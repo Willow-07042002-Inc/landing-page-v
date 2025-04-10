@@ -65,7 +65,7 @@ const Navbar = () => {
         
         {!isCreateWillPage && (
           <nav className="hidden md:flex items-center space-x-8 absolute right-4">
-            <a href="#account" className="text-foreground/80 hover:text-foreground transition-colors">My Account</a>
+            <a href="https://willow-test-deploy.vercel.app/user" className="text-foreground/80 hover:text-foreground transition-colors">My Account</a>
           </nav>
         )}
       </div>

@@ -40,7 +40,6 @@ const FeatureSection = ({
           <a href="https://willow-test-deploy.vercel.app/" >
               <button 
               className="text-2xl px-16 py-3 bg-[#138F8B] hover:bg-[#37978E] text-white rounded-md font-medium transition-colors" 
-              onClick={scrollToPricing}
             >
               {buttonText}
             </button>
