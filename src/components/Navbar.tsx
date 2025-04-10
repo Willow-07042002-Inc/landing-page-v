@@ -27,7 +27,7 @@ const Navbar = () => {
   }, [scrolled]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 border-b border-border transition-all duration-300 ${scrolled || isAlwaysSmallPage ? 'py-4' : 'py-12'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 transition-all duration-300 ${scrolled || isAlwaysSmallPage ? 'py-4 border-b border-border' : 'py-16'}`}>
       <div className="container mx-auto px-4 flex items-center justify-center relative">
         {!isCreateWillPage && (
           <div className="absolute left-4 md:hidden">
@@ -46,7 +46,7 @@ const Navbar = () => {
             <img 
               src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
               alt="Willow Logo" 
-              className={`transition-all duration-300 ${scrolled || isAlwaysSmallPage ? 'h-14 md:h-16' : 'h-16 md:h-20'}`} 
+              className={`transition-all duration-500 ${scrolled || isAlwaysSmallPage ? 'h-14 md:h-16' : 'h-16 md:h-20 -mb-2 mt-6 md:mt-8 lg:mt-12'}`} 
             />
           </Link>
         </div>
