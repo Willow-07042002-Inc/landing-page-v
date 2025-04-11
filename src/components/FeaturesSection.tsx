@@ -53,7 +53,7 @@ const FeatureSection = ({
               <img 
                 src={`/illustration-${illustrationNumber}.png`}
                 alt={`Feature illustration ${illustrationNumber}`}
-                className="w-full h-[calc(100%+25%)] object-contain"
+                className="w-full h-[calc(100%+25%)] object-cover"
               />
             </div>
           </div>
