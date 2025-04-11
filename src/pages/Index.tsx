@@ -1,4 +1,3 @@
-
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
@@ -6,6 +5,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import Reviews from "@/components/Reviews";
 import WillowPricing from "@/components/WillowPricing";
 import Footer from "@/components/Footer";
+import Partners from "@/components/partners";
 
 const Index = () => {
   return (
@@ -15,6 +15,7 @@ const Index = () => {
         <Hero />
         <Reviews />
         <FeaturesSection />
+        <Partners />
         <WillowPricing />
       </main>
       <Footer />

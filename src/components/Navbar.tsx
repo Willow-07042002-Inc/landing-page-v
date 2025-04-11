@@ -27,7 +27,7 @@ const Navbar = () => {
   }, [scrolled]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 transition-all duration-300 ${scrolled || isAlwaysSmallPage ? 'py-4 border-b border-border' : 'py-16'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 transition-all duration-300 ${scrolled || isAlwaysSmallPage ? 'py-4 border-b border-border' : 'py-12'}`}>
       <div className="container mx-auto px-4 flex items-center justify-center relative">
         {!isCreateWillPage && (
           <div className="absolute left-4 md:hidden">
@@ -64,8 +64,8 @@ const Navbar = () => {
         )}
         
         {!isCreateWillPage && (
-          <nav className="hidden md:flex items-center space-x-8 absolute right-4">
-            <a href="https://willow-test-deploy.vercel.app/user" className="text-foreground/80 hover:text-foreground transition-colors ">My Account</a>
+          <nav className="hidden md:flex items-center space-x-8 fixed right-12 top-10 z-50">
+            <a href="https://willow-test-deploy.vercel.app/user" className="text-foreground/80 hover:text-foreground transition-colors">My Account</a>
           </nav>
         )}
       </div>

@@ -20,19 +20,29 @@ const FeatureSection = ({
             {titleParts.map((part, index) => (
               <React.Fragment key={index}>
                 {part.highlighted ? (
-                  <span className="text-[#138F8B] hover:text-[#37978E]  dark:text-[#17C0A9]">{part.text}</span>
+                  <span className="text-[#138F8B] hover:text-[#37978E] dark:text-[#17C0A9]">{part.text}</span>
                 ) : (
                   <span>{part.text}</span>
                 )}
-                {part.lineBreak && <br />}
+                {part.lineBreak && (
+                  <>
+                    <br />
+                    <div className="mb-8"></div>
+                  </>
+                )}
               </React.Fragment>
             ))}
           </h2>
-          <p className="text-2xl text-gray-600 dark:text-gray-300">
+          <p className="text-2xl text-gray-600 dark:text-gray-300 mb-6 md:mb-8">
             {descriptionParts.map((part, index) => (
               <React.Fragment key={index}>
                 {part.text}
-                {part.lineBreak && <br />}
+                {part.lineBreak && (
+                  <>
+                    <br />
+                    <div className="mb-8"></div>
+                  </>
+                )}
               </React.Fragment>
             ))}
           </p>
@@ -95,8 +105,8 @@ const FeatureSections = () => {
     },
     {
       titleParts: [
-        { text: "Updates?", highlighted: true, lineBreak: true},
-        { text: "We got you ", highlighted: false,  },
+        { text: "Updates?", highlighted: true, lineBreak: true },
+        { text: "We got you ", highlighted: false, lineBreak: true },
         { text: "covered", highlighted: true }
       ],
       descriptionParts: [
@@ -112,7 +122,7 @@ const FeatureSections = () => {
   return (
     <section className="bg-background">
       {features.map((feature, index) => (
-        <div key={index} className={`${index === 0 ? "pt-0" : ""} ${index === 1 ? "bg-[#EEF6F2]" : ""}`}>
+        <div key={index} className={`${index === 0 ? "pt-0" : ""} ${index === 1 ? "bg-gray-100" : ""}`}>
           <FeatureSection
             {...feature}
           />
