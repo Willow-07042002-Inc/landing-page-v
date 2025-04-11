@@ -30,7 +30,7 @@ const Navbar = () => {
     <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 transition-all duration-300 ${scrolled || isAlwaysSmallPage ? 'py-4 border-b border-border' : 'py-12'}`}>
       <div className="container mx-auto px-4 flex items-center justify-center relative">
         {!isCreateWillPage && (
-          <div className="absolute left-4 md:hidden">
+          <div className="fixed left-6 top-6 md:hidden z-50">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 focus:outline-none"

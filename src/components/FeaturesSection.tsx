@@ -58,7 +58,7 @@ const FeatureSection = ({
         
         {/* Illustration with clipping effect and hover animation */}
         <div className="w-full md:w-2/5 group">
-          <div className="overflow-hidden h-[600px] relative transition-transform duration-500 group-hover:rotate-3">
+          <div className="overflow-hidden h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] relative transition-transform duration-500 group-hover:rotate-3">
             <div className="absolute inset-0 -bottom-1/4">
               <img 
                 src={`/illustration-${illustrationNumber}.png`}
