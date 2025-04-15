@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -15,9 +14,15 @@ const Footer = () => {
       <div className="container px-4 mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
           <div className="max-w-xs">
+            <img 
+              src="/logo-bg-dark.png" 
+              alt="Willow Logo" 
+              className="h-8 mb-4"
+            />
             <p className="text-xs">
               Copyright 2024 © All Rights Reserved, 07042002, Inc. "DBA" Willow
             </p>
+            
           </div>
           
           <div className="max-w-xl text-xs">
@@ -40,6 +45,9 @@ const Footer = () => {
               >
                 Contact Us
               </button>
+              <Link to="/availability-map" className="text-white hover:text-gray-300 underline">
+                Our Expansion Journey
+              </Link>
             </div>
           </div>
         </div>

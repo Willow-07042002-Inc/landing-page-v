@@ -47,7 +47,7 @@ const WillowPricing = () => {
                   <Check className="absolute top-0 left-0 h-6 w-6 text-white" />
                 </div>
                 <span className="text-left">
-                  <strong className="font-sans">Sign</strong> and <strong className="font-sans">Notarize</strong> your will digitally
+                  <strong className="font-sans">Sign</strong> your will digitally
                 </span>
               </div>
               <div className="flex items-start gap-3">
