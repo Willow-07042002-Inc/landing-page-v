@@ -50,7 +50,7 @@ const AvailabilityMap = () => {
               </div>)}
           </div>
           
-          <a href="https://willow-test-deploy.vercel.app/"><Button variant="default" className="bg-willow hover:bg-willow/90 text-white">
+          <a href="https://willow-test-deploy.vercel.app/coming-soon"><Button variant="default" className="bg-willow hover:bg-willow/90 text-white">
             Let's Get Started
           </Button></a>
         </div>

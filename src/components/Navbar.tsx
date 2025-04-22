@@ -65,7 +65,7 @@ const Navbar = () => {
         
         {!isCreateWillPage && (
           <nav className="hidden md:flex items-center space-x-8 fixed right-12 top-10 z-50">
-            <a href="https://willow-test-deploy.vercel.app/user" className="text-foreground/80 hover:text-foreground transition-colors">My Account</a>
+            <a href="https://willow-test-deploy.vercel.app/coming-soon" className="text-foreground/80 hover:text-foreground transition-colors">My Account</a>
           </nav>
         )}
       </div>
@@ -74,7 +74,7 @@ const Navbar = () => {
         <div className="md:hidden bg-background/95 backdrop-blur-md border-b border-border">
           <nav className="container px-4 py-4 flex flex-col space-y-4">
             <a 
-              href="https://willow-test-deploy.vercel.app/user" 
+              href="https://willow-test-deploy.vercel.app/coming-soon" 
               className="py-2 text-foreground/80 hover:text-foreground transition-colors "
               onClick={() => setIsMenuOpen(false)}
             >

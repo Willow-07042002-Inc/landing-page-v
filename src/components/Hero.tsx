@@ -17,7 +17,7 @@ const Hero = () => {
               <span className="inline-block">All in one place.</span>
             </p>
             <div className="flex justify-center">
-              <a href="https://willow-test-deploy.vercel.app/">
+              <a href="https://willow-test-deploy.vercel.app/coming-soon">
                 <Button size="lg" className="willow-btn px-8 py-6 text-lg">
                   Make my Will
                 </Button>
