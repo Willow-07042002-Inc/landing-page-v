@@ -27,20 +27,20 @@ const FeatureSection = ({
                 {part.lineBreak && (
                   <>
                     <br />
-                    <div className="mb-8"></div>
+                    <div className=" md:mb-6"></div>
                   </>
                 )}
               </React.Fragment>
             ))}
           </h2>
-          <p className="text-2xl text-gray-600 dark:text-gray-300 mb-6 md:mb-8">
+          <p className="text-2xl text-gray-600 dark:text-gray-300 mb-4 md:mb-8">
             {descriptionParts.map((part, index) => (
               <React.Fragment key={index}>
                 {part.text}
                 {part.lineBreak && (
                   <>
                     <br />
-                    <div className="mb-8"></div>
+                    <div className="mb-4 md:mb-8"></div>
                   </>
                 )}
               </React.Fragment>
