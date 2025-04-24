@@ -4,27 +4,27 @@ import useEmblaCarousel from "embla-carousel-react";
 
 const reviewsData = [
   {
-    quote: "Why doesn't everyone use @Lemonade, Inc Insurance? I just switched and slashed my costs by $110 #Winning",
-    author: "Valeria Delgado",
-    username: "@valeriad90",
+    quote: "Creating my will with Willow was incredibly simple and stress-free. The process took just 10 minutes and I feel so much more secure knowing my family is protected.",
+    author: "Sarah Johnson",
+    username: "@sarahj",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
-    quote: "Why doesn't everyone use @Lemonade, Inc Insurance? I just switched and slashed my costs by $110 #Winning",
-    author: "Valeria Delgado",
-    username: "@valeriad90",
+    quote: "I love how easy it is to update my will with Willow. When we bought our new home, I could make the changes in minutes. No need to start from scratch!",
+    author: "Michael Chen",
+    username: "@michaelchen",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
-    quote: "Why doesn't everyone use @Lemonade, Inc Insurance? I just switched and slashed my costs by $110 #Winning",
-    author: "Valeria Delgado",
-    username: "@valeriad90",
+    quote: "The family access feature is a game-changer. My children can securely access my will whenever they need to, and I don't have to worry about lost documents.",
+    author: "Emily Rodriguez",
+    username: "@emilyr",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
-    quote: "Why doesn't everyone use @Lemonade, Inc Insurance? I just switched and slashed my costs by $110 #Winning",
-    author: "Valeria Delgado",
-    username: "@valeriad90",
+    quote: "As a busy parent, I appreciate how Willow handles all the legal complexities. I can focus on my family while knowing my will is properly managed.",
+    author: "David Thompson",
+    username: "@davidt",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   }
 ];
@@ -37,10 +37,9 @@ const ReviewCard = ({ quote, author, username, avatar }: {
 }) => (
   <div className="bg-white rounded-xl p-6 shadow-sm border border-border h-full">
     <div className="flex items-start space-x-3 mb-4">
-      <Avatar className="h-10 w-10">
-        <AvatarImage src={avatar} alt={author} />
-        <AvatarFallback>{author.charAt(0)}</AvatarFallback>
-      </Avatar>
+      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#138F8B]">
+        <span className="text-[#F3F4F6] font-medium">{author.charAt(0)}</span>
+      </div>
       <div>
         <p className="font-medium">{author}</p>
         <p className="text-sm text-muted-foreground">{username}</p>
