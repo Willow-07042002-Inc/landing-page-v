@@ -6,33 +6,28 @@ const reviewsData = [
   {
     quote: "Creating my will with Willow was incredibly simple and stress-free. The process took just 10 minutes and I feel so much more secure knowing my family is protected.",
     author: "Sarah Johnson",
-    username: "@sarahj",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
     quote: "I love how easy it is to update my will with Willow. When we bought our new home, I could make the changes in minutes. No need to start from scratch!",
     author: "Michael Chen",
-    username: "@michaelchen",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
     quote: "The family access feature is a game-changer. My children can securely access my will whenever they need to, and I don't have to worry about lost documents.",
     author: "Emily Rodriguez",
-    username: "@emilyr",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
     quote: "As a busy parent, I appreciate how Willow handles all the legal complexities. I can focus on my family while knowing my will is properly managed.",
     author: "David Thompson",
-    username: "@davidt",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   }
 ];
 
-const ReviewCard = ({ quote, author, username, avatar }: { 
+const ReviewCard = ({ quote, author,  avatar }: { 
   quote: string; 
   author: string; 
-  username: string;
   avatar: string;
 }) => (
   <div className="bg-white rounded-xl p-6 shadow-sm border border-border h-full">
@@ -42,7 +37,6 @@ const ReviewCard = ({ quote, author, username, avatar }: {
       </div>
       <div>
         <p className="font-medium">{author}</p>
-        <p className="text-sm text-muted-foreground">{username}</p>
       </div>
     </div>
     <p className="text-foreground">{quote}</p>
