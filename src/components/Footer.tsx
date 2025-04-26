@@ -32,7 +32,7 @@ const Footer = () => {
               should not be considered legal advice. 07042002 Inc. is not a law firm, and the use of our services and/or contact with any
               company representative does not create an attorney-client relationship.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-4">
               <Link to="/terms" className="text-white hover:text-gray-300 underline">
                 Terms of Service
               </Link>

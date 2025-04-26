@@ -32,7 +32,7 @@ const Hero = () => {
           <div className="flex flex-col items-center justify-center text-center">
             <div className="animate-fade-in">
               <h1 
-                className="text-4xl lg:text-6xl leading-tight mb-4 md:mb-6 font-heading font-light" 
+                className="text-4xl lg:text-6xl leading-tight mb-1 md:mb-2 font-heading font-light" 
                 style={{
                   color: '#222222'
                 }}
@@ -40,11 +40,11 @@ const Hero = () => {
                 We handle what<br />
                 you'd rather ignore
               </h1>
-              <p className="text-lg text-muted-foreground mb-6 md:mb-8">
+              <p className="text-lg text-muted-foreground mb-2 md:mb-4">
                 Create, sign, and store your will.<br />
                 <span className="inline-block">All in one place.</span>
               </p>
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-2 md:mb-4">
                 <a href="https://willow-test-deploy.vercel.app/coming-soon">
                   <Button size="lg" className="willow-btn px-8 py-6 text-lg">
                     Make my Will

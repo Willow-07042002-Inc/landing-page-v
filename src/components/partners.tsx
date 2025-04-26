@@ -1,5 +1,5 @@
 import logoNotary from '/logo-notary.svg'
-import logoAmazon from '/logo-amazon.png'
+import logoAmazon from '/logo-aws.png'
 import logoNext from '/logo-next.png'
 
 const Partners = () => {
