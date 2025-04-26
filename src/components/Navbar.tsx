@@ -31,7 +31,7 @@ const Navbar = () => {
             <img 
               src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
               alt="Willow Logo" 
-              className={`transition-all duration-500 ${scrolled || isAlwaysSmallPage ? 'h-14 md:h-16' : 'h-16 md:h-20 -mb-2 mt-6 md:mt-8 lg:mt-12'}`} 
+              className={`transition-all duration-500 ${scrolled || isAlwaysSmallPage ? 'h-14 md:h-16' : 'h-16 md:h-20 mt-40 md:mt-8 lg:mt-12'}`} 
             />
           </Link>
         </div>

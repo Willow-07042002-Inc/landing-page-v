@@ -12,7 +12,7 @@ const Hero = () => {
           <div className="flex flex-col items-center justify-center text-center">
             <div className="animate-fade-in">
               <h1 
-                className="text-4xl lg:text-6xl leading-tight mb-1 md:mb-2 font-heading font-light" 
+                className="text-4xl lg:text-6xl leading-tight mb-2 font-heading font-light" 
                 style={{
                   color: '#222222'
                 }}
