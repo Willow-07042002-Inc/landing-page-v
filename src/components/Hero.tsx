@@ -4,30 +4,10 @@ import { Button } from "@/components/ui/button";
 const Hero = () => {
   return (
     <section id="hero" className="min-h-screen w-full relative overflow-hidden">
-      {/* Background Image Layer */}
-      <div 
-        className="absolute inset-0 w-full h-full z-0"
-        style={{
-          backgroundImage: "url('/bg-hero.png')",
-          backgroundPosition: "center bottom",
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          pointerEvents: "none"
-        }}
-      />
-      <div 
-        className="absolute inset-0 w-full h-full z-0 md:hidden"
-        style={{
-          backgroundImage: "url('/bg-hero-mobile.png')",
-          backgroundPosition: "center bottom",
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          pointerEvents: "none"
-        }}
-      />
+      
 
       {/* Content Layer */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center">
+      <div className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center mb-36 sm:mb-60 md:mb-0">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="animate-fade-in">
@@ -55,6 +35,27 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      {/* Background Image Layer */}
+      <div 
+        className="absolute inset-0 w-full h-full z-0"
+        style={{
+          backgroundImage: "url('/bg-hero.png')",
+          backgroundPosition: "center bottom",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          pointerEvents: "none"
+        }}
+      />
+      <div 
+        className="absolute inset-0 w-full h-full z-0 md:hidden"
+        style={{
+          backgroundImage: "url('/bg-hero-mobile.png')",
+          backgroundPosition: "center bottom",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          pointerEvents: "none"
+        }}
+      />
     </section>
   );
 };
