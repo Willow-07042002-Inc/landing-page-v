@@ -15,6 +15,16 @@ const Hero = () => {
           pointerEvents: "none"
         }}
       />
+      <div 
+        className="absolute inset-0 w-full h-full z-0 md:hidden"
+        style={{
+          backgroundImage: "url('/bg-hero-mobile.png')",
+          backgroundPosition: "center bottom",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          pointerEvents: "none"
+        }}
+      />
 
       {/* Content Layer */}
       <div className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center">

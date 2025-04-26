@@ -1,18 +1,18 @@
 import logoNotary from '/logo-notary.svg'
 import logoAmazon from '/logo-amazon.png'
+import logoNext from '/logo-next.png'
 
 const Partners = () => {
   const partners = [
-    logoNotary,
     logoAmazon,
-    logoNotary,
-    logoAmazon,
+    logoNext,
+    
   ]
 
   return (
     <section className="pt-16 pb-6 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
+      <div className="container mx-auto px-2">
+        <div className="grid grid-cols-2 md:grid-cols-2  items-center justify-items-center">
           {partners.map((partner, index) => (
             <div key={index} className="w-32 h-16 relative grayscale hover:grayscale-0 transition-all">
               <img

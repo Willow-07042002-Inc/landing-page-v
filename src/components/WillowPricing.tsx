@@ -101,7 +101,7 @@ const WillowPricing = () => {
                   <Circle className="h-6 w-6 stroke-gray-300 fill-gray-300" />
                   <X className="absolute top-0 left-0 h-6 w-6 text-white" />
                 </div>
-                <span className="text-left text-muted-foreground">Sign and notarize your will digitally</span>
+                <span className="text-left text-muted-foreground">Sign your will digitally</span>
               </div>
               <div className="flex items-start gap-3">
                 <div className="relative h-6 w-6 mt-0.5 shrink-0">
