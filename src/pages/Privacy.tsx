@@ -123,10 +123,10 @@ const Privacy = () => {
               <p className="text-base leading-relaxed mb-6">You can manage these rights from your Willow account settings, or reach out anytime at privacy@willow.com. We'll respond within 45 days (often sooner).</p>
 
               <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">How We Keep Your Info Safe</h2>
-              <p className="text-base leading-relaxed mb-6">(working on this)</p>
+              <p className="text-base leading-relaxed mb-6">We follow generally accepted industry standards—technical, physical, and administrative—to safeguard your personal data against loss, misuse, or unauthorized access. These protections include encrypted connections and restricted employee access. Because no method of transmission or storage is perfectly secure, we can't promise absolute security, but we continually review and update our practices to reduce risk.</p>
 
               <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">How Long We Keep Your Data</h2>
-              <p className="text-base leading-relaxed mb-6">(working on this)</p>
+              <p className="text-base leading-relaxed mb-6">We hold on to your information only for as long as it's needed to provide Willow's services or to meet legal and regulatory requirements, after which we securely delete or anonymize it. If you ask us to erase your data, we'll do so unless we're required to keep certain records for compliance, dispute-resolution, or legitimate business purposes.</p>
 
               <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Changes to This Policy</h2>
               <p className="text-base leading-relaxed mb-6">If anything major changes, we'll update this page—and if it's important, we'll email you too. We encourage you to check in once in a while, but no pressure.</p>
