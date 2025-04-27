@@ -1,5 +1,4 @@
 import React from "react";
-import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import FeaturesSection from "@/components/FeaturesSection";
 import Reviews from "@/components/Reviews";
@@ -10,7 +9,6 @@ import Partners from "@/components/partners";
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-grow">
         <Hero />
         <Reviews />
