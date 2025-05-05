@@ -13,7 +13,7 @@ const Index = () => {
         <Hero />
         <Reviews />
         <FeaturesSection />
-        <Partners />
+        {/*<Partners />*/}
         <WillowPricing />
       </main>
       <Footer />

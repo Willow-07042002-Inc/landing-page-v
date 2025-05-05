@@ -20,7 +20,7 @@ const Footer = () => {
               className="h-8 mb-4"
             />
             <p className="text-xs">
-              Copyright 2024 © All Rights Reserved, 07042002, Inc. "DBA" Willow
+              Copyright 2025 © All Rights Reserved, 07042002, Inc. "DBA" Willow
             </p>
             
           </div>
