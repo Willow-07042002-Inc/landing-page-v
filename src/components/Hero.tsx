@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 const Hero = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isIpadPro, setIsIpadPro] = useState(false);
+  const [isIpadProPortrait, setIsIpadProPortrait] = useState(false);
+  const [isIpadProLandscape, setIsIpadProLandscape] = useState(false);
   const [isIpadAir, setIsIpadAir] = useState(false);
 
   useEffect(() => {
@@ -17,36 +19,48 @@ const Hero = () => {
 
     // Check if device is iPad Pro or iPad Air dimension
     const checkIpadDimensions = () => {
-      const isIpadProDimensions = 
+      // iPad Pro dimensions check (both orientations)
+      const isIpadProPortraitDimensions = 
         window.innerWidth >= 1024 && 
-        window.innerWidth <= 1366 && 
-        window.innerHeight >= 1024;
+        window.innerWidth <= 1024 && 
+        window.innerHeight >= 1366;
       
+      const isIpadProLandscapeDimensions = 
+        window.innerWidth >= 1366 && 
+        window.innerHeight >= 1024 && 
+        window.innerHeight <= 1024;
+      
+      // iPad Air dimensions check
       const isIpadAirDimensions = 
         window.innerWidth >= 800 && 
         window.innerWidth <= 840 && 
         window.innerHeight >= 1160 && 
         window.innerHeight <= 1200;
 
-      setIsIpadPro(isIpadProDimensions);
+      setIsIpadProPortrait(isIpadProPortraitDimensions);
+      setIsIpadProLandscape(isIpadProLandscapeDimensions);
+      setIsIpadPro(isIpadProPortraitDimensions || isIpadProLandscapeDimensions);
       setIsIpadAir(isIpadAirDimensions);
     };
 
     // Initial check
     checkIpadDimensions();
     
-    // Listen for resize events
+    // Listen for resize and orientation events
     window.addEventListener("resize", checkIpadDimensions);
+    window.addEventListener("orientationchange", checkIpadDimensions);
     
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", checkIpadDimensions);
+      window.removeEventListener("orientationchange", checkIpadDimensions);
     };
   }, [scrolled]);
 
   // Function to determine the margin top based on device
   const getMarginTop = () => {
-    if (isIpadPro) return { marginTop: '-20rem' };
+    if (isIpadProPortrait) return { marginTop: '-20rem' };
+    if (isIpadProLandscape) return { marginTop: '-10rem' };
     if (isIpadAir) return { marginTop: '-20rem' };
     return {};
   };
