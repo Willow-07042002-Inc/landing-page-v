@@ -56,7 +56,7 @@ const Reviews = () => {
       // Auto-scroll functionality
       const autoplayTimer = setInterval(() => {
         emblaApi.scrollNext();
-      }, 3000); // Scroll every 3 seconds
+      }, 3500); // Scroll every 3 seconds
       
       return () => {
         clearInterval(autoplayTimer);
@@ -74,11 +74,11 @@ const Reviews = () => {
           </p>
         </div>
         
-        <div className="w-full max-w-5xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">
               {reviewsData.map((review, index) => (
-                <div key={index} className="min-w-0 shrink-0 grow-0 basis-full md:basis-1/2 lg:basis-1/3 pl-4">
+                <div key={index} className="min-w-0 shrink-0 grow-0 basis-full sm:basis-1/2 lg:basis-1/3 pl-4 pr-4">
                   <ReviewCard {...review} />
                 </div>
               ))}

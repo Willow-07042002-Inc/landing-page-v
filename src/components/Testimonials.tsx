@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Star } from "lucide-react";
 
@@ -50,7 +49,7 @@ const Testimonials = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.slice(0, 3).map((testimonial, index) => (
             <TestimonialCard key={index} {...testimonial} />
           ))}
         </div>
