@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [isIpadPro, setIsIpadPro] = useState(false);
+  const [isIpadAir, setIsIpadAir] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,10 +14,103 @@ const Hero = () => {
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Check if device is iPad Pro or iPad Air dimension
+    const checkIpadDimensions = () => {
+      const isIpadProDimensions = 
+        window.innerWidth >= 1024 && 
+        window.innerWidth <= 1366 && 
+        window.innerHeight >= 1024;
+      
+      const isIpadAirDimensions = 
+        window.innerWidth >= 800 && 
+        window.innerWidth <= 840 && 
+        window.innerHeight >= 1160 && 
+        window.innerHeight <= 1200;
+
+      setIsIpadPro(isIpadProDimensions);
+      setIsIpadAir(isIpadAirDimensions);
+    };
+
+    // Initial check
+    checkIpadDimensions();
+    
+    // Listen for resize events
+    window.addEventListener("resize", checkIpadDimensions);
+    
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", checkIpadDimensions);
     };
   }, [scrolled]);
+
+  // Function to determine the margin top based on device
+  const getMarginTop = () => {
+    if (isIpadPro) return { marginTop: '-20rem' };
+    if (isIpadAir) return { marginTop: '-20rem' };
+    return {};
+  };
+
+  // Function to determine heading text size based on device
+  const getHeadingStyles = () => {
+    const baseStyle = { color: '#222222' };
+    
+    if (isIpadPro) {
+      return { 
+        ...baseStyle,
+        fontSize: '5rem',
+        lineHeight: '1.1'
+      };
+    }
+    
+    if (isIpadAir) {
+      return { 
+        ...baseStyle,
+        fontSize: '4rem',
+        lineHeight: '1.1'
+      };
+    }
+    
+    return baseStyle;
+  };
+
+  // Function to determine paragraph text size based on device
+  const getParagraphStyles = () => {
+    if (isIpadPro) {
+      return { 
+        fontSize: '1.75rem',
+        lineHeight: '2.2rem'
+      };
+    }
+    
+    if (isIpadAir) {
+      return { 
+        fontSize: '1.5rem',
+        lineHeight: '1.8rem'
+      };
+    }
+    
+    return {};
+  };
+
+  // Function to determine button styles based on device
+  const getButtonStyles = () => {
+    if (isIpadPro) {
+      return { 
+        fontSize: '1.5rem',
+        padding: '2rem 3rem'
+      };
+    }
+    
+    if (isIpadAir) {
+      return { 
+        fontSize: '1.3rem',
+        padding: '1.75rem 2.5rem'
+      };
+    }
+    
+    return {};
+  };
 
   return (
     <section id="hero" className="min-h-screen w-full relative overflow-hidden">
@@ -35,23 +130,33 @@ const Hero = () => {
       </header>
       {/* Content Layer */}
       <div className="relative z-10 w-full min-h-screen flex flex-col justify-center items-center pb-60 md:pb-0 pt-8 md:pt-0 md:mb-0">
-        <div className="container mx-auto px-4">
+        <div 
+          className="container mx-auto px-4"
+          style={getMarginTop()}
+        >
           <div className="flex flex-col items-center justify-center text-center">
             <div className="animate-fade-in">
               <h1 
                 className="text-4xl lg:text-6xl leading-tight mb-2 font-heading font-light" 
-                style={{ color: '#222222' }}
+                style={getHeadingStyles()}
               >
                 We handle what<br />
                 you'd rather ignore
               </h1>
-              <p className="text-lg text-muted-foreground mb-2 md:mb-4">
+              <p 
+                className="text-lg text-muted-foreground mb-2 md:mb-4"
+                style={getParagraphStyles()}
+              >
                 Create, sign, and store your will.<br />
                 <span className="inline-block">All in one place.</span>
               </p>
               <div className="flex justify-center mb-2 md:mb-4">
                 <a href="https://willow-test-deploy.vercel.app/coming-soon">
-                  <Button size="lg" className="willow-btn px-8 py-6 text-lg">
+                  <Button 
+                    size="lg" 
+                    className="willow-btn px-8 py-6 text-lg"
+                    style={getButtonStyles()}
+                  >
                     Make my Will
                   </Button>
                 </a>
