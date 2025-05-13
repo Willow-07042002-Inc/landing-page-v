@@ -7,6 +7,9 @@ const Hero = () => {
   const [isIpadProPortrait, setIsIpadProPortrait] = useState(false);
   const [isIpadProLandscape, setIsIpadProLandscape] = useState(false);
   const [isIpadAir, setIsIpadAir] = useState(false);
+  const [isIpadMini, setIsIpadMini] = useState(false);
+  const [isIpadMiniPortrait, setIsIpadMiniPortrait] = useState(false);
+  const [isIpadMiniLandscape, setIsIpadMiniLandscape] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,11 +39,27 @@ const Hero = () => {
         window.innerWidth <= 840 && 
         window.innerHeight >= 1160 && 
         window.innerHeight <= 1200;
+        
+      // iPad Mini dimensions check (both orientations)
+      const isIpadMiniPortraitDimensions = 
+        window.innerWidth >= 750 && 
+        window.innerWidth <= 790 && 
+        window.innerHeight >= 1000 && 
+        window.innerHeight <= 1050;
+      
+      const isIpadMiniLandscapeDimensions = 
+        window.innerWidth >= 1000 && 
+        window.innerWidth <= 1050 && 
+        window.innerHeight >= 750 && 
+        window.innerHeight <= 790;
 
       setIsIpadProPortrait(isIpadProPortraitDimensions);
       setIsIpadProLandscape(isIpadProLandscapeDimensions);
       setIsIpadPro(isIpadProPortraitDimensions || isIpadProLandscapeDimensions);
       setIsIpadAir(isIpadAirDimensions);
+      setIsIpadMiniPortrait(isIpadMiniPortraitDimensions);
+      setIsIpadMiniLandscape(isIpadMiniLandscapeDimensions);
+      setIsIpadMini(isIpadMiniPortraitDimensions || isIpadMiniLandscapeDimensions);
     };
 
     // Initial check
@@ -62,6 +81,8 @@ const Hero = () => {
     if (isIpadProPortrait) return { marginTop: '-20rem' };
     if (isIpadProLandscape) return { marginTop: '-10rem' };
     if (isIpadAir) return { marginTop: '-20rem' };
+    if (isIpadMiniPortrait) return { marginTop: '-15rem' };
+    if (isIpadMiniLandscape) return { marginTop: '-8rem' };
     return {};
   };
 
@@ -85,6 +106,14 @@ const Hero = () => {
       };
     }
     
+    if (isIpadMini) {
+      return {
+        ...baseStyle,
+        fontSize: '3.5rem',
+        lineHeight: '1.1'
+      };
+    }
+    
     return baseStyle;
   };
 
@@ -104,6 +133,13 @@ const Hero = () => {
       };
     }
     
+    if (isIpadMini) {
+      return {
+        fontSize: '1.25rem',
+        lineHeight: '1.6rem'
+      };
+    }
+    
     return {};
   };
 
@@ -120,6 +156,13 @@ const Hero = () => {
       return { 
         fontSize: '1.3rem',
         padding: '1.75rem 2.5rem'
+      };
+    }
+    
+    if (isIpadMini) {
+      return {
+        fontSize: '1.15rem',
+        padding: '1.5rem 2.25rem'
       };
     }
     
