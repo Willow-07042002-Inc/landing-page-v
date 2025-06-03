@@ -1,0 +1,22 @@
+{
+  "name": "Willow - Will Creation Platform",
+  "short_name": "Willow",
+  "description": "Create, sign, and store your will online. Simple, secure, and hassle-free will creation with unlimited updates and family access.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4ade80",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "finance", "business"],
+  "lang": "en",
+  "scope": "/",
+  "author": "07042002, Inc. DBA Willow"
+} 

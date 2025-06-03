@@ -1,76 +1,87 @@
-# Welcome to your Lovable project
+# Willow - Will Creation Platform
 
-## Project info
+## About Willow
 
-**URL**: https://lovable.dev/projects/8ad82e50-8851-436f-ad4e-b33ebc788a5c
+Willow is a modern, secure platform for creating, signing, and storing wills online. Built with cutting-edge technology to provide a simple, secure, and hassle-free will creation experience with unlimited updates and family access.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Simple Will Creation**: Easy-to-use interface for creating comprehensive wills
+- **Secure Storage**: Your documents are safely stored with enterprise-grade security
+- **Family Access**: Share access with trusted family members
+- **Unlimited Updates**: Make changes to your will anytime
+- **Digital Signatures**: Legally compliant digital signing process
 
-**Use Lovable**
+## Getting Started
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8ad82e50-8851-436f-ad4e-b33ebc788a5c) and start prompting.
+### Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+Make sure you have Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-**Use your preferred IDE**
+### Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Follow these steps to set up the project locally:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Step 1: Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Step 2: Navigate to the project directory
+cd willow-will-creation-platform
 
-# Step 3: Install the necessary dependencies.
+# Step 3: Install the dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Technology Stack
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+This project is built with modern web technologies:
 
-**Use GitHub Codespaces**
+- **Vite** - Fast build tool and development server
+- **TypeScript** - Type-safe JavaScript
+- **React** - User interface library
+- **shadcn/ui** - Beautiful and accessible UI components
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Query** - Data fetching and state management
+- **React Hook Form** - Form handling and validation
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Development
 
-## What technologies are used for this project?
+### Available Scripts
 
-This project is built with:
+- `npm run dev` - Start the development server
+- `npm run build` - Build for production
+- `npm run build:dev` - Build for development
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview the production build
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Project Structure
 
-## How can I deploy this project?
+```
+src/
+├── components/     # Reusable UI components
+├── pages/         # Page components
+├── lib/           # Utility functions
+└── main.tsx       # Application entry point
+```
 
-Simply open [Lovable](https://lovable.dev/projects/8ad82e50-8851-436f-ad4e-b33ebc788a5c) and click on Share -> Publish.
+## Contributing
 
-## Can I connect a custom domain to my Lovable project?
+We welcome contributions to improve Willow. Please follow these guidelines:
 
-Yes it is!
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## License
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
-# landing-page-v
-# landing-page-v
-# landing-page-v
+© 2024 07042002, Inc. DBA Willow. All rights reserved.
+
+## Support
+
+For support and questions, please contact our team at support@willow.com
