@@ -13,7 +13,7 @@ const WillowPricing = () => {
         </div>
         
         <div className="text-center mb-10">
-          <a href = "https://willow-test-deploy.vercel.app/coming-soon">
+          <a href = "https://willow-test-deploy.vercel.app">
           <Button  size="lg" className="bg-willow hover:bg-willow-600 transition-colors border-0 text-white py-6 px-10 text-lg">
             GET STARTED TODAY
           </Button>
