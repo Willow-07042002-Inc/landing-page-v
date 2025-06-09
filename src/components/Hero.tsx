@@ -20,9 +20,9 @@ const Hero = () => {
   }, [scrolled]);
 
   return (
-    <section id="hero" className="min-h-screen w-full relative overflow-hidden">
+    <section id="hero" className="min-h-screen w-full relative overflow-hidden bg-[#F8FAFC] pt-[env(safe-area-inset-top)]">
       {/* Logo fixa no topo */}
-      <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 transition-all duration-300 ${scrolled ? 'py-4 border-b border-border' : 'py-4 md:py-5 lg:py-6'}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-4 bg-background/95 border-b border-border backdrop-blur-sm' : 'py-4 md:py-5 lg:py-6'}`}>
         <div className="container mx-auto px-4 flex items-center justify-center relative">
           <div className={`flex ${scrolled ? 'items-center' : 'items-end'} transition-all duration-300`}>
             <a href="/" className="flex items-end">
