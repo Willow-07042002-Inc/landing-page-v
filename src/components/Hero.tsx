@@ -38,7 +38,7 @@ const Hero = () => {
 
       {/* Content Layer */}
       <div className="relative z-10 w-full min-h-screen flex flex-col md:justify-center items-center pb-20 md:pb-40 lg:pb-0">
-        <div className="container mx-auto px-4 pt-24 md:pt-28 lg:pt-32">
+        <div className="container mx-auto px-4 pt-28 md:pt-28 lg:pt-32">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="animate-fade-in md:lg:mb-40">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-4 font-heading font-light text-[#222222]">
