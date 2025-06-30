@@ -23,7 +23,11 @@ const Hero = () => {
     <section id="hero" className="min-h-screen w-full relative overflow-hidden bg-[#F8FAFC] pt-[env(safe-area-inset-top)]">
       {/* Logo fixed at top */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-4 bg-background/95 border-b border-border backdrop-blur-sm' : 'py-4 md:py-5 lg:py-6'}`}>
-        <div className="container mx-auto px-4 flex items-center justify-center relative">
+        <div className="container mx-auto px-4 flex items-center justify-between relative">
+          {/* Left spacer for centering logo */}
+          <div className="flex-1"></div>
+          
+          {/* Centered logo */}
           <div className={`flex ${scrolled ? 'items-center' : 'items-end'} transition-all duration-300`}>
             <a href="/" className="flex items-end">
               <img 
@@ -31,6 +35,16 @@ const Hero = () => {
                 alt="Willow Logo" 
                 className={`transition-all duration-500 ${scrolled ? 'h-12 sm:h-14 md:h-16' : 'h-14 sm:h-16 md:h-20 mt-6 md:mt-10 lg:mt-8'}`} 
               />
+            </a>
+          </div>
+          
+          {/* Right side - My Account button */}
+          <div className={`flex-1 flex justify-end ${scrolled ? 'items-center' : 'items-end'} transition-all duration-300`}>
+            <a 
+              href="https://willow-test-deploy.vercel.app/login"
+              className={`transition-all duration-500 px-4 py-2 bg-willow hover:bg-willow-600 text-white rounded-md font-medium ${scrolled ? 'text-sm' : 'text-base mt-6 md:mt-10 lg:mt-8'}`}
+            >
+              My Account
             </a>
           </div>
         </div>
