@@ -4,23 +4,33 @@ import useEmblaCarousel from "embla-carousel-react";
 
 const reviewsData = [
   {
-    quote: "Creating my will with Willow was incredibly simple and stress-free. The process took just 10 minutes and I feel so much more secure knowing my family is protected.",
-    author: "Sarah Johnson",
+    quote: "Finally — someone who doesn't pretend this doesn't suck. Willow gets that I don't want to do it… and just does it for me.",
+    author: "Sarah M.",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
-    quote: "I love how easy it is to update my will with Willow. When we bought our new home, I could make the changes in minutes. No need to start from scratch!",
-    author: "Michael Chen",
+    quote: "I didn't want to deal with this at all, but Willow made it feel like something I could actually handle. Super grateful.",
+    author: "Michael R.",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
-    quote: "The family access feature is a game-changer. My children can securely access my will whenever they need to, and I don't have to worry about lost documents.",
-    author: "Emily Rodriguez",
+    quote: "It's like Willow read my mind. I'd been avoiding this forever — and it felt like they just said, 'No worries, we'll take care of it.'",
+    author: "Emily K.",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   },
   {
-    quote: "As a busy parent, I appreciate how Willow handles all the legal complexities. I can focus on my family while knowing my will is properly managed.",
-    author: "David Thompson",
+    quote: "Feels like it was built by someone who actually gets how stressful this is. Simple, smart, and no guilt trip.",
+    author: "David L.",
+    avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
+  },
+  {
+    quote: "I didn't even know where to start, but Willow made it feel like checking off a task — not a full-blown emotional project.",
+    author: "Jessica T.",
+    avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
+  },
+  {
+    quote: "Cheaper than a coffee and actually useful? I'm sold.",
+    author: "Alex P.",
     avatar: "/lovable-uploads/9ff0bcf3-4c32-4418-8d96-3727159fec7d.png"
   }
 ];
