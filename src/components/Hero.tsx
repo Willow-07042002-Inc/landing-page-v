@@ -40,12 +40,15 @@ const Hero = () => {
           
           {/* Right side - My Account button */}
           <div className={`flex-1 flex justify-end ${scrolled ? 'items-center' : 'items-end'} transition-all duration-300`}>
+            {/* TEMPORARILY HIDDEN - Remove this comment block to show My Account button */}
+            {false && (
             <a 
               href="https://willow-test-deploy.vercel.app/login"
-              className={`transition-all duration-500 px-4 py-2 bg-willow hover:bg-willow-600 text-white rounded-md font-medium ${scrolled ? 'text-sm' : 'text-base mt-6 md:mt-10 lg:mt-8'}`}
+              className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${scrolled ? 'text-sm' : 'text-base mt-6 md:mt-10 lg:mt-8'}`}
             >
               My Account
             </a>
+            )}
           </div>
         </div>
       </header>

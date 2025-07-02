@@ -32,45 +32,40 @@ const WillowPricing = () => {
             
             <div className="w-full space-y-4 mb-8">
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-willow fill-willow" />
-                  <Check className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-willow rounded-full flex items-center justify-center">
+                  <Check className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left">
                   <strong className="font-sans">Create</strong> your will online
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-willow fill-willow" />
-                  <Check className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-willow rounded-full flex items-center justify-center">
+                  <Check className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left">
                   <strong className="font-sans">Sign</strong> your will digitally
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-willow fill-willow" />
-                  <Check className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-willow rounded-full flex items-center justify-center">
+                  <Check className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left">
                   <strong className="font-sans">Share</strong> secure access with those you trust
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-willow fill-willow" />
-                  <Check className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-willow rounded-full flex items-center justify-center">
+                  <Check className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left">
                   Unlimited <strong className="font-sans">Updates</strong>, we'll even send suggestions
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-willow fill-willow" />
-                  <Check className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-willow rounded-full flex items-center justify-center">
+                  <Check className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left">
                   Free access to selected <strong className="font-sans">Future</strong> features
@@ -90,37 +85,32 @@ const WillowPricing = () => {
             
             <div className="w-full space-y-4 mb-8">
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-willow fill-willow" />
-                  <Check className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-willow rounded-full flex items-center justify-center">
+                  <Check className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left">Create your will online</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-gray-300 fill-gray-300" />
-                  <X className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-gray-300 rounded-full flex items-center justify-center">
+                  <X className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left text-muted-foreground">Sign your will digitally</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-gray-300 fill-gray-300" />
-                  <X className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-gray-300 rounded-full flex items-center justify-center">
+                  <X className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left text-muted-foreground">Share secure access with those you trust</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-gray-300 fill-gray-300" />
-                  <X className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-gray-300 rounded-full flex items-center justify-center">
+                  <X className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left text-muted-foreground">Unlimited Updates, we'll even send suggestions</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="relative h-6 w-6 mt-0.5 shrink-0">
-                  <Circle className="h-6 w-6 stroke-gray-300 fill-gray-300" />
-                  <X className="absolute top-0 left-0 h-6 w-6 text-white" />
+                <div className="h-8 w-8 mt-0.5 shrink-0 bg-gray-300 rounded-full flex items-center justify-center">
+                  <X className="h-6 w-6 text-white check-icon" />
                 </div>
                 <span className="text-left text-muted-foreground">Free access to selected future features</span>
               </div>
