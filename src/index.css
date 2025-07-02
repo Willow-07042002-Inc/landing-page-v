@@ -136,3 +136,10 @@ body {
 .willow-btn {
   @apply bg-willow hover:bg-willow-600 text-white transition-colors;
 }
+
+.check-icon {
+  stroke-width: 5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
