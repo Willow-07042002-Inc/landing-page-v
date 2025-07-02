@@ -54,7 +54,7 @@ const Hero = () => {
       </header>
 
       {/* Content Layer */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col md:justify-center items-center pb-20 md:pb-40 lg:pb-0">
+      <div className="relative z-10 w-full min-h-screen flex flex-col md:justify-center items-center">
         <div className="container mx-auto px-4 pt-28 md:pt-28 lg:pt-32">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="animate-fade-in md:lg:mb-40">
