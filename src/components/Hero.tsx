@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   const [scrolled, setScrolled] = useState(false);
+  const app_url = import.meta.env.VITE_WILLOW_APP_URL;
+  const app_landing_uri = import.meta.env.VITE_WILLOW_APP_LANDING_URI;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,7 +69,7 @@ const Hero = () => {
                 <span className="inline-block">All in one place.</span>
               </p>
               <div className="flex justify-center mb-4 md:mb-8">
-                <a href="https://willow-test-deploy.vercel.app/coming-soon">
+                <a href={`${app_url}${app_landing_uri}`}>
                   <Button 
                     size="lg" 
                     className="willow-btn px-6 py-5 sm:px-7 sm:py-6 md:px-8 md:py-7 text-base sm:text-lg md:text-xl"
