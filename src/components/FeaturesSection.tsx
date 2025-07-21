@@ -47,7 +47,7 @@ const FeatureSection = ({
             ))}
           </p>
           
-          <a href="https://willow-test-deploy.vercel.app/coming-soon" >
+          <a href="https://app.willow-inc.com/" >
               <button 
               className="text-2xl px-16 py-3 bg-[#138F8B] hover:bg-[#37978E] text-white rounded-md font-medium transition-colors" 
             >

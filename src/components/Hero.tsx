@@ -43,7 +43,7 @@ const Hero = () => {
           {/* Right side - My Account button */}
           <div className={`flex-1 flex justify-end ${scrolled ? 'items-center' : 'items-end'} transition-all duration-300`}>
             <a 
-              href="https://willow-test-deploy.vercel.app/login"
+              href="https://app.willow-inc.com/login"
               className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${scrolled ? 'text-sm' : 'text-base mt-6 md:mt-10 lg:mt-8'}`}
             >
               My Account
@@ -66,7 +66,7 @@ const Hero = () => {
                 <span className="inline-block">All in one place.</span>
               </p>
               <div className="flex justify-center mb-4 md:mb-8">
-                <a href={`${app_url}${app_landing_uri}`}>
+                <a href="https://app.willow-inc.com/">
                   <Button 
                     size="lg" 
                     className="willow-btn px-6 py-5 sm:px-7 sm:py-6 md:px-8 md:py-7 text-base sm:text-lg md:text-xl"
