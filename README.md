@@ -85,4 +85,3 @@ We welcome contributions to improve Willow. Please follow these guidelines:
 ## Support
 
 For support and questions, please contact our team at support@willow.com
-#test
