@@ -28,7 +28,7 @@ const WillowPricing = () => {
             </div>
             
             <p className="text-muted-foreground mb-2 text-sm">MONTHLY</p>
-            <p className="text-6xl font-heading mb-8">$1.98</p>
+            <p className="text-6xl font-heading mb-8">$3.99</p>
             
             <div className="w-full space-y-4 mb-8">
               <div className="flex items-start gap-3">
