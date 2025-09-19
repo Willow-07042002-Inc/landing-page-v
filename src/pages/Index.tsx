@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import FeaturesSection from "@/components/FeaturesSection";
 import Reviews from "@/components/Reviews";
 import WillowPricing from "@/components/WillowPricing";
+import ColoradoCallToAction from "@/components/ColoradoCallToAction";
 import Footer from "@/components/Footer";
 import Partners from "@/components/partners";
 
@@ -15,6 +16,7 @@ const Index = () => {
         <FeaturesSection />
         {/*<Partners />*/}
         <WillowPricing />
+        <ColoradoCallToAction />
       </main>
       <Footer />
     </div>
