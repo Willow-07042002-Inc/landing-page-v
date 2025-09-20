@@ -22,7 +22,7 @@ const ColoradoCallToAction = () => {
   }, []);
 
   return (
-    <section id="colorado" className="relative py-32 md:py-48 bg-white overflow-hidden">
+    <section id="colorado" className="relative min-h-[80vh] py-16 md:py-24 bg-white overflow-hidden flex flex-col justify-center">
       {/* Left mountains - enlarged by 8rem height (twice gondola increase) */}
       <div className="absolute bottom-0 left-0 w-[95vw] h-[36rem] md:h-[40rem] z-10 overflow-hidden">
         <img 
@@ -32,8 +32,8 @@ const ColoradoCallToAction = () => {
         />
       </div>
       
-      {/* Right mountains - enlarged by 8rem height (twice gondola increase) */}
-      <div className="absolute bottom-0 right-0 w-[95vw] h-[36rem] md:h-[40rem] z-10 overflow-hidden">
+      {/* Right mountains - enlarged by 8rem height (twice gondola increase) - hidden on mobile */}
+      <div className="absolute bottom-0 right-0 w-[95vw] h-[36rem] md:h-[40rem] z-10 overflow-hidden hidden md:block">
         <img 
           src="/mountains-right.png" 
           alt="Right mountains" 
@@ -50,8 +50,8 @@ const ColoradoCallToAction = () => {
         />
       </div>
       
-      {/* Right gondola - micro-adjusted up a couple pixels */}
-      <div className="absolute -top-9 md:-top-14 -right-28 md:-right-36 w-[32rem] h-[32rem] md:w-[40rem] md:h-[40rem] z-20">
+      {/* Right gondola - micro-adjusted up a couple pixels - hidden on mobile */}
+      <div className="absolute -top-9 md:-top-14 -right-28 md:-right-36 w-[32rem] h-[32rem] md:w-[40rem] md:h-[40rem] z-20 hidden md:block">
         <img 
           src="/gondola.png" 
           alt="Right gondola" 
@@ -65,13 +65,13 @@ const ColoradoCallToAction = () => {
           <div className="flex flex-col items-center justify-center text-center">
             <div className="max-w-4xl mx-auto">
               {/* Main heading */}
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-gray-900 mb-12">
-                Let's do this Colorado!
+              <h2 className="text-4xl md:text-5xl font-heading font-light text-gray-900 mb-12">
+                This is about you, <br /> so tell us what you want <br /> us to handle.
               </h2>
               
               {/* Subheader */}
               <p className="text-lg md:text-xl text-gray-700 mb-16 max-w-2xl mx-auto">
-                Be part of a group of parents building a simpler future for Colorado families.
+                Be part of a group of parents building a simpler <br /> future for Colorado families.
               </p>
               
               {/* CTA Button */}
