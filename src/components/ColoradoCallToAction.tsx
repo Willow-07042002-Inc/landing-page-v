@@ -1,9 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 const ColoradoCallToAction = () => {
+  useEffect(() => {
+    // Check for URL parameter to auto-scroll to Colorado section
+    const urlParams = new URLSearchParams(window.location.search);
+    const scrollToColorado = urlParams.get('colorado') === 'true';
+    
+    if (scrollToColorado) {
+      // Small delay to ensure the page has loaded
+      setTimeout(() => {
+        const coloradoSection = document.getElementById('colorado');
+        if (coloradoSection) {
+          coloradoSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 100);
+    }
+  }, []);
+
   return (
-    <section className="relative py-32 md:py-48 bg-white overflow-hidden">
+    <section id="colorado" className="relative py-32 md:py-48 bg-white overflow-hidden">
       {/* Left mountains - enlarged by 8rem height (twice gondola increase) */}
       <div className="absolute bottom-0 left-0 w-[95vw] h-[36rem] md:h-[40rem] z-10 overflow-hidden">
         <img 
@@ -22,8 +41,8 @@ const ColoradoCallToAction = () => {
         />
       </div>
       
-      {/* Left gondola - moved slightly up and outward */}
-      <div className="absolute -top-8 md:-top-12 -left-28 md:-left-36 w-[32rem] h-[32rem] md:w-[40rem] md:h-[40rem] z-20">
+      {/* Left gondola - micro-adjusted up a couple pixels */}
+      <div className="absolute -top-9 md:-top-14 -left-28 md:-left-36 w-[32rem] h-[32rem] md:w-[40rem] md:h-[40rem] z-20">
         <img 
           src="/gondola.png" 
           alt="Left gondola" 
@@ -31,8 +50,8 @@ const ColoradoCallToAction = () => {
         />
       </div>
       
-      {/* Right gondola - moved slightly up and outward */}
-      <div className="absolute -top-8 md:-top-12 -right-28 md:-right-36 w-[32rem] h-[32rem] md:w-[40rem] md:h-[40rem] z-20">
+      {/* Right gondola - micro-adjusted up a couple pixels */}
+      <div className="absolute -top-9 md:-top-14 -right-28 md:-right-36 w-[32rem] h-[32rem] md:w-[40rem] md:h-[40rem] z-20">
         <img 
           src="/gondola.png" 
           alt="Right gondola" 
@@ -60,7 +79,17 @@ const ColoradoCallToAction = () => {
                 <a href="https://app.willow-inc.com/colorado-family" target="_blank" rel="noopener noreferrer">
                   <Button 
                     size="lg" 
-                    className="bg-teal-500 hover:bg-teal-600 transition-colors text-white font-semibold py-4 px-8 text-lg rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    className="text-white font-semibold py-4 px-8 text-lg rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    style={{
+                      backgroundColor: '#00BCBA',
+                      borderColor: '#00BCBA'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#009B9A';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#00BCBA';
+                    }}
                   >
                     LET'S DO THIS!
                   </Button>
