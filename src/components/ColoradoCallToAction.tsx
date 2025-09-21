@@ -22,7 +22,7 @@ const ColoradoCallToAction = () => {
   }, []);
 
   return (
-    <section id="colorado" className="relative min-h-[80vh] py-16 md:py-24 bg-white overflow-hidden flex flex-col justify-center">
+    <section id="colorado" className="relative min-h-screen md:min-h-[80vh] py-16 md:py-24 bg-white overflow-hidden flex flex-col justify-center">
       {/* Left mountains - adjusted for mobile spacing */}
       <div className="absolute bottom-0 left-0 w-[95vw] h-[24rem] md:h-[40rem] z-10 overflow-hidden">
         <img 
@@ -41,8 +41,8 @@ const ColoradoCallToAction = () => {
         />
       </div>
       
-      {/* Left gondola - adjusted for mobile spacing */}
-      <div className="absolute top-4 md:-top-14 -left-16 md:-left-36 w-[20rem] h-[20rem] md:w-[40rem] md:h-[40rem] z-20">
+      {/* Left gondola - hidden on mobile, visible on desktop */}
+      <div className="absolute -top-14 -left-36 w-[40rem] h-[40rem] z-20 hidden md:block">
         <img 
           src="/gondola.png" 
           alt="Left gondola" 
@@ -60,8 +60,8 @@ const ColoradoCallToAction = () => {
       </div>
       
       {/* Main content */}
-      <div className="relative z-20 w-full flex flex-col justify-center items-center min-h-[60vh]">
-        <div className="container mx-auto px-4 pt-16 md:pt-0">
+      <div className="relative z-20 w-full flex flex-col justify-start md:justify-center items-center min-h-[60vh] pt-20 md:pt-0">
+        <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="max-w-4xl mx-auto">
               {/* Main heading */}
