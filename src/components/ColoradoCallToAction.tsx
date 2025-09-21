@@ -60,7 +60,7 @@ const ColoradoCallToAction = () => {
       </div>
       
       {/* Main content */}
-      <div className="relative z-20 w-full flex flex-col justify-start md:justify-center items-center min-h-[60vh] pt-20 md:pt-0">
+      <div className="relative z-20 w-full flex flex-col justify-center items-center min-h-[70vh] md:min-h-[60vh] -mt-20 md:mt-0">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="max-w-4xl mx-auto">
