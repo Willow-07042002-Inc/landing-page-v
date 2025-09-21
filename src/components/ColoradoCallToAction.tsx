@@ -66,12 +66,19 @@ const ColoradoCallToAction = () => {
             <div className="max-w-4xl mx-auto">
               {/* Main heading */}
               <h2 className="text-4xl md:text-5xl font-heading font-light text-gray-900 mb-12">
-                This is about you, <br /> so tell us what you want <br /> us to handle.
+                How can we make <br /> your life easier?
               </h2>
               
               {/* Subheader */}
               <p className="text-lg md:text-xl text-gray-700 mb-16 max-w-2xl mx-auto">
-                Be part of a group of parents building a simpler <br /> future for Colorado families.
+                <span className="md:hidden">
+                  Be part of a group <br />
+                  of parents building a <br />
+                  future for Colorado families.
+                </span>
+                <span className="hidden md:inline">
+                  Be part of a group of parents building a <br /> simpler future for Colorado families.
+                </span>
               </p>
               
               {/* CTA Button */}
