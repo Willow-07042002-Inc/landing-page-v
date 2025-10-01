@@ -88,7 +88,7 @@ const Terms = () => {
               </ul>
 
               <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">What We're Not Responsible For - Legal Advice</h2>
-              <p className="text-base leading-relaxed mb-6">Willow is designed to help you document your decisions legally, not to advise on what decisions to make. For example, we're not here to tell you which aunt or uncle to list as a guardian for your children—we're simply here to make sure you have the ability to communicate your preferences in a legally recognized format. For complex estates or specific legal questions, we recommend consulting with a qualified attorney.</p>
+              <p className="text-base leading-relaxed mb-6">Willow is designed to help you document your decisions legally, not to advise on what decisions to make. For example, we're not here to tell you which aunt or uncle to list as a guardian for your children—we're simply here to make sure you have the ability to communicate your preferences in a legally recognized format. For complex estates or specific legal questions, including but not limited to estate tax planning and/or special needs trusts, we recommend consulting with a qualified attorney.</p>
 
               <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Ownership & Restrictions</h2>
               <ul className="list-disc pl-6 mb-6 space-y-2">
