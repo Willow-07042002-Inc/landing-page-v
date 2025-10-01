@@ -13,7 +13,7 @@ type StateSchedule = {
 const AvailabilityMap = () => {
   const stateSchedules: StateSchedule[] = [{
     name: "Colorado",
-    date: "May 2025",
+    date: "Fall 2025",
     isLive: false
   }, {
     name: "Everywhere else",
