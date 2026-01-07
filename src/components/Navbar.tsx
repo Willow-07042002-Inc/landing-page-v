@@ -1,39 +1,149 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [scrolledPastHero, setScrolledPastHero] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   
   const isCreateWillPage = location.pathname === "/create-will";
-  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact"];
+  const isForLawyersPage = location.pathname === "/for-lawyers";
+  const isAboutUsPage = location.pathname === "/about-us";
+  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
 
   useEffect(() => {
+    // Always keep About Us page in scrolled state
+    if (isAboutUsPage) {
+      setScrolled(true);
+      setScrolledPastHero(true);
+      return;
+    }
+    
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10;
       if (isScrolled !== scrolled) {
         setScrolled(isScrolled);
       }
+      
+      // For ForLawyers page, check if hero button is out of view
+      if (isForLawyersPage) {
+        const heroButton = document.querySelector('[data-hero-demo-button]');
+        if (heroButton) {
+          const rect = heroButton.getBoundingClientRect();
+          const isButtonVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+          const hasScrolledPastHero = !isButtonVisible && rect.bottom < 0;
+          if (hasScrolledPastHero !== scrolledPastHero) {
+            setScrolledPastHero(hasScrolledPastHero);
+          }
+        }
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    // Check on mount as well
+    handleScroll();
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [scrolled]);
+  }, [scrolled, scrolledPastHero, isAboutUsPage, isForLawyersPage]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 transition-all duration-300 ${scrolled || isAlwaysSmallPage ? 'py-4 border-b border-border' : 'py-6 md:py-12'}`}>
-      <div className="container mx-auto px-4 flex items-center justify-center relative">
-        <div className={`flex ${scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${isCreateWillPage ? 'absolute left-4 py-6' : ''}`}>
-          <Link to="/" className="flex items-end">
-            <img 
-              src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
-              alt="Willow Logo" 
-              className={`transition-all duration-500 ${scrolled || isAlwaysSmallPage ? 'h-14 md:h-16' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
-            />
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isForLawyersPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
+      <div className="container mx-auto px-4 flex items-center justify-between relative">
+        {/* Mobile Hamburger Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden flex flex-col gap-1.5 p-2"
+          aria-label="Toggle menu"
+        >
+          <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+        </button>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg md:hidden">
+            <div className="flex flex-col p-4 gap-2">
+              <Link 
+                to="/learn" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+              >
+                Learn
+              </Link>
+              <Link 
+                to="/for-lawyers" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+              >
+                For Lawyers
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Left side - Learn and For Lawyers links (Desktop) */}
+        <div className={`hidden md:flex flex-1 gap-4 ${isForLawyersPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
+          <Link 
+            to="/learn" 
+            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+          >
+            Learn
           </Link>
+          <Link 
+            to="/for-lawyers" 
+            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+          >
+            For Lawyers
+          </Link>
+        </div>
+        
+        {/* Centered logo - Shifts left on mobile ForLawyers when scrolled */}
+        <div className={`flex ${isForLawyersPage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
+          isCreateWillPage 
+            ? 'absolute left-1/2 transform -translate-x-1/2 py-6' 
+            : isForLawyersPage && scrolledPastHero
+              ? 'md:absolute md:left-1/2 md:transform md:-translate-x-1/2 absolute left-0 ml-14 md:ml-0' 
+              : 'absolute left-1/2 transform -translate-x-1/2'
+        }`}>
+          <Link to="/" className="flex items-center">
+            {isForLawyersPage && scrolledPastHero ? (
+              <>
+                <div className="md:hidden text-[#138F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
+                <img 
+                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
+                  alt="Willow Logo" 
+                  className="hidden md:block h-16 md:h-20" 
+                />
+              </>
+            ) : (
+              <img 
+                src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
+                alt="Willow Logo" 
+                className={`${isForLawyersPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
+              />
+            )}
+          </Link>
+        </div>
+        
+        {/* Right side - Schedule a Demo button (ForLawyers page, scrolled past hero) */}
+        <div className={`flex flex-1 justify-end items-center transition-opacity duration-300 ${isForLawyersPage && scrolledPastHero ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          {isForLawyersPage && (
+            <Button 
+              size="sm"
+              className="willow-btn px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium"
+              style={{
+                boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
+              }}
+              onClick={() => window.open('https://calendly.com/aaronburlacoff-willow-inc/willow-lets-get-your-will-checked-off', '_blank')}
+            >
+              Schedule a Demo
+            </Button>
+          )}
         </div>
         
         {isCreateWillPage && (

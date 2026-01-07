@@ -12,11 +12,11 @@ const FeatureSection = ({
   isReversed = false
 }) => {
   return (
-    <div className="container mx-auto px-12 ">
-      <div className={`flex flex-col gap-8 items-center ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
+    <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-7xl">
+      <div className={`flex flex-col gap-6 md:gap-8 lg:gap-12 items-center ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
         {/* Content */}
-        <div className="w-full md:w-1/2 flex flex-col items-start gap-6">
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+        <div className={`w-full md:w-1/2 flex flex-col items-start gap-4 md:gap-6 ${isReversed ? 'pr-4 md:pr-8 lg:pr-12' : 'pl-4 md:pl-8 lg:pl-12'}`}>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold" style={{ lineHeight: '1.2' }}>
             {titleParts.map((part, index) => (
               <React.Fragment key={index}>
                 {part.highlighted ? (
@@ -27,21 +27,25 @@ const FeatureSection = ({
                 {part.lineBreak && (
                   <>
                     <br />
-                    <div className=" md:mb-6"></div>
                   </>
                 )}
               </React.Fragment>
             ))}
           </h2>
-          <p className="text-2xl text-gray-600 dark:text-gray-300 mb-4 md:mb-8">
+          <p className="text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 leading-relaxed -mt-2 md:-mt-3">
             {descriptionParts.map((part, index) => (
               <React.Fragment key={index}>
-                {part.text}
-                {part.lineBreak && (
+                {part.text.includes('Hassle-free') ? (
                   <>
-                    <br />
-                    <div className="mb-4 md:mb-8"></div>
+                    {part.text.split('Hassle-free')[0]}
+                    <span className="whitespace-nowrap">Hassle-free</span>
+                    {part.text.split('Hassle-free')[1]}
                   </>
+                ) : (
+                  part.text
+                )}
+                {part.lineBreak && (
+                  <br />
                 )}
               </React.Fragment>
             ))}
@@ -49,7 +53,7 @@ const FeatureSection = ({
           
           <a href="https://app.willow-inc.com/" >
               <button 
-              className="text-2xl px-16 py-3 bg-[#138F8B] hover:bg-[#37978E] text-white rounded-md font-medium transition-colors" 
+              className="text-base md:text-lg lg:text-xl xl:text-2xl px-8 md:px-12 lg:px-16 py-2 md:py-2.5 lg:py-3 bg-[#138F8B] hover:bg-[#37978E] text-white rounded-md font-medium transition-colors" 
             >
               {buttonText}
             </button>
@@ -57,7 +61,7 @@ const FeatureSection = ({
         </div>
         
         {/* Illustration with clipping effect and hover animation */}
-        <div className="w-full md:w-2/5 group">
+        <div className="w-full md:w-1/2 group">
           <div className="overflow-hidden h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] relative transition-transform duration-500 ">
             <div className="absolute inset-0 -bottom-1/4">
               <img 
@@ -78,7 +82,7 @@ const FeatureSections = () => {
     {
       titleParts: [
         { text: "Create and ", highlighted: true },
-        { text: "Sign ", highlighted: true, lineBreak: true },
+        { text: "Sign ", highlighted: true },
         { text: "Your Will, ", highlighted: false },
         { text: "Fast", highlighted: true },
       ],
@@ -107,7 +111,7 @@ const FeatureSections = () => {
       titleParts: [
         { text: "Updates?", highlighted: true, lineBreak: true },
         { text: "We got you ", highlighted: false, lineBreak: true },
-        { text: "covered", highlighted: true }
+        { text: "Covered", highlighted: true }
       ],
       descriptionParts: [
         { text: "Another child? Or a new home?", lineBreak: true },
@@ -122,7 +126,7 @@ const FeatureSections = () => {
   return (
     <section className="bg-background">
       {features.map((feature, index) => (
-        <div key={index} className={`${index === 0 ? "pt-0" : ""} ${index === 1 ? "bg-gray-100" : ""}`}>
+        <div key={index} className={`pt-12 md:pt-6 ${index === 1 ? "bg-gray-100" : ""} pb-0`}>
           <FeatureSection
             {...feature}
           />

@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { MapPin, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -50,11 +51,9 @@ const AvailabilityMap = () => {
               </div>)}
           </div>
           
-          <a href="https://app.willow-inc.com/"><Button variant="default" className="bg-willow hover:bg-willow/90 text-white">
-            Let's Get Started
-          </Button></a>
         </div>
       </main>
+      <Footer />
     </div>;
 };
 
