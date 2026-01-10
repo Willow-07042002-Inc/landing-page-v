@@ -10,6 +10,7 @@ const Navbar = () => {
   
   const isCreateWillPage = location.pathname === "/create-will";
   const isForLawyersPage = location.pathname === "/for-lawyers";
+  const isGivebackPage = location.pathname === "/giveback";
   const isAboutUsPage = location.pathname === "/about-us";
   const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
@@ -51,12 +52,12 @@ const Navbar = () => {
   }, [scrolled, scrolledPastHero, isAboutUsPage, isForLawyersPage]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isForLawyersPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
       <div className="container mx-auto px-4 flex items-center justify-between relative">
         {/* Mobile Hamburger Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="lg:hidden flex flex-col gap-1.5 p-2"
           aria-label="Toggle menu"
         >
           <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
@@ -66,7 +67,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg md:hidden">
+          <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg lg:hidden">
             <div className="flex flex-col p-4 gap-2">
               <Link 
                 to="/learn" 
@@ -82,28 +83,41 @@ const Navbar = () => {
               >
                 For Lawyers
               </Link>
+              <Link 
+                to="/giveback" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+              >
+                Giveback
+              </Link>
             </div>
           </div>
         )}
 
         {/* Left side - Learn and For Lawyers links (Desktop) */}
-        <div className={`hidden md:flex flex-1 gap-4 ${isForLawyersPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
+        <div className={`hidden lg:flex flex-1 gap-4 ${isForLawyersPage || isGivebackPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
           <Link 
             to="/learn" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
           >
             Learn
           </Link>
           <Link 
             to="/for-lawyers" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
           >
             For Lawyers
+          </Link>
+          <Link 
+            to="/giveback" 
+            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+          >
+            Giveback
           </Link>
         </div>
         
         {/* Centered logo - Shifts left on mobile ForLawyers when scrolled */}
-        <div className={`flex ${isForLawyersPage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
+        <div className={`flex ${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
           isCreateWillPage 
             ? 'absolute left-1/2 transform -translate-x-1/2 py-6' 
             : isForLawyersPage && scrolledPastHero
@@ -124,7 +138,7 @@ const Navbar = () => {
               <img 
                 src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
                 alt="Willow Logo" 
-                className={`${isForLawyersPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
+                className={`${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
               />
             )}
           </Link>

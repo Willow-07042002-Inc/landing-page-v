@@ -31,7 +31,7 @@ const Hero = () => {
           {/* Mobile Hamburger Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex flex-col gap-1.5 p-2"
+            className="lg:hidden flex flex-col gap-1.5 p-2"
             aria-label="Toggle menu"
           >
             <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
@@ -41,7 +41,7 @@ const Hero = () => {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg md:hidden">
+            <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg lg:hidden">
               <div className="flex flex-col p-4 gap-2">
                 <Link 
                   to="/learn" 
@@ -57,6 +57,13 @@ const Hero = () => {
                 >
                   For Lawyers
                 </Link>
+                <Link 
+                  to="/giveback" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                >
+                  Giveback
+                </Link>
                 <a 
                   href={`${app_url}/login`}
                   onClick={() => setMobileMenuOpen(false)}
@@ -69,7 +76,7 @@ const Hero = () => {
           )}
 
           {/* Left side - Learn and For Lawyers links (Desktop) */}
-          <div className={`hidden md:flex flex-1 gap-4 items-center transition-all duration-300`}>
+          <div className={`hidden lg:flex flex-1 gap-4 items-center transition-all duration-300`}>
             <Link 
               to="/learn" 
               className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-base md:text-lg`}
@@ -81,6 +88,12 @@ const Hero = () => {
               className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-base md:text-lg`}
             >
               For Lawyers
+            </Link>
+            <Link 
+              to="/giveback" 
+              className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-base md:text-lg`}
+            >
+              Giveback
             </Link>
           </div>
           
@@ -96,7 +109,7 @@ const Hero = () => {
           </div>
           
           {/* Right side - My Account button (Desktop) */}
-          <div className={`hidden md:flex flex-1 justify-end items-center transition-all duration-300`}>
+          <div className={`hidden lg:flex flex-1 justify-end items-center transition-all duration-300`}>
             <a 
               href={`${app_url}/login`}
               className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-base md:text-lg`}
@@ -109,23 +122,24 @@ const Hero = () => {
       </header>
 
       {/* Content Layer */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col md:justify-center items-center">
-        <div className="container mx-auto px-4 pt-40 md:pt-16 lg:pt-20">
+      <div className="relative z-10 w-full min-h-screen flex flex-col justify-start items-center">
+        <div className="container mx-auto px-4 pt-40">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="animate-fade-in md:lg:mb-40">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-4 font-heading font-light text-[#222222]">
-                We handle what<br />
-                you'd rather ignore
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 font-heading font-light text-[#222222]" style={{ lineHeight: '1.3' }}>
+                We handle what<br className="hidden md:inline" /> you'd rather ignore
               </h1>
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground mb-6 md:mb-8">
-                Create, sign, and store your will.<br />
-                <span className="inline-block">All in one place.</span>
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground mb-6 md:mb-8" style={{ lineHeight: '1.35' }}>
+                Create, sign, and store your will<br className="hidden sm:inline" /> — all in one place.
               </p>
               <div className="flex justify-center mb-4 md:mb-8">
                 <a href={`${app_url}${app_landing_uri}`}>
                   <Button 
                     size="lg" 
                     className="willow-btn px-6 py-5 sm:px-7 sm:py-6 md:px-8 md:py-7 text-base sm:text-lg md:text-xl"
+                    style={{
+                      boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
+                    }}
                   >
                     Make my Will
                   </Button>

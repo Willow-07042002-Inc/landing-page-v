@@ -6,10 +6,12 @@ import WillowPricing from "@/components/WillowPricing";
 import ColoradoCallToAction from "@/components/ColoradoCallToAction";
 import Footer from "@/components/Footer";
 import Partners from "@/components/partners";
+import WelcomeModal from "@/components/WelcomeModal";
 
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <WelcomeModal />
       <main className="flex-grow">
         <Hero />
         <Reviews />
