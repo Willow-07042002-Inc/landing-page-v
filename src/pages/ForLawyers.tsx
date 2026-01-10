@@ -384,15 +384,11 @@ const ForLawyers = () => {
               
               {/* Product Shot Frame */}
               <div className="w-full md:w-1/2 group md:pr-8 lg:pr-12 flex justify-center md:block">
-                <div className="w-full aspect-[16/10] rounded-xl overflow-hidden shadow-xl border border-gray-300 relative">
+                <div className="w-full aspect-[16/10] rounded-xl overflow-hidden shadow-xl border border-gray-300 relative bg-gray-50">
                   <img 
                     src="/lovable-uploads/Signing Product Shot.png" 
                     alt="Willow digital signing and notarization" 
-                    className="w-full h-full object-cover object-center"
-                    style={{
-                      transform: 'scale(1.02)',
-                      transformOrigin: 'center center'
-                    }}
+                    className="w-full h-full object-contain object-center"
                   />
                 </div>
               </div>
