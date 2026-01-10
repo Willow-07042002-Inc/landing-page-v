@@ -312,9 +312,9 @@ const ForLawyers = () => {
                 scrollSnapStop: 'always'
               }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <img src="/New headshot 2.png" alt="Sarah Whitmore" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                  <img src="/New headshot 2.png" alt="Katherine Rosenberg" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                   <div>
-                    <p className="font-bold text-sm text-gray-900">Sarah Whitmore</p>
+                    <p className="font-bold text-sm text-gray-900">Katherine Rosenberg</p>
                     <p className="text-xs text-gray-500">Estate Planning Attorney</p>
                   </div>
                 </div>
@@ -328,9 +328,9 @@ const ForLawyers = () => {
                 scrollSnapStop: 'always'
               }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <img src="/New headshot 1.png" alt="Michael Delaney" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                  <img src="/New headshot 1.png" alt="David Castellano" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                   <div>
-                    <p className="font-bold text-sm text-gray-900">Michael Delaney</p>
+                    <p className="font-bold text-sm text-gray-900">David Castellano</p>
                     <p className="text-xs text-gray-500">Trust & Estate Lawyer</p>
                   </div>
                 </div>
@@ -344,9 +344,9 @@ const ForLawyers = () => {
             {/* Review cards */}
             <div className="bg-white rounded-lg p-8 shadow-md">
               <div className="flex items-center gap-3 mb-4">
-                <img src="/New headshot 2.png" alt="Sarah Johnson" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                <img src="/New headshot 2.png" alt="Katherine Rosenberg" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                 <div>
-                  <p className="font-bold text-sm text-gray-900">Sarah Johnson</p>
+                  <p className="font-bold text-sm text-gray-900">Katherine Rosenberg</p>
                   <p className="text-xs text-gray-500">Estate Planning Attorney</p>
                 </div>
               </div>
@@ -354,9 +354,9 @@ const ForLawyers = () => {
             </div>
             <div className="bg-white rounded-lg p-8 shadow-md">
               <div className="flex items-center gap-3 mb-4">
-                <img src="/New headshot 1.png" alt="Michael Chen" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                <img src="/New headshot 1.png" alt="David Castellano" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                 <div>
-                  <p className="font-bold text-sm text-gray-900">Michael Chen</p>
+                  <p className="font-bold text-sm text-gray-900">David Castellano</p>
                   <p className="text-xs text-gray-500">Trust & Estate Lawyer</p>
                 </div>
               </div>
