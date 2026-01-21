@@ -23,6 +23,8 @@ const WelcomeModal = () => {
   const handleLawyerClick = () => {
     // Mark modal as shown in this session
     sessionStorage.setItem('willow-welcome-modal-shown', 'true');
+    // Mark user as a lawyer - this persists across the session
+    sessionStorage.setItem('willow-user-type', 'lawyer');
     setIsOpen(false);
     navigate("/for-lawyers");
   };

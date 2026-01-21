@@ -14,6 +14,10 @@ const Navbar = () => {
   const isAboutUsPage = location.pathname === "/about-us";
   const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
+  
+  // Check if user is marked as a lawyer
+  const isLawyer = sessionStorage.getItem('willow-user-type') === 'lawyer';
+  const logoDestination = isLawyer ? "/for-lawyers" : "/";
 
   useEffect(() => {
     // Always keep About Us page in scrolled state
@@ -124,7 +128,7 @@ const Navbar = () => {
               ? 'md:absolute md:left-1/2 md:transform md:-translate-x-1/2 absolute left-0 ml-14 md:ml-0' 
               : 'absolute left-1/2 transform -translate-x-1/2'
         }`}>
-          <Link to="/" className="flex items-center">
+          <Link to={logoDestination} className="flex items-center">
             {isForLawyersPage && scrolledPastHero ? (
               <>
                 <div className="md:hidden text-[#138F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>

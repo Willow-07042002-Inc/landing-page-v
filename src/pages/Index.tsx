@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Hero from "@/components/Hero";
 import FeaturesSection from "@/components/FeaturesSection";
 import Reviews from "@/components/Reviews";
@@ -9,6 +10,16 @@ import Partners from "@/components/partners";
 import WelcomeModal from "@/components/WelcomeModal";
 
 const Index = () => {
+  const navigate = useNavigate();
+  
+  // Redirect lawyers to the For Lawyers page
+  useEffect(() => {
+    const isLawyer = sessionStorage.getItem('willow-user-type') === 'lawyer';
+    if (isLawyer) {
+      navigate('/for-lawyers', { replace: true });
+    }
+  }, [navigate]);
+  
   return (
     <div className="min-h-screen flex flex-col">
       <WelcomeModal />
