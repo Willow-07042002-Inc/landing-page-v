@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Separator } from "@/components/ui/separator";
@@ -12,12 +12,13 @@ import {
 } from "@/components/ui/accordion";
 
 const ForLawyers = () => {
+  const navigate = useNavigate();
   const [selectedTopic, setSelectedTopic] = useState<'practice' | 'compliance'>('practice');
   const [accordionValue, setAccordionValue] = useState<string[]>([]);
 
   // Mark user as a lawyer when they visit this page
   useEffect(() => {
-    sessionStorage.setItem('willow-user-type', 'lawyer');
+    sessionStorage.setItem('isLawyer', 'true');
   }, []);
 
   // Reset accordion when topic changes
@@ -237,10 +238,10 @@ const ForLawyers = () => {
                     style={{
                       boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
                     }}
-                    onClick={() => window.open('https://calendly.com/aaronburlacoff-willow-inc/willow-lets-get-your-will-checked-off', '_blank')}
+                    onClick={() => navigate('/request-access')}
                     data-hero-demo-button
                   >
-                    Schedule Demo
+                    Request Access
                   </Button>
                 </div>
               </div>
@@ -611,9 +612,9 @@ const ForLawyers = () => {
               <Button 
                 size="lg" 
                 className="willow-btn px-10 py-7 text-lg md:text-xl font-medium"
-                onClick={() => window.open('https://calendly.com/aaronburlacoff-willow-inc/willow-lets-get-your-will-checked-off', '_blank')}
+                onClick={() => navigate('/request-access')}
               >
-                Schedule Demo
+                Request Access
               </Button>
             </div>
           </div>

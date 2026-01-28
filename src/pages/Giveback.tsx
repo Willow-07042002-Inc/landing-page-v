@@ -1,9 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const Giveback = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex flex-col" style={{
       color: '#222222'
@@ -70,13 +72,13 @@ const Giveback = () => {
                   Through nonprofit partnerships, Willow expands access to<br className="hidden sm:inline" /> estate planning and supports families where it matters most.
                 </p>
                 <div className="flex justify-center mb-4 md:mb-8">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="willow-btn px-6 py-5 sm:px-7 sm:py-6 md:px-8 md:py-7 text-base sm:text-lg md:text-xl"
                     style={{
                       boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
                     }}
-                    onClick={() => window.open('https://calendly.com/aaronburlacoff-willow-inc/willow-lets-get-your-will-checked-off', '_blank')}
+                    onClick={() => navigate('/request-access')}
                     data-hero-demo-button
                   >
                     Partner with us
@@ -189,7 +191,7 @@ const Giveback = () => {
               style={{
                 boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
               }}
-              onClick={() => window.open('https://calendly.com/aaronburlacoff-willow-inc/willow-lets-get-your-will-checked-off', '_blank')}
+              onClick={() => navigate('/request-access')}
             >
               Join Our Community
             </Button>

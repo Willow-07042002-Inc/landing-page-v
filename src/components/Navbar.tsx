@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -12,7 +13,9 @@ const Navbar = () => {
   const isForLawyersPage = location.pathname === "/for-lawyers";
   const isGivebackPage = location.pathname === "/giveback";
   const isAboutUsPage = location.pathname === "/about-us";
-  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn"];
+  const isBookPage = location.pathname === "/book";
+  const isRequestAccessPage = location.pathname === "/request-access";
+  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn", "/book", "/request-access"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
   
   // Check if user is marked as a lawyer
@@ -33,16 +36,19 @@ const Navbar = () => {
         setScrolled(isScrolled);
       }
       
-      // For ForLawyers page, check if hero button is out of view
-      if (isForLawyersPage) {
-        const heroButton = document.querySelector('[data-hero-demo-button]');
-        if (heroButton) {
-          const rect = heroButton.getBoundingClientRect();
-          const isButtonVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-          const hasScrolledPastHero = !isButtonVisible && rect.bottom < 0;
-          if (hasScrolledPastHero !== scrolledPastHero) {
-            setScrolledPastHero(hasScrolledPastHero);
-          }
+      // Check if hero button is out of view (works on all pages)
+      const heroButton = document.querySelector('[data-hero-demo-button]');
+      if (heroButton) {
+        const rect = heroButton.getBoundingClientRect();
+        const isButtonVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        const hasScrolledPastHero = !isButtonVisible && rect.bottom < 0;
+        if (hasScrolledPastHero !== scrolledPastHero) {
+          setScrolledPastHero(hasScrolledPastHero);
+        }
+      } else {
+        // If no hero button found, use scroll position as fallback
+        if (scrolledPastHero !== isScrolled) {
+          setScrolledPastHero(isScrolled);
         }
       }
     };
@@ -53,7 +59,7 @@ const Navbar = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [scrolled, scrolledPastHero, isAboutUsPage, isForLawyersPage]);
+  }, [scrolled, scrolledPastHero, isAboutUsPage]);
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
@@ -120,16 +126,16 @@ const Navbar = () => {
           </Link>
         </div>
         
-        {/* Centered logo - Shifts left on mobile ForLawyers when scrolled */}
+        {/* Centered logo - Shifts left on mobile when hero CTA is out of view */}
         <div className={`flex ${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
           isCreateWillPage 
             ? 'absolute left-1/2 transform -translate-x-1/2 py-6' 
-            : isForLawyersPage && scrolledPastHero
+            : scrolledPastHero || isAlwaysSmallPage
               ? 'md:absolute md:left-1/2 md:transform md:-translate-x-1/2 absolute left-0 ml-14 md:ml-0' 
               : 'absolute left-1/2 transform -translate-x-1/2'
         }`}>
           <Link to={logoDestination} className="flex items-center">
-            {isForLawyersPage && scrolledPastHero ? (
+            {(scrolledPastHero || isAlwaysSmallPage) ? (
               <>
                 <div className="md:hidden text-[#138F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
                 <img 
@@ -148,21 +154,23 @@ const Navbar = () => {
           </Link>
         </div>
         
-        {/* Right side - Schedule a Demo button (ForLawyers page, scrolled past hero) */}
-        <div className={`flex flex-1 justify-end items-center transition-opacity duration-300 ${isForLawyersPage && scrolledPastHero ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          {isForLawyersPage && (
-            <Button 
-              size="sm"
-              className="willow-btn px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium"
-              style={{
-                boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
-              }}
-              onClick={() => window.open('https://calendly.com/aaronburlacoff-willow-inc/willow-lets-get-your-will-checked-off', '_blank')}
-            >
-              Schedule a Demo
-            </Button>
-          )}
-        </div>
+        {/* Right side - Schedule a Demo button (only shows when hero CTA is out of view, not on booking pages) */}
+        {!isBookPage && !isRequestAccessPage && (
+          <div className={`flex flex-1 justify-end items-center transition-opacity duration-300 ${scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            {!isCreateWillPage && (scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage)) && (
+              <Button 
+                size="sm"
+                className="willow-btn px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium"
+                style={{
+                  boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
+                }}
+                onClick={() => navigate('/request-access')}
+              >
+                Request Access
+              </Button>
+            )}
+          </div>
+        )}
         
         {isCreateWillPage && (
           <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2">

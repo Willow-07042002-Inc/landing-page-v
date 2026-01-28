@@ -16,6 +16,8 @@ import Learn from "./pages/Learn";
 import ForLawyers from "./pages/ForLawyers";
 import AboutUs from "./pages/AboutUs";
 import Giveback from "./pages/Giveback";
+import Book from "./pages/Book";
+import RequestAccess from "./pages/RequestAccess";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,8 @@ const App = () => (
           <Route path="/for-lawyers" element={<ForLawyers />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/giveback" element={<Giveback />} />
+          <Route path="/book" element={<Book />} />
+          <Route path="/request-access" element={<RequestAccess />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
