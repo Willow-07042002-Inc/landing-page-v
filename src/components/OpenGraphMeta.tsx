@@ -17,6 +17,18 @@ const OpenGraphMeta = () => {
       twitterImageMeta.remove();
     }
 
+    // Update og:title
+    let ogTitleMeta = document.querySelector('meta[property="og:title"]');
+    if (ogTitleMeta) {
+      ogTitleMeta.setAttribute("content", "Sign Your Clients Estate Plans Digitally");
+    }
+
+    // Update Twitter title
+    let twitterTitleMeta = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitleMeta) {
+      twitterTitleMeta.setAttribute("content", "Sign Your Clients Estate Plans Digitally");
+    }
+
     // Update og:url to reflect current page
     let ogUrlMeta = document.querySelector('meta[property="og:url"]');
     if (ogUrlMeta) {
