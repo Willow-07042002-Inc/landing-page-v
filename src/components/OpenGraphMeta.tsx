@@ -5,31 +5,17 @@ const OpenGraphMeta = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Determine which image to use based on the route
-    const isHomePage = location.pathname === "/";
-    const imagePath = isHomePage ? "/preview.png" : "/Textimage.jpg";
-    
-    // Use absolute URL for Open Graph images (required by social platforms)
-    const baseUrl = window.location.origin;
-    const ogImage = `${baseUrl}${imagePath}`;
-
-    // Update or create og:image meta tag
+    // Remove og:image meta tag if it exists
     let ogImageMeta = document.querySelector('meta[property="og:image"]');
-    if (!ogImageMeta) {
-      ogImageMeta = document.createElement("meta");
-      ogImageMeta.setAttribute("property", "og:image");
-      document.head.appendChild(ogImageMeta);
+    if (ogImageMeta) {
+      ogImageMeta.remove();
     }
-    ogImageMeta.setAttribute("content", ogImage);
 
-    // Update Twitter image as well
+    // Remove Twitter image meta tag if it exists
     let twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
-    if (!twitterImageMeta) {
-      twitterImageMeta = document.createElement("meta");
-      twitterImageMeta.setAttribute("name", "twitter:image");
-      document.head.appendChild(twitterImageMeta);
+    if (twitterImageMeta) {
+      twitterImageMeta.remove();
     }
-    twitterImageMeta.setAttribute("content", ogImage);
 
     // Update og:url to reflect current page
     let ogUrlMeta = document.querySelector('meta[property="og:url"]');
