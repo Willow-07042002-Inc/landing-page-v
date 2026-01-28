@@ -7,7 +7,11 @@ const OpenGraphMeta = () => {
   useEffect(() => {
     // Determine which image to use based on the route
     const isHomePage = location.pathname === "/";
-    const ogImage = isHomePage ? "/preview.png" : "/Textimage.jpg";
+    const imagePath = isHomePage ? "/preview.png" : "/Textimage.jpg";
+    
+    // Use absolute URL for Open Graph images (required by social platforms)
+    const baseUrl = window.location.origin;
+    const ogImage = `${baseUrl}${imagePath}`;
 
     // Update or create og:image meta tag
     let ogImageMeta = document.querySelector('meta[property="og:image"]');
