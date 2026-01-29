@@ -63,10 +63,10 @@ const Book = () => {
       <Navbar />
       <main className="flex-grow bg-[#F8FAFC]">
         {/* Hero Section with Calendar */}
-        <section className="min-h-screen flex items-center justify-center bg-[#F8FAFC] pt-24 md:pt-24">
+        <section className="bg-[#F8FAFC] pt-24 md:pt-24 lg:pt-28 pb-[100px] md:pb-8 lg:pb-8 hero-section">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl w-full">
-            <div className="text-center mb-4">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-[#222222] mb-8 leading-tight" style={{ lineHeight: '1.2' }}>
+            <div className="text-center mb-4 lg:mb-1">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-[#222222] mb-3 md:mb-4 leading-tight" style={{ lineHeight: '1.2' }}>
                   You're invited
                 </h1>
 
@@ -77,7 +77,7 @@ const Book = () => {
             </div>
 
             {/* Calendar */}
-            <div className="max-w-4xl mx-auto bg-[#F8FAFC] overflow-hidden rounded-xl cal-booking-container" style={{ 
+            <div className="max-w-4xl mx-auto bg-[#F8FAFC] overflow-visible rounded-xl cal-booking-container lg:-mt-3" style={{ 
               border: 'none' 
             }}>
               {/* Cal.com React Embed */}
@@ -92,54 +92,114 @@ const Book = () => {
             </div>
             
             <style>{`
+              /* Hide reviews below 768px – section removed, footer moves up */
+              @media (max-width: 767px) {
+                .reviews-section {
+                  display: none !important;
+                }
+              }
+              
+              /* Hero section - dynamic height, 100px bottom padding on vertical layouts */
+              .hero-section {
+                min-height: auto !important;
+                height: auto !important;
+                display: block !important;
+              }
+              
+              /* Ensure container wraps content tightly */
+              .hero-section > div {
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+              }
+              
               .cal-booking-container {
                 height: 500px;
                 max-height: 60vh;
                 min-height: 500px;
+                margin-bottom: 0 !important;
               }
               
-              /* iPad - make calendar thinner */
+              /* Tablet screens (768px - 1024px) - same height as larger screens */
               @media (min-width: 768px) and (max-width: 1024px) {
                 .cal-booking-container {
-                  max-width: 32rem !important;
-                  height: 700px;
-                  max-height: 75vh;
-                  min-height: 700px;
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: 500px;
+                  max-height: 60vh;
+                  min-height: 500px;
+                  overflow: visible;
+                  margin-bottom: 0 !important;
+                }
+                
+                .cal-booking-container iframe {
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: 500px !important;
+                  overflow: visible !important;
                 }
               }
               
-              /* Tablet and smaller screens - increase height to accommodate stacked layout */
-              @media (max-width: 1023px) {
-                .cal-booking-container {
-                  height: 700px;
-                  max-height: 75vh;
-                  min-height: 700px;
-                }
-              }
-              
-              /* Mobile screens - full height for better usability */
+              /* Below 768px - large height to accommodate stacked layout */
               @media (max-width: 767px) {
                 .cal-booking-container {
-                  height: 800px;
-                  max-height: 85vh;
-                  min-height: 600px;
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: 2000px;
+                  max-height: none;
+                  min-height: 2000px;
+                  overflow: visible;
+                  margin-bottom: 0 !important;
+                }
+                
+                .cal-booking-container iframe {
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: 2000px !important;
+                  overflow: visible !important;
+                }
+              }
+              
+              /* Mobile screens - large height to accommodate all content */
+              @media (max-width: 640px) {
+                .cal-booking-container {
+                  min-width: 0 !important;
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: 2000px;
+                  max-height: none;
+                  min-height: 2000px;
+                  overflow: visible;
+                }
+                
+                .cal-booking-container iframe {
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: 2000px !important;
+                  overflow: visible !important;
                 }
               }
               
               /* Very small mobile screens */
               @media (max-width: 480px) {
                 .cal-booking-container {
-                  height: 750px;
-                  max-height: 90vh;
-                  min-height: 550px;
+                  height: 1800px;
+                  max-height: none;
+                  min-height: 1800px;
+                  overflow: visible;
+                  margin-bottom: 0 !important;
+                }
+                
+                .cal-booking-container iframe {
+                  height: 1800px !important;
+                  overflow: visible !important;
                 }
               }
             `}</style>
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="pt-6 md:pt-8 pb-12 md:pb-16 bg-[#F8FAFC]">
+        {/* Testimonials Section - Right under calendar (hidden below 768px) */}
+        <section className="reviews-section pt-0 md:pt-6 lg:pt-6 pb-12 md:pb-16 bg-[#F8FAFC]">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl">
             <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
               <div className="p-6 text-center">
