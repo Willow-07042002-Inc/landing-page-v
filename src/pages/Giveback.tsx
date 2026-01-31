@@ -150,7 +150,7 @@ const Giveback = () => {
             <div className="flex flex-col items-center">
               <div className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 rounded-full overflow-hidden shadow-xl relative mb-6">
                 <img 
-                  src="/Workshop.jpg"
+                  src="/workshop.jpg"
                   alt="Community Workshops"
                   className="w-full h-full object-cover object-center"
                   style={{ transform: 'scale(1.25) translateY(5px)' }}

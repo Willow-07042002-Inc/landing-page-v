@@ -4,6 +4,11 @@ import Footer from "@/components/Footer";
 import Cal, { getCalApi } from "@calcom/embed-react";
 
 const RequestAccess = () => {
+  // Visitors who open a request-access page are always lawyers; assume that for the session
+  useEffect(() => {
+    sessionStorage.setItem("willow-user-type", "lawyer");
+  }, []);
+
   useEffect(() => {
     (async function () {
       const cal = await getCalApi();

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import OpenGraphMeta from "@/components/OpenGraphMeta";
+import GoogleAnalyticsPageView from "@/components/GoogleAnalyticsPageView";
 import Index from "./pages/Index";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -30,6 +31,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <OpenGraphMeta />
+        <GoogleAnalyticsPageView />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/terms" element={<Terms />} />
