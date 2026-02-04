@@ -477,7 +477,7 @@ const ForLawyers = () => {
       </section>
 
       {/* Reviews Section */}
-      <section className="py-12 md:py-16 bg-gray-100 -mt-1">
+      <section className="pt-20 md:pt-28 lg:pt-32 pb-28 md:pb-36 lg:pb-40 bg-background -mt-1">
         <div className="container mx-auto px-4 md:px-8 lg:px-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[#222222]">
@@ -618,7 +618,7 @@ const ForLawyers = () => {
       </section>
 
       {/* First Five Clients CTA Section */}
-      <section className="bg-white py-16 md:py-20 lg:py-24">
+      <section className="bg-white pt-20 md:pt-28 lg:pt-32 pb-28 md:pb-36 lg:pb-40">
         <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-7xl">
           <div className="mx-auto">
             <div className="text-center mb-12">
