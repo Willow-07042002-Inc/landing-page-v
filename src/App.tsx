@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import OpenGraphMeta from "@/components/OpenGraphMeta";
 import GoogleAnalyticsPageView from "@/components/GoogleAnalyticsPageView";
+import ClarityTags from "@/components/ClarityTags";
 import Index from "./pages/Index";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -18,6 +19,7 @@ import Learn from "./pages/Learn";
 import ForLawyers from "./pages/ForLawyers";
 import AboutUs from "./pages/AboutUs";
 import Giveback from "./pages/Giveback";
+import Pitol from "./pages/Pitol";
 import Book from "./pages/Book";
 import RequestAccess from "./pages/RequestAccess";
 
@@ -32,6 +34,7 @@ const App = () => (
         <ScrollToTop />
         <OpenGraphMeta />
         <GoogleAnalyticsPageView />
+        <ClarityTags />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/terms" element={<Terms />} />
@@ -43,6 +46,7 @@ const App = () => (
           <Route path="/for-lawyers" element={<ForLawyers />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/giveback" element={<Giveback />} />
+          <Route path="/pitol" element={<Pitol />} />
           <Route path="/book" element={<Book />} />
           <Route path="/request-access" element={<RequestAccess />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

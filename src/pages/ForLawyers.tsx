@@ -297,77 +297,24 @@ const ForLawyers = () => {
         </div>
       </section>
 
-      {/* Reviews Section */}
-      <section className="py-12 md:py-16 bg-gray-100 -mt-1">
-        <div className="container mx-auto px-4 md:px-8 lg:px-12">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[#222222]">
-              Trusted by Estate Planning Attorneys
-            </h2>
-          </div>
-          
-          {/* Mobile: Horizontal scrolling carousel (visible below md breakpoint) */}
-          <div className="block md:hidden overflow-x-auto pb-4 scrollbar-hide" style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
-            <div className="flex gap-6 px-4" style={{ width: 'max-content' }}>
-              {/* Review cards */}
-              <div className="bg-white rounded-lg p-6 shadow-md flex-shrink-0" style={{ 
-                width: 'calc(100vw - 2rem)',
-                minWidth: 'calc(100vw - 2rem)',
-                maxWidth: 'calc(50vw - 1.5rem)',
-                scrollSnapAlign: 'start',
-                scrollSnapStop: 'always'
-              }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <img src="/New headshot 2.png" alt="Katherine Rosenberg" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-                  <div>
-                    <p className="font-bold text-sm text-gray-900">Katherine Rosenberg</p>
-                    <p className="text-xs text-gray-500">Estate Planning Attorney</p>
-                  </div>
-                </div>
-                <p className="text-foreground text-sm leading-relaxed">"This is something the industry has needed for a while. It's exciting to see a team dedicated to building a modern estate planning solution that respects and enhances the work and expertise of lawyers."</p>
-              </div>
-              <div className="bg-white rounded-lg p-6 shadow-md flex-shrink-0" style={{ 
-                width: 'calc(100vw - 2rem)',
-                minWidth: 'calc(100vw - 2rem)',
-                maxWidth: 'calc(50vw - 1.5rem)',
-                scrollSnapAlign: 'start',
-                scrollSnapStop: 'always'
-              }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <img src="/New headshot 1.png" alt="David Castellano" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-                  <div>
-                    <p className="font-bold text-sm text-gray-900">David Castellano</p>
-                    <p className="text-xs text-gray-500">Trust & Estate Lawyer</p>
-                  </div>
-                </div>
-                <p className="text-foreground text-sm leading-relaxed">"This is what's going to set me apart from everyone else moving forward. I can deliver the best of both worlds: a simple, streamlined process backed by professional expertise."</p>
-              </div>
+      {/* Quote Section (from Pilot page) */}
+      <section className="bg-gray-100 py-28 px-6 md:py-32 md:px-10 lg:py-40 lg:px-12">
+        <div className="container mx-auto max-w-4xl">
+          <blockquote className="text-center text-xl md:text-2xl lg:text-3xl text-gray-700 italic leading-relaxed">
+            "Together, we're responsibly shaping how digital signatures are used in estate planning to create simpler, stress-free processes for families. Our approach removes unnecessary friction while maintaining the care, judgment, and standards that families depend on."
+          </blockquote>
+          <div className="flex items-center justify-center gap-3 mt-8 md:mt-10">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
+              <img
+                src="/Burlacoff Headshot.svg"
+                alt="Aaron Burlacoff"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 25%', transform: 'scale(1.7)', transformOrigin: 'center center' }}
+              />
             </div>
-          </div>
-          
-          {/* Desktop: Grid layout - 2 wide cards (visible at md breakpoint and above) */}
-          <div className="hidden md:grid grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Review cards */}
-            <div className="bg-white rounded-lg p-8 shadow-md">
-              <div className="flex items-center gap-3 mb-4">
-                <img src="/New headshot 2.png" alt="Katherine Rosenberg" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-                <div>
-                  <p className="font-bold text-sm text-gray-900">Katherine Rosenberg</p>
-                  <p className="text-xs text-gray-500">Estate Planning Attorney</p>
-                </div>
-              </div>
-              <p className="text-foreground text-base leading-relaxed">"This is something the industry has needed for a while. It's exciting to see a team dedicated to building a modern estate planning solution that respects and enhances the work and expertise of lawyers."</p>
-            </div>
-            <div className="bg-white rounded-lg p-8 shadow-md">
-              <div className="flex items-center gap-3 mb-4">
-                <img src="/New headshot 1.png" alt="David Castellano" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-                <div>
-                  <p className="font-bold text-sm text-gray-900">David Castellano</p>
-                  <p className="text-xs text-gray-500">Trust & Estate Lawyer</p>
-                </div>
-              </div>
-              <p className="text-foreground text-base leading-relaxed">"This is what's going to set me apart from everyone else moving forward. I can deliver the best of both worlds: a simple, streamlined process backed by professional expertise."</p>
-            </div>
+            <p className="text-lg md:text-xl text-gray-600">
+              Aaron Burlacoff, Founder & CEO, Willow
+            </p>
           </div>
         </div>
       </section>
@@ -524,6 +471,81 @@ const ForLawyers = () => {
                   />
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Reviews Section */}
+      <section className="py-12 md:py-16 bg-gray-100 -mt-1">
+        <div className="container mx-auto px-4 md:px-8 lg:px-12">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-[#222222]">
+              Trusted by Estate Planning Attorneys
+            </h2>
+          </div>
+          
+          {/* Mobile: Horizontal scrolling carousel (visible below md breakpoint) */}
+          <div className="block md:hidden overflow-x-auto pb-4 scrollbar-hide" style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex gap-6 px-4" style={{ width: 'max-content' }}>
+              {/* Review cards */}
+              <div className="bg-white rounded-lg p-6 shadow-md flex-shrink-0" style={{ 
+                width: 'calc(100vw - 2rem)',
+                minWidth: 'calc(100vw - 2rem)',
+                maxWidth: 'calc(50vw - 1.5rem)',
+                scrollSnapAlign: 'start',
+                scrollSnapStop: 'always'
+              }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <img src="/New headshot 2.png" alt="Katherine Rosenberg" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                  <div>
+                    <p className="font-bold text-sm text-gray-900">Katherine Rosenberg</p>
+                    <p className="text-xs text-gray-500">Estate Planning Attorney</p>
+                  </div>
+                </div>
+                <p className="text-foreground text-sm leading-relaxed">"This is something the industry has needed for a while. It's exciting to see a team dedicated to building a modern estate planning solution that respects and enhances the work and expertise of lawyers."</p>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow-md flex-shrink-0" style={{ 
+                width: 'calc(100vw - 2rem)',
+                minWidth: 'calc(100vw - 2rem)',
+                maxWidth: 'calc(50vw - 1.5rem)',
+                scrollSnapAlign: 'start',
+                scrollSnapStop: 'always'
+              }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <img src="/New headshot 1.png" alt="David Castellano" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                  <div>
+                    <p className="font-bold text-sm text-gray-900">David Castellano</p>
+                    <p className="text-xs text-gray-500">Trust & Estate Lawyer</p>
+                  </div>
+                </div>
+                <p className="text-foreground text-sm leading-relaxed">"This is what's going to set me apart from everyone else moving forward. I can deliver the best of both worlds: a simple, streamlined process backed by professional expertise."</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop: Grid layout - 2 wide cards (visible at md breakpoint and above) */}
+          <div className="hidden md:grid grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Review cards */}
+            <div className="bg-white rounded-lg p-8 shadow-md">
+              <div className="flex items-center gap-3 mb-4">
+                <img src="/New headshot 2.png" alt="Katherine Rosenberg" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                <div>
+                  <p className="font-bold text-sm text-gray-900">Katherine Rosenberg</p>
+                  <p className="text-xs text-gray-500">Estate Planning Attorney</p>
+                </div>
+              </div>
+              <p className="text-foreground text-base leading-relaxed">"This is something the industry has needed for a while. It's exciting to see a team dedicated to building a modern estate planning solution that respects and enhances the work and expertise of lawyers."</p>
+            </div>
+            <div className="bg-white rounded-lg p-8 shadow-md">
+              <div className="flex items-center gap-3 mb-4">
+                <img src="/New headshot 1.png" alt="David Castellano" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                <div>
+                  <p className="font-bold text-sm text-gray-900">David Castellano</p>
+                  <p className="text-xs text-gray-500">Trust & Estate Lawyer</p>
+                </div>
+              </div>
+              <p className="text-foreground text-base leading-relaxed">"This is what's going to set me apart from everyone else moving forward. I can deliver the best of both worlds: a simple, streamlined process backed by professional expertise."</p>
             </div>
           </div>
         </div>

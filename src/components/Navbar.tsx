@@ -15,7 +15,8 @@ const Navbar = () => {
   const isAboutUsPage = location.pathname === "/about-us";
   const isBookPage = location.pathname === "/book";
   const isRequestAccessPage = location.pathname === "/request-access";
-  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn", "/book", "/request-access"];
+  const isPitolPage = location.pathname === "/pitol";
+  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn", "/book", "/request-access", "/pitol"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
   
   // Check if user is marked as a lawyer (or on a booking page — those visitors are always lawyers)
@@ -195,7 +196,7 @@ const Navbar = () => {
                 }}
                 onClick={() => navigate('/request-access')}
               >
-                Request Access
+                {isPitolPage ? 'Request an invitation' : 'Request Access'}
               </Button>
             )}
           </div>
