@@ -19,9 +19,9 @@ const Navbar = () => {
   const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn", "/book", "/request-access", "/pitol"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
   
-  // Check if user is marked as a lawyer (or on a booking page — those visitors are always lawyers)
+  // User is a lawyer if they've visited any page other than the landing page (set by LawyerRouteMarker in App)
   const isLawyer = sessionStorage.getItem('willow-user-type') === 'lawyer';
-  const logoDestination = (isLawyer || isBookPage || isRequestAccessPage) ? "/for-lawyers" : "/";
+  const logoDestination = isLawyer ? "/for-lawyers" : "/";
 
   useEffect(() => {
     // Always keep About Us page in scrolled state
@@ -135,34 +135,6 @@ const Navbar = () => {
               ? 'md:absolute md:left-1/2 md:transform md:-translate-x-1/2 absolute left-0 ml-14 md:ml-0' 
               : 'absolute left-1/2 transform -translate-x-1/2'
         }`}>
-          {isBookPage || isRequestAccessPage ? (
-            <button
-              type="button"
-              onClick={() => {
-                sessionStorage.setItem("willow-user-type", "lawyer");
-                navigate("/for-lawyers");
-              }}
-              className="flex items-center bg-transparent border-0 p-0 cursor-pointer"
-              aria-label="Go to For Lawyers"
-            >
-              {(scrolledPastHero || isAlwaysSmallPage) ? (
-                <>
-                  <div className="md:hidden text-[#138F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
-                  <img 
-                    src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
-                    alt="Willow Logo" 
-                    className="hidden md:block h-16 md:h-20" 
-                  />
-                </>
-              ) : (
-                <img 
-                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
-                  alt="Willow Logo" 
-                  className={`${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
-                />
-              )}
-            </button>
-          ) : (
           <Link to={logoDestination} className="flex items-center">
             {(scrolledPastHero || isAlwaysSmallPage) ? (
               <>
@@ -181,7 +153,6 @@ const Navbar = () => {
               />
             )}
           </Link>
-          )}
         </div>
         
         {/* Right side - Schedule a Demo button (only shows when hero CTA is out of view, not on booking pages) */}

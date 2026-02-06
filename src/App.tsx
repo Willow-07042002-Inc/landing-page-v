@@ -1,14 +1,25 @@
-
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import OpenGraphMeta from "@/components/OpenGraphMeta";
 import GoogleAnalyticsPageView from "@/components/GoogleAnalyticsPageView";
 import ClarityTags from "@/components/ClarityTags";
 import Index from "./pages/Index";
+
+/** When user visits any page other than the landing page (/), mark them as lawyer for the session. */
+function LawyerRouteMarker() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (pathname !== "/") {
+      sessionStorage.setItem("willow-user-type", "lawyer");
+    }
+  }, [pathname]);
+  return null;
+}
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
@@ -35,6 +46,7 @@ const App = () => (
         <OpenGraphMeta />
         <GoogleAnalyticsPageView />
         <ClarityTags />
+        <LawyerRouteMarker />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/terms" element={<Terms />} />
