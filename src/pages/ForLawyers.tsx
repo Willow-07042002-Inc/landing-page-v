@@ -16,10 +16,7 @@ const ForLawyers = () => {
   const [selectedTopic, setSelectedTopic] = useState<'practice' | 'compliance'>('practice');
   const [accordionValue, setAccordionValue] = useState<string[]>([]);
 
-  // Mark user as a lawyer when they visit this page (same key Navbar/Index use)
-  useEffect(() => {
-    sessionStorage.setItem('willow-user-type', 'lawyer');
-  }, []);
+  // This is now the homepage (/).
 
   // Reset accordion when topic changes
   useEffect(() => {

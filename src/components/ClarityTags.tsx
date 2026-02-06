@@ -21,18 +21,18 @@ const ClarityTags = () => {
     window.clarity("set", "page", pathname);
 
     // Tag user type for filtering (lawyer vs consumer)
-    const lawyerPaths = ["/for-lawyers", "/book", "/request-access", "/pitol"];
-    const userType = lawyerPaths.some((p) => pathname.startsWith(p))
-      ? "lawyer"
-      : "consumer";
+    const consumerPaths = ["/clients"];
+    const userType = consumerPaths.some((p) => pathname.startsWith(p))
+      ? "consumer"
+      : "lawyer";
     window.clarity("set", "user_type", userType);
 
     // Tag section names for easier filtering
     const section =
       pathname === "/"
         ? "home"
-        : pathname === "/for-lawyers"
-          ? "for_lawyers"
+        : pathname === "/clients"
+          ? "clients"
           : pathname === "/giveback"
             ? "giveback"
             : pathname === "/pitol"

@@ -72,6 +72,9 @@ const Footer = () => {
               <Link to="/pitol" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
                 Founding Firms
               </Link>
+              <Link to="/clients" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
+                Clients
+              </Link>
             </div>
           </div>
         </div>

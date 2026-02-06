@@ -1,25 +1,13 @@
-import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import OpenGraphMeta from "@/components/OpenGraphMeta";
 import GoogleAnalyticsPageView from "@/components/GoogleAnalyticsPageView";
 import ClarityTags from "@/components/ClarityTags";
-import Index from "./pages/Index";
-
-/** When user visits any page other than the landing page (/), mark them as lawyer for the session. */
-function LawyerRouteMarker() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    if (pathname !== "/") {
-      sessionStorage.setItem("willow-user-type", "lawyer");
-    }
-  }, [pathname]);
-  return null;
-}
+import Clients from "./pages/Index";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
@@ -46,16 +34,17 @@ const App = () => (
         <OpenGraphMeta />
         <GoogleAnalyticsPageView />
         <ClarityTags />
-        <LawyerRouteMarker />
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<ForLawyers />} />
+          <Route path="/clients" element={<Clients />} />
+          {/* Redirect old /for-lawyers URL to / */}
+          <Route path="/for-lawyers" element={<Navigate to="/" replace />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/create-will" element={<CreateWill />} />
           <Route path="/availability-map" element={<AvailabilityMap />} />
           <Route path="/learn" element={<Learn />} />
-          <Route path="/for-lawyers" element={<ForLawyers />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/giveback" element={<Giveback />} />
           <Route path="/pitol" element={<Pitol />} />

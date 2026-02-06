@@ -51,13 +51,6 @@ const Hero = () => {
                   Learn
                 </Link>
                 <Link 
-                  to="/for-lawyers" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
-                >
-                  For Lawyers
-                </Link>
-                <Link 
                   to="/giveback" 
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
@@ -75,19 +68,13 @@ const Hero = () => {
             </div>
           )}
 
-          {/* Left side - Learn and For Lawyers links (Desktop) */}
+          {/* Left side - Learn and Giveback links (Desktop) */}
           <div className={`hidden lg:flex flex-1 gap-4 items-center transition-all duration-300`}>
             <Link 
               to="/learn" 
               className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-base md:text-lg`}
             >
               Learn
-            </Link>
-            <Link 
-              to="/for-lawyers" 
-              className={`transition-all duration-500 px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-base md:text-lg`}
-            >
-              For Lawyers
             </Link>
             <Link 
               to="/giveback" 

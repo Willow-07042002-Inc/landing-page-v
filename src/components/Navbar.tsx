@@ -10,7 +10,7 @@ const Navbar = () => {
   const location = useLocation();
   
   const isCreateWillPage = location.pathname === "/create-will";
-  const isForLawyersPage = location.pathname === "/for-lawyers";
+  const isHomePage = location.pathname === "/";
   const isGivebackPage = location.pathname === "/giveback";
   const isAboutUsPage = location.pathname === "/about-us";
   const isBookPage = location.pathname === "/book";
@@ -18,10 +18,6 @@ const Navbar = () => {
   const isPitolPage = location.pathname === "/pitol";
   const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn", "/book", "/request-access", "/pitol"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
-  
-  // User is a lawyer if they've visited any page other than the landing page (set by LawyerRouteMarker in App)
-  const isLawyer = sessionStorage.getItem('willow-user-type') === 'lawyer';
-  const logoDestination = isLawyer ? "/for-lawyers" : "/";
 
   useEffect(() => {
     // Always keep About Us page in scrolled state
@@ -63,7 +59,7 @@ const Navbar = () => {
   }, [scrolled, scrolledPastHero, isAboutUsPage]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isHomePage || isGivebackPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
       <div className="container mx-auto px-4 flex items-center justify-between relative">
         {/* Mobile Hamburger Menu Button */}
         <button
@@ -88,13 +84,6 @@ const Navbar = () => {
                 Learn
               </Link>
               <Link 
-                to="/for-lawyers" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
-              >
-                For Lawyers
-              </Link>
-              <Link 
                 to="/giveback" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
@@ -105,37 +94,31 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* Left side - Learn and For Lawyers links (Desktop) */}
-        <div className={`hidden lg:flex flex-1 gap-4 ${isForLawyersPage || isGivebackPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
+        {/* Left side - Learn and Giveback links (Desktop) */}
+        <div className={`hidden lg:flex flex-1 gap-4 ${isHomePage || isGivebackPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
           <Link 
             to="/learn" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
           >
             Learn
           </Link>
           <Link 
-            to="/for-lawyers" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
-          >
-            For Lawyers
-          </Link>
-          <Link 
             to="/giveback" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isForLawyersPage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
           >
             Giveback
           </Link>
         </div>
         
         {/* Centered logo - Shifts left on mobile when hero CTA is out of view */}
-        <div className={`flex ${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
+        <div className={`flex ${isHomePage || isGivebackPage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
           isCreateWillPage 
             ? 'absolute left-1/2 transform -translate-x-1/2 py-6' 
             : scrolledPastHero || isAlwaysSmallPage
               ? 'md:absolute md:left-1/2 md:transform md:-translate-x-1/2 absolute left-0 ml-14 md:ml-0' 
               : 'absolute left-1/2 transform -translate-x-1/2'
         }`}>
-          <Link to={logoDestination} className="flex items-center">
+          <Link to="/" className="flex items-center">
             {(scrolledPastHero || isAlwaysSmallPage) ? (
               <>
                 <div className="md:hidden text-[#138F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
@@ -149,7 +132,7 @@ const Navbar = () => {
               <img 
                 src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
                 alt="Willow Logo" 
-                className={`${isForLawyersPage || isGivebackPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
+                className={`${isHomePage || isGivebackPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
               />
             )}
           </Link>
