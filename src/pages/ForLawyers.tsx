@@ -252,7 +252,7 @@ const ForLawyers = () => {
             <div className="flex flex-col items-center justify-center text-center">
               <div className="animate-fade-in md:lg:mb-40">
                 <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl mb-4 font-heading font-light text-[#222222]" style={{ lineHeight: '1.3' }}>
-                  The <span className="text-[#138F8B]">digital</span> platform<br />built for estate planning
+                  The <span className="text-[#138F8B]">digital</span> platform<br />built for estate attorneys
                 </h1>
                 <p className="text-base sm:text-lg md:text-2xl lg:text-3xl text-muted-foreground mb-6 md:mb-8" style={{ lineHeight: '1.35' }}>
                   Keep everything safe online, accessible to family,<br />easy to understand, and up to date.
