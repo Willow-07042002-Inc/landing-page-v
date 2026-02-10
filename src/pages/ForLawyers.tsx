@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,12 +15,41 @@ const ForLawyers = () => {
   const navigate = useNavigate();
   const [selectedTopic, setSelectedTopic] = useState<'practice' | 'compliance'>('practice');
   const [accordionValue, setAccordionValue] = useState<string[]>([]);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const practiceButtonRef = useRef<HTMLButtonElement | null>(null);
+  const complianceButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // This is now the homepage (/).
 
   // Reset accordion when topic changes
   useEffect(() => {
     setAccordionValue([]);
+  }, [selectedTopic]);
+
+  // Update indicator position and width
+  useEffect(() => {
+    const updateIndicator = () => {
+      const selectedButton = selectedTopic === 'practice' ? practiceButtonRef.current : complianceButtonRef.current;
+      const otherButton = selectedTopic === 'practice' ? complianceButtonRef.current : practiceButtonRef.current;
+      
+      if (selectedButton && otherButton) {
+        const container = selectedButton.parentElement;
+        if (container) {
+          let left = 0;
+          if (selectedTopic === 'compliance' && practiceButtonRef.current) {
+            left = practiceButtonRef.current.offsetWidth;
+          }
+          setIndicatorStyle({
+            left: left,
+            width: selectedButton.offsetWidth
+          });
+        }
+      }
+    };
+
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
   }, [selectedTopic]);
 
   // FAQ questions organized by topic
@@ -149,7 +178,7 @@ const ForLawyers = () => {
         <>
           <p className="mb-4">Yes.</p>
           <p>Willow operates only in states where electronic wills are legally recognized, and all execution and storage workflows are designed to align with applicable state law.</p>
-          <p>See if your state recognizes digital wills <Link to="/availability-map" className="text-[#138F8B] hover:underline">here</Link>.</p>
+          <p>Willow operates only in states where electronic wills are legally recognized, and all execution and storage workflows are designed to align with applicable state law.</p>
         </>
       )
     },
@@ -222,11 +251,11 @@ const ForLawyers = () => {
           <div className="container mx-auto px-4 pt-32 md:pt-40">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="animate-fade-in md:lg:mb-40">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 font-heading font-light text-[#222222]" style={{ lineHeight: '1.3' }}>
-                  Sign Your Clients <br />Estate Plans <span className="text-[#138F8B]">Digitally</span>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 font-heading font-light text-[#222222]" style={{ lineHeight: '1.3' }}>
+                  The <span className="text-[#138F8B]">digital</span> platform<br />built for estate planning
                 </h1>
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground mb-6 md:mb-8" style={{ lineHeight: '1.35' }}>
-                  Keep everything safe online, accessible to family,<br className="hidden sm:inline" /> easy to understand, and up to date.
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-8" style={{ lineHeight: '1.35' }}>
+                  Keep everything safe online, accessible to family,<br />easy to understand, and up to date.
                 </p>
                 <div className="flex justify-center mb-4 md:mb-8">
                   <Button 
@@ -298,7 +327,7 @@ const ForLawyers = () => {
       <section className="bg-gray-100 py-28 px-6 md:py-32 md:px-10 lg:py-40 lg:px-12">
         <div className="container mx-auto max-w-4xl">
           <blockquote className="text-center text-xl md:text-2xl lg:text-3xl text-gray-700 italic leading-relaxed">
-            "Together, we're responsibly shaping how digital signatures are used in estate planning to create simpler, stress-free processes for families. Our approach removes unnecessary friction while maintaining the care, judgment, and standards that families depend on."
+            "Together, we're responsibly shaping how digital signatures are used in estate planning to create simpler, stress-free processes for families. Our approach removes unnecessary friction while maintaining the care, judgment, and standards your clients depend on."
           </blockquote>
           <div className="flex items-center justify-center gap-3 mt-8 md:mt-10">
             <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
@@ -563,12 +592,13 @@ const ForLawyers = () => {
                 <div 
                   className="absolute top-0 bottom-0 bg-[#138F8B] rounded-lg transition-all duration-300 ease-in-out"
                   style={{
-                    left: selectedTopic === 'practice' ? '0%' : '50%',
-                    width: '50%'
+                    left: `${indicatorStyle.left}px`,
+                    width: `${indicatorStyle.width}px`
                   }}
                 />
                 {/* Practice Button */}
                 <button
+                  ref={practiceButtonRef}
                   onClick={() => setSelectedTopic('practice')}
                   className={`py-2 px-6 rounded-lg font-medium text-base md:text-lg transition-colors duration-300 relative z-10 whitespace-nowrap ${
                     selectedTopic === 'practice' 
@@ -580,6 +610,7 @@ const ForLawyers = () => {
                 </button>
                 {/* Compliance Button */}
                 <button
+                  ref={complianceButtonRef}
                   onClick={() => setSelectedTopic('compliance')}
                   className={`py-2 px-6 rounded-lg font-medium text-base md:text-lg transition-colors duration-300 relative z-10 whitespace-nowrap ${
                     selectedTopic === 'compliance' 

@@ -33,9 +33,13 @@
     <meta name="author" content="07042002, Inc. DBA Willow" />
     <meta name="keywords" content="will creation, online will, digital will, estate planning, will signing, secure will storage" />
 
-    <!-- Manifest -->
-    <link rel="manifest" href="/manifest.json" />
+    <!-- Manifest (disabled in dev to prevent caching issues) -->
+    <script>if(location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'){var m=document.createElement('link');m.rel='manifest';m.href='/manifest.json';document.head.appendChild(m);}</script>
     <meta name="theme-color" content="#FFFFFF" />
+    <!-- Prevent caching in dev -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="Sign Your Clients Estate Plans Digitally" />

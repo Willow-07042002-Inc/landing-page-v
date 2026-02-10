@@ -65,10 +65,10 @@ const Giveback = () => {
           <div className="container mx-auto px-4 pt-32 md:pt-40">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="animate-fade-in md:lg:mb-40">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 font-heading font-light text-[#222222]" style={{ lineHeight: '1.3' }}>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 font-heading font-light text-[#222222]" style={{ lineHeight: '1.3' }}>
                   Planting Seeds to <br />Help Communities <span className="text-[#138F8B]">Grow</span>
                 </h1>
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground mb-6 md:mb-8" style={{ lineHeight: '1.35' }}>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-8" style={{ lineHeight: '1.35' }}>
                   Through nonprofit partnerships, Willow expands access to<br className="hidden sm:inline" /> estate planning and supports families where it matters most.
                 </p>
                 <div className="flex justify-center mb-4 md:mb-8">

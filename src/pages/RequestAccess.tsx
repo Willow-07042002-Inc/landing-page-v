@@ -87,13 +87,9 @@ const RequestAccess = () => {
         {/* Hero Section with Calendar */}
         <section className="bg-[#F8FAFC] pt-24 md:pt-24 lg:pt-28 pb-[100px] md:pb-8 lg:pb-8 hero-section">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl w-full">
-            <div className="text-center mb-4 lg:mb-1">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-[#222222] mb-3 md:mb-4 leading-tight" style={{ lineHeight: '1.2' }}>
-                  Let's Connect
-                </h1>
-
+            <div className="text-center mb-4 md:mb-6 lg:mb-8 pt-4 md:pt-6 lg:pt-8">
               {/* Subheader */}
-              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl lg:text-3xl text-gray-800 max-w-3xl mx-auto leading-relaxed">
                 Explore how Willow can best support your <br className="hidden md:inline" />firm and simplify life for your clients.
               </p>
             </div>

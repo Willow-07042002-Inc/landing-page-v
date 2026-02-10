@@ -11,6 +11,7 @@ const Navbar = () => {
   
   const isCreateWillPage = location.pathname === "/create-will";
   const isHomePage = location.pathname === "/";
+  const isClientsPage = location.pathname === "/clients";
   const isGivebackPage = location.pathname === "/giveback";
   const isAboutUsPage = location.pathname === "/about-us";
   const isBookPage = location.pathname === "/book";
@@ -76,13 +77,15 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg lg:hidden">
             <div className="flex flex-col p-4 gap-2">
-              <Link 
-                to="/learn" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
-              >
-                Learn
-              </Link>
+              {isClientsPage && (
+                <Link 
+                  to="/learn" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                >
+                  Learn
+                </Link>
+              )}
               <Link 
                 to="/giveback" 
                 onClick={() => setMobileMenuOpen(false)}
@@ -96,12 +99,14 @@ const Navbar = () => {
 
         {/* Left side - Learn and Giveback links (Desktop) */}
         <div className={`hidden lg:flex flex-1 gap-4 ${isHomePage || isGivebackPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
-          <Link 
-            to="/learn" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
-          >
-            Learn
-          </Link>
+          {isClientsPage && (
+            <Link 
+              to="/learn" 
+              className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+            >
+              Learn
+            </Link>
+          )}
           <Link 
             to="/giveback" 
             className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
