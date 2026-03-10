@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, MapPin } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
@@ -32,7 +33,7 @@ const CreateWill = () => {
     setIsStateSelected(state.length > 0);
   }, [state]);
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValidEmail) {
       toast({
@@ -43,15 +44,22 @@ const CreateWill = () => {
       return;
     }
     setIsSubmittingEmail(true);
-    setTimeout(() => {
-      toast({
-        title: "Success!",
-        description: "We've received your email."
+    try {
+      await supabase.from('form_submissions').insert({
+        form_type: 'state_waitlist',
+        contact_type: 'consumer',
+        email,
+        state,
       });
-      setIsSubmittingEmail(false);
-      setShowComingSoonDialog(true);
-    }, 1500);
-    console.log("Email submitted:", email);
+    } catch (err) {
+      console.error("Failed to save submission:", err);
+    }
+    toast({
+      title: "Success!",
+      description: "We've received your email."
+    });
+    setIsSubmittingEmail(false);
+    setShowComingSoonDialog(true);
   };
 
   const handleStateSubmit = (e: React.FormEvent) => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Separator } from "@/components/ui/separator";
@@ -7,20 +7,36 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
 
 const Contact = () => {
   const { toast } = useToast();
-  
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [contactType, setContactType] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    try {
+      await supabase.from('form_submissions').insert({
+        form_type: 'contact',
+        contact_type: contactType || 'consumer',
+        email: formData.get('email') as string,
+        name: formData.get('name') as string,
+        message: formData.get('message') as string,
+      });
+    } catch (err) {
+      console.error("Failed to save submission:", err);
+    }
+
     toast({
       title: "Message sent",
       description: "Thank you for contacting us. We'll get back to you soon.",
     });
-    
-    // Reset form
-    const form = e.target as HTMLFormElement;
+
     form.reset();
+    setContactType("");
   };
 
   return (
@@ -74,6 +90,22 @@ const Contact = () => {
                       />
                     </div>
                     
+                    <div className="space-y-2">
+                      <Label htmlFor="contactType">I am a...</Label>
+                      <select
+                        id="contactType"
+                        name="contactType"
+                        value={contactType}
+                        onChange={(e) => setContactType(e.target.value)}
+                        required
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-willow focus-visible:border-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                      >
+                        <option value="" disabled>Select one</option>
+                        <option value="consumer">Individual / Family</option>
+                        <option value="attorney">Estate Planning Attorney</option>
+                      </select>
+                    </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="message">Message</Label>
                       <textarea 
