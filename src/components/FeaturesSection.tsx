@@ -51,7 +51,7 @@ const FeatureSection = ({
             ))}
           </p>
           
-          <a href="https://app.willow-inc.com/" >
+          <a href="https://app.willow-inc.com/create" >
               <button 
               className="text-base md:text-lg lg:text-xl xl:text-2xl px-8 md:px-12 lg:px-16 py-2 md:py-2.5 lg:py-3 bg-[#138F8B] hover:bg-[#37978E] text-white rounded-md font-medium transition-colors" 
             >

@@ -120,7 +120,7 @@ const Hero = () => {
                 Create, sign, and store your will<br className="hidden sm:inline" /> — all in one place.
               </p>
               <div className="flex justify-center mb-4 md:mb-8">
-                <a href={`${app_url}${app_landing_uri}`}>
+                <a href={`${app_url}/create`}>
                   <Button 
                     size="lg" 
                     className="willow-btn px-6 py-5 sm:px-7 sm:py-6 md:px-8 md:py-7 text-base sm:text-lg md:text-xl"

@@ -21,6 +21,8 @@ import Giveback from "./pages/Giveback";
 import Pitol from "./pages/Pitol";
 import Book from "./pages/Book";
 import RequestAccess from "./pages/RequestAccess";
+import BlogIndex from "./pages/BlogIndex";
+import BlogPost from "./pages/BlogPost";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,8 @@ const App = () => (
           <Route path="/pitol" element={<Pitol />} />
           <Route path="/book" element={<Book />} />
           <Route path="/request-access" element={<RequestAccess />} />
+          <Route path="/blog" element={<BlogIndex />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

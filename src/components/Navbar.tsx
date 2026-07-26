@@ -17,8 +17,13 @@ const Navbar = () => {
   const isBookPage = location.pathname === "/book";
   const isRequestAccessPage = location.pathname === "/request-access";
   const isPitolPage = location.pathname === "/pitol";
+  const isBlogIndexPage = location.pathname === '/blog' || location.pathname === '/blog/';
+  const isBlogPostPage = location.pathname.startsWith('/blog/') && !isBlogIndexPage;
   const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn", "/book", "/request-access", "/pitol"];
-  const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
+  const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname) ||
+    location.pathname === '/blog' || location.pathname.startsWith('/blog/');
+  // Transparent hero mode: any blog page (index or post) before scrolling
+  const isTransparentHero = (isBlogPostPage || isBlogIndexPage) && !scrolled;
 
   useEffect(() => {
     // Always keep About Us page in scrolled state
@@ -60,17 +65,17 @@ const Navbar = () => {
   }, [scrolled, scrolledPastHero, isAboutUsPage]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isHomePage || isGivebackPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
-      <div className="container mx-auto px-4 flex items-center justify-between relative">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${isTransparentHero ? 'bg-transparent border-b border-transparent py-5 md:py-6' : `bg-background/100 ${isHomePage || isGivebackPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}`}>
+      <div className={`container mx-auto px-4 flex items-center justify-between relative ${(isBlogPostPage || isBlogIndexPage) ? 'min-h-[36px]' : ''}`}>
         {/* Mobile Hamburger Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="lg:hidden flex flex-col gap-1.5 p-2"
           aria-label="Toggle menu"
         >
-          <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`w-6 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <span className={`w-6 h-0.5 transition-all ${isTransparentHero ? 'bg-white' : 'bg-gray-700'} ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+          <span className={`w-6 h-0.5 transition-all ${isTransparentHero ? 'bg-white' : 'bg-gray-700'} ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+          <span className={`w-6 h-0.5 transition-all ${isTransparentHero ? 'bg-white' : 'bg-gray-700'} ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
         </button>
 
         {/* Mobile Menu */}
@@ -86,33 +91,54 @@ const Navbar = () => {
                   Learn
                 </Link>
               )}
-              <Link 
-                to="/giveback" 
+              <Link
+                to="/giveback"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
               >
                 Giveback
               </Link>
+              {!isBlogPostPage && location.pathname !== '/blog' && (
+                <Link
+                  to="/blog"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                >
+                  Learn
+                </Link>
+              )}
             </div>
           </div>
         )}
 
-        {/* Left side - Learn and Giveback links (Desktop) */}
+        {/* Left side - Learn, Giveback, and Blog links (Desktop) */}
         <div className={`hidden lg:flex flex-1 gap-4 ${isHomePage || isGivebackPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
-          {isClientsPage && (
-            <Link 
-              to="/learn" 
-              className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
-            >
-              Learn
-            </Link>
+          {!isTransparentHero && (
+            <>
+              {isClientsPage && (
+                <Link
+                  to="/learn"
+                  className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+                >
+                  Learn
+                </Link>
+              )}
+              <Link
+                to="/giveback"
+                className={`px-3 py-1 rounded font-medium text-gray-600 hover:text-willow hover:bg-gray-50 ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : 'text-base md:text-lg'}`}
+              >
+                Giveback
+              </Link>
+              {!isBlogPostPage && location.pathname !== '/blog' && (
+                <Link
+                  to="/blog"
+                  className={`px-3 py-1 rounded font-medium text-gray-600 hover:text-willow hover:bg-gray-50 ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : 'text-base md:text-lg'}`}
+                >
+                  Learn
+                </Link>
+              )}
+            </>
           )}
-          <Link 
-            to="/giveback" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
-          >
-            Giveback
-          </Link>
         </div>
         
         {/* Centered logo - Shifts left on mobile when hero CTA is out of view */}
@@ -126,33 +152,33 @@ const Navbar = () => {
           <Link to="/" className="flex items-center">
             {(scrolledPastHero || isAlwaysSmallPage) ? (
               <>
-                <div className="md:hidden text-[#138F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
-                <img 
-                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
-                  alt="Willow Logo" 
-                  className="hidden md:block h-16 md:h-20" 
+                <div className={`md:hidden flex items-center justify-center ${isTransparentHero ? 'text-white' : 'text-[#138F8B]'}`} style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
+                <img
+                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
+                  alt="Willow Logo"
+                  className="hidden md:block h-16 md:h-20"
+                  style={isTransparentHero ? { filter: 'brightness(0) invert(1)' } : undefined}
                 />
               </>
             ) : (
-              <img 
-                src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
-                alt="Willow Logo" 
-                className={`${isHomePage || isGivebackPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
+              <img
+                src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
+                alt="Willow Logo"
+                className={`${isHomePage || isGivebackPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`}
+                style={isTransparentHero ? { filter: 'brightness(0) invert(1)' } : undefined}
               />
             )}
           </Link>
         </div>
         
-        {/* Right side - Schedule a Demo button (only shows when hero CTA is out of view, not on booking pages) */}
-        {!isBookPage && !isRequestAccessPage && (
+        {/* Right side - Request Access button (hidden in transparent hero mode) */}
+        {!isBookPage && !isRequestAccessPage && !isTransparentHero && (
           <div className={`flex flex-1 justify-end items-center transition-opacity duration-300 ${scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             {!isCreateWillPage && (scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage)) && (
-              <Button 
+              <Button
                 size="sm"
                 className="willow-btn px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium"
-                style={{
-                  boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
-                }}
+                style={{ boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)' }}
                 onClick={() => navigate('/request-access')}
               >
                 {isPitolPage ? 'Request an invitation' : 'Request Access'}
