@@ -59,8 +59,9 @@ const Investors = () => {
               color: "#5A6570",
             }}
           >
-            Access your holdings, review the current round, or follow along with
-            our monthly updates.
+            Access your holdings, review the current round, or{" "}
+            <br className="hidden sm:inline" />
+            follow along with our monthly updates.
           </p>
 
           {/* Investor Login */}
