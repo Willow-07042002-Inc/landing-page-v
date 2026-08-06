@@ -28,7 +28,8 @@ const Investors = () => {
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.trim() === ACCESS_PASSWORD) {
+    // Case-insensitive — investors type this from memory or a forwarded email.
+    if (password.trim().toLowerCase() === ACCESS_PASSWORD.toLowerCase()) {
       window.location.href = INVEST_NOW_URL;
     } else {
       setGateError(true);
