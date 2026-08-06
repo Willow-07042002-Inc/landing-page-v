@@ -213,6 +213,15 @@ const Investors = () => {
                   setPassword(e.target.value);
                   setGateError(false);
                 }}
+                // Submit on Enter explicitly rather than relying on the
+                // browser's implicit form submission, which some mobile
+                // keyboards and password managers don't trigger.
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleUnlock(e);
+                  }
+                }}
                 className="w-full bg-transparent text-center focus:outline-none mb-2"
                 style={{
                   // 16px minimum — iOS Safari zooms the page on focus below this.
