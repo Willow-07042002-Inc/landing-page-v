@@ -8,9 +8,12 @@ import { supabase } from "@/lib/supabase";
 // sign in here to view shares, profile and investment history. Kore moved these
 // off *.koreconx.com to *.holdersportal.com on Jul 28.
 const INVESTOR_LOGIN_URL = "https://willow.holdersportal.com/auth/login";
-// Kore's Reg D 506(c) offering page. Andrew is hosting their index.html here;
-// it hands off to the KoreInside application flow.
-const INVEST_NOW_URL = "/regd/invest";
+// Kore's Reg D 506(c) offering page — their index.html hosted in this repo at
+// public/regd/invest/. Absolute on purpose: a relative link breaks when this
+// page is viewed anywhere other than production www — old immutable
+// *.vercel.app deployment URLs, or the bare willow-inc.com domain, whose
+// GoDaddy forwarding 404s every path except the homepage.
+const INVEST_NOW_URL = "https://www.willow-inc.com/regd/invest";
 
 // Gate in front of the offering page. This runs in the browser, so the password
 // ships in the JS bundle and anyone determined can read it — it's a deterrent to
