@@ -21,6 +21,7 @@ import Giveback from "./pages/Giveback";
 import Pitol from "./pages/Pitol";
 import Book from "./pages/Book";
 import RequestAccess from "./pages/RequestAccess";
+import Investors from "./pages/Investors";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/pitol" element={<Pitol />} />
           <Route path="/book" element={<Book />} />
           <Route path="/request-access" element={<RequestAccess />} />
+          <Route path="/investors" element={<Investors />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
