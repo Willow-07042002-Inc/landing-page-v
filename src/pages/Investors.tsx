@@ -16,7 +16,7 @@ const INVEST_NOW_URL = "/regd/invest";
 // ships in the JS bundle and anyone determined can read it — it's a deterrent to
 // keep casual visitors and attorneys out, not real access control. Change the
 // string here to change the password.
-const ACCESS_PASSWORD = "Decacorn";
+const ACCESS_PASSWORD = "2002";
 
 const Investors = () => {
   const [email, setEmail] = useState("");
