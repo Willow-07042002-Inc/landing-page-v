@@ -162,7 +162,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center">
             {(scrolledPastHero || isAlwaysSmallPage) ? (
               <>
-                <div className="md:hidden text-[#128F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400', WebkitTextStroke: '0.4px #FCFCFD' }}>W</div>
+                <div className="md:hidden text-[#128F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
                 <img
                   src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
                   alt="Willow Logo"
