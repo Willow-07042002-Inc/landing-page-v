@@ -194,30 +194,6 @@ const Book = () => {
           </div>
         </section>
 
-        {/* Testimonials Section - Right under calendar (hidden below 768px) */}
-        <section className="reviews-section pt-0 md:pt-6 lg:pt-6 pb-12 md:pb-16 bg-[#F8FAFC]">
-          <div className="container mx-auto px-4 md:px-8 max-w-6xl">
-            <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
-              <div className="p-6 text-center">
-                <p className="text-gray-600 italic mb-3">
-                  "Willow feels intentionally built for how attorneys work — and how clients actually live."
-                </p>
-                <p className="text-sm font-semibold text-gray-800">
-                  — David Castellano
-                </p>
-              </div>
-
-              <div className="p-6 text-center">
-                <p className="text-gray-600 italic mb-3">
-                  "The story and team behind Willow are exactly what this industry needs"
-                </p>
-                <p className="text-sm font-semibold text-gray-800">
-                  — Katherine Rosenberg
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
       <Footer />
     </div>

@@ -7,19 +7,11 @@ import ScrollToTop from "@/components/ScrollToTop";
 import OpenGraphMeta from "@/components/OpenGraphMeta";
 import GoogleAnalyticsPageView from "@/components/GoogleAnalyticsPageView";
 import ClarityTags from "@/components/ClarityTags";
-import Clients from "./pages/Index";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
-import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import CreateWill from "./pages/CreateWill";
-import AvailabilityMap from "./pages/AvailabilityMap";
-import Learn from "./pages/Learn";
-import ForLawyers from "./pages/ForLawyers";
-import AboutUs from "./pages/AboutUs";
-import Giveback from "./pages/Giveback";
-import Pitol from "./pages/Pitol";
-import Book from "./pages/Book";
+import Home from "./pages/Home";
+import ForClientsPage from "./pages/ForClientsPage";
 import RequestAccess from "./pages/RequestAccess";
 import Investors from "./pages/Investors";
 
@@ -36,22 +28,17 @@ const App = () => (
         <GoogleAnalyticsPageView />
         <ClarityTags />
         <Routes>
-          <Route path="/" element={<ForLawyers />} />
-          <Route path="/clients" element={<Clients />} />
-          {/* Redirect old /for-lawyers URL to / */}
-          <Route path="/for-lawyers" element={<Navigate to="/" replace />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/for-clients" element={<ForClientsPage />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/create-will" element={<CreateWill />} />
-          <Route path="/availability-map" element={<AvailabilityMap />} />
-          <Route path="/learn" element={<Learn />} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/giveback" element={<Giveback />} />
-          <Route path="/pitol" element={<Pitol />} />
-          <Route path="/book" element={<Book />} />
           <Route path="/request-access" element={<RequestAccess />} />
           <Route path="/investors" element={<Investors />} />
+          {/* Retired pages — old links land somewhere sensible instead of a 404 */}
+          {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/contact", "/create-will", "/availability-map", "/learn", "/about-us", "/pitol"].map((p) => (
+            <Route key={p} path={p} element={<Navigate to="/" replace />} />
+          ))}
+          <Route path="/book" element={<Navigate to="/request-access" replace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

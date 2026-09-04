@@ -81,21 +81,21 @@ const RequestAccess = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC]">
+    <div className="min-h-screen flex flex-col bg-[#FCFCFD]">
       <Navbar />
-      <main className="flex-grow bg-[#F8FAFC]">
+      <main className="flex-grow bg-[#FCFCFD]">
         {/* Hero Section with Calendar */}
-        <section className="bg-[#F8FAFC] pt-24 md:pt-24 lg:pt-28 pb-[100px] md:pb-8 lg:pb-8 hero-section">
+        <section className="bg-[#FCFCFD] pt-28 md:pt-32 pb-[100px] md:pb-12 hero-section">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl w-full">
-            <div className="text-center mb-4 md:mb-6 lg:mb-8 pt-4 md:pt-6 lg:pt-8">
-              {/* Subheader */}
-              <p className="text-xl md:text-2xl lg:text-3xl text-gray-800 max-w-3xl mx-auto leading-relaxed">
+            <div className="text-center mb-8 md:mb-10">
+              <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Book a demo</div>
+              <h1 className="mx-auto max-w-3xl font-heading text-2xl font-light text-[#222222] sm:text-3xl md:text-4xl" style={{ lineHeight: 1.25 }}>
                 Explore how Willow can best support your <br className="hidden md:inline" />firm and simplify life for your clients.
-              </p>
+              </h1>
             </div>
 
             {/* Calendar */}
-            <div className="max-w-4xl mx-auto bg-[#F8FAFC] overflow-visible rounded-xl cal-booking-container lg:-mt-3" style={{ 
+            <div className="max-w-4xl mx-auto bg-[#FCFCFD] overflow-visible rounded-xl cal-booking-container" style={{ 
               border: 'none' 
             }}>
               {/* Cal.com React Embed */}
@@ -217,30 +217,6 @@ const RequestAccess = () => {
           </div>
         </section>
 
-        {/* Testimonials Section - Right under calendar (hidden below 768px) */}
-        <section className="reviews-section pt-0 md:pt-6 lg:pt-6 pb-12 md:pb-16 bg-[#F8FAFC]">
-          <div className="container mx-auto px-4 md:px-8 max-w-6xl">
-            <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
-              <div className="p-6 text-center">
-                <p className="text-gray-600 italic mb-3">
-                  "Willow feels intentionally built for how attorneys work — and how clients actually live."
-                </p>
-                <p className="text-sm font-semibold text-gray-800">
-                  — David Castellano
-                </p>
-              </div>
-
-              <div className="p-6 text-center">
-                <p className="text-gray-600 italic mb-3">
-                  "The story and team behind Willow are exactly what this industry needs"
-                </p>
-                <p className="text-sm font-semibold text-gray-800">
-                  — Katherine Rosenberg
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
       <Footer />
     </div>

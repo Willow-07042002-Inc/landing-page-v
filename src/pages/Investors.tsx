@@ -64,7 +64,7 @@ const Investors = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC]">
+    <div className="min-h-screen flex flex-col bg-[#FCFCFD]">
       <Navbar />
       <main className="flex-grow flex items-center justify-center px-5 py-32 md:py-40">
         <div className="w-full text-center" style={{ maxWidth: "440px" }}>

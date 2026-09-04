@@ -11,13 +11,17 @@ const Navbar = () => {
   
   const isCreateWillPage = location.pathname === "/create-will";
   const isHomePage = location.pathname === "/";
+  const isMarketingPage = ["/", "/attorneys", "/for-clients", "/terms", "/privacy", "/contact", "/investors", "/request-access", "/book"].includes(location.pathname);
+  const marketingTabs = [
+    { label: "For Attorneys", href: "/" },
+    { label: "For Clients", href: "/for-clients" },
+  ];
   const isClientsPage = location.pathname === "/clients";
-  const isGivebackPage = location.pathname === "/giveback";
   const isAboutUsPage = location.pathname === "/about-us";
   const isBookPage = location.pathname === "/book";
   const isRequestAccessPage = location.pathname === "/request-access";
   const isPitolPage = location.pathname === "/pitol";
-  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/learn", "/book", "/request-access", "/pitol"];
+  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/investors", "/learn", "/book", "/request-access", "/pitol"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
 
   useEffect(() => {
@@ -60,7 +64,7 @@ const Navbar = () => {
   }, [scrolled, scrolledPastHero, isAboutUsPage]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/100 ${isHomePage || isGivebackPage || isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 ${isMarketingPage ? 'bg-[#FCFCFD]' : 'bg-background/100'} ${isMarketingPage ? 'py-2.5 md:py-3 border-b border-border' : isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
       <div className="container mx-auto px-4 flex items-center justify-between relative">
         {/* Mobile Hamburger Menu Button */}
         <button
@@ -77,6 +81,27 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg lg:hidden">
             <div className="flex flex-col p-4 gap-2">
+              {isMarketingPage && marketingTabs.map((tab) =>
+                tab.href ? (
+                  <Link
+                    key={tab.label}
+                    to={tab.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                  >
+                    {tab.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={tab.label}
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); }}
+                    className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                  >
+                    {tab.label}
+                  </a>
+                )
+              )}
               {isClientsPage && (
                 <Link 
                   to="/learn" 
@@ -86,37 +111,48 @@ const Navbar = () => {
                   Learn
                 </Link>
               )}
-              <Link 
-                to="/giveback" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
-              >
-                Giveback
-              </Link>
             </div>
           </div>
         )}
 
-        {/* Left side - Learn and Giveback links (Desktop) */}
-        <div className={`hidden lg:flex flex-1 gap-4 ${isHomePage || isGivebackPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
+        {/* Left side - marketing tabs (Desktop) */}
+        <div className={`hidden lg:flex flex-1 gap-4 ${isHomePage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
+          {isMarketingPage && (
+            <div className="flex items-center gap-0.5">
+              {marketingTabs.map((tab) =>
+                tab.href ? (
+                  <Link
+                    key={tab.label}
+                    to={tab.href}
+                    className={`px-2 py-1 rounded font-medium text-sm whitespace-nowrap ${location.pathname === tab.href ? "text-willow" : "text-gray-600 hover:text-willow hover:bg-gray-50"}`}
+                  >
+                    {tab.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={tab.label}
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                    className="px-2 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-sm whitespace-nowrap"
+                  >
+                    {tab.label}
+                  </a>
+                )
+              )}
+            </div>
+          )}
           {isClientsPage && (
             <Link 
               to="/learn" 
-              className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+              className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
             >
               Learn
             </Link>
           )}
-          <Link 
-            to="/giveback" 
-            className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage || isGivebackPage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
-          >
-            Giveback
-          </Link>
         </div>
         
         {/* Centered logo - Shifts left on mobile when hero CTA is out of view */}
-        <div className={`flex ${isHomePage || isGivebackPage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
+        <div className={`flex ${isHomePage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
           isCreateWillPage 
             ? 'absolute left-1/2 transform -translate-x-1/2 py-6' 
             : scrolledPastHero || isAlwaysSmallPage
@@ -126,18 +162,18 @@ const Navbar = () => {
           <Link to="/" className="flex items-center">
             {(scrolledPastHero || isAlwaysSmallPage) ? (
               <>
-                <div className="md:hidden text-[#138F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400' }}>W</div>
-                <img 
-                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
-                  alt="Willow Logo" 
-                  className="hidden md:block h-16 md:h-20" 
+                <div className="md:hidden text-[#128F8B] flex items-center justify-center" style={{ fontFamily: 'Pacifico, cursive', height: '64px', fontSize: '2rem', lineHeight: '1', fontWeight: '400', WebkitTextStroke: '0.4px #FCFCFD' }}>W</div>
+                <img
+                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
+                  alt="Willow Logo"
+                  className={`hidden md:block ${isMarketingPage ? 'h-11 md:h-12' : 'h-16 md:h-20'}`}
                 />
               </>
             ) : (
-              <img 
-                src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png" 
-                alt="Willow Logo" 
-                className={`${isHomePage || isGivebackPage || isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`} 
+              <img
+                src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
+                alt="Willow Logo"
+                className={`${isMarketingPage ? 'h-11 md:h-12' : isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`}
               />
             )}
           </Link>
@@ -145,19 +181,21 @@ const Navbar = () => {
         
         {/* Right side - Schedule a Demo button (only shows when hero CTA is out of view, not on booking pages) */}
         {!isBookPage && !isRequestAccessPage && (
-          <div className={`flex flex-1 justify-end items-center transition-opacity duration-300 ${scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-            {!isCreateWillPage && (scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage)) && (
-              <Button 
-                size="sm"
-                className="willow-btn px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium"
-                style={{
-                  boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
-                }}
-                onClick={() => navigate('/request-access')}
-              >
-                {isPitolPage ? 'Request an invitation' : 'Request Access'}
-              </Button>
-            )}
+          <div className="flex flex-1 justify-end items-center gap-1">
+            <div className={`transition-opacity duration-300 ${scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              {!isCreateWillPage && (
+                <Button
+                  size="sm"
+                  className="willow-btn px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium"
+                  style={{
+                    boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
+                  }}
+                  onClick={() => navigate('/request-access')}
+                >
+                  {isPitolPage ? 'Request an invitation' : 'Book a Demo'}
+                </Button>
+              )}
+            </div>
           </div>
         )}
         

@@ -1,101 +1,71 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+
+/* Line-based field matching the site's input language — underline, teal on
+   focus, no boxes. */
+const lineField =
+  "w-full bg-transparent border-0 border-b border-[#D4DAE0] px-0 py-2.5 text-base text-[#222222] placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-[#138F8B] transition-colors rounded-none";
 
 const Contact = () => {
   const { toast } = useToast();
-  
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     toast({
       title: "Message sent",
       description: "Thank you for contacting us. We'll get back to you soon.",
     });
-    
+
     // Reset form
     const form = e.target as HTMLFormElement;
     form.reset();
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{
-      color: '#222222'
-    }}>
+    <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
-      <main className="flex-grow pt-36 pb-24">
+      <main className="flex-grow pt-32 md:pt-36 pb-24">
         <div className="container px-4 mx-auto">
-          <div className="max-w-3xl mx-auto py-[16px]">
-            <h1 className="text-3xl md:text-4xl font-heading font-bold text-center mb-4" style={{
-              color: '#222222'
-            }}>Contact Us</h1>
-            
-            <div className="text-center mb-8 text-muted-foreground" style={{
-              color: '#222222'
-            }}>
-              We'd love to hear from you
-            </div>
-            
-            <Separator className="my-8" />
-            
-            <div className="prose prose-slate max-w-none" style={{
-              color: '#222222'
-            }}>
-              <p className="text-base leading-relaxed mb-6 text-center">
-                Have questions about Willow? Fill out the form below and our team will get back to you as soon as possible.
-              </p>
-              
-              <Card className="mt-8 border-border">
-                <CardContent className="pt-6">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input 
-                        id="name" 
-                        name="name" 
-                        placeholder="Your name" 
-                        required 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        placeholder="your.email@example.com" 
-                        required 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message</Label>
-                      <textarea 
-                        id="message" 
-                        name="message" 
-                        rows={5} 
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-willow focus-visible:border-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                        placeholder="How can we help you?" 
-                        required
-                      />
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-willow hover:bg-willow-600 text-white"
-                    >
-                      Send Message
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
+          <div className="max-w-xl mx-auto">
+            <div className="mb-4 text-center text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Contact</div>
+            <h1 className="text-3xl md:text-4xl lg:text-[2.75rem] font-heading font-light text-center mb-4 text-[#222222]" style={{ lineHeight: 1.25 }}>
+              We'd love to hear from you.
+            </h1>
+            <p className="mx-auto mb-12 max-w-md text-center text-[15px] md:text-base text-gray-500" style={{ lineHeight: 1.6 }}>
+              Have questions about Willow? Send us a note and our team will get back to you as soon as possible.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div>
+                <label htmlFor="name" className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-400">
+                  Name
+                </label>
+                <input id="name" name="name" placeholder="Your name" required className={lineField} />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-400">
+                  Email
+                </label>
+                <input id="email" name="email" type="email" placeholder="your.email@example.com" required className={lineField} />
+              </div>
+
+              <div>
+                <label htmlFor="message" className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-400">
+                  Message
+                </label>
+                <textarea id="message" name="message" rows={4} placeholder="How can we help you?" required className={`${lineField} resize-none`} />
+              </div>
+
+              <div className="pt-2 text-center">
+                <Button type="submit" size="lg" className="willow-btn h-11 px-8 text-[15px] font-medium">
+                  Send Message
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </main>

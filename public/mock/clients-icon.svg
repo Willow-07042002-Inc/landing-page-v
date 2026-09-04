@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#309E96" aria-label="Clients">
+  <g>
+    <circle cx="12" cy="4.6" r="3.6"/>
+    <circle cx="7.6" cy="5.5" r="3.1"/>
+    <circle cx="16.4" cy="5.5" r="3.1"/>
+    <circle cx="4.9" cy="8.2" r="3.2"/>
+    <circle cx="19.1" cy="8.2" r="3.2"/>
+    <circle cx="7.7" cy="10.2" r="3.1"/>
+    <circle cx="16.3" cy="10.2" r="3.1"/>
+    <circle cx="12" cy="8.4" r="4.7"/>
+    <circle cx="12" cy="10.6" r="2.7"/>
+  </g>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.7 12 L15.3 12 L14.4 15.8 C13.9 17.8 13.9 19.6 14.7 21.7 L9.3 21.7 C10.1 19.6 10.1 17.8 9.6 15.8 Z M12.25 13.3 L13.8 13.3 L13.05 15.4 Z"/>
+</svg>

@@ -1,144 +1,225 @@
 import React from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Separator } from "@/components/ui/separator";
+import { Link } from "react-router-dom";
+import { LegalShell, usePageMeta, H2, P, UL, LI, B, LegalTable } from "@/components/LegalPage";
+
+/* Content source: Willow-Privacy-Policy.md (B2B rewrite). Remaining
+   bracketed values are intentionally unresolved — pending legal review. */
+
+const TOC = [
+  { id: "why-this-exists", label: "Why this exists" },
+  { id: "two-kinds-of-data", label: "Two kinds of data" },
+  { id: "what-we-collect", label: "What we collect about your firm" },
+  { id: "client-data", label: "What your firm puts in about clients" },
+  { id: "how-we-use-data", label: "How we use data" },
+  { id: "who-we-share-with", label: "Who we share it with" },
+  { id: "firm-rights", label: "Your firm's privacy rights" },
+  { id: "client-rights", label: "Your clients' privacy rights" },
+  { id: "security", label: "How we keep information safe" },
+  { id: "retention", label: "How long we keep data" },
+  { id: "where-data-lives", label: "Where data lives" },
+  { id: "changes", label: "Changes to this policy" },
+  { id: "talk-to-us", label: "Talk to us" },
+];
 
 const Privacy = () => {
+  usePageMeta(
+    "Privacy Policy | Willow",
+    "How Willow handles data for estate planning firms and their clients — what we collect, why, who we share it with, and the rights your firm and your clients have."
+  );
+
   return (
-    <div className="min-h-screen flex flex-col" style={{
-      color: '#222222'
-    }}>
-      <Navbar />
-      <main className="flex-grow pt-36 pb-24">
-        <div className="container px-4 mx-auto">
-          <div className="max-w-3xl mx-auto py-[16px]">
-            <h1 className="text-3xl md:text-4xl font-heading font-bold text-center mb-4" style={{
-              color: '#222222'
-            }}>Privacy Policy</h1>
-            
-            <div className="text-center mb-8 text-muted-foreground" style={{
-              color: '#222222'
-            }}>
-              Effective Date: April 1, 2025
-            </div>
-            
-            <Separator className="my-8" />
-            
-            <div className="prose prose-slate max-w-none" style={{
-              color: '#222222'
-            }}>
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Willow's Privacy Promise</h2>
-              <p className="text-base leading-relaxed mb-6">Plain language. No shady stuff. Just the facts about how we use your info.</p>
+    <LegalShell eyebrow="Legal" title="Willow's Privacy Promise" date="September 4, 2026" toc={TOC}>
+      <H2 id="why-this-exists">Why this exists</H2>
+      <P>
+        Let's be real — privacy policies are usually written by lawyers for other lawyers. That's a strange thing for us to say, because
+        lawyers are exactly who we build for. But you don't want to read one either.
+      </P>
+      <P>
+        So here's the plain-English version. This page explains what we collect, why, who we share it with (spoiler: three vendors), and
+        what rights you and your clients have. No dark patterns, no fine print tricks.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Why this exists</h2>
-              <p className="text-base leading-relaxed mb-6">Let's be real—privacy policies are usually written by lawyers for other lawyers. But at Willow, we help people deal with big, personal, life things. So we're writing this in plain English, not legalese. This page tells you what info we collect, why we collect it, who we share it with (spoiler: just a couple of trusted partners), and what rights you have over your data. No dark patterns, no fine print tricks.</p>
+      <H2 id="two-kinds-of-data">First, the most important thing: there are two kinds of data here</H2>
+      <P>This distinction runs through the entire policy, so it's worth getting straight up front.</P>
+      <P>
+        <B>1. Data about your firm and your attorneys.</B> Your name, your firm's billing details, how your team uses the product. We
+        decide what to do with this data, so we're responsible for it. In legal terms, we're the <em>controller</em>.
+      </P>
+      <P>
+        <B>2. Data about your clients.</B> Everything your firm puts into Willow on a client's behalf — names, assets, beneficiaries,
+        executors, guardians, the estate plan itself. <B>This is your firm's data, not ours.</B> You decide what goes in, how long it
+        stays, and where it goes. We just hold it and process it on your instructions. In legal terms, you're the <em>controller</em> and
+        we're the <em>processor</em>.
+      </P>
+      <P>
+        That second category is the one your clients care about, and it's the one your ethical obligations attach to. We built Willow so
+        you stay in control of it.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">What We Collect and Why</h2>
-              <p className="text-base leading-relaxed mb-6">Here's exactly what we collect and why we need it:</p>
+      <H2 id="what-we-collect">What We Collect About Your Firm</H2>
+      <LegalTable
+        head={["What We Collect", "Why We Collect It"]}
+        rows={[
+          ["Attorney and staff names, work emails, phone numbers", "To create accounts, verify identity, and reach you when something needs attention"],
+          ["Firm name, address, and jurisdiction(s) of practice", "To configure state-specific signing and document requirements"],
+          ["Bar number and admission state", "To confirm you're licensed where you're using Willow"],
+          ["Billing contact and payment info", "Processed securely by Stripe. We never see or store full card numbers"],
+          ["How your team uses Willow", "To keep things running, improve features, and squash bugs"],
+          ["Support conversations", "So we can actually help when you write in"],
+        ]}
+      />
+      <P>We keep it lean. If we don't need it, we don't ask for it.</P>
 
-              <div className="overflow-x-auto mb-6">
-                <table className="min-w-full border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="border p-3 text-left">What We Collect</th>
-                      <th className="border p-3 text-left">Why We Collect It</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border p-3">Your name and contact info</td>
-                      <td className="border p-3">To create your account, generate your Will, contact you if needed, and let you log back in securely.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">Date of birth</td>
-                      <td className="border p-3">To confirm you're old enough to make a Will, and generate your Will.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">State of Residence</td>
-                      <td className="border p-3">To confirm we can offer you our service, and generate your Will.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">List of assets + who gets what</td>
-                      <td className="border p-3">So we can generate your Will according to your wishes.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">Names and roles (beneficiaries, executors, guardians)</td>
-                      <td className="border p-3">To generate a valid Will with proper fallback options.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">Email + optional phone number</td>
-                      <td className="border p-3">Used for logins, account recovery, and important alerts.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">Info about children (if added)</td>
-                      <td className="border p-3">Needed for guardianship instructions so we can accurately generate your Will.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">Payment info</td>
-                      <td className="border p-3">Collected and processed securely by Stripe for subscriptions or services.</td>
-                    </tr>
-                    <tr>
-                      <td className="border p-3">How you use Willow</td>
-                      <td className="border p-3">To keep things running smoothly, improve features, and squash bugs.</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+      <H2 id="client-data">What Your Firm Puts In About Clients</H2>
+      <P>
+        When your firm uses Willow, you'll enter information about the people you represent. Typically that includes their name and
+        contact details, date of birth, state of residence, assets and how they should be distributed, beneficiaries, executors,
+        guardians, information about minor children, and the executed documents themselves.
+      </P>
+      <P>
+        <B>We treat all of it as confidential and potentially privileged.</B>
+      </P>
+      <P>Here's what that means in practice:</P>
+      <UL>
+        <LI>
+          <B>We don't decide what goes in.</B> Your firm does.
+        </LI>
+        <LI>
+          <B>We don't use it for our own purposes.</B> Not for marketing, not for analytics we sell, not for anything other than running
+          Willow for you.
+        </LI>
+        <LI>
+          <B>We don't train AI models on it.</B> If we ever build a feature that would require using your client data to train or improve
+          a model, we will ask your firm first and get a clear yes. Silence isn't consent.
+        </LI>
+        <LI>
+          <B>Our staff can't browse it.</B> Access is restricted to the small number of people who need it to run the service or resolve
+          a support ticket you've opened, and it's logged.
+        </LI>
+        <LI>
+          <B>If your client contacts us directly</B> asking to see, change, or delete their data, we won't act on it. We'll refer them to
+          your firm, because it's your relationship and your call.
+        </LI>
+      </UL>
 
-              <p className="text-base leading-relaxed mb-6">We keep it lean. If we don't need it, we don't ask for it.</p>
+      <H2 id="how-we-use-data">How We Use Data</H2>
+      <P>
+        We use firm data to run Willow: setting up accounts, processing payments, sending service notices, confirming it's really you,
+        fixing bugs, improving the product, and staying compliant with the law.
+      </P>
+      <P>
+        We use client data only to provide the service your firm asked for — generating documents, routing them for signature, storing
+        them securely, and making them available to the people your firm authorizes.
+      </P>
+      <P>
+        We may also send you product updates and occasional news about what we're building. You can turn those off anytime without losing
+        any service notices you actually need.
+      </P>
+      <P>
+        <B>We do not sell personal data.</B> Not your firm's, not your clients'. Some state privacy laws define "sale" and "targeted
+        advertising" broadly and require us to tell you about them anyway, so: we don't do either. If that ever changes — it won't
+        quietly — we'll notify you and give you a way to opt out first.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">How We Use Your Data</h2>
-              <p className="text-base leading-relaxed mb-6">We use your info to help you create and manage your Will in a way that's fast, secure, and legally sound. That includes setup, storage, signing, and updates as life changes.</p>
+      <H2 id="who-we-share-with">Who We Share It With</H2>
+      <P>
+        We use three vendors to deliver Willow. Each one is bound by contract to protect the data they handle and to use it only for the
+        service they provide us.
+      </P>
+      <LegalTable
+        head={["Vendor", "What they do", "What they touch"]}
+        rows={[
+          [<B>Supabase</B>, "Database and hosting", "Firm and client data, stored encrypted"],
+          [<B>SignWell</B>, "Digital signature execution", "Documents routed for signing, and signer identity details"],
+          [<B>Stripe</B>, "Payment processing", "Firm billing information only. No client data"],
+        ]}
+      />
+      <P>
+        We'll also share information when the law genuinely requires it — a valid subpoena, court order, or similar. If that happens and
+        we're legally permitted to tell you, we will, so your firm can respond or object before we produce anything.
+      </P>
+      <P>If we ever bring on a new vendor that touches client data, we'll update this list and give you advance notice so you can raise concerns.</P>
 
-              <p className="text-base leading-relaxed mb-6">We also use your data to:</p>
-              <ul className="list-disc pl-6 mb-6 space-y-2">
-                <li className="text-base leading-relaxed">Keep your account running smoothly</li>
-                <li className="text-base leading-relaxed">Send reminders or helpful updates</li>
-                <li className="text-base leading-relaxed">Let you know about new features (only if you want us to)</li>
-                <li className="text-base leading-relaxed">Confirm it's really you when needed</li>
-                <li className="text-base leading-relaxed">Fix bugs and improve the experience</li>
-                <li className="text-base leading-relaxed">Process payments securely</li>
-                <li className="text-base leading-relaxed">Stay compliant with the law</li>
-                <li className="text-base leading-relaxed">Do other things you've clearly agreed to</li>
-              </ul>
+      <H2 id="firm-rights">Your Firm's Privacy Rights</H2>
+      <P>
+        Depending on where your attorneys live, state privacy laws may give them rights over the personal data we hold about them. Those
+        typically include the right to:
+      </P>
+      <UL>
+        <LI>Access the personal data we have about them</LI>
+        <LI>Correct anything inaccurate or outdated</LI>
+        <LI>Delete it, unless we're legally required to keep it</LI>
+        <LI>Download it and take it somewhere else</LI>
+        <LI>Opt out of profiling, targeted advertising, and the sale of personal data — none of which we do</LI>
+        <LI>Appeal if we deny a request</LI>
+        <LI>Unsubscribe from product emails</LI>
+      </UL>
+      <P>
+        You can handle most of this from your account settings, or email Aaron Burlacoff at{" "}
+        <a href="mailto:aaronburlacoff@willow-inc.com" className="font-semibold text-[#128F8B] hover:text-[#0C7370]">
+          aaronburlacoff@willow-inc.com
+        </a>
+        . We'll respond within 45 days, usually much sooner. We won't treat anyone differently for exercising these rights.
+      </P>
 
-              <p className="text-base leading-relaxed mb-6">The Colorado Privacy Act also allows companies to sell personal data. As of the date this policy took effect, Willow does not sell personal data, but if that ever changes, you'll be notified—and you'll always have the right to opt out.</p>
+      <H2 id="client-rights">Your Clients' Privacy Rights</H2>
+      <P>Your clients have rights too — but their relationship is with your firm, not with us.</P>
+      <P>
+        So when a client wants to access, correct, delete, or export their information, they should go to your firm. If they come to us
+        instead, we'll point them back to you.
+      </P>
+      <P>
+        Where your firm needs our help responding, we'll give it. Willow includes tools to export or delete a client's records, and if
+        you need something the product doesn't cover, write to us and we'll sort it out.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Who We Share It With</h2>
-              <p className="text-base leading-relaxed mb-6">As of now, we only share your information with a few trusted partners—Stripe (payments), AWS (secure hosting), and SignWell (digital signing)—who help us deliver Willow safely and smoothly.</p>
-              <p className="text-base leading-relaxed mb-6">We may also share data with other vetted partners in the future to improve the product, but only when necessary and always with your privacy in mind.</p>
+      <H2 id="security">How We Keep Information Safe</H2>
+      <P>
+        We follow generally accepted industry standards — technical, physical, and administrative — to protect against loss, misuse, and
+        unauthorized access. That includes encryption in transit and at rest, restricted and logged employee access, and regular review
+        of our practices.
+      </P>
+      <P>
+        Because no method of transmission or storage is perfectly secure, we can't promise absolute security. What we can promise is that
+        if there's ever a breach affecting your firm's data, <B>we'll tell you promptly</B> and give you what you need to meet your own
+        notification obligations to clients and regulators.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Your Privacy Rights</h2>
-              <p className="text-base leading-relaxed mb-6">If you live in Colorado, the Colorado Privacy Act gives you the right to:</p>
-              <ul className="list-disc pl-6 mb-6 space-y-2">
-                <li className="text-base leading-relaxed">Access the personal data we have about you</li>
-                <li className="text-base leading-relaxed">Correct inaccurate or outdated info</li>
-                <li className="text-base leading-relaxed">Delete your data (unless we're legally required to keep it)</li>
-                <li className="text-base leading-relaxed">Download your data and take it somewhere else</li>
-                <li className="text-base leading-relaxed">Opt out of profiling and targeted advertising (we don't profile users)</li>
-                <li className="text-base leading-relaxed">Opt out of the sale of personal data (even though we don't sell it now)</li>
-                <li className="text-base leading-relaxed">Appeal any decision we make if we deny a rights request</li>
-                <li className="text-base leading-relaxed">Unsubscribe from feature updates, reminders, or product-related emails</li>
-              </ul>
-              <p className="text-base leading-relaxed mb-6">You can manage these rights from your Willow account settings, or reach out anytime at privacy@willow.com. We'll respond within 45 days (often sooner).</p>
+      <H2 id="retention">How Long We Keep Data</H2>
+      <P>
+        <B>Client data:</B> as long as your firm wants it, and no longer. You control retention and deletion inside the product. If your
+        subscription ends, see the export window in our{" "}
+        <Link to="/terms" className="font-semibold text-[#128F8B] hover:text-[#0C7370]">
+          Terms of Service
+        </Link>{" "}
+        — you'll have a defined period to get your files out before we delete them.
+      </P>
+      <P>
+        <B>Firm data:</B> as long as needed to provide the service and meet legal, tax, and dispute-resolution requirements. Then we
+        delete or anonymize it.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">How We Keep Your Info Safe</h2>
-              <p className="text-base leading-relaxed mb-6">We follow generally accepted industry standards—technical, physical, and administrative—to safeguard your personal data against loss, misuse, or unauthorized access. These protections include encrypted connections and restricted employee access. Because no method of transmission or storage is perfectly secure, we can't promise absolute security, but we continually review and update our practices to reduce risk.</p>
+      <H2 id="where-data-lives">Where Data Lives</H2>
+      <P>
+        Willow's infrastructure is hosted in the United States. If we ever store or process data outside the US, we'll update this policy
+        and tell you before it happens.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">How Long We Keep Your Data</h2>
-              <p className="text-base leading-relaxed mb-6">We hold on to your information only for as long as it's needed to provide Willow's services or to meet legal and regulatory requirements, after which we securely delete or anonymize it. If you ask us to erase your data, we'll do so unless we're required to keep certain records for compliance, dispute-resolution, or legitimate business purposes.</p>
+      <H2 id="changes">Changes to This Policy</H2>
+      <P>
+        If something material changes, we'll update this page and email your firm's admin contact. Minor edits — a typo, a clearer
+        sentence — we'll just make.
+      </P>
 
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Changes to This Policy</h2>
-              <p className="text-base leading-relaxed mb-6">If anything major changes, we'll update this page—and if it's important, we'll email you too. We encourage you to check in once in a while, but no pressure.</p>
-
-              <h2 className="text-2xl font-heading font-semibold mb-4 mt-10">Talk to Us</h2>
-              <p className="text-base leading-relaxed mb-6">Have questions? Want to update your info? Just curious how we're handling something?</p>
-            </div>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
+      <H2 id="talk-to-us">Talk to Us</H2>
+      <P>Questions about any of this? Want to know exactly what we hold on a given client? Just curious how something works under the hood?</P>
+      <P>
+        <a href="mailto:aaronburlacoff@willow-inc.com" className="font-semibold text-[#128F8B] hover:text-[#0C7370]">
+          aaronburlacoff@willow-inc.com
+        </a>
+      </P>
+      <P>Willow is operated by 07042002 Inc., a Delaware corporation.</P>
+    </LegalShell>
   );
 };
 

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#309E96" aria-label="Dashboard">
+  <path d="M12 5.2 L18.4 11.6 V20.4 H13.6 V15.2 H10.4 V20.4 H5.6 V11.6 Z"/>
+  <rect x="6.1" y="5.4" width="1.9" height="6.4"/>
+  <path d="M3.2 12.2 L12 3.8 L20.8 12.2" fill="none" stroke="#309E96" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
