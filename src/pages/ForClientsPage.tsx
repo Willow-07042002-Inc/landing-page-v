@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { VignetteFrame } from "@/components/ProductVignettes";
+import { ClientEstatePlanScreen } from "@/pages/Home";
 import {
   TeamRosterVignette,
   StepInVignette,
@@ -167,6 +168,34 @@ const ShareBlock = ({
   </div>
 );
 
+/* The homepage's client "Plan's Playbook" screen, framed at 960 design width
+   and self-scaling — used cropped, rising out of the closing card's corner. */
+const PlaybookShot = () => {
+  const W = 960;
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.5);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      const w = el.offsetWidth || el.getBoundingClientRect().width;
+      if (w > 50) setScale(w / W);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => { ro.disconnect(); window.removeEventListener("resize", measure); };
+  }, []);
+  return (
+    <div ref={ref} className="h-full w-full overflow-hidden">
+      <div style={{ width: W, height: 855, transform: `scale(${scale})`, transformOrigin: "top left" }}>
+        <ClientEstatePlanScreen />
+      </div>
+    </div>
+  );
+};
+
 const ForClientsPage = () => {
   const navigate = useNavigate();
 
@@ -204,7 +233,7 @@ const ForClientsPage = () => {
         <div className="container relative z-10 mx-auto px-4 md:px-8">
           <div className="mx-auto mb-10 max-w-2xl text-center md:mb-12">
             <h2 className="font-heading text-2xl font-bold text-[#222222] md:text-3xl lg:text-[2rem]" style={{ lineHeight: 1.3 }}>
-              Countless pages, <span className="text-[#138F8B]">one simple summary.</span>
+              Countless pages, <span className="block text-[#138F8B]">one simple summary.</span>
             </h2>
             <p className="mt-3 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>
               Willow turns every plan into a story the family can actually follow — reviewed and approved by you before they see a word.
@@ -218,8 +247,8 @@ const ForClientsPage = () => {
       <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
         <div className="container relative z-10 mx-auto px-4 md:px-8 lg:px-10 max-w-6xl">
           <div className="mx-auto mb-12 max-w-4xl text-center md:mb-16">
-            <h2 className="text-2xl md:text-3xl lg:text-[2rem] font-heading font-bold text-[#222222] md:whitespace-nowrap" style={{ lineHeight: 1.3 }}>
-              Everyone prepared. <span className="text-[#138F8B]">Nothing shared early.</span>
+            <h2 className="text-2xl md:text-3xl lg:text-[2rem] font-heading font-bold text-[#222222]" style={{ lineHeight: 1.3 }}>
+              Everyone prepared. <span className="block text-[#138F8B]">Nothing shared early.</span>
             </h2>
             <p className="mt-3 text-[15px] md:text-base text-gray-600" style={{ lineHeight: 1.6 }}>
               Everyone gets exactly what they need, exactly when they need it,
@@ -257,6 +286,42 @@ const ForClientsPage = () => {
             >
               <RoleChangeVignette />
             </ShareBlock>
+          </div>
+        </div>
+      </section>
+
+      {/* Closing — the demo ask, in the homepage's dark-card clothes: the
+          print darkened, white copy left, the Playbook screen rising from the
+          bottom-right corner */}
+      <section className="bg-[#F8FAFC] py-16 md:py-24">
+        <div className="container mx-auto max-w-7xl px-4 md:px-8">
+          <div className="relative overflow-hidden rounded-3xl">
+            <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+            <div className="relative z-10 grid md:grid-cols-[1fr_1.15fr]">
+              <div className="p-8 md:p-14 lg:p-16 md:pr-4">
+                <h2 className="font-heading text-2xl md:text-3xl lg:text-[2.25rem] font-bold text-white" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+                  Ready to bring this{" "}
+                  <br className="hidden md:block" />
+                  to your clients?
+                </h2>
+                <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
+                  Book a demo and walk through the client experience live — see how a signed plan becomes something the whole family understands, and keeps coming back to.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate("/request-access")}
+                  className="mt-8 inline-flex h-11 items-center rounded-md border border-white/70 bg-transparent px-6 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
+                >
+                  Book a Demo
+                </button>
+              </div>
+              <div className="relative h-[340px] sm:h-[400px] md:h-auto md:min-h-[520px]">
+                <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[11%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
+                  <PlaybookShot />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

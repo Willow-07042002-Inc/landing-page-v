@@ -789,3 +789,72 @@ export const NextStepsVignette = () => (
     </div>
   </CoastCard>
 );
+
+/* ── The sharing main page ("Share your documents") from the clients app's
+      Shared tab, at the app's real sizes: serif page header, then the stacked
+      grey card — Your team + the five category rows (titles, descriptions,
+      icons and avatar stacks verbatim from SharedTab/categories). Authored at
+      680px and self-scaling; designed to be cropped by the section showing it. */
+const SHARE_HOME_ROWS: { icon: string; size: number; title: string; desc: string; avatars?: boolean }[] = [
+  { icon: "/mock/family-icon.png", size: 48, title: "Your team", desc: "6 people on your team" },
+  { icon: "/mock/cat-estate.png", size: 56, title: "Estate Plan", desc: "Will, trust(s), POAs, beneficiaries, vital records, final wishes, personal bequests, letters to loved ones." },
+  { icon: "/mock/cat-finance.png", size: 48, title: "Finance", desc: "Accounts, real estate, vehicles, valuables, income, bills, debts, insurance, taxes, business interests.", avatars: true },
+  { icon: "/mock/cat-digital.png", size: 48, title: "Digital Life", desc: "Account inventory, password manager, 2FA/recovery, crypto, domains, per-account wishes.", avatars: true },
+  { icon: "/mock/cat-children.png", size: 40, title: "Children", desc: "Per-child info, parenting values, guardianship guidance, funds, pets.", avatars: true },
+  { icon: "/mock/cat-health.png", size: 56, title: "Health", desc: "Providers, conditions, medications, allergies, insurance, advance directive, end-of-life preferences.", avatars: true },
+];
+
+export const SharingHomeShot = () => {
+  const W = 680;
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.5);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      const w = el.offsetWidth || el.getBoundingClientRect().width;
+      if (w > 50) setScale(w / W);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => { ro.disconnect(); window.removeEventListener("resize", measure); };
+  }, []);
+  return (
+    <div ref={ref} className="h-full w-full overflow-hidden">
+      <div style={{ width: W, transform: `scale(${scale})`, transformOrigin: "top left", fontFamily: "Inter, system-ui, sans-serif" }}>
+        <div className="bg-white px-6 pb-7 pt-8 text-center">
+          <h3 className="text-[#1F2933]" style={{ fontFamily: "Merriweather, Georgia, serif", fontSize: 32, fontWeight: 600 }}>Share your documents</h3>
+          <p className="mx-auto mt-2 max-w-[540px] text-[#6B7280]" style={{ fontSize: 15.5, lineHeight: 1.6 }}>
+            That way no one&apos;s searching around
+            <br />
+            when they need to step in.
+          </p>
+        </div>
+        <div className="bg-[#FAFBFC] px-8 pb-12 pt-6">
+          <div className="overflow-hidden rounded-2xl bg-gray-100" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <div className="grid grid-cols-1 gap-1.5">
+              {SHARE_HOME_ROWS.map((r) => (
+                <div key={r.title} className="flex items-center gap-4 bg-white p-7">
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center">
+                    <img src={r.icon} alt="" className="object-contain" style={{ width: r.size, height: r.size }} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 text-[#1F2933]" style={{ fontSize: 16, fontWeight: 600 }}>{r.title}</div>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="truncate text-[#9CA3AF]" style={{ fontSize: 13, lineHeight: 1.4 }}>{r.desc}</div>
+                      {r.avatars && <AvatarStack />}
+                    </div>
+                  </div>
+                  <ChevronDown className="h-5 w-5 flex-shrink-0 text-[#6B7280]" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+

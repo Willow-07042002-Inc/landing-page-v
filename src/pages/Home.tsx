@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Bell, ChevronDown, ChevronRight, Link2, Plus } from "lucide-react";
+import { SharingHomeShot } from "@/components/ClientVignettes";
 import {
   CheckInDemoVignette,
   ClientDetailJourneyVignette,
@@ -299,7 +300,7 @@ const ShareBar = ({ name, pct, note }: { name: string; pct: number; note: string
   </div>
 );
 
-const ClientEstatePlanScreen = () => (
+export const ClientEstatePlanScreen = () => (
   <div className="relative h-full w-full overflow-hidden bg-[#FAFBFC] text-left" style={{ fontFamily: "Inter, sans-serif", height: 855 }}>
     {/* Header */}
     <div className="border-b border-gray-200 bg-white shadow-sm">
@@ -348,12 +349,14 @@ const ClientEstatePlanScreen = () => (
 
 // Rotating phrases for the hero. The stem commands the attorney ("Ensure your
 // clients…"), so every phrase is an outcome they guarantee by using Willow.
-const HERO_PHRASES = [
-  "actually understand their plans.",
-  "can sign from anywhere.",
-  "never lose a document.",
-  "keep executors and guardians prepared.",
-  "keep coming back to you.",
+// A phrase too wide for the headline swaps to its `short` wording instead of
+// shrinking the type — the font size never changes.
+const HERO_PHRASES: { text: string; short?: string }[] = [
+  { text: "actually understand their plans.", short: "understand their plans." },
+  { text: "can sign from anywhere." },
+  { text: "never lose a document." },
+  { text: "keep executors and guardians prepared.", short: "prepare those around them." },
+  { text: "keep coming back to you." },
 ];
 
 const ROTATE_MS = 2800;
@@ -363,6 +366,7 @@ const HeroRotator = () => {
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLSpanElement>(null);
   const [fits, setFits] = useState<number[]>(() => HERO_PHRASES.map(() => 1));
+  const [useShort, setUseShort] = useState<boolean[]>(() => HERO_PHRASES.map(() => false));
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
@@ -383,16 +387,26 @@ const HeroRotator = () => {
     const measure = () => {
       const cw = el.getBoundingClientRect().width;
       if (cw < 200) return; // ignore degenerate layouts (hidden/collapsed viewport)
-      const inners = el.querySelectorAll<HTMLElement>("[data-phrase]");
-      const next: number[] = [];
-      inners.forEach((inner) => {
-        const prev = inner.style.transform;
-        inner.style.transform = "none";
-        const w = inner.getBoundingClientRect().width;
-        inner.style.transform = prev;
-        next.push(w > cw ? (cw / w) * 0.98 : 1);
+      // Hidden copies carry both wordings at the live font size; pick per phrase:
+      // the long text where it fits, its short variant where it doesn't, and only
+      // scale as a last resort when even the short one overflows.
+      const longs = el.querySelectorAll<HTMLElement>("[data-measure-long]");
+      const shorts = el.querySelectorAll<HTMLElement>("[data-measure-short]");
+      const nextFit: number[] = [];
+      const nextShort: boolean[] = [];
+      HERO_PHRASES.forEach((p, i) => {
+        const lw = longs[i]?.getBoundingClientRect().width ?? 0;
+        if (lw <= cw || !p.short) {
+          nextShort.push(false);
+          nextFit.push(lw > cw ? (cw / lw) * 0.98 : 1);
+        } else {
+          const sw = shorts[i]?.getBoundingClientRect().width ?? 0;
+          nextShort.push(true);
+          nextFit.push(sw > cw ? (cw / sw) * 0.98 : 1);
+        }
       });
-      setFits(next);
+      setFits(nextFit);
+      setUseShort(nextShort);
     };
     measure();
     if (document.fonts?.ready) document.fonts.ready.then(measure);
@@ -410,9 +424,9 @@ const HeroRotator = () => {
 
   return (
     <span ref={containerRef} className="block relative overflow-hidden text-[#138F8B] italic" style={{ height: "1.3em" }} aria-live="polite">
-      {HERO_PHRASES.map((phrase, i) => (
+      {HERO_PHRASES.map((p, i) => (
         <span
-          key={phrase}
+          key={p.text}
           className="absolute left-0 right-0 top-0 whitespace-nowrap"
           style={{
             transform: i === index ? "translateY(0)" : i === prevIndex ? "translateY(-110%)" : "translateY(110%)",
@@ -421,8 +435,19 @@ const HeroRotator = () => {
           }}
         >
           <span data-phrase className="inline-block" style={{ transform: `scale(${fits[i] ?? 1})`, transformOrigin: "center bottom" }}>
-            {phrase}
+            {useShort[i] && p.short ? p.short : p.text}
           </span>
+        </span>
+      ))}
+      {/* Invisible measuring copies — same inherited type, never shown */}
+      {HERO_PHRASES.map((p) => (
+        <span key={`m-${p.text}`} aria-hidden className="invisible absolute left-0 top-0 whitespace-nowrap" data-measure-long>
+          {p.text}
+        </span>
+      ))}
+      {HERO_PHRASES.map((p) => (
+        <span key={`ms-${p.text}`} aria-hidden className="invisible absolute left-0 top-0 whitespace-nowrap" data-measure-short>
+          {p.short ?? ""}
         </span>
       ))}
     </span>
@@ -697,7 +722,7 @@ const StackedCapabilities = () => {
                   <div
                     className="overflow-hidden"
                     style={{
-                      maxHeight: i === active ? "9rem" : 0,
+                      maxHeight: i === active ? "10.5rem" : 0,
                       transition: "max-height 0.55s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
                   >
@@ -714,7 +739,7 @@ const StackedCapabilities = () => {
                   </div>
                   {i === CAPABILITIES.length - 1 && (
                     <Button
-                      className="willow-btn mt-3 h-10 px-5 text-[15px] font-medium"
+                      className="willow-btn mt-6 h-10 px-5 text-[15px] font-medium"
                       onClick={() => (window.location.href = "/request-access")}
                     >
                       Let's get started
@@ -755,14 +780,6 @@ const StackedCapabilities = () => {
           <div key={cap.title}>
             <h3 className="font-heading font-bold text-xl text-[#222222] mb-2">{cap.title}</h3>
             <p className="text-[17px] text-gray-600 leading-relaxed mb-4">{cap.body}</p>
-            {i === CAPABILITIES.length - 1 && (
-              <Button
-                className="willow-btn mb-4 h-10 px-5 text-[15px] font-medium"
-                onClick={() => (window.location.href = "/request-access")}
-              >
-                Let's get started
-              </Button>
-            )}
             <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl" style={{ aspectRatio: "1 / 1" }}>
               <img src={cap.print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
               <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
@@ -1063,6 +1080,41 @@ const Home = () => {
               </Button>
             </div>
           </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* For clients — the darkened print card: white copy on the left, the
+          client sharing home surfacing out of the bottom-right corner */}
+      <section className="bg-white pb-12 md:pb-16">
+        <div className="container mx-auto max-w-7xl px-4 md:px-8">
+          <div className="relative overflow-hidden rounded-3xl">
+            <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+            <div className="relative z-10 grid md:grid-cols-[1fr_1.15fr]">
+              <div className="p-8 md:p-14 lg:p-16 md:pr-4">
+                <h2 className="font-heading text-2xl md:text-3xl lg:text-[2.25rem] font-bold text-white" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+                  Learn how we keep{" "}
+                  <br className="hidden md:block" />
+                  your clients connected.
+                </h2>
+                <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
+                  Willow becomes a lasting touchpoint between your practice and the entire family — everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate("/for-clients")}
+                  className="mt-8 inline-flex h-11 items-center rounded-md border border-white/70 bg-transparent px-6 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
+                >
+                  Explore the client experience
+                </button>
+              </div>
+              <div className="relative h-[340px] sm:h-[400px] md:h-auto md:min-h-[520px]">
+                <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[11%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
+                  <SharingHomeShot />
+                </div>
               </div>
             </div>
           </div>
