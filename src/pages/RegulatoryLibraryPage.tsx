@@ -57,12 +57,6 @@ const RegulatoryLibraryPage = () => {
             <div className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#E6F5F4] px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.1em] text-[#0C7370]">
               Coming soon
             </div>
-            <a
-              href="/request-access"
-              className="willow-btn mt-9 inline-flex h-11 items-center rounded-md px-6 text-[15px] font-medium"
-            >
-              Learn about your state
-            </a>
           </div>
         </main>
         <Footer />
