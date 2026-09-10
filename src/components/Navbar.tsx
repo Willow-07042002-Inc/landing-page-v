@@ -240,16 +240,19 @@ const Navbar = () => {
           isCreateWillPage 
             ? 'absolute left-1/2 transform -translate-x-1/2 py-6' 
             : scrolledPastHero || isAlwaysSmallPage
-              ? 'md:absolute md:left-1/2 md:transform md:-translate-x-1/2 absolute left-0 ml-[4.75rem] md:ml-0' 
+              ? 'lg:absolute lg:left-1/2 lg:transform lg:-translate-x-1/2 absolute left-0 ml-[3.75rem] lg:ml-0' 
               : 'absolute left-1/2 transform -translate-x-1/2'
         }`}>
           <Link to="/" className="flex items-center">
             {(scrolledPastHero || isAlwaysSmallPage) ? (
-              <img
-                src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
-                alt="Willow Logo"
-                className={`${isMarketingPage ? 'h-11 md:h-12' : 'h-11 md:h-20'}`}
-              />
+              <>
+                <span aria-hidden className="mr-3 h-6 w-px bg-gray-300 lg:hidden" />
+                <img
+                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
+                  alt="Willow Logo"
+                  className={`${isMarketingPage ? 'h-11 md:h-12' : 'h-11 md:h-20'}`}
+                />
+              </>
             ) : (
               <img
                 src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
