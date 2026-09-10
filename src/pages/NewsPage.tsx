@@ -1,7 +1,6 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AttorneyQuotes from "@/components/AttorneyQuotes";
 
 /* News & writing — a simple dated list that grows one entry per article.
    Each item links out to the piece (or, later, to posts of our own). */
@@ -101,8 +100,6 @@ const NewsPage = () => (
         </div>
       </section>
     </main>
-
-    <AttorneyQuotes />
 
     <Footer />
   </div>
