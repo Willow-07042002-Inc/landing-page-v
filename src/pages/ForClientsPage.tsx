@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { Button } from "@/components/ui/button";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanScreen } from "@/pages/Home";
@@ -326,8 +325,6 @@ const ForClientsPage = () => {
           </div>
         </div>
       </section>
-
-      <AttorneyQuotes />
 
       <Footer />
     </div>
