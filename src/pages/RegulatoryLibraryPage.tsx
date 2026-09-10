@@ -61,7 +61,7 @@ const RegulatoryLibraryPage = () => {
               href="/request-access"
               className="willow-btn mt-9 inline-flex h-11 items-center rounded-md px-6 text-[15px] font-medium"
             >
-              Ask about your state
+              Learn about your state
             </a>
           </div>
         </main>
