@@ -1,6 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+
+
+/* Brand icons for the Resources menu — drawn on the Lucide 24-grid so they sit
+   naturally beside the app's icon set */
+const NewsIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <path d="M4 5h13v14H6a2 2 0 0 1-2-2V5Z" />
+    <path d="M17 9h2a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2" />
+    <path d="M7.5 9h6M7.5 12.5h6M7.5 16h3.5" />
+  </svg>
+);
+
+const LibraryIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <path d="M12 3.5 4 7.5h16L12 3.5Z" />
+    <path d="M6 10.5V16M10 10.5V16M14 10.5V16M18 10.5V16" />
+    <path d="M4.5 19h15" />
+  </svg>
+);
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -11,11 +31,31 @@ const Navbar = () => {
   
   const isCreateWillPage = location.pathname === "/create-will";
   const isHomePage = location.pathname === "/";
-  const isMarketingPage = ["/", "/attorneys", "/for-clients", "/terms", "/privacy", "/contact", "/investors", "/request-access", "/book"].includes(location.pathname);
+  // Marketing chrome (tabs + compact bar) on every content page, including
+  // nested ones like /legislation-by-state/new-york
+  const isMarketingPage = ["/", "/attorneys", "/for-clients", "/news", "/terms", "/privacy", "/contact", "/investors", "/request-access", "/book"].includes(location.pathname)
+    || location.pathname.startsWith("/legislation-by-state");
   const marketingTabs = [
     { label: "For Attorneys", href: "/" },
     { label: "For Clients", href: "/for-clients" },
   ];
+  // Resources holds the content pages; rendered as a dropdown on desktop and
+  // a labelled group in the mobile menu
+  const resourceLinks = [
+    { label: "Willow in the News", desc: "Coverage and announcements", href: "/news", Icon: NewsIcon },
+    { label: "Legislation by State", desc: "E-signing law, state by state", href: "/legislation-by-state", Icon: LibraryIcon },
+  ];
+  const [resourcesOpen, setResourcesOpen] = useState(false);
+  const resourcesRef = useRef<HTMLDivElement>(null);
+  const onResourcesPage = resourceLinks.some((l) => l.href === location.pathname);
+  useEffect(() => {
+    if (!resourcesOpen) return;
+    const close = (e: MouseEvent) => {
+      if (resourcesRef.current && !resourcesRef.current.contains(e.target as Node)) setResourcesOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [resourcesOpen]);
   const isClientsPage = location.pathname === "/clients";
   const isAboutUsPage = location.pathname === "/about-us";
   const isBookPage = location.pathname === "/book";
@@ -87,7 +127,7 @@ const Navbar = () => {
                     key={tab.label}
                     to={tab.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                    className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium"
                   >
                     {tab.label}
                   </Link>
@@ -96,17 +136,33 @@ const Navbar = () => {
                     key={tab.label}
                     href="#"
                     onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); }}
-                    className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                    className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium"
                   >
                     {tab.label}
                   </a>
                 )
               )}
+              {isMarketingPage && (
+                <>
+                  <div className="px-3 py-2 font-medium text-gray-600">Resources</div>
+                  {resourceLinks.map(({ label, href, Icon }) => (
+                    <Link
+                      key={href}
+                      to={href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2.5 rounded py-1.5 pl-7 pr-3 text-[15px] text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                    >
+                      <Icon className="h-4 w-4 text-gray-400" />
+                      {label}
+                    </Link>
+                  ))}
+                </>
+              )}
               {isClientsPage && (
                 <Link 
                   to="/learn" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium"
+                  className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium"
                 >
                   Learn
                 </Link>
@@ -124,7 +180,7 @@ const Navbar = () => {
                   <Link
                     key={tab.label}
                     to={tab.href}
-                    className={`px-2 py-1 rounded font-medium text-sm whitespace-nowrap ${location.pathname === tab.href ? "text-willow" : "text-gray-600 hover:text-willow hover:bg-gray-50"}`}
+                    className={`px-2 py-1 rounded font-medium text-sm whitespace-nowrap ${location.pathname === tab.href ? "text-willow" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
                   >
                     {tab.label}
                   </Link>
@@ -133,18 +189,46 @@ const Navbar = () => {
                     key={tab.label}
                     href="#"
                     onClick={(e) => e.preventDefault()}
-                    className="px-2 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium text-sm whitespace-nowrap"
+                    className="px-2 py-1 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium text-sm whitespace-nowrap"
                   >
                     {tab.label}
                   </a>
                 )
               )}
+              <div ref={resourcesRef} className="relative" onMouseEnter={() => setResourcesOpen(true)} onMouseLeave={() => setResourcesOpen(false)}>
+                <button
+                  type="button"
+                  onClick={() => setResourcesOpen((o) => !o)}
+                  aria-expanded={resourcesOpen}
+                  className={`flex items-center gap-1 rounded px-2 py-1 text-sm font-medium whitespace-nowrap ${onResourcesPage ? "text-willow" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}
+                >
+                  Resources
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${resourcesOpen ? "rotate-180" : ""}`} />
+                </button>
+                {resourcesOpen && (
+                  <div className="absolute left-0 top-full z-50 w-60 pt-1.5">
+                    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white py-1.5" style={{ boxShadow: "0 8px 28px rgba(16,24,40,0.10)" }}>
+                      {resourceLinks.map(({ label, href, Icon }) => (
+                        <Link
+                          key={href}
+                          to={href}
+                          onClick={() => setResourcesOpen(false)}
+                          className={`flex items-center gap-2.5 px-4 py-2 text-sm font-medium ${location.pathname === href ? "text-willow" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}
+                        >
+                          <Icon className={`h-4 w-4 ${location.pathname === href ? "text-willow" : "text-gray-400"}`} />
+                          {label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           {isClientsPage && (
             <Link 
               to="/learn" 
-              className={`px-3 py-1 text-gray-600 hover:text-willow hover:bg-gray-50 rounded font-medium ${isHomePage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
+              className={`px-3 py-1 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium ${isHomePage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
             >
               Learn
             </Link>

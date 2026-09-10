@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { Button } from "@/components/ui/button";
 import { Bell, ChevronDown, ChevronRight, Link2, Plus } from "lucide-react";
 import { SharingHomeShot } from "@/components/ClientVignettes";
@@ -352,11 +353,11 @@ export const ClientEstatePlanScreen = () => (
 // A phrase too wide for the headline swaps to its `short` wording instead of
 // shrinking the type — the font size never changes.
 const HERO_PHRASES: { text: string; short?: string }[] = [
-  { text: "actually understand their plans.", short: "understand their plans." },
+  { text: "actually understand their\u00A0plans.", short: "understand their plans." },
   { text: "can sign from anywhere." },
-  { text: "never lose a document." },
+  { text: "never lose a\u00A0document." },
   { text: "keep executors and guardians prepared.", short: "prepare those around them." },
-  { text: "keep coming back to you." },
+  { text: "keep coming back to\u00A0you." },
 ];
 
 const ROTATE_MS = 2800;
@@ -387,6 +388,13 @@ const HeroRotator = () => {
     const measure = () => {
       const cw = el.getBoundingClientRect().width;
       if (cw < 200) return; // ignore degenerate layouts (hidden/collapsed viewport)
+      // Mobile lets phrases wrap onto a second line at full size, so no
+      // shrinking and no short-swapping there.
+      if (window.innerWidth < 768) {
+        setFits(HERO_PHRASES.map(() => 1));
+        setUseShort(HERO_PHRASES.map(() => false));
+        return;
+      }
       // Hidden copies carry both wordings at the live font size; pick per phrase:
       // the long text where it fits, its short variant where it doesn't, and only
       // scale as a last resort when even the short one overflows.
@@ -423,11 +431,11 @@ const HeroRotator = () => {
   }, []);
 
   return (
-    <span ref={containerRef} className="block relative overflow-hidden text-[#138F8B] italic" style={{ height: "1.3em" }} aria-live="polite">
+    <span ref={containerRef} className="relative block h-[2.6em] overflow-hidden italic text-[#138F8B] md:h-[1.3em]" aria-live="polite">
       {HERO_PHRASES.map((p, i) => (
         <span
           key={p.text}
-          className="absolute left-0 right-0 top-0 whitespace-nowrap"
+          className="absolute left-0 right-0 top-0 md:whitespace-nowrap"
           style={{
             transform: i === index ? "translateY(0)" : i === prevIndex ? "translateY(-110%)" : "translateY(110%)",
             opacity: i === index ? 1 : 0,
@@ -971,7 +979,7 @@ const Home = () => {
       <section className="w-full bg-[#FCFCFD] pt-[env(safe-area-inset-top)] max-md:flex max-md:min-h-[52svh] max-md:items-center">
         <div className="container mx-auto px-4 pt-20 md:pt-24 pb-1">
           <div className="flex flex-col items-center justify-center text-center animate-fade-in w-full">
-            <h1 className="w-full text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] mb-2 font-heading font-light text-[#222222]" style={{ lineHeight: 1.25 }}>
+            <h1 className="w-full text-[2rem] sm:text-4xl md:text-4xl lg:text-[2.75rem] mb-2 font-heading font-light text-[#222222]" style={{ lineHeight: 1.25 }}>
               Ensure your clients
               <HeroRotator />
             </h1>
@@ -994,35 +1002,16 @@ const Home = () => {
       {/* Attorney/client windowpane */}
       <SplitShowcase onBook={() => setBookOpen(true)} />
 
-      {/* Reviews — two attorney quotes, plain and quiet */}
-      <section className="bg-[#FCFCFD] py-12 md:py-16">
+      {/* As seen in — a quiet press beat right after the product */}
+      <section className="bg-[#FCFCFD] pb-6 pt-12 md:pb-2 md:pt-16 lg:-mt-[6vh]">
         <div className="container mx-auto max-w-5xl px-4 md:px-8">
-          <div className="grid gap-10 md:grid-cols-2 md:gap-12">
-            {[
-              {
-                quote:
-                  "This is something the industry has needed for a while. It's exciting to see a modern estate planning solution that respects and enhances the expertise of lawyers.",
-                name: null,
-                role: "Florida Estate Planning Attorney",
-              },
-              {
-                quote:
-                  "What appeals to me about Willow's approach is the flexibility it offers — attorneys don't have to choose between jumping into the deep end or playing catch-up later.",
-                name: null,
-                role: "New York Estate Planning Attorney",
-              },
-            ].map((r) => (
-              <figure key={r.quote} className="flex flex-col text-center">
-                <blockquote className="font-heading text-base md:text-[17px] lg:text-lg leading-relaxed text-[#222222]" style={{ textWrap: "balance" }}>
-                  "{r.quote}"
-                </blockquote>
-                <figcaption className="mt-4 pt-3">
-                  <span className="mx-auto mb-3 block w-10 border-t border-gray-300" />
-                  {r.name && <span className="block text-base font-semibold text-[#222222]">{r.name}</span>}
-                  <span className="mt-0.5 block text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400">{r.role}</span>
-                </figcaption>
-              </figure>
-            ))}
+          <div>
+            <div className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">As seen in</div>
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 md:gap-x-14">
+              <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-5 w-auto opacity-55 grayscale md:h-6" />
+              <img src="/press-business-insider.svg" alt="Business Insider" className="h-6 w-auto opacity-55 grayscale md:h-7" />
+              <img src="/press-usa-today.svg" alt="USA Today" className="h-5 w-auto opacity-55 grayscale md:h-6" />
+            </div>
           </div>
         </div>
       </section>
@@ -1120,6 +1109,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Quotes close the page on every marketing page */}
+      <AttorneyQuotes />
 
       <Footer />
 

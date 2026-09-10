@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { Button } from "@/components/ui/button";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanScreen } from "@/pages/Home";
@@ -114,7 +115,7 @@ const ChapterCarousel = () => {
         <button
           onClick={() => go(idx - 1)}
           aria-label="Previous"
-          className="absolute top-1/2 z-10 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center text-gray-500 transition-colors hover:text-[#138F8B]"
+          className="absolute top-1/2 z-10 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center text-gray-500 transition-colors hover:text-gray-800"
           style={{ left: `calc(50% - ${slideW / 2 + gap / 2}px)` }}
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
@@ -122,7 +123,7 @@ const ChapterCarousel = () => {
         <button
           onClick={() => go(idx + 1)}
           aria-label="Next"
-          className="absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 translate-x-1/2 items-center justify-center text-gray-500 transition-colors hover:text-[#138F8B]"
+          className="absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 translate-x-1/2 items-center justify-center text-gray-500 transition-colors hover:text-gray-800"
           style={{ right: `calc(50% - ${slideW / 2 + gap / 2}px)` }}
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
@@ -325,6 +326,8 @@ const ForClientsPage = () => {
           </div>
         </div>
       </section>
+
+      <AttorneyQuotes />
 
       <Footer />
     </div>

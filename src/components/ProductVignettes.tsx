@@ -258,7 +258,7 @@ export const ActiveClientsNextStepsVignette = () => (
                   <span
                     key={n}
                     className="h-[5px] flex-1 rounded-full"
-                    style={{ backgroundColor: n < r.step ? "#128F8B" : n === r.step ? "rgba(18,143,139,0.3)" : "#E5E7EB" }}
+                    style={{ backgroundColor: n < r.step ? "#309E96" : n === r.step ? "rgba(48,158,150,0.3)" : "#E5E7EB" }}
                   />
                 ))}
               </span>
@@ -266,7 +266,7 @@ export const ActiveClientsNextStepsVignette = () => (
             <span className="mt-0.5 block truncate text-[15.5px] text-[#9CA3AF]">Next step: {r.next}</span>
           </span>
           {r.cta && (
-            <span className="flex-shrink-0 rounded-full bg-[#F0F9F9] px-4 py-1.5 text-[14.5px] font-semibold text-[#128F8B]">{r.cta}</span>
+            <span className="flex-shrink-0 rounded-full bg-[#F0F5F4] px-4 py-1.5 text-[14.5px] font-semibold text-[#309E96]">{r.cta}</span>
           )}
         </div>
       ))}

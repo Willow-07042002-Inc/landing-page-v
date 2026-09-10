@@ -12,6 +12,9 @@ import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ForClientsPage from "./pages/ForClientsPage";
+import NewsPage from "./pages/NewsPage";
+import RegulatoryLibraryPage from "./pages/RegulatoryLibraryPage";
+import StateDetailPage from "./pages/StateDetailPage";
 import RequestAccess from "./pages/RequestAccess";
 import Investors from "./pages/Investors";
 
@@ -30,6 +33,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/for-clients" element={<ForClientsPage />} />
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/legislation-by-state" element={<RegulatoryLibraryPage />} />
+          <Route path="/legislation-by-state/:slug" element={<StateDetailPage />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/request-access" element={<RequestAccess />} />
