@@ -17,6 +17,7 @@ import RegulatoryLibraryPage from "./pages/RegulatoryLibraryPage";
 import StateDetailPage from "./pages/StateDetailPage";
 import RequestAccess from "./pages/RequestAccess";
 import Investors from "./pages/Investors";
+import Careers from "./pages/Careers";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/request-access" element={<RequestAccess />} />
           <Route path="/investors" element={<Investors />} />
+          <Route path="/careers" element={<Careers />} />
           {/* Retired pages — old links land somewhere sensible instead of a 404 */}
           {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/contact", "/create-will", "/availability-map", "/learn", "/about-us", "/pitol"].map((p) => (
             <Route key={p} path={p} element={<Navigate to="/" replace />} />
