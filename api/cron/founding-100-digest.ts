@@ -10,8 +10,12 @@
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import nodemailer from "nodemailer";
-import { adminClient } from "../_lib";
-import { parseFirmDetails, FIRM_FIELDS, FOUNDING_100_FORM_TYPE } from "../../src/lib/founding100";
+// .js extensions are required: package.json sets "type": "module", so Vercel
+// compiles these functions with NodeNext resolution. Without them the build
+// logs TS2835 but still deploys, and the function dies at runtime with
+// FUNCTION_INVOCATION_FAILED.
+import { adminClient } from "../_lib.js";
+import { parseFirmDetails, FIRM_FIELDS, FOUNDING_100_FORM_TYPE } from "../../src/lib/founding100.js";
 
 const TIMEZONE = "America/New_York";
 const DIGEST_TO = process.env.FOUNDING_100_DIGEST_TO ?? "aaronburlacoff@willow-inc.com";
