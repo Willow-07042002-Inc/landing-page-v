@@ -18,6 +18,13 @@ import { adminClient } from "../_lib.js";
 import { parseFirmDetails, FIRM_FIELDS, FOUNDING_100_FORM_TYPE } from "../../src/lib/founding100.js";
 
 const TIMEZONE = "America/New_York";
+const REQUIRED_ENV = [
+  "CRON_SECRET",
+  "SUPABASE_URL",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "SMTP_USER",
+  "SMTP_PASSWORD",
+] as const;
 const DIGEST_TO = process.env.FOUNDING_100_DIGEST_TO ?? "aaronburlacoff@willow-inc.com";
 
 /* Midnight in New York, as a UTC instant. Derived from the offset the zone is
@@ -100,12 +107,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // endpoint from being used to spam the inbox from the open internet.
   // Fails closed: a missing secret is a misconfiguration, never a reason to
   // let unauthenticated requests through.
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    console.error("Founding 100 digest: CRON_SECRET is not set; refusing to run.");
-    return res.status(500).json({ error: "CRON_SECRET not configured" });
+  //
+  // Every required variable is checked up front and reported by NAME (never
+  // value) so a misconfigured deploy says exactly what to add in Vercel. The
+  // names are no secret — they're in this file.
+  const missing = REQUIRED_ENV.filter((name) => !process.env[name]);
+  if (missing.length) {
+    console.error(`Founding 100 digest: missing env vars: ${missing.join(", ")}`);
+    return res.status(500).json({ error: "Not configured", missing });
   }
-  if (req.headers.authorization !== `Bearer ${secret}`) {
+  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
@@ -125,11 +136,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err) {
     console.error("Founding 100 digest query failed:", err);
     return res.status(500).json({ error: "Query failed" });
-  }
-
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
-    console.error("Founding 100 digest: SMTP is not configured; nothing sent.");
-    return res.status(500).json({ error: "SMTP not configured", found: rows.length });
   }
 
   const port = Number(process.env.SMTP_PORT ?? "465");
