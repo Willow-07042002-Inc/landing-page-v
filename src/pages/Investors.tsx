@@ -25,6 +25,7 @@ const Investors = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribeError, setSubscribeError] = useState<string | null>(null);
   const [showGate, setShowGate] = useState(false);
   const [password, setPassword] = useState("");
   const [gateError, setGateError] = useState(false);
@@ -49,17 +50,22 @@ const Investors = () => {
     e.preventDefault();
     if (!email || !email.includes("@")) return;
     setIsSubmitting(true);
-    try {
-      await supabase.from("form_submissions").insert({
-        form_type: "newsletter",
-        contact_type: "investor",
-        email,
-      });
-    } catch (err) {
-      console.error("Failed to save subscription:", err);
+    setSubscribeError(null);
+    // supabase-js reports failures on `error` rather than throwing, so this
+    // has to be checked. It previously wasn't, and the thank-you showed even
+    // though nothing was saved.
+    const { error } = await supabase.from("form_submissions").insert({
+      form_type: "newsletter",
+      contact_type: "investor",
+      email,
+    });
+    setIsSubmitting(false);
+    if (error) {
+      console.error("Failed to save subscription:", error);
+      setSubscribeError("Sorry — that didn't save. Please try again.");
+      return;
     }
     setEmail("");
-    setIsSubmitting(false);
     setSubscribed(true);
   };
 
@@ -176,6 +182,11 @@ const Investors = () => {
                   {isSubmitting ? "..." : "Subscribe"}
                 </button>
               </form>
+            )}
+            {subscribeError && (
+              <p className="mt-3" style={{ fontSize: "14px", color: "#B4342E" }} role="alert">
+                {subscribeError}
+              </p>
             )}
           </div>
         </div>
