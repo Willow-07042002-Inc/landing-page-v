@@ -1,9 +1,14 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/founding-100-digest",
+      "schedule": "0 1 * * *"
     }
   ]
 }
-

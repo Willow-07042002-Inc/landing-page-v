@@ -33,7 +33,7 @@ const Navbar = () => {
   const isHomePage = location.pathname === "/";
   // Marketing chrome (tabs + compact bar) on every content page, including
   // nested ones like /legislation-by-state/new-york
-  const isMarketingPage = ["/", "/attorneys", "/for-clients", "/news", "/terms", "/privacy", "/contact", "/investors", "/careers", "/request-access", "/book"].includes(location.pathname)
+  const isMarketingPage = ["/", "/attorneys", "/for-clients", "/news", "/terms", "/privacy", "/contact", "/investors", "/careers", "/founding-100", "/request-access", "/book"].includes(location.pathname)
     || location.pathname.startsWith("/legislation-by-state");
   const marketingTabs = [
     { label: "For Attorneys", href: "/" },
@@ -61,7 +61,7 @@ const Navbar = () => {
   const isBookPage = location.pathname === "/book";
   const isRequestAccessPage = location.pathname === "/request-access";
   const isPitolPage = location.pathname === "/pitol";
-  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/investors", "/careers", "/learn", "/book", "/request-access", "/pitol"];
+  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/contact", "/investors", "/careers", "/founding-100", "/learn", "/book", "/request-access", "/pitol"];
   const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
 
   useEffect(() => {
