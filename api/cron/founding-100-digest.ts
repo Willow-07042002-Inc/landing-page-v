@@ -98,8 +98,14 @@ export function buildHtml(rows: Row[], dayLabel: string): string {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Vercel Cron signs its calls with CRON_SECRET. Requiring it keeps the
   // endpoint from being used to spam the inbox from the open internet.
+  // Fails closed: a missing secret is a misconfiguration, never a reason to
+  // let unauthenticated requests through.
   const secret = process.env.CRON_SECRET;
-  if (secret && req.headers.authorization !== `Bearer ${secret}`) {
+  if (!secret) {
+    console.error("Founding 100 digest: CRON_SECRET is not set; refusing to run.");
+    return res.status(500).json({ error: "CRON_SECRET not configured" });
+  }
+  if (req.headers.authorization !== `Bearer ${secret}`) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
