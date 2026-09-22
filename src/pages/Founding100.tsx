@@ -129,9 +129,9 @@ const Founding100 = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
-      <main className="flex-grow pt-28 md:pt-32 pb-20 md:pb-28">
-        <div className="container mx-auto max-w-6xl px-5 md:px-8">
-          <div className="grid gap-14 lg:grid-cols-2 lg:items-start lg:gap-20">
+      <main className="flex-grow overflow-x-clip pt-28 md:pt-32 lg:pb-28">
+        <div className="container mx-auto max-w-7xl px-5 md:px-8">
+          <div className="grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:items-start lg:gap-14">
 
           {/* Form — left on desktop; first in the viewport from a QR code */}
           <section className="mx-auto w-full max-w-[520px] text-center lg:mx-0 lg:max-w-none lg:text-left">
@@ -145,7 +145,7 @@ const Founding100 = () => {
               Become a Founding Partner
             </h1>
             <p className="mx-auto mt-4 max-w-md text-[15px] text-gray-500 md:text-base lg:mx-0" style={{ lineHeight: 1.6 }}>
-              Tell us about your firm and we'll be in touch within a day.
+              We're signing our first 100 Founding Partners.
             </p>
 
             {status === "done" ? (
@@ -187,49 +187,52 @@ const Founding100 = () => {
             )}
           </section>
 
-          {/* Offer — right on desktop, below the form when stacked */}
-          <section className="mx-auto w-full max-w-[640px] border-t border-gray-200 pt-14 lg:mx-0 lg:max-w-none lg:border-t-0 lg:pt-0">
-            <div className="text-center lg:text-left">
-              <h2
-                className="font-heading text-[1.6rem] font-light text-[#222222] sm:text-[2rem]"
-                style={{ lineHeight: 1.25 }}
-              >
-                Willow Founding 100
-              </h2>
-              <p className="mx-auto mt-4 max-w-md text-[15px] text-gray-500 md:text-base lg:mx-0" style={{ lineHeight: 1.6 }}>
-                We're signing our first 100 Founding Partners.
-              </p>
-            </div>
+          {/* Offer — the founder-note treatment from the homepage: the Golden
+              Gate print with a white card floating over it.
+              Desktop: a rounded photo frame in the right column.
+              Stacked (phones/tablets): the print breaks out of the page
+              container and runs edge to edge down to the footer — no white
+              gutters around the photo — with the card centred on top. */}
+          <section className="relative mx-[calc(50%-50vw)] w-screen overflow-hidden lg:mx-0 lg:w-auto lg:rounded-3xl">
+            <img
+              src="/golden-gate.jpg"
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: "center 45%" }}
+            />
+            <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.15)" }} />
 
-            <ul className="mt-10 lg:mt-8">
-              {BENEFITS.map(({ title, body }) => (
-                <li key={title} className="flex gap-4 border-t border-gray-200 py-6 first:border-t-0 first:pt-0 md:gap-5">
-                  <span className="-mt-0.5 h-7 w-7 flex-shrink-0 md:h-8 md:w-8"><CheckMark /></span>
-                  <div>
-                    <h3 className="font-heading text-[17px] font-semibold text-[#222222] md:text-lg">{title}</h3>
-                    <p className="mt-1.5 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>{body}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            {/* Scroll-back CTA only matters when the form is off-screen above;
-                on desktop it sits in the next column, so this is hidden. */}
-            <div className="mt-12 border-t border-gray-200 pt-10 text-center lg:hidden">
-              <p className="text-[15px] text-gray-600 md:text-base">
-                Spots are limited to the first 100 firms.
-              </p>
-              <Button
-                size="lg"
-                className="willow-btn mt-5 h-12 px-8 text-[15px] font-medium"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            <div className="relative z-10 px-4 py-12 sm:px-8 sm:py-16 lg:p-8 xl:p-10">
+              <div
+                className="mx-auto w-full max-w-[560px] rounded-2xl bg-white p-6 sm:p-9 lg:max-w-none lg:px-10 lg:py-9"
+                style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
               >
-                Claim my spot
-              </Button>
+                <ul>
+                  {BENEFITS.map(({ title, body }) => (
+                    <li key={title} className="flex gap-4 border-t border-gray-200 py-6 first:border-t-0 first:pt-0 last:pb-0 md:gap-5 lg:py-5">
+                      <span className="-mt-0.5 h-7 w-7 flex-shrink-0 md:h-8 md:w-8"><CheckMark /></span>
+                      <div>
+                        <h3 className="font-heading text-[17px] font-semibold text-[#222222] md:text-lg">{title}</h3>
+                        <p className="mt-1.5 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>{body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Scroll-back CTA only matters when the form is off-screen
+                    above; on desktop the form sits in the next column. */}
+                <div className="mt-8 border-t border-gray-200 pt-8 text-center lg:hidden">
+                  <Button
+                    size="lg"
+                    className="willow-btn h-12 w-full text-[15px] font-medium sm:w-auto sm:px-8"
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  >
+                    Claim my spot
+                  </Button>
+                </div>
+              </div>
             </div>
-            <p className="mt-10 hidden border-t border-gray-200 pt-8 text-[15px] text-gray-600 lg:block">
-              Spots are limited to the first 100 firms.
-            </p>
           </section>
 
           </div>
