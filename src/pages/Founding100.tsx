@@ -23,22 +23,29 @@ import { FOUNDING_100_FORM_TYPE, formatFirmDetails } from "@/lib/founding100";
    /api/founding-100, which writes them server-side with the service role —
    so no database credentials ship in this bundle. */
 
-const BENEFITS: { title: string; body: string }[] = [
+/* `gain` is what the Founding Partner actually receives. It's set in Willow
+   teal at the start of each heading, which is what makes the list scan
+   without a check mark or bullet. */
+const BENEFITS: { gain: string; rest: string; body: string }[] = [
   {
-    title: "20% off for the first year",
+    gain: "20% off",
+    rest: "for the first year",
     body: "Founding Partner pricing, locked in for your first twelve months on Willow.",
   },
   {
-    title: "White-glove onboarding",
+    gain: "White-glove",
+    rest: "onboarding",
     body: "We set your firm up ourselves — templates, workflows, and your existing clients migrated with you.",
   },
   {
-    title: "Direct input on what we build next",
-    body: "Founding Partners get priority on feature requests. You tell us what your practice needs, and it goes to the front of the queue. No bureaucracy.",
+    gain: "Direct input",
+    rest: "on what we build next",
+    body: "Your feature requests go to the front of the queue. No bureaucracy.",
   },
   {
-    title: "Refer another attorney, get a free month",
-    body: "Every attorney you refer who onboards earns you a free month. Uncapped — there's no ceiling on how many you can earn.",
+    gain: "A free month",
+    rest: "for every attorney you refer",
+    body: "Each referral who onboards earns you a month free. Uncapped.",
   },
 ];
 
@@ -120,20 +127,17 @@ const Founding100 = () => {
       <Navbar />
       <main className="flex-grow overflow-x-clip pt-28 md:pt-32 lg:pb-28">
         <div className="container mx-auto max-w-7xl px-5 md:px-8">
-          <div className="grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:items-start lg:gap-14">
+          <div className="grid gap-14 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
 
           {/* Form — left on desktop; first in the viewport from a QR code */}
           <section className="mx-auto w-full max-w-[520px] text-center lg:mx-0 lg:max-w-none lg:text-left">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">
-              Founding Partner
-            </div>
             <h1
-              className="mt-3 font-heading text-[1.75rem] font-light text-[#222222] sm:text-4xl"
-              style={{ lineHeight: 1.25 }}
+              className="font-heading text-[2rem] font-light text-[#222222] sm:text-[2.5rem] lg:text-[2.25rem]"
+              style={{ lineHeight: 1.15, letterSpacing: "-0.01em", textWrap: "balance" }}
             >
               Become a Founding Partner
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-[15px] text-gray-500 md:text-base lg:mx-0" style={{ lineHeight: 1.6 }}>
+            <p className="mx-auto mt-3 max-w-md text-[16px] text-gray-500 md:text-[17px] lg:mx-0" style={{ lineHeight: 1.6, textWrap: "balance" }}>
               We're signing our first 100 Founding Partners.
             </p>
 
@@ -190,14 +194,16 @@ const Founding100 = () => {
 
             <div className="relative z-10 px-4 py-12 sm:px-8 sm:py-16 lg:p-8 xl:p-10">
               <div
-                className="mx-auto w-full max-w-[560px] rounded-2xl bg-white p-6 sm:p-9 lg:max-w-none lg:px-10 lg:py-9"
+                className="mx-auto w-full max-w-[560px] rounded-2xl bg-white px-6 py-7 sm:p-9 lg:max-w-none lg:px-10 lg:py-10"
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
               >
                 <ul>
-                  {BENEFITS.map(({ title, body }) => (
-                    <li key={title} className="border-t border-gray-200 py-6 first:border-t-0 first:pt-0 last:pb-0 lg:py-5">
-                      <h3 className="font-heading text-[17px] font-semibold text-[#222222] md:text-lg">{title}</h3>
-                      <p className="mt-1.5 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>{body}</p>
+                  {BENEFITS.map(({ gain, rest, body }) => (
+                    <li key={gain} className="border-t border-gray-100 py-5 first:border-t-0 first:pt-0 last:pb-0">
+                      <h3 className="font-heading text-[19px] font-normal text-[#222222] md:text-[21px]" style={{ lineHeight: 1.3 }}>
+                        <span className="font-bold text-[#128F8B]">{gain}</span> {rest}
+                      </h3>
+                      <p className="mt-1.5 text-[14.5px] text-gray-500 md:text-[15px]" style={{ lineHeight: 1.6 }}>{body}</p>
                     </li>
                   ))}
                 </ul>
