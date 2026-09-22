@@ -42,17 +42,6 @@ const BENEFITS: { title: string; body: string }[] = [
   },
 ];
 
-/* The product's own "done" check (see the journey steps in ProductVignettes):
-   a solid Willow Teal disc with a bold white check, set in a Teal Pale halo so
-   it reads as a finished mark rather than a faint bullet. Scales to its box. */
-const CheckMark = () => (
-  <svg viewBox="0 0 28 28" fill="none" aria-hidden className="h-full w-full">
-    <circle cx="14" cy="14" r="14" fill="#E6F5F4" />
-    <circle cx="14" cy="14" r="10" fill="#128F8B" />
-    <path d="M9.6 14.3l3 2.9 5.8-6.2" stroke="#FFFFFF" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 /* Line-based field. 16px text is deliberate: iOS Safari zooms the page when a
    focused input is smaller, which is jarring on a QR-code landing. */
 const Field = ({
@@ -136,7 +125,7 @@ const Founding100 = () => {
           {/* Form — left on desktop; first in the viewport from a QR code */}
           <section className="mx-auto w-full max-w-[520px] text-center lg:mx-0 lg:max-w-none lg:text-left">
             <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">
-              Founding 100
+              Founding Partner
             </div>
             <h1
               className="mt-3 font-heading text-[1.75rem] font-light text-[#222222] sm:text-4xl"
@@ -150,8 +139,7 @@ const Founding100 = () => {
 
             {status === "done" ? (
               <div className="mt-10 border-t border-gray-200 pt-10">
-                <div className="mx-auto h-14 w-14 lg:mx-0"><CheckMark /></div>
-                <h2 className="mt-5 font-heading text-2xl font-light text-[#222222]">You're on the list.</h2>
+                <h2 className="font-heading text-2xl font-light text-[#222222]">You're on the list.</h2>
                 <p className="mx-auto mt-3 max-w-sm text-[15px] text-gray-500 lg:mx-0" style={{ lineHeight: 1.6 }}>
                   Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""} — we've got your details and
                   we'll reach out to {form.email} within a day to get {form.firmName || "your firm"} set up.
@@ -180,9 +168,6 @@ const Founding100 = () => {
                 >
                   {status === "sending" ? "Sending…" : "Claim my spot"}
                 </Button>
-                <p className="text-center text-[13px] text-gray-400">
-                  No payment details needed — we'll follow up personally.
-                </p>
               </form>
             )}
           </section>
@@ -210,12 +195,9 @@ const Founding100 = () => {
               >
                 <ul>
                   {BENEFITS.map(({ title, body }) => (
-                    <li key={title} className="flex gap-4 border-t border-gray-200 py-6 first:border-t-0 first:pt-0 last:pb-0 md:gap-5 lg:py-5">
-                      <span className="-mt-0.5 h-7 w-7 flex-shrink-0 md:h-8 md:w-8"><CheckMark /></span>
-                      <div>
-                        <h3 className="font-heading text-[17px] font-semibold text-[#222222] md:text-lg">{title}</h3>
-                        <p className="mt-1.5 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>{body}</p>
-                      </div>
+                    <li key={title} className="border-t border-gray-200 py-6 first:border-t-0 first:pt-0 last:pb-0 lg:py-5">
+                      <h3 className="font-heading text-[17px] font-semibold text-[#222222] md:text-lg">{title}</h3>
+                      <p className="mt-1.5 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>{body}</p>
                     </li>
                   ))}
                 </ul>
