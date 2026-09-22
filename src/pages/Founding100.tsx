@@ -42,10 +42,14 @@ const BENEFITS: { title: string; body: string }[] = [
   },
 ];
 
+/* The product's own "done" check (see the journey steps in ProductVignettes):
+   a solid Willow Teal disc with a bold white check, set in a Teal Pale halo so
+   it reads as a finished mark rather than a faint bullet. Scales to its box. */
 const CheckMark = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-full w-full">
-    <circle cx="12" cy="12" r="11" fill="#E6F5F4" />
-    <path d="M7.5 12.4l3 3 6-6.4" stroke="#0C7370" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  <svg viewBox="0 0 28 28" fill="none" aria-hidden className="h-full w-full">
+    <circle cx="14" cy="14" r="14" fill="#E6F5F4" />
+    <circle cx="14" cy="14" r="10" fill="#128F8B" />
+    <path d="M9.6 14.3l3 2.9 5.8-6.2" stroke="#FFFFFF" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -146,7 +150,7 @@ const Founding100 = () => {
 
             {status === "done" ? (
               <div className="mt-10 border-t border-gray-200 pt-10">
-                <div className="mx-auto h-11 w-11 lg:mx-0"><CheckMark /></div>
+                <div className="mx-auto h-14 w-14 lg:mx-0"><CheckMark /></div>
                 <h2 className="mt-5 font-heading text-2xl font-light text-[#222222]">You're on the list.</h2>
                 <p className="mx-auto mt-3 max-w-sm text-[15px] text-gray-500 lg:mx-0" style={{ lineHeight: 1.6 }}>
                   Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""} — we've got your details and
@@ -200,7 +204,7 @@ const Founding100 = () => {
             <ul className="mt-10 lg:mt-8">
               {BENEFITS.map(({ title, body }) => (
                 <li key={title} className="flex gap-4 border-t border-gray-200 py-6 first:border-t-0 first:pt-0 md:gap-5">
-                  <span className="mt-0.5 h-6 w-6 flex-shrink-0 md:h-[26px] md:w-[26px]"><CheckMark /></span>
+                  <span className="-mt-0.5 h-7 w-7 flex-shrink-0 md:h-8 md:w-8"><CheckMark /></span>
                   <div>
                     <h3 className="font-heading text-[17px] font-semibold text-[#222222] md:text-lg">{title}</h3>
                     <p className="mt-1.5 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>{body}</p>
