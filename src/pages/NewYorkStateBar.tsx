@@ -34,6 +34,12 @@ const NysbaMark = () => {
       alt="New York State Bar Association"
       onError={() => setFailed(true)}
       className="h-16 w-auto sm:h-24"
+      /* The supplied file is navy on an opaque white rectangle, which reads as
+         a visible box against this page's off-white. Multiply drops the white
+         into the background and leaves the navy untouched — the page behind it
+         is always light, so there's nothing for the blend to go wrong against.
+         Swap this for a transparent PNG if the sponsor kit has one. */
+      style={{ mixBlendMode: "multiply" }}
     />
   );
 };
@@ -49,7 +55,12 @@ const NewYorkStateBar = () => (
         <NysbaMark />
       </span>
     }
-    subheading="We're sponsoring this week's conference — here's what comes with it."
+    /* The line is too long to sit on one row beside the form, so the only
+       question is where it breaks. Non-breaking spaces hold "this week's
+       conference —" together, which leaves the dash at the end of the first
+       row and the payoff alone on the second. Left to itself it split after
+       "week's" and opened the second row with a dangling dash. */
+    subheading={"We're sponsoring this week's conference — here's what comes with it."}
     formType={NYSBA_FORM_TYPE}
     image="/nyc-skyline.jpg"
     demoPath="/request-access"

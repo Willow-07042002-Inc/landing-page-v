@@ -177,7 +177,10 @@ const PartnerSignupPage = ({
             >
               {heading}
             </h1>
-            <p className="mx-auto mt-3 max-w-md text-[16px] text-gray-500 md:text-[17px] lg:mx-0" style={{ lineHeight: 1.6, textWrap: "balance" }}>
+            {/* The cap keeps the line short while the column is the full page
+                width; past lg the column is already narrow, so capping it
+                again only forces an early break mid-sentence. */}
+            <p className="mx-auto mt-4 max-w-md text-[16px] text-gray-500 md:text-[17px] lg:mx-0 lg:max-w-none" style={{ lineHeight: 1.6, textWrap: "balance" }}>
               {subheading}
             </p>
 
