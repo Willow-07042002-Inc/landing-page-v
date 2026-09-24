@@ -98,11 +98,20 @@ export type PartnerSignupPageProps = {
      evergreen page is unchanged; a conference page should pass something from
      the city it's being read in. */
   image?: string;
+  /* Where to send the attorney once the lead is saved, when claiming the
+     offer takes a demo. Setting it also puts a line under the button saying
+     so, because a form that submits and then moves you somewhere unannounced
+     reads as a misfire.
+
+     The lead is written before the redirect either way, so someone who books
+     no demo is still captured and still reaches the digest. Leave it unset
+     and the page shows its own confirmation instead. */
+  demoPath?: string;
 };
 
 const PartnerSignupPage = ({
   metaTitle, metaDescription, heading, subheading, formType,
-  image = "/golden-gate.jpg",
+  image = "/golden-gate.jpg", demoPath,
 }: PartnerSignupPageProps) => {
   usePageMeta(metaTitle, metaDescription);
 
@@ -137,6 +146,17 @@ const PartnerSignupPage = ({
       console.error("Founding Partner sign-up failed:", insertError);
       setError("Something went wrong. Please try again.");
       setStatus("idle");
+      return;
+    }
+    // Only once the row is safely written. Redirecting first would lose the
+    // lead on any failure, and the attorney would never know.
+    //
+    // A full page load, not the router: Cal.com's embed initialises once on
+    // script load, so arriving at /request-access through a client-side
+    // navigation renders the page with an empty space where the calendar
+    // should be. Booking is the whole point of sending them there.
+    if (demoPath) {
+      window.location.assign(demoPath);
       return;
     }
     setStatus("done");
@@ -192,6 +212,12 @@ const PartnerSignupPage = ({
                 >
                   {status === "sending" ? "Sending…" : "Claim my spot"}
                 </Button>
+
+                {demoPath && (
+                  <p className="text-center text-[13px] text-gray-400 lg:text-left" style={{ lineHeight: 1.5 }}>
+                    You'll book a 15-minute demo next — that's how the offer is claimed.
+                  </p>
+                )}
               </form>
             )}
           </section>
