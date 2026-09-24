@@ -82,6 +82,52 @@ const Field = ({
   </label>
 );
 
+/* Volume is a sizing signal, not a figure anyone needs to the unit, and an
+   attorney at a booth shouldn't have to total up last year to answer. Bands
+   are quicker to answer and honest about the precision we actually get.
+   Non-overlapping on purpose: "10–25" next to "1–10" makes 10 ambiguous. */
+const PLANS_PER_YEAR = ["1–10", "11–25", "26–50", "51–100", "100+"];
+
+/* The line-based Field's sibling, kept visually identical: same underline,
+   same 16px text, same teal focus. `appearance-none` drops the platform
+   control, so the chevron below replaces it. */
+const SelectField = ({
+  label, value, onChange, options, placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  placeholder: string;
+}) => (
+  <label className="block">
+    <span className="mb-1.5 block text-[13px] font-medium text-gray-500">{label}</span>
+    <span className="relative block">
+      <select
+        value={value}
+        required
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full appearance-none rounded-none bg-transparent pb-2 pr-6 text-[16px] focus:outline-none ${value ? "text-[#222222]" : "text-gray-300"}`}
+        style={{ borderBottom: "1px solid #D4DAE0", transition: "border-color 0.15s" }}
+        onFocus={(e) => (e.currentTarget.style.borderBottomColor = "#128F8B")}
+        onBlur={(e) => (e.currentTarget.style.borderBottomColor = "#D4DAE0")}
+      >
+        <option value="" disabled>{placeholder}</option>
+        {options.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+      </select>
+      <svg
+        viewBox="0 0 12 8" width="11" height="8" aria-hidden
+        className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400"
+        fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+      >
+        <path d="M1 1.5 6 6.5 11 1.5" />
+      </svg>
+    </span>
+  </label>
+);
+
 export type PartnerSignupPageProps = {
   /* Browser tab title and meta description — each surface wants its own, so a
      conference page can be shared without reading as the evergreen offer. */
@@ -199,7 +245,7 @@ const PartnerSignupPage = ({
                 <Field label="Firm name" value={form.firmName} onChange={set("firmName")} autoComplete="organization" placeholder="Whitfield Law" />
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <Field label="Attorneys at the firm" inputMode="numeric" value={form.attorneyCount} onChange={set("attorneyCount")} placeholder="4" />
-                  <Field label="Estate plans per year" inputMode="numeric" value={form.plansPerYear} onChange={set("plansPerYear")} placeholder="120" />
+                  <SelectField label="Estate plans per year" value={form.plansPerYear} onChange={set("plansPerYear")} options={PLANS_PER_YEAR} placeholder="Select a range" />
                 </div>
 
                 {error && (
