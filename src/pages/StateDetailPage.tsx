@@ -3,7 +3,7 @@ import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { STATES, LEGISLATION_COMING_SOON } from "@/lib/usStates";
+import { STATES, LEGISLATION_COMING_SOON, legislationStatus } from "@/lib/usStates";
 import NotFound from "@/pages/NotFound";
 
 /* Per-state legislation page. Layout: breadcrumb + serif title + dek + CTA on
@@ -22,7 +22,7 @@ import NotFound from "@/pages/NotFound";
    brief says so rather than rounding to a clean answer. */
 
 type Section = { id: string; title: string; body: React.ReactNode };
-type Brief = { updated: string; status: string; sections: Section[] };
+type Brief = { updated: string; sections: Section[] };
 
 /* New York — Chapter 637 of 2025 (S7416A), adding EPTL 3-6.1 et seq.
    The effective date is computed, not quoted: the act takes effect "on the
@@ -230,17 +230,14 @@ const IL_SECTIONS: Section[] = [
 const BRIEFS: Record<string, Brief> = {
   "new-york": {
     updated: "September 24, 2026",
-    status: "Signed December 12, 2025 · in force June 10, 2027",
     sections: NY_SECTIONS,
   },
   florida: {
     updated: "September 24, 2026",
-    status: "In force since January 1, 2020",
     sections: FL_SECTIONS,
   },
   illinois: {
     updated: "September 24, 2026",
-    status: "In force since July 26, 2021",
     sections: IL_SECTIONS,
   },
 };
@@ -250,10 +247,13 @@ const StateDetailPage = () => {
   const navigate = useNavigate();
   const state = STATES.find((s) => s.slug === slug);
   if (LEGISLATION_COMING_SOON) return <Navigate to="/legislation-by-state" replace />;
-  if (!state) return <NotFound />;
+  /* A state we haven't written up has no page at all. The library links only
+     the three we cover, so anything else here is a guessed or stale URL, and
+     a 404 is a truer answer than a page apologising for being empty. */
+  if (!state || !BRIEFS[state.slug]) return <NotFound />;
 
-  const brief = BRIEFS[state.slug] ?? null;
-  const sections = brief?.sections ?? null;
+  const brief = BRIEFS[state.slug];
+  const sections = brief.sections;
 
   return (
     <div className="min-h-screen flex flex-col bg-white" style={{ color: "#222222" }}>
@@ -297,8 +297,7 @@ const StateDetailPage = () => {
         {/* Brief body — section nav beside the content */}
         <section className="bg-white py-12 md:py-16">
           <div className="container mx-auto max-w-6xl px-4 md:px-8">
-            {sections ? (
-              <div className="grid gap-10 md:grid-cols-[15rem_1fr] md:gap-14">
+            <div className="grid gap-10 md:grid-cols-[15rem_1fr] md:gap-14">
                 <aside className="hidden md:block">
                   <nav className="sticky top-28 flex flex-col gap-4">
                     {sections.map((sec, i) => (
@@ -314,7 +313,7 @@ const StateDetailPage = () => {
                 </aside>
                 <article>
                   <div className="text-[13.5px] text-gray-400">
-                    {brief?.status} · verified {brief?.updated}
+                    {legislationStatus(state.slug)?.status} · verified {brief.updated}
                   </div>
                   {sections.map((sec) => (
                     <div key={sec.id} id={sec.id} className="mt-8 scroll-mt-28 first-of-type:mt-6">
@@ -327,18 +326,7 @@ const StateDetailPage = () => {
                     </div>
                   ))}
                 </article>
-              </div>
-            ) : (
-              <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center md:p-12">
-                <h2 className="font-heading text-xl font-bold text-[#222222]" style={{ lineHeight: 1.35 }}>
-                  The full {state.name} brief is being prepared.
-                </h2>
-                <p className="mx-auto mt-3 max-w-md text-[15px] text-gray-600" style={{ lineHeight: 1.6 }}>
-                  A plain-language summary of {state.name}&apos;s rules on electronic wills and electronic execution is on
-                  its way.
-                </p>
-              </div>
-            )}
+            </div>
           </div>
         </section>
       </main>
