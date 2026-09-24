@@ -34,7 +34,7 @@ const ROLES: Role[] = [
   {
     id: "founding-attorney",
     title: "Founding Attorney",
-    chips: ["Full-time", "New York metro", "Starts summer 2026"],
+    chips: ["Full-time", "New York metro"],
     about: [
       "This is a founding role. You'd be the first practicing attorney on the team — building Willow alongside the founder and engineering, co-leading every sales call and design partner conversation with the founder, and being the lawyer in the room every step of the way.",
       "We've had a 30+ year T&E advisor as our north star from day one. Now we need someone in the day-to-day — mapping state legislation into the product, partnering with the founder on go-to-market and design partner success, and acting as a thought partner on every legal-adjacent decision.",
@@ -61,7 +61,7 @@ const ROLES: Role[] = [
   {
     id: "head-of-sales",
     title: "Head of Sales",
-    chips: ["Full-time", "New York metro", "Starts summer 2026"],
+    chips: ["Full-time", "New York metro"],
     about: [
       "This is a founding role. You'd be the first salesperson on the team — carrying the number alongside the founder, running the calls yourself, and turning what works on those calls into a motion the next hire can pick up and run.",
       "The founder has sold every account to date. The motion works; it has never been written down. Now we need someone to own it end to end — sourcing, pipeline, close, and the handoff into onboarding — and to build the thing that outlasts any one rep.",
@@ -91,7 +91,7 @@ const ROLES: Role[] = [
   {
     id: "lead-designer",
     title: "Lead Designer",
-    chips: ["Full-time", "New York metro", "Starts summer 2026"],
+    chips: ["Full-time", "New York metro"],
     about: [
       "This is a founding role. You'd own how Willow looks and how it's built on the front end — designing the product and then shipping it yourself, alongside the founder and engineering.",
       "We're not looking for someone to hand off mockups. The people who move fastest here design in the browser, hold the whole surface in their head, and go as deep into the stack as the problem requires. You'd set the bar for craft across two very different audiences: attorneys who live in the product all day, and families who open it a handful of times in their lives, often on the worst day of them.",
@@ -160,16 +160,17 @@ const Careers = () => {
       <Navbar />
       <main className="flex-grow pt-32 md:pt-36 pb-24">
         <div className="container mx-auto px-4">
-          {/* Hero — the headline breaks between its two sentences rather than
-              wherever the measure runs out, so the turn lands on "We're
-              rebuilding it." The first sentence needs 898px at this size, so
-              the measure is 5xl; forced only from sm up, since narrower than
-              that it has to wrap on its own anyway. */}
-          <div className="mx-auto max-w-5xl text-center">
+          {/* Hero — the break is placed for line length, not grammar. At the
+              sentence boundary the rows ran 898px over 280px; turning after
+              "paper" makes them 637px and 624px, and keeps "on paper"
+              intact. Moving "paper" down as well would give 517px over
+              744px and split the phrase. Forced from sm up; narrower than
+              that it wraps on its own. */}
+          <div className="mx-auto max-w-3xl text-center">
             <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Careers</div>
             <h1 className="font-heading text-3xl font-light text-[#222222] sm:text-4xl lg:text-[2.5rem]" style={{ lineHeight: 1.25 }}>
-              Estate planning has run on paper for a century.
-              <br className="hidden sm:block" /> We're rebuilding it.
+              Estate planning has run on paper
+              <br className="hidden sm:block" /> for a century. We're rebuilding it.
             </h1>
           </div>
 
@@ -195,7 +196,6 @@ const Careers = () => {
                   {r.chips.map((c) => (
                     <Chip key={c}>{c}</Chip>
                   ))}
-                  <span className="ml-1 hidden text-gray-400 transition-transform group-hover:translate-x-0.5 sm:block">&rarr;</span>
                 </span>
               </a>
             ))}
