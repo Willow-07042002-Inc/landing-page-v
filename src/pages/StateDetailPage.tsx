@@ -25,11 +25,13 @@ type Section = { id: string; title: string; body: React.ReactNode };
 type Brief = { updated: string; sections: Section[] };
 
 /* New York — Chapter 637 of 2025 (S7416A), adding EPTL 3-6.1 et seq.
-   The effective date is computed, not quoted: the act takes effect "on the
-   five hundred forty-fifth day after it shall have become a law", and it
-   became law on December 12, 2025, which lands on June 10, 2027. Several
-   published summaries say December 12, 2027 — that is two years from signing,
-   not 545 days, and it is wrong. */
+
+   Effective date: December 12, 2027. Read the enacting bill alone and you get
+   June 10, 2027 — it takes effect "on the five hundred forty-fifth day after
+   it shall have become a law", and 545 days from December 12, 2025 is June 10,
+   2027. That was the date this file carried, and it is wrong: a 2026 chapter
+   amendment moved it to December 12, 2027. The original bill text is not the
+   operative law. Check the amended statute, not S7416A, before touching this. */
 const NY_SECTIONS: Section[] = [
   {
     id: "whats-legal",
@@ -74,12 +76,13 @@ const NY_SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          <strong>June 10, 2027.</strong> The act takes effect "on the five hundred forty-fifth day after it shall have
-          become a law," and it became law on December 12, 2025.
+          <strong>December 12, 2027.</strong> The enacting bill set the 545th day after it became law, which was
+          June 10, 2027; a 2026 chapter amendment moved it to December 12, 2027. Summaries written before that
+          amendment still carry the earlier date.
         </p>
         <p className="mt-4">
           Until that date nothing changes: a New York will still has to be executed on paper under EPTL 3-2.1. An
-          electronic will signed before June 10, 2027 is not a valid will.
+          electronic will signed before December 12, 2027 is not a valid will.
         </p>
       </>
     ),

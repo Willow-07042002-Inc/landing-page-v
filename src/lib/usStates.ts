@@ -21,7 +21,7 @@ export const LEGISLATION_COMING_SOON = false;
    its own wording: the act is signed but does not take effect until 2027, and
    "signed into law" on its own reads as though it were usable now. */
 export const LEGISLATION_COVERAGE = [
-  { slug: "new-york", status: "Signed December 12, 2025 \u00b7 in force June 10, 2027", card: "Signed into law \u2014 electronic wills are valid from June 10, 2027." },
+  { slug: "new-york", status: "Signed December 12, 2025 \u00b7 in force December 12, 2027", card: "Signed into law \u2014 electronic wills are valid from December 12, 2027." },
   { slug: "florida", status: "In force since January 1, 2020", card: "In force \u2014 electronic wills have been valid since January 1, 2020." },
   { slug: "illinois", status: "In force since July 26, 2021", card: "In force \u2014 electronic wills have been valid since July 26, 2021." },
 ] as const;
