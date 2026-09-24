@@ -1,9 +1,19 @@
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Cal, { getCalApi } from "@calcom/embed-react";
 
+/* The Founding Partner sign-up pages send attorneys here to claim the offer
+   and mark the hand-off with ?claim=1. For them the booking isn't optional —
+   it's the step that claims it — so the eyebrow says so. Everyone else
+   arrives from the nav wanting an ordinary demo, and sees the plain label. */
+const CLAIM_PARAM = "claim";
+
 const RequestAccess = () => {
+  const [searchParams] = useSearchParams();
+  const isClaiming = searchParams.get(CLAIM_PARAM) === "1";
+
   useEffect(() => {
     (async function () {
       const cal = await getCalApi();
@@ -88,7 +98,9 @@ const RequestAccess = () => {
         <section className="bg-[#FCFCFD] pt-28 md:pt-32 pb-[100px] md:pb-12 hero-section">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl w-full">
             <div className="text-center mb-8 md:mb-10">
-              <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Book a demo</div>
+              <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">
+                {isClaiming ? "Book a demo to claim your offer" : "Book a demo"}
+              </div>
               <h1 className="mx-auto max-w-3xl font-heading text-2xl font-light text-[#222222] sm:text-3xl md:text-4xl" style={{ lineHeight: 1.25 }}>
                 Explore how Willow can best support your <br className="hidden md:inline" />firm and simplify life for your clients.
               </h1>

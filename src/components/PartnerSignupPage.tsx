@@ -208,7 +208,9 @@ const PartnerSignupPage = ({
     // navigation renders the page with an empty space where the calendar
     // should be. Booking is the whole point of sending them there.
     if (demoPath) {
-      window.location.assign(demoPath);
+      // ?claim=1 tells the booking page this attorney came to claim the
+      // offer rather than to look around, so it can label itself that way.
+      window.location.assign(`${demoPath}?claim=1`);
       return;
     }
     setStatus("done");
