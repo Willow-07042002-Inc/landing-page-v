@@ -276,9 +276,10 @@ export const DocumentsVaultVignette = () => (
         { name: "Medical Proxy", meta: "Signed August 18, 2026" },
       ].map((d) => (
         <div key={d.name} className="flex items-center gap-3 border-b border-[#F0F1F3] py-2.5 last:border-0">
-          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5]" style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.05)" }}>
-            <SolidDocIcon color="#059669" size={15} />
-          </span>
+          {/* Bare glyph rather than a disc: the rows already read as a list,
+              so the circle was only capping how big the icon inside it could
+              be. Willow teal, not the emerald these were drawn in. */}
+          <SolidDocIcon color="#128F8B" size={26} />
           <div className="min-w-0 flex-1">
             <div className="text-[13.5px] font-medium text-[#1F2933]">{d.name}</div>
             <div className="text-[11.5px] text-[#9CA3AF]">{d.meta}</div>
@@ -288,9 +289,9 @@ export const DocumentsVaultVignette = () => (
       ))}
       <Lbl className="mb-0.5 mt-3.5">Past Documents</Lbl>
       <div className="flex items-center gap-3 py-2.5 opacity-60">
-        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F4F6]">
-          <SolidDocIcon color="#9CA3AF" size={15} />
-        </span>
+        {/* Superseded, so it stays grey — the row's opacity alone doesn't
+            distinguish it, and a teal glyph here would read as current. */}
+        <SolidDocIcon color="#9CA3AF" size={26} />
         <div className="min-w-0 flex-1">
           <div className="text-[13.5px] font-medium text-[#1F2933]">Last Will and Testament</div>
           <div className="text-[11.5px] text-[#9CA3AF]">Valid March 12, 2019 – August 18, 2026</div>
