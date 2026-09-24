@@ -8,12 +8,28 @@ import NotFound from "@/pages/NotFound";
 
 /* Per-state legislation page. Layout: breadcrumb + serif title + dek + CTA on
    the left, the state photo on the right, then a section-nav sidebar beside
-   the brief. New York carries FILLER content as the template; every other
-   state renders the same frame with a "brief in progress" body until the
-   state-by-state report lands. */
+   the brief.
+
+   BRIEFS holds the states we have actually written up — New York, Florida and
+   Illinois. Every other state renders the same frame with a "brief in
+   progress" body until its brief is written.
+
+   Everything in these briefs is drawn from the statute or the enacting bill,
+   cited inline so an attorney can check it, and each brief carries the date it
+   was verified. This is a page lawyers will read about their own practice: a
+   sentence nobody has checked against the text does more harm here than an
+   empty section. Where the law is unsettled or we have not confirmed it, the
+   brief says so rather than rounding to a clean answer. */
 
 type Section = { id: string; title: string; body: React.ReactNode };
+type Brief = { updated: string; status: string; sections: Section[] };
 
+/* New York — Chapter 637 of 2025 (S7416A), adding EPTL 3-6.1 et seq.
+   The effective date is computed, not quoted: the act takes effect "on the
+   five hundred forty-fifth day after it shall have become a law", and it
+   became law on December 12, 2025, which lands on June 10, 2027. Several
+   published summaries say December 12, 2027 — that is two years from signing,
+   not 545 days, and it is wrong. */
 const NY_SECTIONS: Section[] = [
   {
     id: "whats-legal",
@@ -21,13 +37,33 @@ const NY_SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          New York signed the Electronic Wills Act in December 2025, joining the states that recognize a will executed
-          electronically — created, signed, witnessed, and stored without paper. [Filler copy: replace with the report's
-          plain-language summary of what the statute covers, and what it deliberately leaves out.]
+          Governor Hochul signed the Electronic Wills Act on December 12, 2025 as Chapter 637 of the Laws of 2025. It
+          adds a new Part 6 to Article 3 of the Estates, Powers and Trusts Law — EPTL 3-6.1 through 3-6.9 — and lets a
+          will be created, signed and attested electronically rather than on paper.
         </p>
         <p className="mt-4">
-          [Filler copy: scope of electronic execution for the broader estate plan — trusts, powers of attorney, health
-          directives — and how remote witnessing and notarization fit in.]
+          The witnesses may sign in the testator's <em>physical or electronic</em> presence, and the officer
+          administering the oath may likewise be physically or electronically present. That is what makes a fully remote
+          execution possible: the testator, the witnesses and the notary need never be in the same room.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "filing",
+    title: "The 30-day filing requirement",
+    body: (
+      <>
+        <p>
+          This is the provision that most changes how a New York practice runs, and it has no counterpart in Florida or
+          Illinois. An electronic will must be electronically filed with the New York State Unified Court System within
+          thirty days of its execution, by the testator or someone the testator authorises.
+        </p>
+        <p className="mt-4">
+          Miss that window and the statute is unforgiving: an electronic will that is not timely filed is{" "}
+          <strong>deemed invalid</strong>. The court system then holds the will until it is removed or revoked — New
+          York has made the court the custodian rather than leaving custody to the drafting attorney or a private
+          vendor, which is the opposite of Florida's approach.
         </p>
       </>
     ),
@@ -36,9 +72,77 @@ const NY_SECTIONS: Section[] = [
     id: "effective-date",
     title: "When does it take effect?",
     body: (
+      <>
+        <p>
+          <strong>June 10, 2027.</strong> The act takes effect "on the five hundred forty-fifth day after it shall have
+          become a law," and it became law on December 12, 2025.
+        </p>
+        <p className="mt-4">
+          Until that date nothing changes: a New York will still has to be executed on paper under EPTL 3-2.1. An
+          electronic will signed before June 10, 2027 is not a valid will.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "for-your-practice",
+    title: "What it means for your practice",
+    body: (
       <p>
-        The Act takes effect on June 10, 2027. [Filler copy: what attorneys can do now to be ready on day one, and how
-        Willow supports plans signed before and after the effective date.]
+        There is a long runway here, and the work to do in it is operational rather than legal: deciding who on your
+        team owns the thirty-day filing and how you prove it happened, since a missed filing voids the instrument
+        outright. Willow tracks the execution date, files within the window, and keeps the receipt with the matter.
+      </p>
+    ),
+  },
+];
+
+/* Florida — Fla. Stat. 732.521–732.525, in force since January 1, 2020, with
+   remote online notarization under chapter 117, part II. */
+const FL_SECTIONS: Section[] = [
+  {
+    id: "whats-legal",
+    title: "What does Florida allow?",
+    body: (
+      <>
+        <p>
+          Florida has recognised electronic wills since <strong>January 1, 2020</strong> — longer than almost any other
+          state. The rules live at sections 732.521 through 732.525 of the Florida Statutes.
+        </p>
+        <p className="mt-4">
+          A testator may sign with an electronic signature, and a witness may satisfy the presence requirement through
+          audio-video technology rather than standing in the room, provided the execution is supervised by a Florida
+          online notary public under chapter 117, part II.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "qualified-custodian",
+    title: "The qualified custodian rule",
+    body: (
+      <>
+        <p>
+          Florida does not put the will in the court's hands the way New York does. It requires a{" "}
+          <strong>qualified custodian</strong>, defined in section 732.525: a custodian must be domiciled in or have its
+          principal place of business in Florida, must hold the will in a secure system, and must keep the audio-video
+          recording of the notarization along with it.
+        </p>
+        <p className="mt-4">
+          Custody is therefore a standing obligation rather than a one-time filing, and it is the piece most firms
+          underestimate when they first move a signing online.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "vulnerable-adults",
+    title: "Vulnerable adults cannot sign remotely",
+    body: (
+      <p>
+        Remote witnessing is unavailable where the principal is a <strong>vulnerable adult</strong>. That exclusion
+        deserves a place in your intake, not in the signing ceremony: it is a question to have answered before you plan
+        an execution around a screen, because discovering it on the day means starting over on paper.
       </p>
     ),
   },
@@ -47,22 +151,99 @@ const NY_SECTIONS: Section[] = [
     title: "What it means for your practice",
     body: (
       <p>
-        [Filler copy: practical guidance — which clients this serves first, what changes in the signing ceremony, how
-        storage and probate submission work, and where the attorney of record stays in control.]
-      </p>
-    ),
-  },
-  {
-    id: "faq",
-    title: "Electronic wills FAQ",
-    body: (
-      <p>
-        [Filler copy: the three or four questions New York attorneys actually ask — validity in other states, revocation,
-        safekeeping obligations, court acceptance.]
+        Florida is the mature jurisdiction of the three — the statute has been in force for years and the operational
+        questions are settled ones. The decisions in front of a Florida firm are about custody and record-keeping
+        rather than about whether an electronic will is any good.
       </p>
     ),
   },
 ];
+
+/* Illinois — 755 ILCS 6/, the Electronic Wills, Electronic Estate Planning
+   Documents, and Remote Witnesses Act. The articles read here are all sourced
+   to P.A. 102-167, eff. 7-26-21. The act's title now also covers electronic
+   estate planning documents generally; the public act that broadened it has
+   not been confirmed here, so this brief does not date that change. */
+const IL_SECTIONS: Section[] = [
+  {
+    id: "whats-legal",
+    title: "What does Illinois allow?",
+    body: (
+      <>
+        <p>
+          Illinois has allowed electronic wills since <strong>July 26, 2021</strong>, under the Electronic Wills,
+          Electronic Estate Planning Documents, and Remote Witnesses Act, 755 ILCS 6/ (P.A. 102-167).
+        </p>
+        <p className="mt-4">
+          Section 5-5 keeps the familiar shape of an execution: the testator signs with an electronic signature, or
+          directs someone in their presence to sign, and two or more credible witnesses attest in the testator's
+          presence. The person signing at the testator's direction may not be a witness, a beneficiary, or a
+          beneficiary's spouse or child.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "remote-attestation",
+    title: "Two conditions on remote attestation",
+    body: (
+      <>
+        <p>
+          Section 15-10 lets the witnessing happen over audio-video, but attaches two requirements that are easy to
+          miss and fatal to get wrong. The will must <strong>designate Illinois as its place of execution</strong>, and
+          the witnesses must be <strong>located in the United States</strong> at the time they attest.
+        </p>
+        <p className="mt-4">
+          A witness who takes the call from abroad breaks the execution. It is worth asking where people will physically
+          be, not just whether they can make the time.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "other-documents",
+    title: "Trusts, powers of attorney and directives",
+    body: (
+      <p>
+        Section 15-5 covers everything that is not a will. Those documents may be witnessed over audio-video and signed
+        in counterparts — but a counterpart signature page has to be attached to the document{" "}
+        <strong>within 10 business days</strong>, and before the signer's death or incapacity. The document does not
+        take effect until it is. A signing that is left half-assembled on someone's desk is not merely untidy; it is
+        not yet a document.
+      </p>
+    ),
+  },
+  {
+    id: "for-your-practice",
+    title: "What it means for your practice",
+    body: (
+      <p>
+        Illinois puts the burden on the record rather than on a filing. Article 10 provides for certified paper copies,
+        and section 5-10(b) presumes an electronic will was revoked if neither it nor a certified paper copy can be
+        found after death. Storage you can produce from is not an administrative nicety here — it is what keeps the
+        will provable.
+      </p>
+    ),
+  },
+];
+
+const BRIEFS: Record<string, Brief> = {
+  "new-york": {
+    updated: "September 24, 2026",
+    status: "Signed December 12, 2025 · in force June 10, 2027",
+    sections: NY_SECTIONS,
+  },
+  florida: {
+    updated: "September 24, 2026",
+    status: "In force since January 1, 2020",
+    sections: FL_SECTIONS,
+  },
+  illinois: {
+    updated: "September 24, 2026",
+    status: "In force since July 26, 2021",
+    sections: IL_SECTIONS,
+  },
+};
 
 const StateDetailPage = () => {
   const { slug } = useParams();
@@ -71,7 +252,8 @@ const StateDetailPage = () => {
   if (LEGISLATION_COMING_SOON) return <Navigate to="/legislation-by-state" replace />;
   if (!state) return <NotFound />;
 
-  const sections = state.slug === "new-york" ? NY_SECTIONS : null;
+  const brief = BRIEFS[state.slug] ?? null;
+  const sections = brief?.sections ?? null;
 
   return (
     <div className="min-h-screen flex flex-col bg-white" style={{ color: "#222222" }}>
@@ -131,7 +313,9 @@ const StateDetailPage = () => {
                   </nav>
                 </aside>
                 <article>
-                  <div className="text-[13.5px] text-gray-400">Last updated: September 9, 2026</div>
+                  <div className="text-[13.5px] text-gray-400">
+                    {brief?.status} · verified {brief?.updated}
+                  </div>
                   {sections.map((sec) => (
                     <div key={sec.id} id={sec.id} className="mt-8 scroll-mt-28 first-of-type:mt-6">
                       <h2 className="font-heading text-xl font-bold text-[#222222] md:text-2xl" style={{ lineHeight: 1.3 }}>
