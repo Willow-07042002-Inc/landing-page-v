@@ -1,8 +1,13 @@
-// GET /api/cron/founding-100-digest — nightly Founding 100 sign-up digest.
+// GET /api/cron/founding-100-digest — nightly Founding Partner sign-up digest.
 //
-// Scheduled by the `crons` entry in vercel.json for 01:00 UTC, which is 9pm
-// New York (8pm when the clock falls back). It reports everyone who signed up
-// since midnight New York time on the day it runs.
+// Covers every sign-up surface in SIGNUP_FORM_TYPES — the evergreen
+// /founding-100 page and the conference pages — not just Founding 100. The
+// path keeps its original name because vercel.json's `crons` entry points at
+// it; renaming the file would silently unschedule the job.
+//
+// Scheduled by that entry for 01:00 UTC, which is 9pm New York (8pm when the
+// clock falls back). It reports everyone who signed up since midnight New
+// York time on the day it runs.
 //
 // It sends every night, including nights with no sign-ups: a "no sign-ups
 // today" line is a cheap confirmation that the pipeline is still alive, so a
@@ -15,7 +20,9 @@ import nodemailer from "nodemailer";
 // logs TS2835 but still deploys, and the function dies at runtime with
 // FUNCTION_INVOCATION_FAILED.
 import { adminClient } from "../_lib.js";
-import { parseFirmDetails, FIRM_FIELDS, FOUNDING_100_FORM_TYPE } from "../../src/lib/founding100.js";
+import {
+  parseFirmDetails, FIRM_FIELDS, SIGNUP_FORM_TYPES, signupSourceLabel,
+} from "../../src/lib/founding100.js";
 
 const TIMEZONE = "America/New_York";
 const REQUIRED_ENV = [
@@ -47,7 +54,13 @@ export function startOfTodayInNewYork(now: Date): Date {
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-type Row = { name: string | null; email: string; message: string | null; created_at: string };
+type Row = {
+  name: string | null;
+  email: string;
+  message: string | null;
+  created_at: string;
+  form_type: string;
+};
 
 export function buildHtml(rows: Row[], dayLabel: string): string {
   /* One stacked block per sign-up rather than a wide table. Six columns of
@@ -75,6 +88,7 @@ export function buildHtml(rows: Row[], dayLabel: string): string {
           <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
             ${detail.map(([k, v]) => `<tr><td ${label}>${esc(k)}</td><td ${value}>${esc(v)}</td></tr>`).join("")}
             <tr><td ${label}>Signed up</td><td ${value}>${esc(time)}</td></tr>
+            <tr><td ${label}>Source</td><td ${value}>${esc(signupSourceLabel(r.form_type))}</td></tr>
           </table>
         </td></tr>
       </table>
@@ -83,21 +97,21 @@ export function buildHtml(rows: Row[], dayLabel: string): string {
 
   const body = rows.length
     ? `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">${rows.map(card).join("")}</table>`
-    : `<p style="font-size:15px;color:#5A6570;margin:0;">No Founding 100 sign-ups today.</p>`;
+    : `<p style="font-size:15px;color:#5A6570;margin:0;">No Founding Partner sign-ups today.</p>`;
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;font-family:Arial,'Segoe UI',sans-serif;background:#F4F6F8;">
   <div style="max-width:560px;margin:0 auto;padding:24px 14px;">
     <div style="background:#ffffff;border-radius:16px;padding:28px 22px;border:1px solid #E7EAEE;">
-      <div style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.14em;color:#0C7370;">Founding 100</div>
+      <div style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.14em;color:#0C7370;">Founding Partners</div>
       <h1 style="font-family:Georgia,serif;font-weight:normal;font-size:23px;color:#222222;margin:8px 0 4px;">
         ${rows.length} sign-up${rows.length === 1 ? "" : "s"} today
       </h1>
       <p style="font-size:13px;color:#8A93A0;margin:0 0 22px;">${esc(dayLabel)}</p>
       ${body}
     </div>
-    <p style="color:#B6BDC6;font-size:11px;text-align:center;margin:16px 0 0;">Willow &middot; willow-inc.com/founding-100</p>
+    <p style="color:#B6BDC6;font-size:11px;text-align:center;margin:16px 0 0;">Willow &middot; willow-inc.com</p>
   </div>
 </body></html>`;
 }
@@ -113,7 +127,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // names are no secret — they're in this file.
   const missing = REQUIRED_ENV.filter((name) => !process.env[name]);
   if (missing.length) {
-    console.error(`Founding 100 digest: missing env vars: ${missing.join(", ")}`);
+    console.error(`Founding Partner digest: missing env vars: ${missing.join(", ")}`);
     return res.status(500).json({ error: "Not configured", missing });
   }
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -127,14 +141,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { data, error } = await adminClient()
       .from("form_submissions")
-      .select("name, email, message, created_at")
-      .eq("form_type", FOUNDING_100_FORM_TYPE)
+      .select("name, email, message, created_at, form_type")
+      .in("form_type", SIGNUP_FORM_TYPES.map((s) => s.type))
       .gte("created_at", since.toISOString())
       .order("created_at", { ascending: true });
     if (error) throw new Error(error.message);
     rows = (data ?? []) as Row[];
   } catch (err) {
-    console.error("Founding 100 digest query failed:", err);
+    console.error("Founding Partner digest query failed:", err);
     return res.status(500).json({ error: "Query failed" });
   }
 
@@ -156,11 +170,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await transporter.sendMail({
       from: process.env.SMTP_FROM_EMAIL ?? process.env.SMTP_USER,
       to: DIGEST_TO,
-      subject: `Founding 100 — ${rows.length} sign-up${rows.length === 1 ? "" : "s"} today (${dayLabel})`,
+      subject: `Founding Partners — ${rows.length} sign-up${rows.length === 1 ? "" : "s"} today (${dayLabel})`,
       html: buildHtml(rows, dayLabel),
     });
   } catch (err) {
-    console.error("Founding 100 digest send failed:", err);
+    console.error("Founding Partner digest send failed:", err);
     return res.status(500).json({ error: "Send failed", found: rows.length });
   }
 

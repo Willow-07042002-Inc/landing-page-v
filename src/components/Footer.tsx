@@ -54,6 +54,9 @@ const Footer = () => {
               <Link to="/founding-100" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
                 Founding 100
               </Link>
+              <Link to="/nysba" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
+                NY State Bar
+              </Link>
             </div>
           </div>
         </div>

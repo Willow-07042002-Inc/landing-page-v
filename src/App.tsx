@@ -19,6 +19,7 @@ import RequestAccess from "./pages/RequestAccess";
 import Investors from "./pages/Investors";
 import Careers from "./pages/Careers";
 import Founding100 from "./pages/Founding100";
+import NewYorkStateBar from "./pages/NewYorkStateBar";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,9 @@ const App = () => (
           <Route path="/investors" element={<Investors />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/founding-100" element={<Founding100 />} />
+          <Route path="/nysba" element={<NewYorkStateBar />} />
+          {/* Spelled-out alias: easier to say out loud at a booth than "nysba" */}
+          <Route path="/new-york-state-bar" element={<Navigate to="/nysba" replace />} />
           {/* Retired pages — old links land somewhere sensible instead of a 404 */}
           {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/contact", "/create-will", "/availability-map", "/learn", "/about-us", "/pitol"].map((p) => (
             <Route key={p} path={p} element={<Navigate to="/" replace />} />
