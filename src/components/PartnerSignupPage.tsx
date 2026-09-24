@@ -51,6 +51,12 @@ const BENEFITS: { gain: string; rest: string; body: string }[] = [
   },
 ];
 
+/* Submitting saves the lead and then hands the attorney to the booking page,
+   so the button says what actually happens rather than promising the offer
+   outright. It carries that on its own — a line of small print underneath
+   repeating it was saying the same thing twice. */
+const CTA_LABEL = "Book a demo to claim";
+
 /* Line-based field. 16px text is deliberate: iOS Safari zooms the page when a
    focused input is smaller, which is jarring on a QR-code landing. */
 const Field = ({
@@ -259,14 +265,8 @@ const PartnerSignupPage = ({
                   className="willow-btn h-12 w-full text-[15px] font-medium disabled:opacity-60"
                   style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
                 >
-                  {status === "sending" ? "Sending…" : "Claim my spot"}
+                  {status === "sending" ? "Sending…" : CTA_LABEL}
                 </Button>
-
-                {demoPath && (
-                  <p className="text-center text-[13px] text-gray-400 lg:text-left" style={{ lineHeight: 1.5 }}>
-                    You'll book a 15-minute demo next — that's how the offer is claimed.
-                  </p>
-                )}
               </form>
             )}
           </section>
@@ -311,7 +311,7 @@ const PartnerSignupPage = ({
                     className="willow-btn h-12 w-full text-[15px] font-medium sm:w-auto sm:px-8"
                     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                   >
-                    Claim my spot
+                    {CTA_LABEL}
                   </Button>
                 </div>
               </div>

@@ -3,7 +3,11 @@ import { FOUNDING_100_FORM_TYPE } from "@/lib/founding100";
 
 /* The evergreen Founding Partner page, linked from the footer. The offer, the
    form and the layout live in PartnerSignupPage — this file is only the
-   header copy and the form_type the sign-up is filed under. */
+   header copy and the form_type the sign-up is filed under.
+
+   Claiming the offer takes a demo here for the same reason it does at the
+   conference: the two pages sell the same thing, so they shouldn't end in
+   different places. */
 const Founding100 = () => (
   <PartnerSignupPage
     metaTitle="Founding 100 | Willow"
@@ -11,6 +15,7 @@ const Founding100 = () => (
     heading="Become a Founding Partner"
     subheading="We're signing our first 100 Founding Partners."
     formType={FOUNDING_100_FORM_TYPE}
+    demoPath="/request-access"
   />
 );
 
