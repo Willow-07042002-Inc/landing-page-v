@@ -8,7 +8,7 @@
 
 // Ship gate: while true, /legislation-by-state shows a Coming Soon page and
 // state detail routes bounce back to it. Flip to false to launch the grid.
-export const LEGISLATION_COMING_SOON = false;
+export const LEGISLATION_COMING_SOON = true;
 
 /* The states the library actually covers. We publish a brief where we have
    read the statute and can cite it; a state absent from this list has no page
