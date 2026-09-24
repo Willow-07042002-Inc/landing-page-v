@@ -20,11 +20,10 @@ import { NYSBA_FORM_TYPE } from "@/lib/founding100";
 /* The same wordmark the navbar and footer use. */
 const WILLOW_LOGO = "/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png";
 
-/* Drop the Association's own artwork — from their sponsor kit, so the file we
-   ship is the one they approved — at this path. Until it exists the mark
-   falls back to the name set in the page's heading face, so a missing file is
-   never a broken image in front of an attorney. */
-const NYSBA_LOGO = "/nysba-logo.png";
+/* The Association's own 150 Years mark, as supplied. The fallback below still
+   stands: if the file ever goes missing the heading reads as the name rather
+   than a broken image in front of an attorney. */
+const NYSBA_LOGO = "/nysba-logo.webp";
 
 const NysbaMark = () => {
   const [failed, setFailed] = useState(false);
@@ -34,7 +33,7 @@ const NysbaMark = () => {
       src={NYSBA_LOGO}
       alt="New York State Bar Association"
       onError={() => setFailed(true)}
-      className="h-11 w-auto sm:h-14"
+      className="h-16 w-auto sm:h-24"
     />
   );
 };
@@ -45,8 +44,8 @@ const NewYorkStateBar = () => (
     metaDescription="Willow is sponsoring this week's New York State Bar Association conference. Here's what comes with becoming a Founding Partner."
     heading={
       <span className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-        <img src={WILLOW_LOGO} alt="Willow" className="h-10 w-auto sm:h-12" />
-        <span aria-hidden className="text-[1.75rem] font-light text-gray-300">&times;</span>
+        <img src={WILLOW_LOGO} alt="Willow" className="h-14 w-auto sm:h-20" />
+        <span aria-hidden className="text-[1.75rem] font-light text-gray-300 sm:text-[2.25rem]">&times;</span>
         <NysbaMark />
       </span>
     }
