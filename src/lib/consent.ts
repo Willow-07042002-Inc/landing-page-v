@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 /*
  * Analytics consent for willow-inc.com (Privacy Policy 2.6(c)–(d), 5.8, 8.7).
  *
@@ -8,8 +10,14 @@
  * Global Privacy Control signal counts as a decline (a later, explicit Accept
  * in Cookie settings still wins: it's the visitor's own choice).
  *
- * Withdrawing consent clears GA's and Clarity's first-party cookies, tells
- * Clarity, and reloads so neither script keeps running.
+ * Before either script loads, the page address is cleaned (cleanAddress): only
+ * campaign tags (utm_*) and the site's own parameters stay, so nothing personal
+ * that arrived in a link (an email address, say) ever reaches Google or
+ * Clarity. Google then counts page views itself, including the site's in-app
+ * navigation (enhanced measurement), from the clean address.
+ *
+ * Withdrawing consent tells GA and Clarity, clears their first-party cookies,
+ * and reloads so neither script keeps running.
  *
  * Advertising stays off in the tag itself, whatever the dashboards say:
  * Google signals and ad personalization off, ad storage denied.
@@ -20,6 +28,10 @@ export type ConsentChoice = "granted" | "denied";
 const STORAGE_KEY = "willow_analytics_consent";
 const GA_ID = "G-DTM6FLHNTM";
 const CLARITY_ID = "va5mvqtza2";
+/** Query parameters the site itself reads (RequestAccess, ColoradoCallToAction). */
+const SITE_PARAMS = new Set(["claim", "colorado"]);
+/** A query parameter that may stay in an address we report: campaign tags and the site's own. */
+const keepParam = (k: string) => k.toLowerCase().startsWith("utm_") || SITE_PARAMS.has(k);
 
 /** Fired after GA and Clarity are on the page (the page-view tracker listens). */
 export const ANALYTICS_READY_EVENT = "willow:analytics-ready";
@@ -81,17 +93,25 @@ export function setConsent(choice: ConsentChoice): void {
     loadAnalytics();
     return;
   }
-  if (loaded) {
-    try {
-      window.clarity?.("consentv2", { ad_Storage: "denied", analytics_Storage: "denied" });
-      window.clarity?.("consent", false);
-    } catch {
-      // Clarity not reachable: the cookies below and the reload still stop it.
-    }
+  if (!loaded) {
+    clearAnalyticsCookies();
+    return;
+  }
+  try {
+    // Tell both tools first, so nothing still queued writes a cookie again.
+    window.gtag?.("consent", "update", { analytics_storage: "denied" });
+    window.clarity?.("consentv2", { ad_Storage: "denied", analytics_Storage: "denied" });
+    window.clarity?.("consent", false);
+  } catch {
+    // Not reachable: the cookies below and the reload still stop them.
   }
   clearAnalyticsCookies();
   // The scripts can't be unloaded from a running page; a reload starts clean.
-  if (loaded) window.location.reload();
+  // Clear once more just before it, in case a hit already in flight set one.
+  window.setTimeout(() => {
+    clearAnalyticsCookies();
+    window.location.reload();
+  }, 150);
 }
 
 export function openCookieSettings(): void {
@@ -101,9 +121,10 @@ export function openCookieSettings(): void {
 function loadAnalytics(): void {
   if (loaded) return;
   loaded = true;
+  cleanAddress();
 
-  // Google Analytics: measurement only. Page views are sent by
-  // GoogleAnalyticsPageView (send_page_view off, so the first isn't counted twice).
+  // Google Analytics: measurement only. It sends the page views itself (this
+  // page now, then each in-app navigation); GoogleAnalyticsPageView adds clicks.
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {
     // eslint-disable-next-line prefer-rest-params
@@ -117,7 +138,6 @@ function loadAnalytics(): void {
   });
   window.gtag("js", new Date());
   window.gtag("config", GA_ID, {
-    send_page_view: false,
     allow_google_signals: false,
     allow_ad_personalization_signals: false,
   });
@@ -163,21 +183,55 @@ function clearAnalyticsCookies(): void {
   }
 }
 
+/** Only the query parameters that may be reported (keepParam), as "?a=b" or "". */
+function keptQuery(params: URLSearchParams): string {
+  const keep = new URLSearchParams();
+  params.forEach((v, k) => {
+    if (keepParam(k)) keep.append(k, v);
+  });
+  const q = keep.toString();
+  return q ? `?${q}` : "";
+}
+
 /**
- * A URL safe to send: path only, plus campaign tags (utm_*), never other query
- * parameters. A mailto:/tel: link is sent as just its scheme, never the address.
+ * Drop every other query parameter from the address bar, keeping the path, the
+ * #section and the router's history state, before GA or Clarity can read it.
+ */
+function cleanAddress(): void {
+  try {
+    const { pathname, search, hash } = window.location;
+    const query = keptQuery(new URLSearchParams(search));
+    if (query !== search) {
+      window.history.replaceState(window.history.state, "", `${pathname}${query}${hash}`);
+    }
+  } catch {
+    // Can't rewrite the address: analytics still loads, as before.
+  }
+}
+
+/**
+ * A link's URL safe to send: path plus campaign tags and the site's own
+ * parameters (keepParam), nothing else. A mailto:/tel: link is sent as just its
+ * scheme, never the address.
  */
 export function scrubUrl(href: string): string {
   try {
     const u = new URL(href, window.location.origin);
     if (u.protocol !== "http:" && u.protocol !== "https:") return u.protocol;
-    const keep = new URLSearchParams();
-    u.searchParams.forEach((v, k) => {
-      if (k.toLowerCase().startsWith("utm_")) keep.set(k, v);
-    });
-    const q = keep.toString();
-    return `${u.origin}${u.pathname}${q ? `?${q}` : ""}`;
+    return `${u.origin}${u.pathname}${keptQuery(u.searchParams)}`;
   } catch {
     return "";
   }
+}
+
+/** True once GA and Clarity are on the page; flips when the visitor accepts. */
+export function useAnalyticsReady(): boolean {
+  const [ready, setReady] = useState(analyticsLoaded());
+  useEffect(() => {
+    if (ready) return;
+    const onReady = () => setReady(true);
+    window.addEventListener(ANALYTICS_READY_EVENT, onReady);
+    return () => window.removeEventListener(ANALYTICS_READY_EVENT, onReady);
+  }, [ready]);
+  return ready;
 }
