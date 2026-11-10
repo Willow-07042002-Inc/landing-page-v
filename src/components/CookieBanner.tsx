@@ -37,10 +37,13 @@ const CookieBanner = () => {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Cookie settings"
+      aria-labelledby="cookie-banner-title"
+      data-analytics-ignore
       className="fixed inset-x-3 bottom-3 z-[100] mx-auto max-w-[720px] rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-[0_12px_32px_-8px_rgba(16,24,40,0.18)] sm:inset-x-6 sm:bottom-6 sm:p-6"
     >
-      <p className="font-sans text-[15px] font-semibold text-[#1F2933]">Cookies on willow-inc.com</p>
+      <p id="cookie-banner-title" className="font-sans text-[15px] font-semibold text-[#1F2933]">
+        Cookies on willow-inc.com
+      </p>
       <p className="mt-1.5 font-sans text-[13.5px] leading-relaxed text-[#4B5563]">
         With your OK, we use Google Analytics and Microsoft Clarity to see how people use this site, such as the pages they
         visit and what they click. Anything you type into a form is masked. We don&rsquo;t use them for advertising. They

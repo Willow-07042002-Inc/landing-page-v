@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { ANALYTICS_READY_EVENT, analyticsLoaded } from "@/lib/consent";
+import { useAnalyticsReady } from "@/lib/consent";
 
 /**
  * Sets Microsoft Clarity custom tags on every route change so you can
@@ -9,14 +9,7 @@ import { ANALYTICS_READY_EVENT, analyticsLoaded } from "@/lib/consent";
  */
 const ClarityTags = () => {
   const { pathname } = useLocation();
-  const [ready, setReady] = useState(analyticsLoaded());
-
-  useEffect(() => {
-    if (ready) return;
-    const onReady = () => setReady(true);
-    window.addEventListener(ANALYTICS_READY_EVENT, onReady);
-    return () => window.removeEventListener(ANALYTICS_READY_EVENT, onReady);
-  }, [ready]);
+  const ready = useAnalyticsReady();
 
   useEffect(() => {
     if (!ready || typeof window.clarity !== "function") return;
