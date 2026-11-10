@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { openCookieSettings } from "@/lib/consent";
 
 const Footer = () => {
   const location = useLocation();
@@ -54,6 +55,13 @@ const Footer = () => {
               <Link to="/nysba" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
                 NY State Bar
               </Link>
+              <button
+                type="button"
+                onClick={openCookieSettings}
+                className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}
+              >
+                Cookie settings
+              </button>
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import OpenGraphMeta from "@/components/OpenGraphMeta";
 import GoogleAnalyticsPageView from "@/components/GoogleAnalyticsPageView";
 import ClarityTags from "@/components/ClarityTags";
+import CookieBanner from "@/components/CookieBanner";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
@@ -33,6 +34,7 @@ const App = () => (
         <OpenGraphMeta />
         <GoogleAnalyticsPageView />
         <ClarityTags />
+        <CookieBanner />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/for-clients" element={<ForClientsPage />} />
