@@ -21,6 +21,7 @@ import Investors from "./pages/Investors";
 import Careers from "./pages/Careers";
 import Founding100 from "./pages/Founding100";
 import NewYorkStateBar from "./pages/NewYorkStateBar";
+import WhereWereLive from "./pages/WhereWereLive";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,8 @@ const App = () => (
           <Route path="/legislation-by-state/:slug" element={<StateDetailPage />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/availability" element={<WhereWereLive />} />
+          <Route path="/where-were-live" element={<Navigate to="/availability" replace />} />
           <Route path="/request-access" element={<RequestAccess />} />
           <Route path="/investors" element={<Investors />} />
           <Route path="/careers" element={<Careers />} />
