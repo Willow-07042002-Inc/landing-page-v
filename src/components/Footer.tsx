@@ -43,6 +43,9 @@ const Footer = () => {
               <Link to="/privacy" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
                 Privacy Policy
               </Link>
+              <Link to="/availability" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
+                Where we're live
+              </Link>
               <Link to="/careers" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
                 Careers
               </Link>
