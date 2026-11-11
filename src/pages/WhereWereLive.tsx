@@ -42,13 +42,6 @@ const WhereWereLive = () => {
       </P>
       <P>Willow isn't available in Washington yet.</P>
 
-      <H2 id="signing">Signing documents</H2>
-      <P>
-        Signing, witnessing and notarizing documents in Willow isn't offered yet. Today, documents are signed outside Willow, and
-        Willow keeps copies. Signing is coming soon in the states marked below, where state law allows documents like wills to be
-        signed electronically.
-      </P>
-
       <H2 id="states">States where Willow is available</H2>
       <ul className="mb-6 border-t-2 border-[#222222]">
         {OPEN.map((s) => (
