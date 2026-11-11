@@ -651,7 +651,7 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
   {
     title: "Grow client relationships — and build new ones with their families.",
     body:
-      "As your client's life moves forward, you always stay in the loop. When their executors, guardians, and the people around them need plans of their own, we'll put them in touch with the attorney who knows their family best.",
+      "As your client's life moves forward, you always stay in the loop. When their executors, guardians, and the people around them need plans of their own, they can book time with you directly, if they choose.",
     print: "/willow-street.jpg",
     visual: <CheckInDemoVignette h={520} />,
     fitAspect: "900 / 520",
@@ -854,7 +854,7 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     topic: "practice",
     q: "How does Willow support revisiting plans over time?",
     a: [
-      "As life moves forward, Willow helps surface natural moments when an update may be needed — and routes clients back to their attorney.",
+      "As life moves forward, Willow helps surface natural moments when an update may be needed — and makes it easy for clients to book time with their attorney.",
       "Clients can book time directly through your connected calendar, and both you and the client receive reminders along with a clear summary of relevant background and documents ahead of the conversation.",
     ],
   },
