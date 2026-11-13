@@ -40,8 +40,17 @@ const Footer = () => {
               company representative does not create an attorney-client relationship.
             </p>
             <div className="flex flex-wrap gap-4">
+              <Link to="/terms" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
+                Terms
+              </Link>
               <Link to="/privacy" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
                 Privacy Policy
+              </Link>
+              <Link to="/health-data-notice" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
+                Health Data Notice
+              </Link>
+              <Link to="/subprocessors" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
+                Subprocessors
               </Link>
               <Link to="/availability" className={isAboutUsPage ? "text-[#222222] hover:text-gray-600 underline" : "text-white hover:text-gray-300 underline"}>
                 Where we're live
