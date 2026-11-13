@@ -8,8 +8,17 @@ import OpenGraphMeta from "@/components/OpenGraphMeta";
 import GoogleAnalyticsPageView from "@/components/GoogleAnalyticsPageView";
 import ClarityTags from "@/components/ClarityTags";
 import CookieBanner from "@/components/CookieBanner";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
+import {
+  MemberTermsPage,
+  RecipientTermsPage,
+  FirmAgreementPage,
+  PrivacyPage,
+  HealthDataNoticePage,
+  TermsIndexPage,
+  SubprocessorsPage,
+  ConnectionsPage,
+  RequestDocumentsPage,
+} from "./pages/legal/LegalPages";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ForClientsPage from "./pages/ForClientsPage";
@@ -43,8 +52,40 @@ const App = () => (
           <Route path="/news" element={<NewsPage />} />
           <Route path="/legislation-by-state" element={<RegulatoryLibraryPage />} />
           <Route path="/legislation-by-state/:slug" element={<StateDetailPage />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
+          {/* Legal set of Nov 13, 2026 (src/pages/legal). The apps link to these paths. */}
+          <Route path="/terms" element={<TermsIndexPage />} />
+          <Route path="/member-terms" element={<MemberTermsPage />} />
+          <Route path="/recipient-terms" element={<RecipientTermsPage />} />
+          <Route path="/firm-agreement" element={<FirmAgreementPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/health-data-notice" element={<HealthDataNoticePage />} />
+          <Route path="/subprocessors" element={<SubprocessorsPage />} />
+          <Route path="/connections" element={<ConnectionsPage />} />
+          <Route path="/request-documents" element={<RequestDocumentsPage />} />
+          {/* Other names people will try for the same pages */}
+          {[
+            ["/privacy-policy", "/privacy"],
+            ["/terms-of-service", "/terms"],
+            ["/terms-and-conditions", "/terms"],
+            ["/legal", "/terms"],
+            ["/member-agreement", "/member-terms"],
+            ["/recipient-agreement", "/recipient-terms"],
+            ["/fsa", "/firm-agreement"],
+            ["/firm-subscription-agreement", "/firm-agreement"],
+            ["/firm-terms", "/firm-agreement"],
+            ["/dpa", "/firm-agreement#exhibit-a"],
+            ["/data-processing-addendum", "/firm-agreement#exhibit-a"],
+            ["/consumer-health-data-notice", "/health-data-notice"],
+            ["/health-data", "/health-data-notice"],
+            ["/sub-processors", "/subprocessors"],
+            ["/integrations", "/connections"],
+            ["/connected-services", "/connections"],
+            ["/request", "/request-documents"],
+            ["/release-request", "/request-documents"],
+            ["/document-request", "/request-documents"],
+          ].map(([from, to]) => (
+            <Route key={from} path={from} element={<Navigate to={to} replace />} />
+          ))}
           <Route path="/availability" element={<WhereWereLive />} />
           <Route path="/zoom" element={<ZoomGuide />} />
           <Route path="/where-were-live" element={<Navigate to="/availability" replace />} />
