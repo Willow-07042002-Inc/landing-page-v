@@ -99,10 +99,10 @@ const Footer = () => {
           <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-10 sm:grid-cols-3">
             {COLUMNS.map((col) => (
               <div key={col.title}>
-                <h3 className={`mb-4 text-xs font-semibold uppercase tracking-[0.12em] ${text}`}>{col.title}</h3>
-                <ul className="space-y-3">
+                <h3 className={`mb-3 font-sans text-xs font-semibold uppercase tracking-[0.12em] ${text}`}>{col.title}</h3>
+                <ul className="space-y-2 text-sm leading-5">
                   {col.links.map((l) => (
-                    <li key={l.label}>{renderLink(l)}</li>
+                    <li key={l.label} className="leading-5">{renderLink(l)}</li>
                   ))}
                 </ul>
               </div>
