@@ -14,7 +14,6 @@ import {
   FirmAgreementPage,
   PrivacyPage,
   HealthDataNoticePage,
-  TermsIndexPage,
   SubprocessorsPage,
   ConnectionsPage,
   RequestDocumentsPage,
@@ -32,6 +31,11 @@ import Founding100 from "./pages/Founding100";
 import NewYorkStateBar from "./pages/NewYorkStateBar";
 import WhereWereLive from "./pages/WhereWereLive";
 import ZoomGuide from "./pages/ZoomGuide";
+import TemplatePage from "./pages/site/TemplatePage";
+import SecurityPage from "./pages/site/SecurityPage";
+import AboutPage from "./pages/site/AboutPage";
+import LegalCenterPage from "./pages/site/LegalCenterPage";
+import { PAGES } from "./content/pages";
 
 const queryClient = new QueryClient();
 
@@ -49,11 +53,18 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/for-clients" element={<ForClientsPage />} />
+          {/* Platform and solutions pages, rendered from src/content/pages.tsx */}
+          {PAGES.map((p) => (
+            <Route key={p.path} path={p.path} element={<TemplatePage />} />
+          ))}
+          <Route path="/security" element={<SecurityPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/legal" element={<LegalCenterPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/legislation-by-state" element={<RegulatoryLibraryPage />} />
           <Route path="/legislation-by-state/:slug" element={<StateDetailPage />} />
           {/* Legal set of Nov 13, 2026 (src/pages/legal). The apps link to these paths. */}
-          <Route path="/terms" element={<TermsIndexPage />} />
+          <Route path="/terms" element={<LegalCenterPage />} />
           <Route path="/member-terms" element={<MemberTermsPage />} />
           <Route path="/recipient-terms" element={<RecipientTermsPage />} />
           <Route path="/firm-agreement" element={<FirmAgreementPage />} />
@@ -67,7 +78,10 @@ const App = () => (
             ["/privacy-policy", "/privacy"],
             ["/terms-of-service", "/terms"],
             ["/terms-and-conditions", "/terms"],
-            ["/legal", "/terms"],
+            ["/solutions", "/platform"],
+            ["/trust", "/security"],
+            ["/company", "/about"],
+            ["/about-us", "/about"],
             ["/member-agreement", "/member-terms"],
             ["/recipient-agreement", "/recipient-terms"],
             ["/fsa", "/firm-agreement"],
@@ -97,7 +111,7 @@ const App = () => (
           {/* Spelled-out alias: easier to say out loud at a booth than "nysba" */}
           <Route path="/new-york-state-bar" element={<Navigate to="/nysba" replace />} />
           {/* Retired pages — old links land somewhere sensible instead of a 404 */}
-          {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/contact", "/create-will", "/availability-map", "/learn", "/about-us", "/pitol"].map((p) => (
+          {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/contact", "/create-will", "/availability-map", "/learn", "/pitol"].map((p) => (
             <Route key={p} path={p} element={<Navigate to="/" replace />} />
           ))}
           <Route path="/book" element={<Navigate to="/request-access" replace />} />

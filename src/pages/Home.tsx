@@ -6,6 +6,11 @@ import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { Button } from "@/components/ui/button";
 import { Bell, ChevronDown, ChevronRight, Link2, Plus } from "lucide-react";
 import { SharingHomeShot } from "@/components/ClientVignettes";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { RequiredActionsVignette } from "@/components/site/vignettes";
+import { LinkCards, SecurityBand, ClosingCta } from "@/components/site/blocks";
+import { CARDS } from "@/content/pages";
 import {
   CheckInDemoVignette,
   ClientDetailJourneyVignette,
@@ -151,7 +156,7 @@ const AttorneyDashboardScreen = () => (
           <span className="flex items-center gap-3 rounded-lg px-2.5 py-2 hover:bg-[#F8FAFA]">
             <span className="text-right">
               <span className="block text-[13px] font-semibold leading-tight text-[#1F2933]">Rachel Alvarez</span>
-              <span className="mt-0.5 block text-[11px] leading-tight text-[#9CA3AF]">Alvarez Family Law</span>
+              <span className="mt-0.5 block text-[11px] leading-tight text-[#9CA3AF]">Alvarez Estate Planning</span>
             </span>
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F0F9F9] text-[11px] font-bold text-[#309E96] ring-1 ring-black/5">RA</span>
             <ChevronDown className="h-3.5 w-3.5 text-[#9CA3AF]" />
@@ -198,8 +203,8 @@ const AttorneyDashboardScreen = () => (
           <ProColumn
             icon={<MaskIcon src="/mock/clients-icon.svg" color="#309E96" size={20} />}
             title="Active clients"
-            count={10}
-            footer="View all 10 clients"
+            count={24}
+            footer="View all 24 clients"
             rounding="rounded-none"
             action={
               <span className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium text-[#128F8B] hover:bg-[#F0F9F9] hover:text-[#0F7673]">
@@ -208,20 +213,17 @@ const AttorneyDashboardScreen = () => (
             }
           >
             {[
-              { n: "Daniel Rosen", i: "DR", step: 3, label: "Step 3 of 5 · Planning meeting" },
-              { n: "Maria Rosen", i: "MR", step: 2, label: "Step 2 of 5 · Your information" },
-              { n: "Elena Ruiz", i: "ER", step: 5, label: "Step 5 of 5 · Signing" },
-              { n: "Marcus Webb", i: "MW", step: 4, label: "Step 4 of 5 · Review meeting" },
+              { n: "Daniel & Maria Rosen", i: "DR", label: "Will, trust and POAs · Summary approved" },
+              { n: "Elena Ruiz", i: "ER", label: "Will and health care proxy · Shared with 3" },
+              { n: "Marcus Webb", i: "MW", label: "Revocable trust · Check-in answered" },
+              { n: "Grace Liu", i: "GL", label: "Will · Uploaded this week" },
             ].map((r) => (
               <div key={r.n} className="group flex min-h-[84px] items-center justify-between gap-3 bg-white px-5 py-4 transition-colors hover:bg-[#F8FAFA]">
                 <div className="flex min-w-0 items-center gap-3.5">
                   <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F4F6] text-[13px] font-semibold text-[#9CA3AF] ring-1 ring-black/5 group-hover:bg-[#F0F9F9] group-hover:text-[#309E96]">{r.i}</span>
                   <span className="min-w-0">
                     <span className="block truncate font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{r.n}</span>
-                    <span className="mt-1 flex items-center gap-2">
-                      <JourneyTrack step={r.step} />
-                      <span className="truncate text-[#9CA3AF]" style={{ fontSize: 12.5 }}>{r.label}</span>
-                    </span>
+                    <span className="block truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{r.label}</span>
                   </span>
                 </div>
               </div>
@@ -230,16 +232,15 @@ const AttorneyDashboardScreen = () => (
 
           <ProColumn
             icon={<PlansSignedIcon />}
-            title="Plans signed"
-            count={206}
-            footer="View all 206 clients"
+            title="Required actions"
+            count={4}
             rounding="rounded-r-2xl"
           >
             {[
-              { n: "Sam Whitfield", i: "SW", m: "sam.whitfield@gmail.com" },
-              { n: "Priya Anand", i: "PA", m: "priya.anand@outlook.com" },
-              { n: "Grace Liu", i: "GL", m: "grace.liu@yahoo.com" },
-              { n: "Olivia Grant", i: "OG", m: "olivia.grant@gmail.com" },
+              { n: "Daniel Rosen", i: "DR", m: "Plan summary ready to review", tag: "Approve" },
+              { n: "Maria Rosen", i: "MR", m: "Asked to open Daniel's will", tag: "Release" },
+              { n: "Grace Liu", i: "GL", m: "Annual check-in ready to send", tag: "Send" },
+              { n: "Marcus Webb", i: "MW", m: "Said something changed", tag: "Call" },
             ].map((r) => (
               <div key={r.n} className="group flex min-h-[84px] items-center justify-between gap-3 bg-white px-5 py-4 transition-colors hover:bg-[#F8FAFA]">
                 <div className="flex min-w-0 items-center gap-3.5">
@@ -249,7 +250,7 @@ const AttorneyDashboardScreen = () => (
                     <span className="block truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{r.m}</span>
                   </span>
                 </div>
-                <span className="flex-shrink-0 rounded-full bg-[#E6F5F4] px-2.5 py-0.5 text-[11px] font-semibold text-[#0C7370]">Active</span>
+                <span className="flex-shrink-0 rounded-full bg-[#E6F5F4] px-2.5 py-0.5 text-[11px] font-semibold text-[#0C7370]">{r.tag}</span>
               </div>
             ))}
           </ProColumn>
@@ -336,15 +337,10 @@ export const ClientEstatePlanScreen = () => (
         <ClientCard icon="/mock/family-icon.png" title="You & Your Family" subtitle="The people at the center of your plan" />
         <ClientCard icon="/mock/shield-icon.png" title="If You Need Someone to Step In" subtitle="What happens if you can't make decisions for yourself" />
         <ClientCard icon="/mock/tree-icon.png" title="What You'll Leave Behind" subtitle="How your estate is managed and distributed" />
-        <ClientCard icon="/mock/docs-icon.png" title="Your Documents" subtitle="Signed documents, recordings, and compliance files" />
+        <ClientCard icon="/mock/docs-icon.png" title="Your Documents" subtitle="Signed documents and past versions" />
       </div>
     </div>
 
-    {/* Ask Eva */}
-    <div className="absolute bottom-6 right-6 flex items-center gap-2.5 rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-5 shadow-lg hover:shadow-xl">
-      <img src="/mock/eva.png" alt="Eva" className="h-10 w-10 rounded-full object-cover" style={{ backgroundColor: "rgba(84,167,154,0.1)" }} />
-      <span className="font-medium text-[#1F2933]" style={{ fontSize: 15 }}>Ask Eva</span>
-    </div>
   </div>
 );
 
@@ -354,7 +350,7 @@ export const ClientEstatePlanScreen = () => (
 // shrinking the type — the font size never changes.
 const HERO_PHRASES: { text: string; short?: string }[] = [
   { text: "actually understand their\u00A0plans.", short: "understand their plans." },
-  { text: "can sign from anywhere." },
+  { text: "share their plan on their terms." },
   { text: "never lose a\u00A0document." },
   { text: "keep executors and guardians prepared.", short: "prepare those around them." },
   { text: "keep coming back to\u00A0you." },
@@ -612,17 +608,17 @@ const SplitShowcase = ({ onBook }: { onBook: () => void }) => {
 // screenshots on the right slide up and stack over one another.
 const CAPABILITIES: { title: string; body: string; print: string; visual: React.ReactNode; fitAspect?: string; fitWidth?: string }[] = [
   {
-    title: "Every client, organized from engagement to signing.",
+    title: "Every client, and every action waiting on you.",
     body:
-      "See who's waiting on you and who you're waiting on. Send documents straight to your client's portal, so everything for the matter lives in one place.",
+      "New leads from your booking page, every active client, and one list of what needs you: summaries to approve, release requests, emails ready to send.",
     print: "/central-park.jpg",
-    visual: <ActiveClientsNextStepsVignette />,
-    fitAspect: "900 / 400",
+    visual: <RequiredActionsVignette />,
+    fitAspect: "900 / 560",
   },
   {
-    title: "Sign digitally — from anywhere, or right in your office.",
+    title: "Keep your signing ceremony. Lose the binder.",
     body:
-      "Every signature is captured digitally, whether your client is across the country or across your conference table. No paper to lose. (Remote signing available in select states.)",
+      "Sign the way you do today and upload the executed documents. Willow's own signing ceremony is built, and it opens state by state as the law allows.",
     print: "/golden-gate.jpg",
     visual: (
       <div className="absolute inset-0">
@@ -632,9 +628,9 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
     fitAspect: "2056 / 1258",
   },
   {
-    title: "Keep every document safe — and easy to understand.",
+    title: "Every document safe, and easy to understand.",
     body:
-      "Signed documents live in secure online storage built around your state's regulations, with every gift, condition, and account written out in language the family can follow.",
+      "Signed documents and every past version live in one secure place, with every gift, condition and power written out in plain English you've approved.",
     print: "/florida-coast.jpg",
     visual: <AssetBreakdownVignette />,
     fitAspect: "900 / 650",
@@ -642,16 +638,16 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
   {
     title: "Ensure your executors and guardians are prepared.",
     body:
-      "Willow understands everyone's role, recommends what each person should have access to, and releases it exactly when they need it — never a day earlier.",
+      "Willow understands each person's role and recommends what they should see. Anything sealed stays sealed until you verify a passing.",
     print: "/hudson-bridge.jpg",
     visual: <SharingRecommendationVignette h={660} />,
     fitAspect: "760 / 660",
     fitWidth: "76%",
   },
   {
-    title: "Grow client relationships — and build new ones with their families.",
+    title: "Relationships that last, and new ones with the family.",
     body:
-      "As your client's life moves forward, you always stay in the loop. When their executors, guardians, and the people around them need plans of their own, we'll put them in touch with the attorney who knows their family best.",
+      "A yearly rhythm of check-ins and updates, each one approved by you, brings clients back when life changes, and introduces you to the executors and family who'll need an attorney next.",
     print: "/willow-street.jpg",
     visual: <CheckInDemoVignette h={520} />,
     fitAspect: "900 / 520",
@@ -814,8 +810,8 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     topic: "practice",
     q: "Do my clients have to sign through Willow?",
     a: [
-      "No. Digital execution is optional — and available in select states.",
-      "Keep your signing ceremony exactly as it is today — pen, paper, conference room — then upload the executed documents. Your clients still get everything else: plain-language summaries, secure storage, sharing on their terms, and a plan that stays current for life.",
+      "No. Keep your signing ceremony exactly as it is today: pen, paper, conference room. Then upload the executed documents.",
+      "Your clients still get everything else: plain-English summaries, secure storage, sharing on their terms, and a yearly rhythm of staying in touch. Willow's own signing ceremony opens state by state as the law allows.",
     ],
   },
   {
@@ -823,69 +819,61 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     q: "How can I get started?",
     a: [
       "It starts with a short conversation.",
-      "We take time to understand your practice and jurisdiction to ensure your firm is a good fit. From there, we guide you through a brief onboarding call, walk through the platform, and answer any questions before you begin using Willow with clients. No process overhaul — just a better way to deliver what you already do.",
+      "We take time to understand your practice and your state, set up your account with you, walk through the platform, and load your first clients together. No process overhaul, just a better way to deliver what you already do.",
     ],
   },
   {
     topic: "practice",
     q: "Does Willow help create estate planning documents?",
     a: [
-      "You remain fully responsible for advising clients and drafting estate planning documents.",
-      "Willow does not provide legal advice. Instead, we support the execution, storage, and long-term management of the documents you prepare — allowing you to focus your time on what you do best while we help elevate the client experience.",
-    ],
-  },
-  {
-    topic: "practice",
-    q: "How does the signing ceremony work, and can I tailor it to my practice?",
-    a: [
-      "Willow supports attorney-led digital execution that aligns with state requirements around witnessing, recordings, and notarization. You remain in control of the ceremony and can pause at any time or build in breaks to review materials with your client.",
-      "For practices that prefer a more tailored approach, we can support custom execution flows built around existing regulations. Our goal is to make digital execution compliant and reliable — without forcing you into a one-size-fits-all format.",
+      "No. You remain fully responsible for advising clients and drafting their documents.",
+      "Willow doesn't give legal advice. It stores the signed plan, drafts a plain-English summary for you to review and approve, shares it with the people your client names, and keeps you in touch as life moves forward.",
     ],
   },
   {
     topic: "practice",
     q: "Who can access my clients' documents?",
     a: [
-      "Access is fully controlled by the client.",
-      "Only individuals the client explicitly authorizes — such as family members, executors, or fiduciaries — can view documents through their own secure accounts. Permissions can be granted or revoked at any time, ensuring access remains intentional and appropriate.",
+      "Access is controlled by the client.",
+      "Only the people a client names, such as executors, guardians or agents, can see documents, through their own accounts. Anything sealed until a passing stays sealed until you verify it. Sharing can be changed at any time, and every change is recorded.",
     ],
   },
   {
     topic: "practice",
-    q: "How does Willow support revisiting plans over time?",
+    q: "How does Willow help clients come back for updates?",
     a: [
-      "As life moves forward, Willow helps surface natural moments when an update may be needed — and routes clients back to their attorney.",
-      "Clients can book time directly through your connected calendar, and both you and the client receive reminders along with a clear summary of relevant background and documents ahead of the conversation.",
+      "Once a plan is approved, Willow keeps a yearly rhythm of check-ins, short surveys and updates from your firm, each one approved by you before it's sent.",
+      "When a client says something has changed, you hear about it on your dashboard, and they can book time through your booking page.",
     ],
   },
   {
     topic: "compliance",
-    q: "Are there estate planning lawyers on the Willow team?",
+    q: "Where is Willow available?",
     a: [
-      "Yes. Our team includes estate planning attorneys with over 35 years of combined experience.",
-      "They help shape our workflows, compliance standards, and long-term storage practices to ensure the platform aligns with how estate planning is practiced in the real world. Willow does not provide legal advice, and you remain the attorney of record.",
+      "Willow is available to firms and clients in every state and Washington, D.C., except Washington State.",
+      "Digital signing is separate: it switches on state by state as the law allows, and Where we're live lists each state as it opens.",
     ],
   },
   {
     topic: "compliance",
-    q: "Is Willow compliant with applicable state laws?",
+    q: "How are documents stored?",
     a: [
-      "Yes. Willow operates only in states where electronic wills are legally recognized, and all execution and storage workflows are designed to align with applicable state law.",
+      "Copies of signed documents and their past versions are stored in the United States, encrypted in transit and at rest. Every view, download and release is recorded, and the record is kept for seven years.",
+      "Willow keeps copies; originals stay with you, as they do today.",
     ],
   },
   {
     topic: "compliance",
-    q: "How are documents and recordings stored long term?",
+    q: "Is client information used to train AI?",
     a: [
-      "Our storage is designed for long-term reliability, ensuring signed documents and required supporting materials are securely preserved over time.",
+      "Never. Documents are read only to draft summaries for your review, AI processing stays in the United States, and nothing from a connected email or calendar account is ever sent to an AI provider.",
     ],
   },
   {
     topic: "compliance",
-    q: "What happens if Willow is no longer operating?",
+    q: "Is Willow built with estate planning attorneys?",
     a: [
-      "Like any law practice planning for continuity, Willow maintains a formal succession plan in the unlikely event we no longer offer our services.",
-      "In that situation, custodianship of each will and its associated records would be transferred in accordance with applicable state standards — and the decision about where a will is transferred always remains with the client.",
+      "Yes. Willow is shaped alongside practicing estate planning attorneys, who use it with real clients and tell us what to build next. Willow does not provide legal advice, and you remain the attorney of record.",
     ],
   },
 ];
@@ -979,6 +967,11 @@ const Home = () => {
       <section className="w-full bg-[#FCFCFD] pt-[env(safe-area-inset-top)] max-md:flex max-md:min-h-[52svh] max-md:items-center">
         <div className="container mx-auto px-4 pt-20 md:pt-24 pb-1">
           <div className="flex flex-col items-center justify-center text-center animate-fade-in w-full">
+            <div className="mb-5 flex items-center gap-2.5 text-[12.5px] font-semibold uppercase tracking-[0.16em] text-[#0C7370]">
+              <span className="hidden h-[3px] w-5 rounded-full bg-[#128F8B] sm:block" />
+              The estate planning platform for attorneys
+              <span className="hidden h-[3px] w-5 rounded-full bg-[#128F8B] sm:block" />
+            </div>
             <h1 className="w-full text-[2rem] sm:text-4xl md:text-4xl lg:text-[2.75rem] mb-2 font-heading font-light text-[#222222]" style={{ lineHeight: 1.25 }}>
               Ensure your clients
               <HeroRotator />
@@ -986,15 +979,22 @@ const Home = () => {
             <p className="mb-6 max-w-xl text-[15px] sm:text-base md:text-[17px] font-normal text-gray-500" style={{ lineHeight: 1.5, letterSpacing: "0.01em" }}>
               Modernize your practice with our all-in-one platform purpose-built for estate planning attorneys and the clients they serve.
             </p>
-            <Button
-              size="lg"
-              className="willow-btn px-6 py-5 text-base"
-              style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
-              onClick={() => navigate("/request-access")}
-              data-hero-demo-button
-            >
-              Book a Demo
-            </Button>
+            <div className="flex flex-col items-center gap-3 sm:flex-row">
+              <Link
+                to="/request-access"
+                className="press inline-flex h-12 items-center justify-center rounded-lg bg-[#128F8B] px-6 text-[15.5px] font-semibold text-white hover:bg-[#0C7370]"
+                style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
+                data-hero-demo-button
+              >
+                Book a demo
+              </Link>
+              <Link
+                to="/platform"
+                className="press inline-flex h-12 items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-5 text-[15.5px] font-medium text-[#1F2933] hover:border-gray-400"
+              >
+                Explore the platform <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -1002,16 +1002,58 @@ const Home = () => {
       {/* Attorney/client windowpane */}
       <SplitShowcase onBook={() => setBookOpen(true)} />
 
-      {/* As seen in — a quiet press beat right after the product */}
+      {/* As seen in — the two articles, linked */}
       <section className="bg-[#FCFCFD] pb-6 pt-12 md:pb-2 md:pt-16 lg:-mt-[6vh]">
         <div className="container mx-auto max-w-5xl px-4 md:px-8">
-          <div>
-            <div className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">As seen in</div>
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 md:gap-x-14">
-              <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-5 w-auto opacity-55 grayscale md:h-6" />
-              <img src="/press-business-insider.svg" alt="Business Insider" className="h-6 w-auto opacity-55 grayscale md:h-7" />
-              <img src="/press-usa-today.svg" alt="USA Today" className="h-5 w-auto opacity-55 grayscale md:h-6" />
-            </div>
+          <div className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">As seen in</div>
+          <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-5">
+            <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity hover:opacity-90">
+              <img src="/press-business-insider.svg" alt="Business Insider" className="h-6 w-auto md:h-7" />
+            </a>
+            <a href="https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity hover:opacity-90">
+              <img src="/press-usa-today.svg" alt="USA Today" className="h-5 w-auto md:h-6" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Two audiences, one platform */}
+      <section className="bg-[#FCFCFD] pt-16 md:pt-24">
+        <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
+          <div className="grid gap-5 md:grid-cols-2">
+            {[
+              {
+                eyebrow: "For attorneys",
+                title: "Your relationship with a client shouldn't end at the signing.",
+                body: "One dashboard for every client, summaries you approve, and a yearly rhythm that brings clients back.",
+                to: "/platform",
+                cta: "Explore the platform",
+                image: "/nyc-skyline.jpg",
+              },
+              {
+                eyebrow: "For clients & their team",
+                title: "A plan everyone understands, and everyone's ready for.",
+                body: "A plain-English playbook of the plan, shared with executors, guardians and agents on the client's terms.",
+                to: "/for-clients",
+                cta: "See the client experience",
+                image: "/west-side-hwy.jpg",
+              },
+            ].map((c) => (
+              <Link key={c.to} to={c.to} className="lift group relative flex min-h-[420px] flex-col justify-end overflow-hidden rounded-2xl">
+                <img src={c.image} alt="" aria-hidden className="lift-img absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(6,45,44,0.10) 15%, rgba(6,45,44,0.88) 100%)" }} />
+                <div className="relative p-8 text-white md:p-10">
+                  <div className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/75">{c.eyebrow}</div>
+                  <h2 className="mt-3 max-w-md font-heading text-[1.7rem] font-bold leading-[1.2] md:text-[2rem]" style={{ textWrap: "balance" }}>
+                    {c.title}
+                  </h2>
+                  <p className="mt-3 max-w-md text-[16px] leading-relaxed text-white/85">{c.body}</p>
+                  <span className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-semibold">
+                    {c.cta} <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -1021,8 +1063,17 @@ const Home = () => {
         <StackedCapabilities />
       </section>
 
+      {/* The platform, page by page */}
+      <LinkCards
+        eyebrow="The platform"
+        title="Everything after the signature, in one place."
+        cards={["/platform/client-dashboard", "/platform/plan-summaries", "/platform/vault", "/platform/sharing", "/platform/check-ins", "/platform/booking"].map((p) => ({ ...CARDS[p], to: p }))}
+      />
+
       {/* FAQ */}
       <FaqSection />
+
+      <SecurityBand />
 
       {/* Our commitment to lawyers — the Golden Gate print fills the rounded
           box; a smaller white box floats over it and carries the content */}
@@ -1044,7 +1095,7 @@ const Home = () => {
                   Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.
                 </p>
                 <p className="mt-4">
-                  We're building more than a product. Alongside estate attorneys, we're setting a new standard for how plans are signed, stored, and carried forward — a future where families are never left guessing, and every attorney is free to do what they do best."
+                  We're building more than a product. Alongside estate attorneys, we're setting a new standard for how plans are signed, stored, and carried forward: a future where families are never left guessing, and every attorney is free to do what they do best."
                 </p>
               </blockquote>
             </div>
@@ -1065,7 +1116,7 @@ const Home = () => {
                 className="willow-btn h-11 px-6 text-[15px] font-medium"
                 onClick={() => navigate("/request-access")}
               >
-                Elevate your practice today
+                Book a demo
               </Button>
             </div>
           </div>
@@ -1090,7 +1141,7 @@ const Home = () => {
                   your clients connected.
                 </h2>
                 <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
-                  Willow becomes a lasting touchpoint between your practice and the entire family — everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
+                  Willow becomes a lasting touchpoint between your practice and the entire family. Everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
                 </p>
                 <button
                   type="button"
@@ -1113,6 +1164,8 @@ const Home = () => {
       {/* Quotes close the page on every marketing page */}
       <AttorneyQuotes />
 
+      <ClosingCta />
+
       <Footer />
 
       {/* Book-a-meeting popup — opened by clicking inside the product windowpane */}
@@ -1128,7 +1181,7 @@ const Home = () => {
           >
             <h3 className="mb-2 font-heading text-2xl font-bold text-[#222222]">Book a meeting</h3>
             <p className="mb-7 text-base leading-relaxed text-gray-600">
-              See both sides of Willow live — a short walkthrough of the attorney workspace and the client experience.
+              See both sides of Willow live: a short walkthrough of the attorney workspace and the client experience.
             </p>
             <Button
               size="lg"

@@ -1,299 +1,359 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { Link, useLocation } from "react-router-dom";
+import { ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
+import { ATTORNEY_LOGIN, CLIENT_LOGIN, DEMO_PATH, NAV, type NavLink, type NavMenu } from "@/content/siteMap";
 
+/* Site header. Desktop: logo, five menus (four open a full-width panel of
+   columns with a one-line description under every link, plus a featured
+   card), then Log in and Book a demo. Phones and narrow windows: a ☰ that
+   opens a full-screen sheet with the same sections, collapsible, and the two
+   actions pinned to the bottom.
 
-/* Brand icons for the Resources menu — drawn on the Lucide 24-grid so they sit
-   naturally beside the app's icon set */
-const NewsIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
-    <path d="M4 5h13v14H6a2 2 0 0 1-2-2V5Z" />
-    <path d="M17 9h2a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2" />
-    <path d="M7.5 9h6M7.5 12.5h6M7.5 16h3.5" />
-  </svg>
+   Motion follows a few rules: the first panel eases in (180ms, strong
+   ease-out); moving between menus while one is open swaps instantly; closing
+   is faster than opening; nothing animates for keyboard users beyond focus. */
+
+const LOGO = "/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png";
+
+const isActive = (pathname: string, menu: NavMenu) => {
+  if (menu.to) return pathname === menu.to;
+  return !!menu.columns?.some((c) => c.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(`${l.to}/`))));
+};
+
+const MenuLink = ({ link, onNavigate, compact = false }: { link: NavLink; onNavigate: () => void; compact?: boolean }) => {
+  const inner = (
+    <>
+      <span className="flex items-center gap-1.5 text-[14.5px] font-semibold text-[#1F2933] group-hover:text-[#0C7370]">
+        {link.label}
+        {link.href && !link.href.startsWith("mailto:") && <ExternalLink className="h-3 w-3 text-gray-400" aria-hidden />}
+        {link.badge && <span className="rounded-full bg-[#E6F5F4] px-1.5 py-px text-[10.5px] font-semibold uppercase tracking-[0.06em] text-[#0C7370]">{link.badge}</span>}
+      </span>
+      {link.desc && !compact && <span className="mt-0.5 block text-[13px] leading-snug text-gray-500">{link.desc}</span>}
+    </>
+  );
+  const cls = "group -mx-3 block rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-[#F1F8F7] focus-visible:bg-[#F1F8F7] focus-visible:outline-none";
+  return link.to ? (
+    <Link to={link.to} onClick={onNavigate} className={cls}>
+      {inner}
+    </Link>
+  ) : (
+    <a href={link.href} onClick={onNavigate} className={cls}>
+      {inner}
+    </a>
+  );
+};
+
+const MegaPanel = ({ menu, onNavigate }: { menu: NavMenu; onNavigate: () => void }) => (
+  <div className="mx-auto grid max-w-7xl grid-cols-[1fr_300px] gap-10 px-8 py-8">
+    <div className={`grid gap-8 ${menu.columns!.length >= 3 ? "grid-cols-3" : menu.columns!.length === 2 ? "grid-cols-2" : "grid-cols-2"}`}>
+      {menu.columns!.map((col) => (
+        <div key={col.title}>
+          <div className="mb-2 text-[11.5px] font-semibold uppercase tracking-[0.14em] text-gray-400">{col.title}</div>
+          <div className="flex flex-col">
+            {col.links.map((l) => (
+              <MenuLink key={l.label} link={l} onNavigate={onNavigate} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+    {menu.feature && (
+      <Link
+        to={menu.feature.to}
+        onClick={onNavigate}
+        className="group relative flex min-h-[260px] flex-col justify-end overflow-hidden rounded-xl"
+      >
+        <img src={menu.feature.image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(6,45,44,0.05) 20%, rgba(6,45,44,0.82) 100%)" }} />
+        <div className="relative p-5 text-white">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/75">{menu.feature.eyebrow}</div>
+          <div className="mt-1.5 font-heading text-[17px] font-bold leading-snug">{menu.feature.title}</div>
+          <div className="mt-1.5 text-[13px] leading-snug text-white/85">{menu.feature.body}</div>
+          <span className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold">
+            Learn more <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </span>
+        </div>
+      </Link>
+    )}
+  </div>
 );
 
-const LibraryIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
-    <path d="M12 3.5 4 7.5h16L12 3.5Z" />
-    <path d="M6 10.5V16M10 10.5V16M14 10.5V16M18 10.5V16" />
-    <path d="M4.5 19h15" />
-  </svg>
-);
-
-const Navbar = () => {
-  const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
-  const [scrolledPastHero, setScrolledPastHero] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
-  
-  const isCreateWillPage = location.pathname === "/create-will";
-  const isHomePage = location.pathname === "/";
-  // Marketing chrome (tabs + compact bar) on every content page, including
-  // nested ones like /legislation-by-state/new-york
-  const isMarketingPage = ["/", "/attorneys", "/for-clients", "/news", "/terms", "/privacy", "/member-terms", "/recipient-terms", "/firm-agreement", "/health-data-notice", "/subprocessors", "/connections", "/request-documents", "/contact", "/investors", "/careers", "/founding-100", "/nysba", "/request-access", "/book"].includes(location.pathname)
-    || location.pathname.startsWith("/legislation-by-state");
-  const marketingTabs = [
-    { label: "For Attorneys", href: "/" },
-    { label: "For Clients", href: "/for-clients" },
-  ];
-  // Resources holds the content pages; rendered as a dropdown on desktop and
-  // a labelled group in the mobile menu
-  const resourceLinks = [
-    { label: "Willow in the News", desc: "Coverage and announcements", href: "/news", Icon: NewsIcon },
-    { label: "Legislation by State", desc: "E-signing law, state by state", href: "/legislation-by-state", Icon: LibraryIcon },
-  ];
-  const [resourcesOpen, setResourcesOpen] = useState(false);
-  const resourcesRef = useRef<HTMLDivElement>(null);
-  const onResourcesPage = resourceLinks.some((l) => l.href === location.pathname);
+const LoginMenu = ({ open, setOpen }: { open: boolean; setOpen: (o: boolean) => void }) => {
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!resourcesOpen) return;
+    if (!open) return;
     const close = (e: MouseEvent) => {
-      if (resourcesRef.current && !resourcesRef.current.contains(e.target as Node)) setResourcesOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
-  }, [resourcesOpen]);
-  const isClientsPage = location.pathname === "/clients";
-  const isAboutUsPage = location.pathname === "/about-us";
-  const isBookPage = location.pathname === "/book";
-  const isRequestAccessPage = location.pathname === "/request-access";
-  const isPitolPage = location.pathname === "/pitol";
-  const alwaysSmallPages = ["/availability-map", "/terms", "/privacy", "/member-terms", "/recipient-terms", "/firm-agreement", "/health-data-notice", "/subprocessors", "/connections", "/request-documents", "/contact", "/investors", "/careers", "/founding-100", "/nysba", "/learn", "/book", "/request-access", "/pitol"];
-  const isAlwaysSmallPage = alwaysSmallPages.includes(location.pathname);
-
-  useEffect(() => {
-    // Always keep About Us page in scrolled state
-    if (isAboutUsPage) {
-      setScrolled(true);
-      setScrolledPastHero(true);
-      return;
-    }
-    
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 10;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
-      
-      // Check if hero button is out of view (works on all pages)
-      const heroButton = document.querySelector('[data-hero-demo-button]');
-      if (heroButton) {
-        const rect = heroButton.getBoundingClientRect();
-        const isButtonVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-        const hasScrolledPastHero = !isButtonVisible && rect.bottom < 0;
-        if (hasScrolledPastHero !== scrolledPastHero) {
-          setScrolledPastHero(hasScrolledPastHero);
-        }
-      } else {
-        // If no hero button found, use scroll position as fallback
-        if (scrolledPastHero !== isScrolled) {
-          setScrolledPastHero(isScrolled);
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    // Check on mount as well
-    handleScroll();
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [scrolled, scrolledPastHero, isAboutUsPage]);
-
+  }, [open, setOpen]);
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 ${isMarketingPage ? 'bg-[#FCFCFD]' : 'bg-background/100'} ${isMarketingPage ? 'py-2.5 md:py-3 border-b border-border' : isAboutUsPage ? 'py-5 md:py-6 border-b border-border' : scrolled || isAlwaysSmallPage ? 'py-5 md:py-6 border-b border-border' : 'py-6 md:py-12'}`}>
-      <div className="container mx-auto px-4 flex items-center justify-between relative">
-        {/* Mobile Hamburger Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden flex flex-col gap-[5px] p-3"
-          aria-label="Toggle menu"
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={() => setOpen(!open)}
+        className="press flex h-9 items-center gap-1 rounded-md px-3 text-[14px] font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+      >
+        Log in <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="menu-pop absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white p-1.5"
+          style={{ boxShadow: "0 12px 32px rgba(16,24,40,0.12)", transformOrigin: "top right" }}
         >
-          <span className={`w-5 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''}`}></span>
-          <span className={`w-5 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
-          <span className={`w-5 h-0.5 bg-gray-700 transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`}></span>
-        </button>
+          {[
+            { label: "Attorney portal", desc: "For attorneys and firm staff", href: ATTORNEY_LOGIN },
+            { label: "Client portal", desc: "For clients and the people they've named", href: CLIENT_LOGIN },
+          ].map((l) => (
+            <a key={l.label} role="menuitem" href={l.href} className="block rounded-lg px-3 py-2.5 hover:bg-[#F1F8F7]">
+              <span className="block text-[14px] font-semibold text-[#1F2933]">{l.label}</span>
+              <span className="block text-[12.5px] text-gray-500">{l.desc}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg lg:hidden">
-            <div className="flex flex-col p-4 gap-2">
-              {isMarketingPage && marketingTabs.map((tab) =>
-                tab.href ? (
-                  <Link
-                    key={tab.label}
-                    to={tab.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium"
-                  >
-                    {tab.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={tab.label}
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); }}
-                    className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium"
-                  >
-                    {tab.label}
-                  </a>
-                )
-              )}
-              {isMarketingPage && (
-                <>
-                  <div className="px-3 py-2 font-medium text-gray-600">Resources</div>
-                  {resourceLinks.map(({ label, href, Icon }) => (
-                    <Link
-                      key={href}
-                      to={href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-2.5 rounded py-1.5 pl-7 pr-3 text-[15px] text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                    >
-                      <Icon className="h-4 w-4 text-gray-400" />
-                      {label}
-                    </Link>
-                  ))}
-                </>
-              )}
-              {isClientsPage && (
-                <Link 
-                  to="/learn" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium"
-                >
-                  Learn
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Left side - marketing tabs (Desktop) */}
-        <div className={`hidden lg:flex flex-1 gap-4 ${isHomePage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} ${isCreateWillPage ? 'absolute left-4' : ''}`}>
-          {isMarketingPage && (
-            <div className="flex items-center gap-0.5">
-              {marketingTabs.map((tab) =>
-                tab.href ? (
-                  <Link
-                    key={tab.label}
-                    to={tab.href}
-                    className={`px-2 py-1 rounded font-medium text-sm whitespace-nowrap ${location.pathname === tab.href ? "text-willow" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}
-                  >
-                    {tab.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={tab.label}
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                    className="px-2 py-1 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium text-sm whitespace-nowrap"
-                  >
-                    {tab.label}
-                  </a>
-                )
-              )}
-              <div ref={resourcesRef} className="relative" onMouseEnter={() => setResourcesOpen(true)} onMouseLeave={() => setResourcesOpen(false)}>
-                <button
-                  type="button"
-                  onClick={() => setResourcesOpen((o) => !o)}
-                  aria-expanded={resourcesOpen}
-                  className={`flex items-center gap-1 rounded px-2 py-1 text-sm font-medium whitespace-nowrap ${onResourcesPage ? "text-willow" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}
-                >
-                  Resources
-                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${resourcesOpen ? "rotate-180" : ""}`} />
-                </button>
-                {resourcesOpen && (
-                  <div className="absolute left-0 top-full z-50 w-60 pt-1.5">
-                    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white py-1.5" style={{ boxShadow: "0 8px 28px rgba(16,24,40,0.10)" }}>
-                      {resourceLinks.map(({ label, href, Icon }) => (
-                        <Link
-                          key={href}
-                          to={href}
-                          onClick={() => setResourcesOpen(false)}
-                          className={`flex items-center gap-2.5 px-4 py-2 text-sm font-medium ${location.pathname === href ? "text-willow" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}
-                        >
-                          <Icon className={`h-4 w-4 ${location.pathname === href ? "text-willow" : "text-gray-400"}`} />
-                          {label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          {isClientsPage && (
-            <Link 
-              to="/learn" 
-              className={`px-3 py-1 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded font-medium ${isHomePage ? 'text-base md:text-lg' : scrolled || isAlwaysSmallPage ? 'text-base md:text-lg' : 'text-base mt-12 md:mt-8 lg:mt-8'}`}
-            >
-              Learn
+const MobileSheet = ({ onClose }: { onClose: () => void }) => {
+  const [open, setOpen] = useState<string | null>(null);
+  return (
+    <div
+      className="fixed inset-x-0 bottom-0 z-40 flex flex-col bg-[#FCFCFD] lg:hidden"
+      style={{ top: "calc(64px + env(safe-area-inset-top))" }}
+      role="dialog"
+      aria-label="Site menu"
+    >
+      <div className="flex-1 overflow-y-auto px-5 pb-6">
+        {NAV.map((menu) =>
+          menu.to ? (
+            <Link key={menu.label} to={menu.to} onClick={onClose} className="flex min-h-[56px] items-center border-b border-gray-200 text-[17px] font-semibold text-[#1F2933]">
+              {menu.label}
             </Link>
-          )}
-        </div>
-        
-        {/* Centered logo - Shifts left on mobile when hero CTA is out of view */}
-        <div className={`flex ${isHomePage || isAboutUsPage ? 'items-center' : scrolled || isAlwaysSmallPage ? 'items-center' : 'items-end'} transition-all duration-300 ${
-          isCreateWillPage 
-            ? 'absolute left-1/2 transform -translate-x-1/2 py-6' 
-            : scrolledPastHero || isAlwaysSmallPage
-              ? 'lg:absolute lg:left-1/2 lg:transform lg:-translate-x-1/2 absolute left-0 ml-[54px] lg:ml-0' 
-              : 'absolute left-1/2 transform -translate-x-1/2'
-        }`}>
-          <Link to="/" className="flex items-center">
-            {(scrolledPastHero || isAlwaysSmallPage) ? (
-              <>
-                <img
-                  src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
-                  alt="Willow Logo"
-                  className={`${isMarketingPage ? 'h-11 md:h-12' : 'h-11 md:h-20'}`}
-                />
-              </>
-            ) : (
-              <img
-                src="/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png"
-                alt="Willow Logo"
-                className={`${isMarketingPage ? 'h-11 md:h-12' : isAboutUsPage ? 'h-16 md:h-20' : scrolled || isAlwaysSmallPage ? 'h-16 md:h-20' : 'h-16 md:h-20 mt-12 md:mt-8 lg:mt-8'}`}
-              />
-            )}
-          </Link>
-        </div>
-        
-        {/* Right side - Schedule a Demo button (only shows when hero CTA is out of view, not on booking pages) */}
-        {!isBookPage && !isRequestAccessPage && (
-          <div className="flex flex-1 justify-end items-center gap-1">
-            <div className={`transition-opacity duration-300 ${scrolledPastHero || (isAlwaysSmallPage && !isBookPage && !isRequestAccessPage) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-              {!isCreateWillPage && (
-                <Button
-                  size="sm"
-                  className="willow-btn px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium"
-                  style={{
-                    boxShadow: '0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)'
-                  }}
-                  onClick={() => navigate('/request-access')}
-                >
-                  {isPitolPage ? 'Request an invitation' : 'Book a Demo'}
-                </Button>
+          ) : (
+            <div key={menu.label} className="border-b border-gray-200">
+              <button
+                type="button"
+                aria-expanded={open === menu.label}
+                onClick={() => setOpen(open === menu.label ? null : menu.label)}
+                className="flex min-h-[56px] w-full items-center justify-between text-left text-[17px] font-semibold text-[#1F2933]"
+              >
+                {menu.label}
+                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${open === menu.label ? "rotate-180" : ""}`} />
+              </button>
+              {open === menu.label && (
+                <div className="pb-4">
+                  {menu.columns!.map((col) => (
+                    <div key={col.title} className="mb-3">
+                      <div className="mb-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">{col.title}</div>
+                      {col.links.map((l) =>
+                        l.to ? (
+                          <Link key={l.label} to={l.to} onClick={onClose} className="flex min-h-[44px] items-center text-[15.5px] text-gray-700">
+                            {l.label}
+                          </Link>
+                        ) : (
+                          <a key={l.label} href={l.href} onClick={onClose} className="flex min-h-[44px] items-center text-[15.5px] text-gray-700">
+                            {l.label}
+                          </a>
+                        )
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-          </div>
-        )}
-        
-        {isCreateWillPage && (
-          <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2">
-            <div className="rounded-full border-4 border-background overflow-hidden w-24 h-24">
-              <img 
-                src="/lovable-uploads/705cc112-2e95-4f02-8977-fed85638cb3f.png" 
-                alt="Profile" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
+          )
         )}
       </div>
+      <div className="grid gap-2.5 border-t border-gray-200 bg-white px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-4">
+        <Link to={DEMO_PATH} onClick={onClose} className="press flex h-12 items-center justify-center rounded-lg bg-[#128F8B] text-[16px] font-semibold text-white">
+          Book a demo
+        </Link>
+        <div className="grid grid-cols-2 gap-2.5">
+          <a href={ATTORNEY_LOGIN} className="press flex h-12 items-center justify-center rounded-lg border border-gray-300 text-[14.5px] font-medium text-gray-800">
+            Attorney log in
+          </a>
+          <a href={CLIENT_LOGIN} className="press flex h-12 items-center justify-center rounded-lg border border-gray-300 text-[14.5px] font-medium text-gray-800">
+            Client log in
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Navbar = () => {
+  const location = useLocation();
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [panelShown, setPanelShown] = useState(false); // true once a panel has been open, so switching is instant
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const closeTimer = useRef<number | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Close everything on navigation
+  useEffect(() => {
+    setOpenMenu(null);
+    setPanelShown(false);
+    setMobileOpen(false);
+    setLoginOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenMenu(null);
+        setPanelShown(false);
+        setLoginOpen(false);
+        setMobileOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  const cancelClose = () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    closeTimer.current = null;
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = window.setTimeout(() => {
+      setOpenMenu(null);
+      setPanelShown(false);
+    }, 140);
+  };
+  const openNow = (label: string) => {
+    cancelClose();
+    setPanelShown(openMenu !== null);
+    setOpenMenu(label);
+  };
+  const closeAll = () => {
+    cancelClose();
+    setOpenMenu(null);
+    setPanelShown(false);
+  };
+
+  const active = NAV.find((m) => m.label === openMenu && m.columns);
+
+  return (
+    <header
+      ref={headerRef}
+      className={`fixed left-0 right-0 top-0 z-50 border-b bg-[#FCFCFD]/95 backdrop-blur-md transition-[border-color,box-shadow] duration-200 ${
+        scrolled || openMenu || mobileOpen ? "border-gray-200" : "border-transparent"
+      }`}
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+      onMouseLeave={scheduleClose}
+    >
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:shadow">
+        Skip to content
+      </a>
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-5 md:px-8">
+        <Link to="/" className="flex flex-shrink-0 items-center" aria-label="Willow home" onClick={closeAll}>
+          <img src={LOGO} alt="Willow" className="h-10 w-auto md:h-11" />
+        </Link>
+
+        <nav aria-label="Main" className="hidden flex-1 items-center gap-0.5 lg:flex">
+          {NAV.map((menu) =>
+            menu.to ? (
+              <Link
+                key={menu.label}
+                to={menu.to}
+                onMouseEnter={scheduleClose}
+                className={`rounded-md px-3 py-2 text-[14.5px] font-medium transition-colors ${
+                  isActive(location.pathname, menu) ? "text-[#0C7370]" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                {menu.label}
+              </Link>
+            ) : (
+              <button
+                key={menu.label}
+                type="button"
+                aria-expanded={openMenu === menu.label}
+                onMouseEnter={() => openNow(menu.label)}
+                onClick={() => (openMenu === menu.label ? closeAll() : openNow(menu.label))}
+                className={`flex items-center gap-1 rounded-md px-3 py-2 text-[14.5px] font-medium transition-colors ${
+                  openMenu === menu.label
+                    ? "bg-gray-100 text-gray-900"
+                    : isActive(location.pathname, menu)
+                    ? "text-[#0C7370]"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                {menu.label}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${openMenu === menu.label ? "rotate-180" : ""}`} />
+              </button>
+            )
+          )}
+        </nav>
+
+        <div className="ml-auto hidden items-center gap-1.5 lg:flex" onMouseEnter={scheduleClose}>
+          <LoginMenu open={loginOpen} setOpen={setLoginOpen} />
+          <Link
+            to={DEMO_PATH}
+            className="press flex h-9 items-center rounded-md bg-[#128F8B] px-4 text-[14px] font-semibold text-white transition-colors hover:bg-[#0C7370]"
+            data-nav-demo
+          >
+            Book a demo
+          </Link>
+        </div>
+
+        {/* Phones and narrow windows */}
+        <div className="ml-auto flex items-center gap-2 lg:hidden">
+          <Link to={DEMO_PATH} className="press hidden h-9 items-center rounded-md bg-[#128F8B] px-3.5 text-[13.5px] font-semibold text-white sm:flex">
+            Book a demo
+          </Link>
+          <button
+            type="button"
+            onClick={() => setMobileOpen((o) => !o)}
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-gray-100"
+          >
+            <span className="relative block h-3.5 w-5">
+              <span className={`absolute left-0 top-0 h-0.5 w-5 rounded bg-gray-800 transition-transform duration-200 ${mobileOpen ? "translate-y-[6px] rotate-45" : ""}`} />
+              <span className={`absolute left-0 top-[6px] h-0.5 w-5 rounded bg-gray-800 transition-opacity duration-150 ${mobileOpen ? "opacity-0" : ""}`} />
+              <span className={`absolute left-0 top-[12px] h-0.5 w-5 rounded bg-gray-800 transition-transform duration-200 ${mobileOpen ? "-translate-y-[6px] -rotate-45" : ""}`} />
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop mega panel */}
+      {active && (
+        <div
+          className={`absolute inset-x-0 top-full hidden border-b border-gray-200 bg-white lg:block ${panelShown ? "" : "mega-enter"}`}
+          style={{ boxShadow: "0 24px 48px -24px rgba(16,24,40,0.18)" }}
+          onMouseEnter={cancelClose}
+        >
+          <MegaPanel menu={active} onNavigate={closeAll} />
+        </div>
+      )}
+
+      {/* Portalled: the header's backdrop blur would otherwise trap a fixed sheet inside the bar */}
+      {mobileOpen && createPortal(<MobileSheet onClose={() => setMobileOpen(false)} />, document.body)}
     </header>
   );
 };

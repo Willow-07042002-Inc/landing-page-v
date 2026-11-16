@@ -167,6 +167,83 @@ body {
   @apply bg-willow hover:bg-willow-600 text-white transition-colors;
 }
 
+/* ── Motion layer ─────────────────────────────────────────────────────────
+   Strong custom curves (the built-in ones are too soft), transform and
+   opacity only, hover effects gated to real pointers, and everything at rest
+   under reduced motion. */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Anything pressable answers the press */
+.press {
+  transition: transform 160ms var(--ease-out), background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+/* A linked card lifts 2px; its photograph zooms inside the frame */
+@media (hover: hover) and (pointer: fine) {
+  .lift {
+    transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 150ms ease;
+  }
+  .lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px -16px rgba(16, 24, 40, 0.22);
+  }
+  .lift .lift-img {
+    transition: transform 500ms var(--ease-out);
+  }
+  .lift:hover .lift-img {
+    transform: scale(1.03);
+  }
+}
+
+/* The first mega panel eases down from the bar; switching menus is instant */
+@keyframes mega-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.mega-enter {
+  animation: mega-in 180ms var(--ease-out);
+}
+
+/* Small popovers scale from their trigger */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+.menu-pop {
+  animation: pop-in 150ms var(--ease-out);
+}
+
+/* The hero enters once, on load: one container, short and non-uniform delays */
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.enter > * {
+  animation: enter-up 520ms var(--ease-out) both;
+}
+.enter > *:nth-child(2) { animation-delay: 60ms; }
+.enter > *:nth-child(3) { animation-delay: 110ms; }
+.enter > *:nth-child(4) { animation-delay: 150ms; }
+.enter > *:nth-child(5) { animation-delay: 180ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active { transform: none; }
+  .mega-enter, .menu-pop, .enter > * { animation: none; }
+  .lift, .lift:hover, .lift .lift-img, .lift:hover .lift-img { transform: none !important; }
+}
+
 .check-icon {
   stroke-width: 5px;
   stroke-linecap: round;
