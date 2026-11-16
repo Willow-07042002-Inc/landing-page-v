@@ -39,6 +39,7 @@ export type PageDef = {
   metaDesc: string;
   eyebrow: string;
   title: string;
+  accent?: string; // the italic teal second line of the headline
   subtitle: string;
   secondary?: { label: string; to: string };
   hero: { visual: React.ReactNode; print: string; aspect?: string; width?: string; frameAspect?: string };
@@ -106,7 +107,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "The Willow Platform | Estate Planning Software for Attorneys",
     metaDesc: "One platform for estate planning attorneys and their clients: a client dashboard, plain-English plan summaries, secure sharing and a yearly rhythm of staying in touch.",
     eyebrow: "Platform",
-    title: "One platform for the plan and the relationship.",
+    title: "One platform for",
+    accent: "the plan and the relationship.",
     subtitle: "Willow holds every client's plan, explains it to the family in plain English, shares it with the people they name, and keeps you in touch for years after the signing.",
     secondary: { label: "See the client experience", to: "/for-clients" },
     hero: { visual: <RequiredActionsVignette />, print: "/nyc-skyline.jpg" },
@@ -131,10 +133,10 @@ export const PAGES: PageDef[] = [
     rowsTitle: "Everything after the signature, in one place.",
     rows: [
       {
-        eyebrow: "Client dashboard",
-        title: "See everything waiting on you, the moment you sign in.",
-        body: "New leads from your booking page, every active client, and one list of the actions that need you: summaries to approve, release requests, emails ready to send.",
-        visual: <RequiredActionsVignette />,
+        eyebrow: "Client records",
+        title: "Every client's plan, people and history, on one record.",
+        body: "Each record holds the client's estate plan, the team they've named, your notes, and your yearly plan for staying in touch, with every email waiting for your approval.",
+        visual: <StayingInTouchVignette />,
         print: "/central-park.jpg",
       },
       {
@@ -161,7 +163,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Client Dashboard | Willow for Estate Planning Attorneys",
     metaDesc: "Leads from your booking page, every active client, and every action waiting on you, in one dashboard built for estate planning attorneys.",
     eyebrow: "Platform · Client dashboard",
-    title: "Every client, and every action waiting on you.",
+    title: "Every client,",
+    accent: "and every action waiting on you.",
     subtitle: "Sign in to three lists: the new leads who booked time with you, the clients whose plans are in progress, and the actions only you can take.",
     hero: { visual: <RequiredActionsVignette />, print: "/central-park.jpg" },
     points: [
@@ -200,7 +203,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Digital Signing Ceremony | Willow",
     metaDesc: "Willow's attorney-led signing ceremony is built and switches on state by state as electronic wills law allows. Until then, sign as you do today and upload the executed documents.",
     eyebrow: "Platform · Signing ceremony · Coming",
-    title: "A signing ceremony, ready for the day your state allows it.",
+    title: "A signing ceremony, ready",
+    accent: "for the day your state allows it.",
     subtitle: "Willow's signing ceremony is built. It switches on state by state as electronic wills and remote notarization become law. Until then, sign the way you do today and upload the executed documents.",
     secondary: { label: "See where the law stands", to: "/legislation-by-state" },
     hero: { visual: <SigningShot />, print: "/golden-gate.jpg", aspect: "2056 / 1258", width: "88%" },
@@ -234,7 +238,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "The Willow Vault | Secure Storage for Estate Plans",
     metaDesc: "Every signed estate planning document, every past version, and a record of everyone who opened them, stored for your clients and the people they name.",
     eyebrow: "Platform · Vault",
-    title: "Every document, every version, and who opened it.",
+    title: "Every document, every version,",
+    accent: "and who opened it.",
     subtitle: "The signed plan and everything that supports it, stored in one place your client and the people they name can reach, with a record of every view, download and release.",
     hero: { visual: <VaultVignette />, print: "/hudson-bridge.jpg" },
     points: [
@@ -273,7 +278,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Plain-English Plan Summaries | Willow",
     metaDesc: "Willow drafts a plain-English summary of every will, trust, power of attorney and health care proxy. The attorney reviews and approves every word before the client sees it.",
     eyebrow: "Platform · Plan summaries",
-    title: "Every plan, explained in plain English.",
+    title: "Every plan,",
+    accent: "explained in plain English.",
     subtitle: "Willow drafts a summary of each will, trust and power of attorney, tied clause by clause to the document. You edit it and approve it. Only then does your client see it.",
     hero: { visual: <SummaryReviewVignette />, print: "/florida-coast.jpg" },
     points: [
@@ -316,7 +322,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Sharing & Release | Willow",
     metaDesc: "Clients share their estate plan with executors, guardians and agents by role. Documents can be shared now, or sealed until a passing is verified by the attorney.",
     eyebrow: "Platform · Sharing & release",
-    title: "Everyone prepared. Nothing shared early.",
+    title: "Everyone prepared.",
+    accent: "Nothing shared early.",
     subtitle: "Your client names their executors, guardians and agents. Willow recommends what each should see, and holds anything sealed until you've verified a passing.",
     hero: { visual: <SharingRecommendationVignette />, print: "/willow-street.jpg", aspect: "760 / 660" },
     points: [
@@ -360,7 +367,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Check-ins & Updates | Willow",
     metaDesc: "A yearly rhythm of check-ins, short surveys and updates from your firm keeps estate plans current and brings clients back to their attorney when life changes.",
     eyebrow: "Platform · Check-ins & updates",
-    title: "Plans stay current. Clients come back to you.",
+    title: "Plans stay current.",
+    accent: "Clients come back to you.",
     subtitle: "Once a plan is approved, Willow keeps you in touch with a yearly rhythm of check-ins, short surveys and updates from your firm. Every email waits for your approval.",
     hero: { visual: <CheckInDemoVignette h={560} />, print: "/santa-monica.jpg" },
     points: [
@@ -395,7 +403,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Booking Page | Willow for Estate Planning Attorneys",
     metaDesc: "A booking page for estate planning attorneys: video, phone or in-person meetings, availability from your own calendar, and every booking becomes a lead.",
     eyebrow: "Platform · Booking page",
-    title: "New clients book time with you directly.",
+    title: "New clients book time",
+    accent: "with you directly.",
     subtitle: "Share your booking page and people choose a video, phone or in-person meeting from your real availability. Every booking arrives on your dashboard as a lead.",
     hero: { visual: <BookingVignette />, print: "/williamsburg.jpg" },
     points: [
@@ -430,7 +439,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Integrations | Willow",
     metaDesc: "Connect Google Workspace, Microsoft 365 and Zoom to Willow for calendar availability, meeting links and client contact suggestions. Every connection is optional.",
     eyebrow: "Platform · Integrations",
-    title: "Works with the tools your practice already runs on.",
+    title: "Works with the tools",
+    accent: "your practice already runs on.",
     subtitle: "Connect Google Workspace, Microsoft 365 or Zoom for your availability, meeting links and client contact details. Every connection is optional, and you can disconnect any time.",
     secondary: { label: "See exactly what each one accesses", to: "/connections" },
     hero: { visual: <ConnectionsVignette />, print: "/nyc-street.jpg" },
@@ -452,7 +462,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Willow for Solo Estate Planning Attorneys",
     metaDesc: "Run a modern estate planning practice on your own: one dashboard for every client, plain-English summaries you approve, and a yearly rhythm of staying in touch.",
     eyebrow: "Solutions · Solo practitioners",
-    title: "A modern practice, without hiring for it.",
+    title: "A modern practice,",
+    accent: "without hiring for it.",
     subtitle: "You're the attorney, the intake team and the follow-up. Willow gives you one dashboard for every client and takes on the explaining, the sharing and the staying in touch.",
     hero: { visual: <RequiredActionsVignette />, print: "/williamsburg.jpg" },
     points: [
@@ -484,7 +495,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Willow for Boutique Estate Planning Firms",
     metaDesc: "Every client experience under your firm's name and branding, a dashboard for each attorney, and a plan that stays with the family for life.",
     eyebrow: "Solutions · Boutique firms",
-    title: "Your firm's name on every client's plan.",
+    title: "Your firm's name",
+    accent: "on every client's plan.",
     subtitle: "Clients see your logo and your colours on every page and email Willow sends. Each attorney runs their own clients from their own dashboard.",
     hero: { visual: <SharingRecommendationVignette />, print: "/nyc-street.jpg", aspect: "760 / 660" },
     points: [
@@ -513,7 +525,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Grow Your Estate Planning Practice | Willow",
     metaDesc: "Willow keeps estate planning attorneys connected to clients, executors and families as life moves forward, so relationships turn into updates, returning clients and a practice worth more.",
     eyebrow: "Solutions · Practice growth",
-    title: "Your relationship with a client shouldn't end at the signing.",
+    title: "Your relationship with a client",
+    accent: "shouldn't end at the signing.",
     subtitle: "Today the plan goes into a binder and the relationship goes quiet. Willow keeps you connected to the client, their executors and their family as life moves forward.",
     hero: { visual: <CheckInDemoVignette h={560} />, print: "/central-park.jpg" },
     points: [
@@ -549,7 +562,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Wills on Willow | Estate Planning Software",
     metaDesc: "Store, explain and share every will: plain-English summaries of each gift approved by the attorney, past versions kept, and release only once a passing is verified.",
     eyebrow: "Solutions · Wills",
-    title: "Every will, stored, explained and ready.",
+    title: "Every will,",
+    accent: "stored, explained and ready.",
     subtitle: "Upload the signed will and Willow keeps it with every past version, explains each gift in plain English once you approve it, and releases it to the executor when it's time.",
     hero: { visual: <WhoGetsWhatVignette />, print: "self" },
     points: [
@@ -574,7 +588,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Revocable Trusts on Willow | Estate Planning Software",
     metaDesc: "Willow explains revocable and irrevocable trusts in plain English: who manages the trust, what it holds, and when each beneficiary receives their share.",
     eyebrow: "Solutions · Revocable trusts",
-    title: "A trust anyone in the family can follow.",
+    title: "A trust anyone",
+    accent: "in the family can follow.",
     subtitle: "Who manages the trust, what it holds, and when each beneficiary receives their share, laid out as a schedule your client and their trustee can read.",
     hero: { visual: <TrustVignette />, print: "self" },
     points: [
@@ -600,7 +615,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Powers of Attorney & Health Care Proxies on Willow",
     metaDesc: "Willow explains each power in a power of attorney or health care proxy in plain English and shares it with the agents named, so they can act when they're needed.",
     eyebrow: "Solutions · Powers of attorney",
-    title: "Every power, explained in plain English.",
+    title: "Every power of attorney,",
+    accent: "explained power by power.",
     subtitle: "Financial powers of attorney and health care proxies, summarized power by power and shared with the agents named, so they know what they can do before they need to.",
     hero: { visual: <StepInVignette />, print: "self" },
     points: [
@@ -615,7 +631,8 @@ export const PAGES: PageDef[] = [
     metaTitle: "Guardianship for Minors on Willow",
     metaDesc: "When a plan names guardians for minor children, Willow helps parents gather per-child guidance, funds and care details and share them with the guardian.",
     eyebrow: "Solutions · Guardianship for minors",
-    title: "A guardian who knows the children, not just their names.",
+    title: "A guardian who knows the children,",
+    accent: "not just their names.",
     subtitle: "When a plan names a guardian, Willow helps the parents gather what that person would need, child by child, and share it now or when it's needed.",
     hero: { visual: <CategoriesVignette />, print: "self" },
     points: [

@@ -9,7 +9,7 @@ import { SharingHomeShot } from "@/components/ClientVignettes";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { RequiredActionsVignette } from "@/components/site/vignettes";
-import { LinkCards, SecurityBand, ClosingCta } from "@/components/site/blocks";
+import { LinkCards, SecurityBand } from "@/components/site/blocks";
 import { CARDS } from "@/content/pages";
 import {
   CheckInDemoVignette,
@@ -1066,7 +1066,8 @@ const Home = () => {
       {/* The platform, page by page */}
       <LinkCards
         eyebrow="The platform"
-        title="Everything after the signature, in one place."
+        title="Everything after the signature,"
+        accent="in one place."
         cards={["/platform/client-dashboard", "/platform/plan-summaries", "/platform/vault", "/platform/sharing", "/platform/check-ins", "/platform/booking"].map((p) => ({ ...CARDS[p], to: p }))}
       />
 
@@ -1164,7 +1165,6 @@ const Home = () => {
       {/* Quotes close the page on every marketing page */}
       <AttorneyQuotes />
 
-      <ClosingCta />
 
       <Footer />
 

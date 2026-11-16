@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Plus, Minus } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { DEMO_PATH } from "@/content/siteMap";
+import { RequiredActionsVignette } from "@/components/site/vignettes";
 
-/* The page system every marketing page is built from. One width, one set of
-   edges (max-w-7xl, px-5/8), one button pair, one card style, one heading
-   scale. The signature visual is the "print": a photograph of a place, matted
-   around a live recreation of the real product. */
+/* The page system every marketing page is built from, in the language of the
+   homepage and the For Clients page:
+   - centered heroes: a light serif line, then an italic teal line
+   - centered section heads: the second phrase in teal on its own line
+   - copy and product side by side on the golden section (38.2 / 61.8)
+   - the print: a photograph with the product screen laid over it, cut to the
+     same proportions so it sits with an even mat on every side
+   - the dark print card to close, its product screen rising out of the
+     bottom-right corner; attorney quotes after it
+   One ground (#F8FAFC), one ink (#222222), one button pair. */
 
-export const WRAP = "mx-auto w-full max-w-7xl px-5 md:px-8";
+export const WRAP = "mx-auto w-full max-w-7xl px-4 md:px-8";
+const INK = "#222222";
+const GLOW = "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)";
 
 export const usePageMeta = (title: string, description: string) => {
   useEffect(() => {
@@ -25,32 +35,44 @@ export const usePageMeta = (title: string, description: string) => {
   }, [title, description]);
 };
 
-export const PageShell = ({ children, ground = "#FCFCFD" }: { children: React.ReactNode; ground?: string }) => (
-  <div className="flex min-h-screen flex-col" style={{ backgroundColor: ground, color: "#1F2933" }}>
+export const PageShell = ({ children, quotes = false }: { children: React.ReactNode; quotes?: boolean }) => (
+  <div className="flex min-h-screen flex-col bg-[#F8FAFC]" style={{ color: INK }}>
     <Navbar />
     <main id="main" className="flex-1 pt-16">
       {children}
+      {quotes && <AttorneyQuotes />}
     </main>
     <Footer />
   </div>
 );
 
 export const Eyebrow = ({ children, light = false }: { children: React.ReactNode; light?: boolean }) => (
-  <div className={`flex items-center gap-2.5 text-[12.5px] font-semibold uppercase tracking-[0.16em] ${light ? "text-white/70" : "text-[#0C7370]"}`}>
-    <span className={`h-[3px] w-5 rounded-full ${light ? "bg-white/60" : "bg-[#128F8B]"}`} />
-    {children}
-  </div>
+  <div className={`text-[12px] font-semibold uppercase tracking-[0.14em] ${light ? "text-white/70" : "text-[#0C7370]"}`}>{children}</div>
 );
 
-export const PrimaryButton = ({ to = DEMO_PATH, children = "Book a demo", className = "" }: { to?: string; children?: React.ReactNode; className?: string }) => (
-  <Link to={to} className={`press inline-flex h-12 items-center justify-center rounded-lg bg-[#128F8B] px-6 text-[15.5px] font-semibold text-white hover:bg-[#0C7370] ${className}`}>
+export const PrimaryButton = ({
+  to = DEMO_PATH,
+  children = "Book a demo",
+  className = "",
+  glow = false,
+}: {
+  to?: string;
+  children?: React.ReactNode;
+  className?: string;
+  glow?: boolean;
+}) => (
+  <Link
+    to={to}
+    className={`press inline-flex h-11 items-center justify-center rounded-md bg-[#128F8B] px-6 text-[15px] font-medium text-white hover:bg-[#0C7370] ${className}`}
+    style={glow ? { boxShadow: GLOW } : undefined}
+  >
     {children}
   </Link>
 );
 
 export const SecondaryButton = ({ to, href, children, light = false }: { to?: string; href?: string; children: React.ReactNode; light?: boolean }) => {
-  const cls = `press inline-flex h-12 items-center justify-center gap-1.5 rounded-lg border px-5 text-[15.5px] font-medium ${
-    light ? "border-white/40 text-white hover:border-white/80" : "border-gray-300 bg-white text-[#1F2933] hover:border-gray-400"
+  const cls = `press inline-flex h-11 items-center justify-center gap-1.5 rounded-md border px-6 text-[15px] font-medium transition-colors ${
+    light ? "border-white/70 bg-transparent text-white hover:bg-white/10" : "border-gray-300 bg-white text-[#222222] hover:border-gray-400"
   }`;
   return to ? (
     <Link to={to} className={cls}>
@@ -63,107 +85,145 @@ export const SecondaryButton = ({ to, href, children, light = false }: { to?: st
   );
 };
 
-/* ── The print: a photograph matted around a product screen. The screen
-      keeps its own proportions: it takes `width` of the frame unless that
-      would make it taller than 88% of the frame, then it narrows instead. ── */
-const ratioOf = (a: string) => {
-  const [w, h] = a.split("/").map((n) => parseFloat(n));
-  return h ? w / h : 1.6;
-};
-
+/* ── The print. The frame takes the screen's own proportions, so the screen,
+      laid over the photograph at 92% each way, fits it exactly with an even
+      mat all round. "self": the screen already carries its photograph. ── */
 export const PrintFrame = ({
   print,
   children,
   aspect = "900 / 560",
-  width = "90%",
   className = "",
-  frameAspect,
 }: {
   print: string;
   children: React.ReactNode;
   aspect?: string;
   width?: string;
-  className?: string;
   frameAspect?: string;
+  className?: string;
 }) =>
-  // "self": the screen already carries its own photograph, so it fills the frame
   print === "self" ? (
-    <div className={`relative w-full overflow-hidden rounded-2xl border border-black/10 bg-white ${className}`} style={{ aspectRatio: aspect }}>
+    <div className={`relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl ${className}`} style={{ aspectRatio: aspect }}>
       <div className="absolute inset-0">{children}</div>
     </div>
   ) : (
-  <div
-    className={`relative w-full overflow-hidden rounded-2xl border border-black/10 ${className}`}
-    style={{ aspectRatio: frameAspect ?? "16 / 10.5", containerType: "size" }}
-  >
-    <img src={print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" decoding="async" />
-    <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.18)" }} />
-    <div
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-white"
-      style={{ width: `min(${width}, calc(88cqh * ${ratioOf(aspect).toFixed(4)}))`, aspectRatio: aspect, boxShadow: "0 10px 44px rgba(0,0,0,0.20)" }}
-    >
-      <div className="absolute inset-0">{children}</div>
+    <div className={`relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl ${className}`} style={{ aspectRatio: aspect }}>
+      <img src={print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" decoding="async" />
+      <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+      <div className="absolute inset-[4%] overflow-hidden rounded-lg bg-white" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+        {children}
+      </div>
     </div>
-  </div>
+  );
+
+/* ── Headline with the teal second line ── */
+export const TwoTone = ({ lead, accent, italic = false }: { lead: string; accent?: string; italic?: boolean }) => (
+  <>
+    {lead}
+    {accent && <span className={`block text-[#138F8B] ${italic ? "italic" : ""}`}>{accent}</span>}
+  </>
 );
 
-/* ── Page hero: breadcrumb eyebrow, a short h1, one sentence, two actions,
-      then the product itself, wide. ── */
+/* ── Page hero: centered, light serif with an italic teal line, one
+      sentence, the demo button; then the product, wide. ── */
 export const PageHero = ({
   eyebrow,
   title,
+  accent,
   subtitle,
   secondary,
   visual,
+  visualAspect = "900 / 560",
 }: {
   eyebrow: string;
   title: React.ReactNode;
+  accent?: string;
   subtitle: string;
   secondary?: { label: string; to: string };
   visual?: React.ReactNode;
+  visualAspect?: string;
 }) => (
-  <section className="pb-14 pt-14 md:pb-20 md:pt-20">
-    <div className={`${WRAP} enter`}>
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <div className="mt-5 grid items-end gap-6 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
-        <h1 className="font-heading text-[2.35rem] font-bold leading-[1.12] tracking-[-0.015em] text-[#14202B] md:text-[3.25rem]" style={{ textWrap: "balance" }}>
-          {title}
-        </h1>
-        <div>
-          <p className="text-[17px] leading-relaxed text-gray-600 md:text-[18.5px]">{subtitle}</p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <PrimaryButton />
-            {secondary && <SecondaryButton to={secondary.to}>{secondary.label}</SecondaryButton>}
-          </div>
-        </div>
+  <section className="bg-[#F8FAFC] pb-16 pt-14 md:pb-24 md:pt-20">
+    <div className={`${WRAP} enter flex flex-col items-center text-center`}>
+      <div className="mb-5">
+        <Eyebrow>{eyebrow}</Eyebrow>
       </div>
-      {visual && <div className="mt-12 md:mt-16">{visual}</div>}
+      <h1 className="mb-5 max-w-4xl font-heading text-[2rem] font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+        {typeof title === "string" ? <TwoTone lead={title} accent={accent} italic /> : title}
+      </h1>
+      <p className="mb-8 max-w-2xl text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em" }}>
+        {subtitle}
+      </p>
+      <div className="flex flex-col items-center gap-3 sm:flex-row">
+        <PrimaryButton glow className="px-8 sm:h-12 sm:text-[16px]" />
+        {secondary && (
+          <Link to={secondary.to} className="group inline-flex h-11 items-center gap-1.5 px-3 text-[15px] font-medium text-[#0C7370] hover:text-[#064544]">
+            {secondary.label} <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </Link>
+        )}
+      </div>
     </div>
+    {visual && (
+      <div className="mx-auto mt-12 w-full px-4 md:mt-16" style={{ maxWidth: `min(1160px, calc((100svh - 140px) * ${ratioOf(visualAspect).toFixed(4)}))` }}>
+        {visual}
+      </div>
+    )}
   </section>
 );
 
-/* ── Section heading: eyebrow, h2, optional lead ── */
-export const SectionHead = ({ eyebrow, title, lead, center = false }: { eyebrow?: string; title: React.ReactNode; lead?: string; center?: boolean }) => (
+const ratioOf = (a: string) => {
+  const [w, h] = a.split("/").map((n) => parseFloat(n));
+  return h ? w / h : 1.6;
+};
+
+/* ── Section heading: centered, the second phrase teal on its own line ── */
+export const SectionHead = ({
+  eyebrow,
+  title,
+  accent,
+  lead,
+  center = true,
+  light = false,
+}: {
+  eyebrow?: string;
+  title: React.ReactNode;
+  accent?: string;
+  lead?: string;
+  center?: boolean;
+  light?: boolean;
+}) => (
   <div className={center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
-    {eyebrow && <div className={center ? "flex justify-center" : ""}><Eyebrow>{eyebrow}</Eyebrow></div>}
-    <h2 className="mt-4 font-heading text-[1.9rem] font-bold leading-[1.18] tracking-[-0.01em] text-[#14202B] md:text-[2.5rem]" style={{ textWrap: "balance" }}>
-      {title}
+    {eyebrow && (
+      <div className="mb-3">
+        <Eyebrow light={light}>{eyebrow}</Eyebrow>
+      </div>
+    )}
+    <h2 className={`font-heading text-2xl font-bold md:text-3xl lg:text-[2.25rem] ${light ? "text-white" : "text-[#222222]"}`} style={{ lineHeight: 1.25, textWrap: "balance" }}>
+      {typeof title === "string" ? <TwoTone lead={title} accent={accent} /> : title}
     </h2>
-    {lead && <p className="mt-4 text-[17px] leading-relaxed text-gray-600 md:text-[18px]">{lead}</p>}
+    {lead && (
+      <p className={`mt-4 text-[15px] md:text-[17px] ${light ? "text-white/80" : "text-gray-600"} ${center ? "mx-auto max-w-2xl" : ""}`} style={{ lineHeight: 1.6 }}>
+        {lead}
+      </p>
+    )}
   </div>
 );
 
-/* ── Three points, ruled, numbered. No icon bubbles. ── */
-export const ValuePoints = ({ title, eyebrow, points }: { title?: string; eyebrow?: string; points: { title: string; body: string }[] }) => (
-  <section className="py-16 md:py-24">
-    <div className={WRAP}>
-      {title && <SectionHead eyebrow={eyebrow} title={title} />}
-      <div className={`grid gap-10 md:grid-cols-3 md:gap-10 ${title ? "mt-12" : ""}`}>
-        {points.map((p, i) => (
-          <div key={p.title} className="border-t-2 border-[#14202B] pt-5">
-            <div className="text-[13px] font-semibold tabular-nums text-[#0C7370]">0{i + 1}</div>
-            <h3 className="mt-2 font-heading text-[1.3rem] font-bold leading-snug text-[#14202B]">{p.title}</h3>
-            <p className="mt-3 text-[16.5px] leading-relaxed text-gray-600">{p.body}</p>
+/* ── Three points: ruled, serif titles, no numbers or icons ── */
+export const ValuePoints = ({ title, accent, eyebrow, points }: { title?: string; accent?: string; eyebrow?: string; points: { title: string; body: string }[] }) => (
+  <section className="bg-[#F8FAFC] py-14 md:py-20">
+    <div className={`${WRAP} max-w-6xl`}>
+      {title && (
+        <div className="mb-12">
+          <SectionHead eyebrow={eyebrow} title={title} accent={accent} />
+        </div>
+      )}
+      <div className="grid gap-10 md:grid-cols-3 md:gap-12">
+        {points.map((p) => (
+          <div key={p.title} className="border-t-2 border-[#222222] pt-5">
+            <h3 className="font-heading text-xl font-bold text-[#222222]" style={{ lineHeight: 1.35 }}>
+              {p.title}
+            </h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-gray-600 lg:text-base">{p.body}</p>
           </div>
         ))}
       </div>
@@ -171,59 +231,64 @@ export const ValuePoints = ({ title, eyebrow, points }: { title?: string; eyebro
   </section>
 );
 
-/* ── Feature rows: copy and a framed product screen, alternating sides ── */
+/* ── Copy beside the product, on the golden section, alternating sides ── */
 export type FeatureRowData = { eyebrow?: string; title: string; body: string; bullets?: string[]; visual: React.ReactNode; print: string; aspect?: string; width?: string };
 
-export const FeatureRows = ({ title, eyebrow, lead, rows }: { title?: string; eyebrow?: string; lead?: string; rows: FeatureRowData[] }) => (
-  <section className="py-16 md:py-24">
-    <div className={WRAP}>
-      {title && <SectionHead eyebrow={eyebrow} title={title} lead={lead} />}
-      <div className={`flex flex-col gap-20 md:gap-28 ${title ? "mt-14 md:mt-20" : ""}`}>
+export const FeatureRow = ({ r, flip }: { r: FeatureRowData; flip?: boolean }) => (
+  <div className={`flex flex-col items-center gap-8 lg:flex-row lg:gap-12 ${flip ? "lg:flex-row-reverse" : ""}`}>
+    <div className="w-full lg:w-[38.2%]">
+      {r.eyebrow && <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{r.eyebrow}</div>}
+      <h3 className="mt-2 font-heading text-xl font-bold text-[#222222] lg:text-2xl" style={{ lineHeight: 1.35 }}>
+        {r.title}
+      </h3>
+      <p className="mt-3 text-[15px] leading-relaxed text-gray-600 lg:text-base">{r.body}</p>
+      {r.bullets && (
+        <ul className="mt-5 space-y-2.5">
+          {r.bullets.map((b) => (
+            <li key={b} className="flex gap-3 text-[15px] leading-relaxed text-gray-600">
+              <span className="mt-[9px] h-[5px] w-[5px] flex-shrink-0 rounded-full bg-[#128F8B]" />
+              {b}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+    <div className="w-full lg:w-[61.8%]">
+      <PrintFrame print={r.print} aspect={r.aspect}>
+        {r.visual}
+      </PrintFrame>
+    </div>
+  </div>
+);
+
+export const FeatureRows = ({ title, accent, eyebrow, lead, rows }: { title?: string; accent?: string; eyebrow?: string; lead?: string; rows: FeatureRowData[] }) => (
+  <section className="bg-[#F8FAFC] py-16 md:py-24">
+    <div className={`${WRAP} max-w-6xl lg:px-10`}>
+      {title && (
+        <div className="mb-12 md:mb-16">
+          <SectionHead eyebrow={eyebrow} title={title} accent={accent} lead={lead} />
+        </div>
+      )}
+      <div className="flex flex-col gap-16 md:gap-24">
         {rows.map((r, i) => (
-          <div key={r.title} className={`grid items-center gap-10 lg:gap-16 ${i % 2 === 1 ? "lg:grid-cols-[1.35fr_1fr]" : "lg:grid-cols-[1fr_1.35fr]"}`}>
-            <div className={i % 2 === 1 ? "lg:order-2" : ""}>
-              {r.eyebrow && <div className="text-[12.5px] font-semibold uppercase tracking-[0.16em] text-[#0C7370]">{r.eyebrow}</div>}
-              <h3 className="mt-3 font-heading text-[1.6rem] font-bold leading-[1.22] text-[#14202B] md:text-[2rem]" style={{ textWrap: "balance" }}>
-                {r.title}
-              </h3>
-              <p className="mt-4 text-[17px] leading-relaxed text-gray-600">{r.body}</p>
-              {r.bullets && (
-                <ul className="mt-6 space-y-3 border-t border-gray-200 pt-6">
-                  {r.bullets.map((b) => (
-                    <li key={b} className="flex gap-3 text-[15.5px] leading-relaxed text-gray-700">
-                      <span className="mt-[9px] h-[5px] w-[5px] flex-shrink-0 rounded-full bg-[#128F8B]" />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div className={i % 2 === 1 ? "lg:order-1" : ""}>
-              <PrintFrame print={r.print} aspect={r.aspect} width={r.width} frameAspect="1 / 0.82">
-                {r.visual}
-              </PrintFrame>
-            </div>
-          </div>
+          <FeatureRow key={r.title} r={r} flip={i % 2 === 1} />
         ))}
       </div>
     </div>
   </section>
 );
 
-/* ── How it works: numbered steps on a line ── */
-export const Steps = ({ eyebrow, title, steps, tinted = true }: { eyebrow?: string; title: string; steps: { title: string; body: string }[]; tinted?: boolean }) => (
-  <section className={`py-16 md:py-24 ${tinted ? "bg-[#F1F6F6]" : ""}`}>
-    <div className={WRAP}>
-      <SectionHead eyebrow={eyebrow} title={title} />
-      <ol className={`mt-12 grid gap-8 ${steps.length === 4 ? "md:grid-cols-4" : steps.length === 5 ? "md:grid-cols-5" : "md:grid-cols-3"}`}>
+/* ── How it works: a ruled line of steps ── */
+export const Steps = ({ eyebrow, title, accent, steps }: { eyebrow?: string; title: string; accent?: string; steps: { title: string; body: string }[]; tinted?: boolean }) => (
+  <section className="bg-white py-16 md:py-24">
+    <div className={`${WRAP} max-w-6xl`}>
+      <SectionHead eyebrow={eyebrow} title={title} accent={accent} />
+      <ol className={`mt-12 grid gap-8 md:mt-14 ${steps.length === 4 ? "md:grid-cols-4" : steps.length === 5 ? "md:grid-cols-5" : "md:grid-cols-3"}`}>
         {steps.map((s, i) => (
-          <li key={s.title} className="relative">
-            <div className="flex items-center gap-3">
-              <span className="font-heading text-[2.2rem] font-bold leading-none text-[#128F8B]">{i + 1}</span>
-              <span className="h-px flex-1 bg-[#128F8B]/30" />
-            </div>
-            <h3 className="mt-4 text-[17px] font-semibold text-[#14202B]">{s.title}</h3>
-            <p className="mt-2 text-[15.5px] leading-relaxed text-gray-600">{s.body}</p>
+          <li key={s.title} className="border-t border-gray-200 pt-5">
+            <div className="font-heading text-[1.75rem] font-light italic leading-none text-[#138F8B]">{i + 1}</div>
+            <h3 className="mt-3 text-[16px] font-semibold text-[#222222]">{s.title}</h3>
+            <p className="mt-2 text-[15px] leading-relaxed text-gray-600">{s.body}</p>
           </li>
         ))}
       </ol>
@@ -231,41 +296,51 @@ export const Steps = ({ eyebrow, title, steps, tinted = true }: { eyebrow?: stri
   </section>
 );
 
-/* ── FAQ: lines, not boxes ── */
-export const Faq = ({ title = "Common questions", items }: { title?: string; items: { q: string; a: string }[] }) => {
+/* ── FAQ: the homepage's — lines, not boxes; questions left, heading right ── */
+export const Faq = ({ title = "Common Questions", items }: { title?: string; items: { q: string; a: string }[] }) => {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="py-16 md:py-24">
-      <div className={`${WRAP} grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-20`}>
-        <div>
-          <Eyebrow>FAQ</Eyebrow>
-          <h2 className="mt-4 font-heading text-[1.9rem] font-bold leading-tight text-[#14202B] md:text-[2.4rem]">{title}</h2>
-          <p className="mt-4 max-w-sm text-[16.5px] leading-relaxed text-gray-600">
-            Anything else, we're happy to walk through it for your practice and your state.
-          </p>
-          <div className="mt-6">
-            <PrimaryButton>Book a demo</PrimaryButton>
-          </div>
-        </div>
-        <div className="border-t border-gray-200">
-          {items.map((item, i) => (
-            <div key={item.q} className="border-b border-gray-200">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between gap-6 py-6 text-left"
-                onClick={() => setOpen(open === i ? null : i)}
-                aria-expanded={open === i}
-              >
-                <span className="font-heading text-[1.15rem] font-bold leading-snug text-[#14202B] md:text-[1.3rem]">{item.q}</span>
-                {open === i ? <Minus className="h-5 w-5 flex-shrink-0 text-gray-400" /> : <Plus className="h-5 w-5 flex-shrink-0 text-gray-400" />}
-              </button>
-              <div className="grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: open === i ? "1fr" : "0fr" }}>
-                <div className="overflow-hidden">
-                  <p className="max-w-2xl pb-6 pr-8 text-[16.5px] leading-relaxed text-gray-600">{item.a}</p>
+    <section className="bg-[#FCFCFD] py-16 md:py-20">
+      <div className={`${WRAP} max-w-6xl lg:px-12`}>
+        <div className="flex flex-col gap-10 md:flex-row md:gap-16">
+          <div className="order-2 md:order-1 md:w-3/5">
+            <div className="border-t border-gray-200">
+              {items.map((item, i) => (
+                <div key={item.q} className="border-b border-gray-200">
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between gap-6 py-6 text-left"
+                    onClick={() => setOpen(open === i ? null : i)}
+                    aria-expanded={open === i}
+                  >
+                    <span className="font-heading text-xl font-semibold text-[#222222] md:text-2xl" style={{ lineHeight: 1.25 }}>
+                      {item.q}
+                    </span>
+                    <span className="flex-shrink-0 text-2xl leading-none text-gray-400" aria-hidden>
+                      {open === i ? "×" : "+"}
+                    </span>
+                  </button>
+                  <div className="grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: open === i ? "1fr" : "0fr" }}>
+                    <div className="overflow-hidden">
+                      <p className="max-w-2xl pb-6 pr-8 text-[17px] leading-relaxed text-gray-600 md:text-lg">{item.a}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+          <div className="order-1 md:order-2 md:w-2/5 md:pl-6">
+            <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">FAQ</div>
+            <h2 className="mt-3 font-heading text-3xl font-bold text-[#222222] md:text-4xl" style={{ lineHeight: 1.25 }}>
+              {title}
+            </h2>
+            <p className="mt-4 max-w-sm text-[17px] leading-relaxed text-gray-600 md:text-lg">
+              Still can't find what you're looking for? We're happy to walk through anything specific to your practice or your state.
+            </p>
+            <div className="mt-6">
+              <PrimaryButton>Let's get started</PrimaryButton>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -275,21 +350,39 @@ export const Faq = ({ title = "Common questions", items }: { title?: string; ite
 /* ── Link cards to other pages ── */
 export type CardLink = { label: string; desc: string; to: string; image: string; eyebrow?: string };
 
-export const LinkCards = ({ eyebrow, title, lead, cards, cols = 3 }: { eyebrow?: string; title?: string; lead?: string; cards: CardLink[]; cols?: 2 | 3 | 4 }) => (
-  <section className="py-16 md:py-24">
-    <div className={WRAP}>
-      {title && <SectionHead eyebrow={eyebrow} title={title} lead={lead} />}
-      <div className={`grid gap-5 sm:grid-cols-2 ${cols === 4 ? "lg:grid-cols-4" : cols === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3"} ${title ? "mt-12" : ""}`}>
+export const LinkCards = ({
+  eyebrow,
+  title,
+  accent,
+  lead,
+  cards,
+  cols = 3,
+}: {
+  eyebrow?: string;
+  title?: string;
+  accent?: string;
+  lead?: string;
+  cards: CardLink[];
+  cols?: 2 | 3 | 4;
+}) => (
+  <section className="bg-[#F8FAFC] py-16 md:py-24">
+    <div className={`${WRAP} max-w-6xl`}>
+      {title && (
+        <div className="mb-12">
+          <SectionHead eyebrow={eyebrow} title={title} accent={accent} lead={lead} />
+        </div>
+      )}
+      <div className={`grid gap-6 sm:grid-cols-2 ${cols === 4 ? "lg:grid-cols-4" : cols === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}>
         {cards.map((c) => (
-          <Link key={c.to + c.label} to={c.to} className="lift group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white">
-            <div className="relative aspect-[16/9] overflow-hidden">
+          <Link key={c.to + c.label} to={c.to} className="lift group flex flex-col overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm">
+            <div className="relative aspect-[16/10] overflow-hidden">
               <img src={c.image} alt="" aria-hidden className="lift-img absolute inset-0 h-full w-full object-cover" loading="lazy" />
             </div>
-            <div className="flex flex-1 flex-col p-5">
-              {c.eyebrow && <div className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{c.eyebrow}</div>}
-              <div className="mt-1 font-heading text-[1.15rem] font-bold text-[#14202B]">{c.label}</div>
-              <p className="mt-1.5 flex-1 text-[15px] leading-relaxed text-gray-600">{c.desc}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-[14px] font-semibold text-[#0C7370]">
+            <div className="flex flex-1 flex-col p-6">
+              {c.eyebrow && <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{c.eyebrow}</div>}
+              <div className="mt-1.5 font-heading text-xl font-bold text-[#222222]">{c.label}</div>
+              <p className="mt-2 flex-1 text-[15px] leading-relaxed text-gray-600">{c.desc}</p>
+              <span className="mt-5 inline-flex items-center gap-1 text-[14.5px] font-medium text-[#0C7370]">
                 Learn more <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
               </span>
             </div>
@@ -300,7 +393,19 @@ export const LinkCards = ({ eyebrow, title, lead, cards, cols = 3 }: { eyebrow?:
   </section>
 );
 
-/* ── Security band: deep teal, the four commitments, a link to the page ── */
+/* ── The dark print card (the homepage's client band) ── */
+const DarkPrintCard = ({ image, children, right }: { image: string; children: React.ReactNode; right?: React.ReactNode }) => (
+  <div className="relative overflow-hidden rounded-3xl">
+    <img src={image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+    <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+    <div className={`relative z-10 grid ${right ? "md:grid-cols-[1fr_1.15fr]" : ""}`}>
+      <div className={`p-8 md:p-14 lg:p-16 ${right ? "md:pr-4" : ""}`}>{children}</div>
+      {right}
+    </div>
+  </div>
+);
+
+/* ── Security: the four commitments on the dark print card ── */
 export const SECURITY_POINTS = [
   { title: "A code at every sign-in", body: "Attorneys and clients confirm each sign-in with a one-time code sent to their email." },
   { title: "Access the client controls", body: "Only the people a client names can see their documents, and only when the client says so." },
@@ -309,71 +414,89 @@ export const SECURITY_POINTS = [
 ];
 
 export const SecurityBand = () => (
-  <section className="bg-[#064544] py-16 text-white md:py-20">
+  <section className="bg-[#F8FAFC] py-12 md:py-16">
     <div className={WRAP}>
-      <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
-        <div>
-          <Eyebrow light>Security</Eyebrow>
-          <h2 className="mt-4 font-heading text-[1.9rem] font-bold leading-tight md:text-[2.3rem]">Built for the most private documents a family has.</h2>
-          <Link to="/security" className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-semibold text-white/90 hover:text-white">
-            How we protect client information <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-          {SECURITY_POINTS.map((p) => (
-            <div key={p.title} className="border-t border-white/20 pt-4">
-              <h3 className="text-[16.5px] font-semibold">{p.title}</h3>
-              <p className="mt-1.5 text-[15px] leading-relaxed text-white/70">{p.body}</p>
+      <DarkPrintCard image="/nyc-street.jpg">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+          <div>
+            <Eyebrow light>Security</Eyebrow>
+            <h2 className="mt-3 font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+              Built for the most private documents a family has.
+            </h2>
+            <div className="mt-8">
+              <SecondaryButton to="/security" light>
+                How we protect client information
+              </SecondaryButton>
             </div>
-          ))}
+          </div>
+          <div className="grid gap-x-10 gap-y-7 sm:grid-cols-2">
+            {SECURITY_POINTS.map((p) => (
+              <div key={p.title} className="border-t border-white/25 pt-4">
+                <h3 className="font-heading text-[17px] font-bold text-white">{p.title}</h3>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-white/80">{p.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </DarkPrintCard>
     </div>
   </section>
 );
 
-/* ── Closing call to action: a photograph, a line, the demo button ── */
+/* ── Closing: the dark print card, white copy left, a product screen rising
+      out of the bottom-right corner ── */
 export const ClosingCta = ({
   title = "See Willow with your own practice.",
-  body = "A short walkthrough of the attorney workspace and the client experience, set up around your state and the way you work.",
-  image = "/williamsburg.jpg",
+  body = "Book a demo and walk through both sides of Willow live: the attorney workspace and the client experience, set up around your state and the way you work.",
+  image = "/west-side-hwy.jpg",
+  shot,
 }: {
   title?: string;
   body?: string;
   image?: string;
+  shot?: React.ReactNode;
 }) => (
-  <section className="pb-16 md:pb-24">
+  <section className="bg-[#F8FAFC] py-12 md:py-16">
     <div className={WRAP}>
-      <div className="relative overflow-hidden rounded-3xl">
-        <img src={image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(100deg, rgba(6,45,44,0.88) 0%, rgba(6,45,44,0.62) 55%, rgba(6,45,44,0.35) 100%)" }} />
-        <div className="relative px-7 py-14 md:px-16 md:py-20">
-          <h2 className="max-w-2xl font-heading text-[2rem] font-bold leading-[1.15] text-white md:text-[2.75rem]" style={{ textWrap: "balance" }}>
-            {title}
-          </h2>
-          <p className="mt-4 max-w-xl text-[17px] leading-relaxed text-white/85">{body}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link to={DEMO_PATH} className="press inline-flex h-12 items-center justify-center rounded-lg bg-white px-6 text-[15.5px] font-semibold text-[#064544] hover:bg-[#E6F5F4]">
-              Book a demo
-            </Link>
-            <SecondaryButton to="/platform" light>
-              Explore the platform
-            </SecondaryButton>
+      <DarkPrintCard
+        image={image}
+        right={
+          <div className="relative h-[300px] sm:h-[380px] md:h-auto md:min-h-[460px]">
+            <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[12%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
+              {shot ?? <RequiredActionsVignette />}
+            </div>
           </div>
+        }
+      >
+        <h2 className="font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+          {title}
+        </h2>
+        <p className="mt-6 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>
+          {body}
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <SecondaryButton to={DEMO_PATH} light>
+            Book a demo
+          </SecondaryButton>
         </div>
-      </div>
+      </DarkPrintCard>
     </div>
   </section>
 );
 
-/* ── A single pulled statement, centered ── */
+/* ── A single pulled statement, centered, light serif ── */
 export const Statement = ({ children, by }: { children: React.ReactNode; by?: string }) => (
-  <section className="py-16 md:py-24">
-    <div className="mx-auto max-w-4xl px-5 text-center md:px-8">
-      <p className="font-heading text-[1.6rem] font-bold leading-[1.35] text-[#14202B] md:text-[2.2rem]" style={{ textWrap: "balance" }}>
+  <section className="bg-white py-16 md:py-24">
+    <div className="mx-auto max-w-4xl px-4 text-center md:px-8">
+      <p className="font-heading text-[1.75rem] font-light italic leading-[1.3] text-[#138F8B] md:text-[2.5rem]" style={{ textWrap: "balance" }}>
         {children}
       </p>
-      {by && <div className="mt-6 text-[12.5px] font-semibold uppercase tracking-[0.14em] text-gray-400">{by}</div>}
+      {by && (
+        <div className="mt-6">
+          <span className="mx-auto mb-3 block w-10 border-t border-gray-300" />
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400">{by}</span>
+        </div>
+      )}
     </div>
   </section>
 );

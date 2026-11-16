@@ -42,14 +42,15 @@ const SecurityPage = () => {
     "How Willow protects estate plans and client information: protected sign-in, encryption, client-controlled access, a seven-year access record, US hosting and strict limits on AI."
   );
   return (
-    <PageShell>
+    <PageShell quotes>
       <PageHero
         eyebrow="Security"
-        title="Built for the most private documents a family has."
+        title="Built for the most private"
+        accent="documents a family has."
         subtitle="An estate plan holds a family's finances, health and wishes. Willow is built so the right people see it at the right time, and no one else does."
         secondary={{ label: "Read the Privacy Policy", to: "/privacy" }}
         visual={
-          <PrintFrame print="/workshop.jpg" width="84%" frameAspect="16 / 9">
+          <PrintFrame print="/workshop.jpg" className="shadow-2xl">
             <VaultVignette />
           </PrintFrame>
         }
@@ -57,21 +58,24 @@ const SecurityPage = () => {
 
       <section className="py-16 md:py-24">
         <div className={WRAP}>
-          <SectionHead eyebrow="How we protect it" title="Six commitments, built into the product." />
+          <SectionHead eyebrow="How we protect it" title="Six commitments," accent="built into the product." />
           <div className="mt-12 grid gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
-            {PILLARS.map((p, i) => (
-              <div key={p.title} className="border-t-2 border-[#14202B] pt-5">
-                <div className="text-[13px] font-semibold tabular-nums text-[#0C7370]">0{i + 1}</div>
-                <h3 className="mt-2 font-heading text-[1.3rem] font-bold text-[#14202B]">{p.title}</h3>
-                <p className="mt-3 text-[16.5px] leading-relaxed text-gray-600">{p.body}</p>
+            {PILLARS.map((p) => (
+              <div key={p.title} className="border-t-2 border-[#222222] pt-5">
+                <h3 className="font-heading text-xl font-bold text-[#222222]" style={{ lineHeight: 1.35 }}>{p.title}</h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-gray-600 lg:text-base">{p.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#064544] py-16 text-white md:py-20">
-        <div className={`${WRAP} grid gap-12 lg:grid-cols-3`}>
+      <section className="bg-[#F8FAFC] py-12 md:py-16">
+        <div className={WRAP}>
+        <div className="relative overflow-hidden rounded-3xl">
+        <img src="/hudson-bridge.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+        <div className="relative z-10 grid gap-12 p-8 text-white md:p-14 lg:grid-cols-3 lg:p-16">
           {[
             { k: "Where it lives", v: "Hosted in the United States", b: "Willow's database, files and applications run on Supabase, on Amazon Web Services, and Vercel, in the United States." },
             { k: "Health information", v: "Its own notice and consent", b: "Health details a client adds are covered by a separate Consumer Health Data Notice and a separate consent. Never sold, never used for advertising." },
@@ -89,6 +93,8 @@ const SecurityPage = () => {
             </div>
           ))}
         </div>
+        </div>
+        </div>
       </section>
 
       <Faq
@@ -104,7 +110,8 @@ const SecurityPage = () => {
 
       <LinkCards
         eyebrow="Read more"
-        title="The details, in writing."
+        title="The details,"
+        accent="in writing."
         cards={[
           { label: "Privacy Policy", desc: "How Willow collects, uses and protects personal information.", to: "/privacy", image: "/nyc-street.jpg", eyebrow: "Legal" },
           { label: "Connected services", desc: "Exactly what Willow can access in Google, Microsoft and Zoom.", to: "/connections", image: CARDS["/platform/integrations"].image, eyebrow: "Legal" },

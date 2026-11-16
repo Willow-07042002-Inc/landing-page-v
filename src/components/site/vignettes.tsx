@@ -128,9 +128,13 @@ export const SummaryReviewVignette = () => (
         <p className="mt-3 text-[12.5px] leading-[1.75] text-[#9CA3AF]">
           All estate, inheritance and similar taxes shall be paid from the residue of my estate without apportionment…
         </p>
+        <div className="mt-5 text-center text-[13px] font-bold tracking-[0.08em] text-[#1F2933]">ARTICLE FIFTH</div>
+        <p className="mt-3 text-[12.5px] leading-[1.75] text-[#9CA3AF]">
+          I nominate my sister, CLAIRE ROSEN, as Executor of this Will. If she fails to qualify or ceases to act, I nominate JUN PARK…
+        </p>
       </div>
       {/* The draft summary */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5 [&>div]:py-4">
         <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
           <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9CA3AF]">Gift</div>
           <div className="mt-1.5 flex items-start justify-between gap-3">
@@ -154,6 +158,11 @@ export const SummaryReviewVignette = () => (
         <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
           <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9CA3AF]">Taxes</div>
           <div className="mt-1.5 text-[15.5px] font-semibold text-[#1F2933]">The estate pays the taxes, not the people receiving gifts</div>
+        </div>
+        <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9CA3AF]">Executor</div>
+          <div className="mt-1.5 text-[15.5px] font-semibold text-[#1F2933]">Claire Rosen, Daniel's sister</div>
+          <div className="mt-1 text-[13px] text-[#6B7280]">Jun Park steps in if Claire can't serve.</div>
         </div>
       </div>
     </div>
@@ -365,9 +374,11 @@ export const RecipientPortalVignette = ({ state = "sealed" }: { state?: "sealed"
   const released = state === "released";
   const rows = [
     { Icon: ScrollText, t: "Last Will and Testament", s: released ? "Signed August 18, 2026" : "Opens once Daniel's passing is verified", sealed: true },
+    { Icon: ScrollText, t: "Revocable Living Trust", s: released ? "Restated August 18, 2026" : "Opens once Daniel's passing is verified", sealed: true },
     { Icon: FileText, t: "Daniel's instructions for you", s: "Where everything is, who to call first, his wishes", sealed: true },
     { Icon: Landmark, t: "Finance", s: "Accounts, insurance, property and bills", sealed: false },
     { Icon: KeyRound, t: "Digital life", s: "Accounts, password manager and recovery", sealed: true },
+    { Icon: HeartPulse, t: "Final wishes", s: "Service, burial and the people to tell", sealed: true },
   ];
   return (
     <Stage font="Inter, sans-serif" bg="#FAFBFC">
@@ -387,13 +398,13 @@ export const RecipientPortalVignette = ({ state = "sealed" }: { state?: "sealed"
                 <Unlock className="h-3 w-3" /> Released Oct 3 by Rachel Alvarez
               </span>
             ) : (
-              <span className="rounded-full bg-[#F3F4F6] px-2.5 py-0.5 text-[11px] font-semibold text-[#6B7280]">3 waiting for you</span>
+              <span className="rounded-full bg-[#F3F4F6] px-2.5 py-0.5 text-[11px] font-semibold text-[#6B7280]">5 waiting for you</span>
             )}
           </div>
           {rows.map(({ Icon, t, s, sealed }) => {
             const locked = sealed && !released;
             return (
-              <div key={t} className="flex items-center gap-3.5 border-b border-[#F5F6F7] px-5 py-[15px] last:border-0">
+              <div key={t} className="flex items-center gap-3.5 border-b border-[#F5F6F7] px-5 py-[13px] last:border-0">
                 <Icon className={`h-[19px] w-[19px] ${locked ? "text-[#C4C9D0]" : "text-[#128F8B]"}`} />
                 <span className="min-w-0 flex-1">
                   <span className={`block text-[14.5px] font-medium ${locked ? "text-[#6B7280]" : "text-[#1F2933]"}`}>{t}</span>
@@ -461,8 +472,8 @@ export const GuardianChildrenVignette = () => (
     </div>
     <div className="grid flex-1 grid-cols-2 gap-5 p-7">
       {[
-        { n: "Emma", age: "Age 9", items: ["Lincoln Elementary · IEP updated March 2026", "Dr. Patel, pediatrician", "Piano on Tuesdays, swim on Saturdays", "Allergic to tree nuts"] },
-        { n: "Leo", age: "Age 6", items: ["Speech therapy, Thursdays", "Dr. Patel, pediatrician", "Sleeps with the blue blanket", "Best friend: Sam, two doors down"] },
+        { n: "Emma", age: "Age 9", items: ["Lincoln Elementary · IEP updated March 2026", "Dr. Patel, pediatrician", "Piano on Tuesdays, swim on Saturdays", "Allergic to tree nuts", "College fund: 529 plan, statements in Finance", "Lights out at 8:30, after one chapter"] },
+        { n: "Leo", age: "Age 6", items: ["Speech therapy, Thursdays", "Dr. Patel, pediatrician", "Sleeps with the blue blanket", "Best friend: Sam, two doors down", "College fund: 529 plan, statements in Finance", "Biscuit the dog goes with Leo"] },
       ].map((c) => (
         <div key={c.n} className="overflow-hidden rounded-2xl bg-white" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
           <div className="flex items-center gap-3 border-b border-[#F0F1F3] px-5 py-4">
@@ -503,6 +514,7 @@ export const AgentPortalVignette = () => (
           { t: "Banks & financial institutions", s: "Open and close accounts, deposits and withdrawals" },
           { t: "Real property", s: "Buy, sell, lease or manage property for Daniel" },
           { t: "Taxes", s: "Prepare, file and pay federal and state taxes" },
+          { t: "Retirement accounts", s: "Manage and take required distributions" },
           { t: "Health care decisions", s: "Speak for Daniel if he can't speak for himself" },
         ].map((r) => (
           <div key={r.t} className="flex items-start gap-3 border-b border-[#F5F6F7] px-5 py-3.5 last:border-0">

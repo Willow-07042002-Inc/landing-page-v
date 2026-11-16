@@ -54,7 +54,7 @@ const Row = ({ item }: { item: Item }) => {
   const inner = (
     <>
       <span className="min-w-0">
-        <span className="block text-[17px] font-semibold text-[#14202B] group-hover:text-[#0C7370]">{item.name}</span>
+        <span className="block text-[17px] font-semibold text-[#222222] group-hover:text-[#0C7370]">{item.name}</span>
         <span className="mt-1 block text-[15px] leading-relaxed text-gray-600">{item.desc}</span>
       </span>
       <ArrowRight className="mt-1 h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#0C7370]" />
@@ -90,7 +90,7 @@ const LegalCenterPage = () => {
       <section className="pb-10 pt-14 md:pt-20">
         <div className={`${WRAP} enter`}>
           <Eyebrow>Legal center</Eyebrow>
-          <h1 className="mt-5 max-w-3xl font-heading text-[2.35rem] font-bold leading-[1.12] text-[#14202B] md:text-[3.25rem]">Every term and policy, in one place.</h1>
+          <h1 className="mt-5 max-w-3xl font-heading text-[2.35rem] font-bold leading-[1.12] text-[#222222] md:text-[3.25rem]">Every term and policy, in one place.</h1>
           <p className="mt-5 max-w-2xl text-[17.5px] leading-relaxed text-gray-600">
             Which terms apply depends on how you use Willow. Each document below is the current version, last updated {VERSION_DATE}. Earlier versions are available on request at{" "}
             <a href={`mailto:${SUPPORT_EMAIL}`} className="font-semibold text-[#0C7370] underline underline-offset-2">
@@ -105,7 +105,7 @@ const LegalCenterPage = () => {
           {GROUPS.map((g) => (
             <div key={g.title} className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16">
               <div>
-                <h2 className="font-heading text-[1.45rem] font-bold leading-snug text-[#14202B]">{g.title}</h2>
+                <h2 className="font-heading text-[1.45rem] font-bold leading-snug text-[#222222]">{g.title}</h2>
                 <p className="mt-2 text-[15.5px] leading-relaxed text-gray-600">{g.lead}</p>
               </div>
               <div className="divide-y divide-gray-200 border-y border-gray-200">
