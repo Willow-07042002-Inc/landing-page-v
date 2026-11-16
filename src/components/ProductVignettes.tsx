@@ -72,9 +72,9 @@ const Bleed = ({ font, h = VH, children }: { font: "attorney" | "client"; h?: nu
 export const LeadIntakeVignette = () => (
   <Bleed font="client">
     <div className="flex items-center gap-4 border-b border-[#E5E7EB] px-10 py-6">
-      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E6F5F4] text-[17px] font-bold text-[#0C7370]">AE</span>
+      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E6F5F4] text-[17px] font-bold text-[#0C7370]">AF</span>
       <div>
-        <div className="text-[21px] font-semibold text-[#1F2933]">Book with Alvarez Estate Planning</div>
+        <div className="text-[21px] font-semibold text-[#1F2933]">Book with Alvarez Family Law</div>
         <div className="mt-0.5 text-[15px] text-[#9CA3AF]">A few questions first — it keeps the meeting short</div>
       </div>
     </div>
@@ -316,7 +316,7 @@ const PLAYBOOK_CARDS = [
   { icon: "/mock/family-icon.png", t: "You & Your Family", s: "The people at the center of your plan" },
   { icon: "/mock/shield-icon.png", t: "If You Need Someone to Step In", s: "What happens if you can't make decisions for yourself" },
   { icon: "/mock/tree-icon.png", t: "What You'll Leave Behind", s: "How your estate is managed and distributed" },
-  { icon: "/mock/docs-icon.png", t: "Your Documents", s: "Signed documents and past versions" },
+  { icon: "/mock/docs-icon.png", t: "Your Documents", s: "Signed documents, recordings, and compliance files" },
 ];
 
 export const CheckInDemoVignette = ({ h = VH }: { h?: number } = {}) => {

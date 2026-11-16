@@ -266,12 +266,12 @@ export const DocumentsVaultVignette = () => (
     <CardHead
       icon="/mock/docs-icon.png"
       title="Your Documents"
-      subtitle="Signed documents and past versions"
+      subtitle="Signed documents, recordings, and compliance files"
     />
     <div className="px-7 pb-5">
       <Lbl className="mb-0.5">Signed Estate Plan Documents</Lbl>
       {[
-        { name: "Last Will and Testament", meta: "Signed August 18, 2026" },
+        { name: "Last Will and Testament", meta: "Signed August 18, 2026 · ceremony recording kept" },
         { name: "Power of Attorney", meta: "Signed August 18, 2026" },
         { name: "Medical Proxy", meta: "Signed August 18, 2026" },
       ].map((d) => (
@@ -504,7 +504,7 @@ const ShareRow = ({ label, on, rec, chip, chipActive }: { label: string; on: boo
 const ReleasePanel = ({ sel, highlight }: { sel: number; highlight: boolean }) => {
   const rows = [
     { title: "Share now", desc: "They can open this straight away.", rec: false },
-    { title: "Add a condition", desc: "You describe it. Your attorney decides when it's met.", rec: false },
+    { title: "Share when it springs", desc: "Held until a doctor confirms you can't decide for yourself.", rec: false },
     { title: "Share when I've passed", desc: "Held until your passing is verified.", rec: true },
   ];
   return (
@@ -568,7 +568,7 @@ export const ReleaseTimingVignette = () => {
             <div className="border-t border-[#F0F1F3]">
               <ShareRow label="Last Will & Testament" on rec chip={chipLabel} chipActive={panelOpen} />
               <ShareRow label="Revocable Living Trust" on rec chip="Share when I've passed" />
-              <ShareRow label="Power of Attorney" on chip="Share now" />
+              <ShareRow label="Power of Attorney" on chip="Share when it springs" />
               <ShareRow label="Medical Proxy" on={false} />
             </div>
           </div>

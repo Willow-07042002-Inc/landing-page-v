@@ -101,7 +101,7 @@ const ROLES: Role[] = [
 ];
 
 const RoleNav = () => (
-  <div className="sticky top-16 z-30 border-y border-gray-200 bg-[#F8FAFC]/95 backdrop-blur-md">
+  <div className="sticky top-[72px] z-30 border-y border-gray-200 bg-[#F8FAFC]/95 backdrop-blur-md">
     <div className={`${WRAP} flex justify-start gap-7 overflow-x-auto md:justify-center`}>
       {ROLES.map((r) => (
         <a key={r.id} href={`#${r.id}`} className="whitespace-nowrap py-3.5 text-[15px] font-medium text-gray-500 transition-colors hover:text-[#138F8B]">

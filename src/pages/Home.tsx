@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Bell, ChevronDown, ChevronRight, Link2, Plus } from "lucide-react";
 import { SharingHomeShot } from "@/components/ClientVignettes";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { RequiredActionsVignette } from "@/components/site/vignettes";
 import { LinkCards, SecurityBand } from "@/components/site/blocks";
 import { CARDS } from "@/content/pages";
 import {
@@ -21,28 +19,28 @@ import {
 } from "@/components/ProductVignettes";
 
 /**
- * Renders a full-size (1440×855) recreation of a product screen, scaled to
- * fit its parent. Building at real app dimensions lets the markup reuse the
- * exact spacing and type sizes from the actual product code.
+ * Renders a full-size product screen (1440×855 by default; pass `w` for a
+ * wider canvas) scaled to fit its parent. Building at real app dimensions lets
+ * the markup reuse the exact spacing and type sizes from the product code.
  */
-const ScaledScreen = ({ children }: { children: React.ReactNode }) => {
+const ScaledScreen = ({ children, w = 1440 }: { children: React.ReactNode; w?: number }) => {
   const outerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.55);
   useEffect(() => {
     const el = outerRef.current;
     if (!el) return;
     const measure = () => {
-      const w = el.getBoundingClientRect().width;
-      if (w > 50) setScale(w / 1440);
+      const width = el.getBoundingClientRect().width;
+      if (width > 50) setScale(width / w);
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [w]);
   return (
     <div ref={outerRef} className="absolute inset-0 overflow-hidden">
-      <div style={{ width: 1440, height: 855, transform: `scale(${scale})`, transformOrigin: "top left" }}>{children}</div>
+      <div style={{ width: w, height: 855, transform: `scale(${scale})`, transformOrigin: "top left" }}>{children}</div>
     </div>
   );
 };
@@ -156,7 +154,7 @@ const AttorneyDashboardScreen = () => (
           <span className="flex items-center gap-3 rounded-lg px-2.5 py-2 hover:bg-[#F8FAFA]">
             <span className="text-right">
               <span className="block text-[13px] font-semibold leading-tight text-[#1F2933]">Rachel Alvarez</span>
-              <span className="mt-0.5 block text-[11px] leading-tight text-[#9CA3AF]">Alvarez Estate Planning</span>
+              <span className="mt-0.5 block text-[11px] leading-tight text-[#9CA3AF]">Alvarez Family Law</span>
             </span>
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F0F9F9] text-[11px] font-bold text-[#309E96] ring-1 ring-black/5">RA</span>
             <ChevronDown className="h-3.5 w-3.5 text-[#9CA3AF]" />
@@ -203,8 +201,8 @@ const AttorneyDashboardScreen = () => (
           <ProColumn
             icon={<MaskIcon src="/mock/clients-icon.svg" color="#309E96" size={20} />}
             title="Active clients"
-            count={24}
-            footer="View all 24 clients"
+            count={10}
+            footer="View all 10 clients"
             rounding="rounded-none"
             action={
               <span className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium text-[#128F8B] hover:bg-[#F0F9F9] hover:text-[#0F7673]">
@@ -213,17 +211,20 @@ const AttorneyDashboardScreen = () => (
             }
           >
             {[
-              { n: "Daniel & Maria Rosen", i: "DR", label: "Will, trust and POAs · Summary approved" },
-              { n: "Elena Ruiz", i: "ER", label: "Will and health care proxy · Shared with 3" },
-              { n: "Marcus Webb", i: "MW", label: "Revocable trust · Check-in answered" },
-              { n: "Grace Liu", i: "GL", label: "Will · Uploaded this week" },
+              { n: "Daniel Rosen", i: "DR", step: 3, label: "Step 3 of 5 · Planning meeting" },
+              { n: "Maria Rosen", i: "MR", step: 2, label: "Step 2 of 5 · Your information" },
+              { n: "Elena Ruiz", i: "ER", step: 5, label: "Step 5 of 5 · Signing" },
+              { n: "Marcus Webb", i: "MW", step: 4, label: "Step 4 of 5 · Review meeting" },
             ].map((r) => (
               <div key={r.n} className="group flex min-h-[84px] items-center justify-between gap-3 bg-white px-5 py-4 transition-colors hover:bg-[#F8FAFA]">
                 <div className="flex min-w-0 items-center gap-3.5">
                   <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F4F6] text-[13px] font-semibold text-[#9CA3AF] ring-1 ring-black/5 group-hover:bg-[#F0F9F9] group-hover:text-[#309E96]">{r.i}</span>
                   <span className="min-w-0">
                     <span className="block truncate font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{r.n}</span>
-                    <span className="block truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{r.label}</span>
+                    <span className="mt-1 flex items-center gap-2">
+                      <JourneyTrack step={r.step} />
+                      <span className="truncate text-[#9CA3AF]" style={{ fontSize: 12.5 }}>{r.label}</span>
+                    </span>
                   </span>
                 </div>
               </div>
@@ -232,15 +233,16 @@ const AttorneyDashboardScreen = () => (
 
           <ProColumn
             icon={<PlansSignedIcon />}
-            title="Required actions"
-            count={4}
+            title="Plans signed"
+            count={206}
+            footer="View all 206 clients"
             rounding="rounded-r-2xl"
           >
             {[
-              { n: "Daniel Rosen", i: "DR", m: "Plan summary ready to review", tag: "Approve" },
-              { n: "Maria Rosen", i: "MR", m: "Asked to open Daniel's will", tag: "Release" },
-              { n: "Grace Liu", i: "GL", m: "Annual check-in ready to send", tag: "Send" },
-              { n: "Marcus Webb", i: "MW", m: "Said something changed", tag: "Call" },
+              { n: "Sam Whitfield", i: "SW", m: "sam.whitfield@gmail.com" },
+              { n: "Priya Anand", i: "PA", m: "priya.anand@outlook.com" },
+              { n: "Grace Liu", i: "GL", m: "grace.liu@yahoo.com" },
+              { n: "Olivia Grant", i: "OG", m: "olivia.grant@gmail.com" },
             ].map((r) => (
               <div key={r.n} className="group flex min-h-[84px] items-center justify-between gap-3 bg-white px-5 py-4 transition-colors hover:bg-[#F8FAFA]">
                 <div className="flex min-w-0 items-center gap-3.5">
@@ -250,7 +252,7 @@ const AttorneyDashboardScreen = () => (
                     <span className="block truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{r.m}</span>
                   </span>
                 </div>
-                <span className="flex-shrink-0 rounded-full bg-[#E6F5F4] px-2.5 py-0.5 text-[11px] font-semibold text-[#0C7370]">{r.tag}</span>
+                <span className="flex-shrink-0 rounded-full bg-[#E6F5F4] px-2.5 py-0.5 text-[11px] font-semibold text-[#0C7370]">Active</span>
               </div>
             ))}
           </ProColumn>
@@ -337,23 +339,28 @@ export const ClientEstatePlanScreen = () => (
         <ClientCard icon="/mock/family-icon.png" title="You & Your Family" subtitle="The people at the center of your plan" />
         <ClientCard icon="/mock/shield-icon.png" title="If You Need Someone to Step In" subtitle="What happens if you can't make decisions for yourself" />
         <ClientCard icon="/mock/tree-icon.png" title="What You'll Leave Behind" subtitle="How your estate is managed and distributed" />
-        <ClientCard icon="/mock/docs-icon.png" title="Your Documents" subtitle="Signed documents and past versions" />
+        <ClientCard icon="/mock/docs-icon.png" title="Your Documents" subtitle="Signed documents, recordings, and compliance files" />
       </div>
     </div>
 
+    {/* Ask Eva */}
+    <div className="absolute bottom-6 right-6 flex items-center gap-2.5 rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-5 shadow-lg hover:shadow-xl">
+      <img src="/mock/eva.png" alt="Eva" className="h-10 w-10 rounded-full object-cover" style={{ backgroundColor: "rgba(84,167,154,0.1)" }} />
+      <span className="font-medium text-[#1F2933]" style={{ fontSize: 15 }}>Ask Eva</span>
+    </div>
   </div>
 );
 
 // Rotating phrases for the hero. The stem commands the attorney ("Ensure your
 // clients…"), so every phrase is an outcome they guarantee by using Willow.
-// A phrase too wide for the headline swaps to its `short` wording instead of
-// shrinking the type — the font size never changes.
-const HERO_PHRASES: { text: string; short?: string }[] = [
-  { text: "actually understand their\u00A0plans.", short: "understand their plans." },
-  { text: "share their plan on their terms." },
-  { text: "never lose a\u00A0document." },
-  { text: "keep executors and guardians prepared.", short: "prepare those around them." },
-  { text: "keep coming back to\u00A0you." },
+// Every phrase sits in the same grid cell, so the headline is always as tall
+// as its longest phrase at the current width and never jumps as they change.
+const HERO_PHRASES = [
+  "actually understand their plans.",
+  "share their plan on their terms.",
+  "never lose a document.",
+  "keep executors and guardians prepared.",
+  "keep coming back to you.",
 ];
 
 const ROTATE_MS = 2800;
@@ -361,9 +368,6 @@ const ROTATE_MS = 2800;
 const HeroRotator = () => {
   const [index, setIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
-  const containerRef = useRef<HTMLSpanElement>(null);
-  const [fits, setFits] = useState<number[]>(() => HERO_PHRASES.map(() => 1));
-  const [useShort, setUseShort] = useState<boolean[]>(() => HERO_PHRASES.map(() => false));
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
@@ -377,232 +381,138 @@ const HeroRotator = () => {
     return () => clearInterval(id);
   }, [reduced]);
 
-  // Scale any phrase wider than the headline down to fit, at every viewport size
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const measure = () => {
-      const cw = el.getBoundingClientRect().width;
-      if (cw < 200) return; // ignore degenerate layouts (hidden/collapsed viewport)
-      // Mobile lets phrases wrap onto a second line at full size, so no
-      // shrinking and no short-swapping there.
-      if (window.innerWidth < 768) {
-        setFits(HERO_PHRASES.map(() => 1));
-        setUseShort(HERO_PHRASES.map(() => false));
-        return;
-      }
-      // Hidden copies carry both wordings at the live font size; pick per phrase:
-      // the long text where it fits, its short variant where it doesn't, and only
-      // scale as a last resort when even the short one overflows.
-      const longs = el.querySelectorAll<HTMLElement>("[data-measure-long]");
-      const shorts = el.querySelectorAll<HTMLElement>("[data-measure-short]");
-      const nextFit: number[] = [];
-      const nextShort: boolean[] = [];
-      HERO_PHRASES.forEach((p, i) => {
-        const lw = longs[i]?.getBoundingClientRect().width ?? 0;
-        if (lw <= cw || !p.short) {
-          nextShort.push(false);
-          nextFit.push(lw > cw ? (cw / lw) * 0.98 : 1);
-        } else {
-          const sw = shorts[i]?.getBoundingClientRect().width ?? 0;
-          nextShort.push(true);
-          nextFit.push(sw > cw ? (cw / sw) * 0.98 : 1);
-        }
-      });
-      setFits(nextFit);
-      setUseShort(nextShort);
-    };
-    measure();
-    if (document.fonts?.ready) document.fonts.ready.then(measure);
-    // Italic faces load lazily on first paint — re-measure when any font finishes loading
-    document.fonts?.addEventListener?.("loadingdone", measure);
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-      document.fonts?.removeEventListener?.("loadingdone", measure);
-    };
-  }, []);
-
   return (
-    <span ref={containerRef} className="relative block h-[2.6em] overflow-hidden italic text-[#138F8B] md:h-[1.3em]" aria-live="polite">
+    // The padding/negative margin pair widens the clip box so descenders and
+    // italic overhangs aren't cut, without changing the layout.
+    <span className="-my-[0.12em] grid overflow-hidden py-[0.12em] pr-[0.1em] italic text-[#138F8B]">
       {HERO_PHRASES.map((p, i) => (
         <span
-          key={p.text}
-          className="absolute left-0 right-0 top-0 md:whitespace-nowrap"
+          key={p}
+          aria-hidden={i !== index}
+          className="[grid-area:1/1]"
           style={{
+            textWrap: "balance",
             transform: i === index ? "translateY(0)" : i === prevIndex ? "translateY(-110%)" : "translateY(110%)",
             opacity: i === index ? 1 : 0,
-            transition: reduced ? "none" : "transform 0.55s cubic-bezier(0.22,1,0.36,1), opacity 0.45s",
+            transition: reduced ? "none" : "transform 0.55s cubic-bezier(0.22,1,0.36,1), opacity 0.45s ease",
           }}
         >
-          <span data-phrase className="inline-block" style={{ transform: `scale(${fits[i] ?? 1})`, transformOrigin: "center bottom" }}>
-            {useShort[i] && p.short ? p.short : p.text}
-          </span>
-        </span>
-      ))}
-      {/* Invisible measuring copies — same inherited type, never shown */}
-      {HERO_PHRASES.map((p) => (
-        <span key={`m-${p.text}`} aria-hidden className="invisible absolute left-0 top-0 whitespace-nowrap" data-measure-long>
-          {p.text}
-        </span>
-      ))}
-      {HERO_PHRASES.map((p) => (
-        <span key={`ms-${p.text}`} aria-hidden className="invisible absolute left-0 top-0 whitespace-nowrap" data-measure-short>
-          {p.short ?? ""}
+          {p}
         </span>
       ))}
     </span>
   );
 };
 
-/**
- * The attorney/client windowpane. Scrolling pins the section and sweeps the
- * divider from the attorney view to the client view (and back on scroll up).
- * The panes are live UI, not screenshots: everything is hoverable, and any
- * click inside a pane goes to booking a meeting.
- */
-const SplitShowcase = ({ onBook }: { onBook: () => void }) => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const frameRef = useRef<HTMLDivElement>(null);
-  const clientPaneRef = useRef<HTMLDivElement>(null);
-  const dividerRef = useRef<HTMLDivElement>(null);
-  const clientPillRef = useRef<HTMLSpanElement>(null);
-  const attorneyPillRef = useRef<HTMLSpanElement>(null);
-  const draggingRef = useRef(false);
-  const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* The homepage's container, matched to harvey.ai's: 1728px at most, the same
+   side padding as the navigation bar, and a 12-column grid with 20px gutters. */
+const HOME_WRAP = "mx-auto w-full max-w-[1728px] px-5 md:px-8 lg:px-9 xl:px-10";
 
-  const render = useCallback((p: number) => {
-    const pct = Math.max(0, Math.min(1, p)) * 100;
-    if (clientPaneRef.current) clientPaneRef.current.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
-    if (dividerRef.current) dividerRef.current.style.left = `${pct}%`;
-    // One label at a time: whichever view holds the majority of the frame
-    const clientMajority = p >= 0.5;
-    if (clientPillRef.current) clientPillRef.current.style.opacity = clientMajority ? "1" : "0";
-    if (attorneyPillRef.current) attorneyPillRef.current.style.opacity = clientMajority ? "0" : "1";
-  }, []);
-
-  useEffect(() => {
-    if (reduced) {
-      render(0.5);
-      return;
-    }
-    const onScroll = () => {
-      if (draggingRef.current || !trackRef.current) return;
-      const rect = trackRef.current.getBoundingClientRect();
-      // Phones (unpinned): the sweep runs off raw scroll position — it starts
-      // the instant you scroll and completes within the first ~third of a
-      // screen, while the section itself scrolls away naturally.
-      if (window.innerWidth < 768) {
-        const t = Math.max(0, Math.min(1, window.scrollY / (window.innerHeight * 0.35)));
-        render(t * t * (3 - 2 * t));
-        return;
-      }
-      const total = trackRef.current.offsetHeight - window.innerHeight;
-      if (total <= 0) return;
-      const raw = -rect.top / total;
-      const t = Math.max(0, Math.min(1, (raw - 0.12) / 0.7));
-      render(t * t * (3 - 2 * t));
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [reduced, render]);
-
-  const setFromX = (clientX: number) => {
-    if (!frameRef.current) return;
-    const r = frameRef.current.getBoundingClientRect();
-    render(Math.max(0, Math.min(1, (clientX - r.left) / r.width)));
-  };
-
-  return (
-    <section
-      ref={trackRef}
-      // Phones don't pin at all — a 100vh sticky stage around a ~300px frame
-      // reads as a screen of blank. The section flows naturally and the pane
-      // sweeps across during the first stretch of scroll. Desktop/tablet keep
-      // the pinned scrollytelling (iPad portrait trims the track's tail).
-      className={`relative pointer-events-none mt-4 md:mt-[-70px] ${reduced ? "" : "md:h-[280vh] md:max-lg:portrait:-mb-[20vh]"}`}
-      style={{ marginTop: reduced ? 0 : undefined }}
+/* One product shot under the hero, matted in a print the way harvey.ai frames
+   its hero screenshot, with no scroll effects. The screen is the attorney
+   dashboard exactly as it appears on willow-inc.com today (1440×855); the
+   frame's shape gives it an even mat. On a phone the screen runs off the
+   bottom-right edge so it stays legible. */
+const HeroShot = () => (
+  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl md:aspect-[1.71]">
+    <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+    <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+    <div
+      role="img"
+      aria-label="The Willow attorney dashboard: active clients and plans signed."
+      className="absolute left-[6%] top-[7%] w-[170%] overflow-hidden rounded-lg bg-[#F0F2F5] md:left-[8.5%] md:top-[7.9%] md:w-[83%] md:rounded-xl"
+      style={{ aspectRatio: "1440 / 855", boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
     >
-      <div className={`${reduced ? "" : "md:sticky md:top-0 md:h-screen"} pointer-events-none flex items-center justify-center px-4 pb-6 pt-6 md:pt-[88px]`}>
-        <div
-          className="pointer-events-auto relative"
-          style={{ width: "min(1160px, 94vw, calc((100vh - 170px) * 1.6842))" }}
-        >
-          {/* Indicator — a small quiet label above the frame, never covering the UI */}
-          <div className="absolute -top-7 left-1 h-5">
-            <span
-              ref={clientPillRef}
-              className="absolute left-0 top-0 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370] transition-opacity duration-300"
-              style={{ opacity: 0 }}
-            >
-              Purpose built for clients
-            </span>
-            <span
-              ref={attorneyPillRef}
-              className="absolute left-0 top-0 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370] transition-opacity duration-300"
-              style={{ opacity: 1 }}
-            >
-              Purpose built for attorneys
-            </span>
-          </div>
+      <ScaledScreen>
+        <AttorneyDashboardScreen />
+      </ScaledScreen>
+    </div>
+  </div>
+);
 
-          <div
-            className="relative w-full rounded-2xl border border-gray-300 shadow-2xl overflow-hidden"
-            style={{ aspectRatio: "16 / 9.5" }}
-          >
-            {/* Print frame — the golden-gate print mats the product shot,
-                mirroring the framed capability cards further down the page */}
-            <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
-
-          <div
-            ref={frameRef}
-            className="absolute left-1/2 top-1/2 h-[92%] w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-xl overflow-hidden bg-[#F1F5F7]"
-            style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)", touchAction: "pan-y" }}
-          >
-
-          {/* Attorney view (base layer) — faithful recreation of the professionals dashboard */}
-          <div className="absolute inset-0">
-            <ScaledScreen>
-              <AttorneyDashboardScreen />
-            </ScaledScreen>
-          </div>
-
-          {/* Client view (revealed layer) — faithful recreation of the My Estate Plan screen */}
-          <div ref={clientPaneRef} className="absolute inset-0" style={{ clipPath: "inset(0 100% 0 0)" }}>
-            <ScaledScreen>
-              <ClientEstatePlanScreen />
-            </ScaledScreen>
-          </div>
-
-          {/* Divider — a wider invisible strip keeps it draggable without any visible handle */}
-          <div
-            ref={dividerRef}
-            className="absolute top-0 bottom-0 w-[3px] bg-[#138F8B] cursor-col-resize"
-            style={{ left: 0, transform: "translateX(-1.5px)" }}
-            onPointerDown={(e) => {
-              draggingRef.current = true;
-              (e.target as HTMLElement).setPointerCapture(e.pointerId);
-              setFromX(e.clientX);
-              e.preventDefault();
-            }}
-            onPointerMove={(e) => { if (draggingRef.current) setFromX(e.clientX); }}
-            onPointerUp={() => { draggingRef.current = false; }}
-            onPointerCancel={() => { draggingRef.current = false; }}
-          >
-            <div className="absolute top-0 bottom-0 -left-2 w-5" />
-            </div>
-          </div>
-          </div>
-        </div>
+/* Two doors, as on harvey.ai: hovering a card widens it to a 1.4 share of the
+   row and dims its neighbour (.aud-row / .aud-card in index.css). Both screens
+   are product shots already on willow-inc.com, drawn wider than the card, so
+   widening shows more of them. */
+const AUDIENCES: { title: string; body: string; cta: string; to: string; image: string; shot: React.ReactNode }[] = [
+  {
+    title: "For attorneys",
+    body: "Every client and every next step in one place, from the first meeting to the signed plan and every year after.",
+    cta: "Explore Willow for attorneys",
+    to: "/platform",
+    image: "/nyc-skyline.jpg",
+    shot: (
+      <div className="relative w-[150vw] md:w-[min(52vw,720px)]" style={{ aspectRatio: "900 / 400" }}>
+        <ActiveClientsNextStepsVignette />
       </div>
-    </section>
-  );
-};
+    ),
+  },
+  {
+    title: "For clients\n& their team",
+    body: "A plan clients understand, kept in one place and shared with executors, guardians and agents on their terms.",
+    cta: "Explore Willow for clients",
+    to: "/for-clients",
+    image: "/west-side-hwy.jpg",
+    shot: (
+      <div className="relative w-[200vw] md:w-[min(68vw,1000px)]" style={{ aspectRatio: "1440 / 855" }}>
+        <ScaledScreen>
+          <ClientEstatePlanScreen />
+        </ScaledScreen>
+      </div>
+    ),
+  },
+];
+
+const AudienceRouter = () => (
+  <section className="bg-[#FCFCFD] pt-20 md:pt-28">
+    <div className={HOME_WRAP}>
+      <div className="mx-auto max-w-3xl text-center">
+        <h2
+          className="font-heading text-[clamp(2.1rem,3.6vw,3.5rem)] font-light text-[#222222]"
+          style={{ lineHeight: 1.12, letterSpacing: "-0.01em", textWrap: "balance" }}
+        >
+          One platform,
+          <span className="block text-[#138F8B]">for the attorney and the family.</span>
+        </h2>
+        <p className="mx-auto mt-5 max-w-[560px] text-[16px] text-gray-600" style={{ lineHeight: 1.5 }}>
+          Attorneys run every client relationship from one place. Clients and the people they name get a plan they understand, shared on their terms.
+        </p>
+      </div>
+
+      <div className="aud-row mx-auto mt-12 flex max-w-[1370px] flex-col gap-4 md:mt-20 md:aspect-[2/1] md:flex-row md:gap-5 xl:w-[calc((100%-220px)/12*10+180px)]">
+        {AUDIENCES.map((a) => (
+          <Link
+            key={a.to}
+            to={a.to}
+            className="aud-card group relative flex aspect-[3/4] max-h-[520px] flex-1 flex-col overflow-hidden rounded-xl text-white md:aspect-auto md:max-h-none"
+          >
+            {/* The print keeps its width as the card grows, so the photo never re-crops mid-hover */}
+            <div className="absolute inset-y-0 left-0 aspect-[5/4] h-full min-w-full">
+              <img src={a.image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+            </div>
+            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+            <div className="relative flex flex-col items-start gap-4 px-7 pt-7 md:px-10 md:pt-10">
+              <h3 className="whitespace-pre-line font-heading text-[clamp(1.6rem,2.3vw,2.25rem)] font-normal md:max-w-[320px]" style={{ lineHeight: 1.12 }}>
+                {a.title}
+              </h3>
+              <p className="max-w-[320px] text-[15px] text-white/85 md:text-[16px]" style={{ lineHeight: 1.4 }}>
+                {a.body}
+              </p>
+              <span className="mt-1 inline-flex h-9 items-center rounded-md border border-white/80 px-3.5 text-[14px] font-medium transition-colors duration-200 group-hover:bg-white/10">
+                {a.cta}
+              </span>
+            </div>
+            <div className="relative mt-8 pl-7 md:mt-10 md:pl-[88px]">
+              <div className="w-max overflow-hidden rounded-tl-lg bg-white" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
+                {a.shot}
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
 // The four core capabilities. Left list activates as you scroll; the
 // screenshots on the right slide up and stack over one another.
@@ -612,8 +522,8 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
     body:
       "New leads from your booking page, every active client, and one list of what needs you: summaries to approve, release requests, emails ready to send.",
     print: "/central-park.jpg",
-    visual: <RequiredActionsVignette />,
-    fitAspect: "900 / 560",
+    visual: <ActiveClientsNextStepsVignette />,
+    fitAspect: "900 / 400",
   },
   {
     title: "Keep your signing ceremony. Lose the binder.",
@@ -957,55 +867,47 @@ const FaqSection = () => {
 
 const Home = () => {
   const navigate = useNavigate();
-  const [bookOpen, setBookOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
 
-      {/* Hero */}
-      <section className="w-full bg-[#FCFCFD] pt-[env(safe-area-inset-top)] max-md:flex max-md:min-h-[52svh] max-md:items-center">
-        <div className="container mx-auto px-4 pt-20 md:pt-24 pb-1">
-          <div className="flex flex-col items-center justify-center text-center animate-fade-in w-full">
-            <div className="mb-5 flex items-center gap-2.5 text-[12.5px] font-semibold uppercase tracking-[0.16em] text-[#0C7370]">
-              <span className="hidden h-[3px] w-5 rounded-full bg-[#128F8B] sm:block" />
-              The estate planning platform for attorneys
-              <span className="hidden h-[3px] w-5 rounded-full bg-[#128F8B] sm:block" />
-            </div>
-            <h1 className="w-full text-[2rem] sm:text-4xl md:text-4xl lg:text-[2.75rem] mb-2 font-heading font-light text-[#222222]" style={{ lineHeight: 1.25 }}>
-              Ensure your clients
+      {/* Hero, laid out like harvey.ai's: the headline on the left, the
+          sentence and the one button on the right, bottoms aligned */}
+      <section className="w-full bg-[#FCFCFD] pt-[calc(72px+env(safe-area-inset-top)+40px)] md:pt-[calc(72px+72px)] lg:pt-[calc(72px+80px)]">
+        <div className={HOME_WRAP}>
+          <div className="enter grid gap-y-8 lg:grid-cols-12 lg:items-end lg:gap-x-[18px] xl:gap-x-5">
+            <h1
+              className="font-heading text-[clamp(2.4rem,4vw,4.5rem)] font-light text-[#222222] lg:col-span-7 xl:col-span-6 xl:col-start-2"
+              style={{ lineHeight: 1.1, letterSpacing: "-0.0125em" }}
+            >
+              <span className="block">Ensure your clients</span>
               <HeroRotator />
             </h1>
-            <p className="mb-6 max-w-xl text-[15px] sm:text-base md:text-[17px] font-normal text-gray-500" style={{ lineHeight: 1.5, letterSpacing: "0.01em" }}>
-              Modernize your practice with our all-in-one platform purpose-built for estate planning attorneys and the clients they serve.
-            </p>
-            <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <div className="lg:col-span-4 lg:col-start-9 lg:pb-2 xl:col-start-8">
+              <p className="max-w-[460px] text-[17px] text-gray-600 md:text-[19px]" style={{ lineHeight: 1.4 }}>
+                Modernize your practice with our all-in-one platform purpose-built for estate planning attorneys and the clients they serve.
+              </p>
               <Link
                 to="/request-access"
-                className="press inline-flex h-12 items-center justify-center rounded-lg bg-[#128F8B] px-6 text-[15.5px] font-semibold text-white hover:bg-[#0C7370]"
+                className="press mt-8 inline-flex h-12 items-center justify-center rounded-md bg-[#128F8B] px-6 text-[15.5px] font-medium text-white hover:bg-[#0C7370] md:mt-10"
                 style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
                 data-hero-demo-button
               >
-                Book a demo
-              </Link>
-              <Link
-                to="/platform"
-                className="press inline-flex h-12 items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-5 text-[15.5px] font-medium text-[#1F2933] hover:border-gray-400"
-              >
-                Explore the platform <ArrowRight className="h-4 w-4" />
+                Request a demo
               </Link>
             </div>
+          </div>
+          <div className="mt-12 md:mt-16 lg:mt-20">
+            <HeroShot />
           </div>
         </div>
       </section>
 
-      {/* Attorney/client windowpane */}
-      <SplitShowcase onBook={() => setBookOpen(true)} />
-
-      {/* As seen in — the two articles, linked */}
-      <section className="bg-[#FCFCFD] pb-6 pt-12 md:pb-2 md:pt-16 lg:-mt-[6vh]">
-        <div className="container mx-auto max-w-5xl px-4 md:px-8">
-          <div className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">As seen in</div>
+      {/* As seen in: the two articles, linked */}
+      <section className="bg-[#FCFCFD] pt-16 md:pt-24">
+        <div className={HOME_WRAP}>
+          <div className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">As seen in</div>
           <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-5">
             <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity hover:opacity-90">
               <img src="/press-business-insider.svg" alt="Business Insider" className="h-6 w-auto md:h-7" />
@@ -1017,46 +919,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Two audiences, one platform */}
-      <section className="bg-[#FCFCFD] pt-16 md:pt-24">
-        <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
-          <div className="grid gap-5 md:grid-cols-2">
-            {[
-              {
-                eyebrow: "For attorneys",
-                title: "Your relationship with a client shouldn't end at the signing.",
-                body: "One dashboard for every client, summaries you approve, and a yearly rhythm that brings clients back.",
-                to: "/platform",
-                cta: "Explore the platform",
-                image: "/nyc-skyline.jpg",
-              },
-              {
-                eyebrow: "For clients & their team",
-                title: "A plan everyone understands, and everyone's ready for.",
-                body: "A plain-English playbook of the plan, shared with executors, guardians and agents on the client's terms.",
-                to: "/for-clients",
-                cta: "See the client experience",
-                image: "/west-side-hwy.jpg",
-              },
-            ].map((c) => (
-              <Link key={c.to} to={c.to} className="lift group relative flex min-h-[420px] flex-col justify-end overflow-hidden rounded-2xl">
-                <img src={c.image} alt="" aria-hidden className="lift-img absolute inset-0 h-full w-full object-cover" />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(6,45,44,0.10) 15%, rgba(6,45,44,0.88) 100%)" }} />
-                <div className="relative p-8 text-white md:p-10">
-                  <div className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/75">{c.eyebrow}</div>
-                  <h2 className="mt-3 max-w-md font-heading text-[1.7rem] font-bold leading-[1.2] md:text-[2rem]" style={{ textWrap: "balance" }}>
-                    {c.title}
-                  </h2>
-                  <p className="mt-3 max-w-md text-[16px] leading-relaxed text-white/85">{c.body}</p>
-                  <span className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-semibold">
-                    {c.cta} <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* For attorneys / For clients & their team */}
+      <AudienceRouter />
 
       {/* Core capabilities */}
       <section className="bg-[#FCFCFD]">
@@ -1117,7 +981,7 @@ const Home = () => {
                 className="willow-btn h-11 px-6 text-[15px] font-medium"
                 onClick={() => navigate("/request-access")}
               >
-                Book a demo
+                Request a demo
               </Button>
             </div>
           </div>
@@ -1168,37 +1032,6 @@ const Home = () => {
 
       <Footer />
 
-      {/* Book-a-meeting popup — opened by clicking inside the product windowpane */}
-      {bookOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]"
-          onClick={() => setBookOpen(false)}
-        >
-          <div
-            className="w-full max-w-[440px] rounded-2xl bg-white p-8 text-center"
-            style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.08)" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="mb-2 font-heading text-2xl font-bold text-[#222222]">Book a meeting</h3>
-            <p className="mb-7 text-base leading-relaxed text-gray-600">
-              See both sides of Willow live: a short walkthrough of the attorney workspace and the client experience.
-            </p>
-            <Button
-              size="lg"
-              className="willow-btn w-full py-6 text-base"
-              onClick={() => navigate("/request-access")}
-            >
-              Book a Demo
-            </Button>
-            <button
-              className="mt-3 w-full py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"
-              onClick={() => setBookOpen(false)}
-            >
-              Not now
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

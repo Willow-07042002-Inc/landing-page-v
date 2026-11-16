@@ -36,7 +36,7 @@ const Footer = () => (
           </p>
           <div className="mt-6 flex flex-wrap gap-2.5">
             <Link to={DEMO_PATH} className="press inline-flex h-10 items-center rounded-md bg-white px-4 text-[14px] font-semibold text-[#064544] hover:bg-[#E6F5F4]">
-              Book a demo
+              Request a demo
             </Link>
             <a href={ATTORNEY_LOGIN} className="press inline-flex h-10 items-center rounded-md border border-white/30 px-4 text-[14px] font-medium text-white hover:border-white/60">
               Attorney log in
