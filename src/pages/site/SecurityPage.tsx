@@ -50,7 +50,7 @@ const SecurityPage = () => {
         subtitle="An estate plan holds a family's finances, health and wishes. Willow is built so the right people see it at the right time, and no one else does."
         secondary={{ label: "Read the Privacy Policy", to: "/privacy" }}
         visual={
-          <PrintFrame print="/workshop.jpg" className="shadow-2xl">
+          <PrintFrame print="/williamsburg.jpg" className="shadow-2xl">
             <VaultVignette />
           </PrintFrame>
         }

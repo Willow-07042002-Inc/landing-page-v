@@ -68,7 +68,7 @@ export const CARDS: Record<string, { label: string; desc: string; image: string;
   "/platform/check-ins": { label: "Check-ins & updates", desc: "A yearly rhythm that brings clients back to you.", image: "/santa-monica.jpg", eyebrow: "Client experience" },
   "/platform/booking": { label: "Booking page", desc: "New clients book video, phone or in-person time.", image: "/williamsburg.jpg", eyebrow: "Client experience" },
   "/platform/integrations": { label: "Integrations", desc: "Google Workspace, Microsoft 365 and Zoom.", image: "/nyc-street.jpg", eyebrow: "Connect" },
-  "/security": { label: "Security", desc: "How client information is protected, and who can see it.", image: "/workshop.jpg", eyebrow: "Trust" },
+  "/security": { label: "Security", desc: "How client information is protected, and who can see it.", image: "/williamsburg.jpg", eyebrow: "Trust" },
   "/solutions/solo": { label: "Solo practitioners", desc: "Run every matter from one dashboard.", image: "/williamsburg.jpg", eyebrow: "For attorneys" },
   "/solutions/boutique-firms": { label: "Boutique firms", desc: "Every client, under your firm's name.", image: "/nyc-street.jpg", eyebrow: "For attorneys" },
   "/solutions/practice-growth": { label: "Practice growth", desc: "Relationships that last past the signing.", image: "/central-park.jpg", eyebrow: "For attorneys" },

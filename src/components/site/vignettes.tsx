@@ -287,6 +287,8 @@ export const VaultVignette = () => (
           { n: "Revocable Living Trust", s: "Restated August 18, 2026", v: "Current" },
           { n: "Power of Attorney", s: "Signed August 18, 2026", v: "Current" },
           { n: "Health Care Proxy", s: "Signed August 18, 2026", v: "Current" },
+          { n: "HIPAA Authorization", s: "Signed August 18, 2026", v: "Current" },
+          { n: "Deed, 14 Birchwood Lane", s: "Recorded September 2, 2026", v: "Current" },
           { n: "Last Will and Testament", s: "March 12, 2019 – August 18, 2026", v: "Past" },
         ].map((d, i) => (
           <div key={d.n + i} className="flex items-center gap-3 border-b border-[#F5F6F7] px-5 py-3.5 last:border-0">
@@ -307,6 +309,8 @@ export const VaultVignette = () => (
           { Icon: Download, t: "Daniel downloaded the trust", s: "Sep 3, 10:47 AM" },
           { Icon: Lock, t: "Release request from Maria denied", s: "Aug 30 · by Rachel Alvarez" },
           { Icon: Share2, t: "Finance shared with Maria Rosen", s: "Now · Aug 21" },
+          { Icon: Eye, t: "Rachel Alvarez approved the will summary", s: "Aug 20, 9:15 AM" },
+          { Icon: Download, t: "Daniel downloaded the will", s: "Aug 19, 6:02 PM" },
         ].map(({ Icon, t, s }) => (
           <div key={t} className="flex items-start gap-3 border-b border-[#F5F6F7] px-5 py-3.5 last:border-0">
             <Icon className="mt-0.5 h-4 w-4 text-[#9CA3AF]" />
