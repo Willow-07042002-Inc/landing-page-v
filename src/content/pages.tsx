@@ -71,10 +71,8 @@ export const CARDS: Record<string, { label: string; desc: string; image: string;
   "/solutions/solo": { label: "Solo practitioners", desc: "Run every matter from one dashboard.", image: "/williamsburg.jpg", eyebrow: "For attorneys" },
   "/solutions/boutique-firms": { label: "Boutique firms", desc: "Every client, under your firm's name.", image: "/nyc-street.jpg", eyebrow: "For attorneys" },
   "/solutions/practice-growth": { label: "Practice growth", desc: "Relationships that last past the signing.", image: "/central-park.jpg", eyebrow: "For attorneys" },
+  "/solutions/their-team": { label: "Their team", desc: "Executors, trustees, guardians and agents, each with their own portal.", image: "/hudson-bridge.jpg", eyebrow: "For clients & their team" },
   "/for-clients": { label: "Clients & families", desc: "A plan everyone understands.", image: "/west-side-hwy.jpg", eyebrow: "For clients" },
-  "/solutions/executors-trustees": { label: "Executors & trustees", desc: "What they receive, and when.", image: "/hudson-bridge.jpg", eyebrow: "For the team" },
-  "/solutions/guardians": { label: "Guardians", desc: "Everything about the children, ready on day one.", image: "/santa-monica.jpg", eyebrow: "For the team" },
-  "/solutions/agents": { label: "Agents & health care proxies", desc: "What they can do, spelled out.", image: "/golden-gate.jpg", eyebrow: "For the team" },
   "/solutions/wills": { label: "Wills", desc: "Signed, stored and explained.", image: "/willow-street.jpg", eyebrow: "By plan" },
   "/solutions/trusts": { label: "Revocable trusts", desc: "Payout schedules anyone can follow.", image: "/florida-coast.jpg", eyebrow: "By plan" },
   "/solutions/powers-of-attorney": { label: "Powers of attorney", desc: "Every power, explained in plain English.", image: "/nyc-skyline.jpg", eyebrow: "By plan" },
@@ -354,7 +352,7 @@ export const PAGES: PageDef[] = [
       { q: "What about powers of attorney and health care proxies?", a: "They're shared now, so the people named can act when they're needed." },
       { q: "Can a client change their mind?", a: "Any time. Sharing can be added, changed or removed, and each change is recorded." },
     ],
-    related: ["/solutions/executors-trustees", "/solutions/guardians", "/platform/vault"],
+    related: ["/solutions/their-team", "/platform/vault", "/platform/plan-summaries"],
     security: true,
   },
   {
@@ -540,85 +538,10 @@ export const PAGES: PageDef[] = [
         print: "self",
       },
     ],
-    related: ["/platform/check-ins", "/platform/booking", "/solutions/executors-trustees"],
+    related: ["/platform/check-ins", "/platform/booking", "/solutions/their-team"],
   },
 
   /* ─────────────────────── SOLUTIONS: CLIENTS & THEIR TEAM ─────────────────────── */
-  {
-    path: "/solutions/executors-trustees",
-    metaTitle: "For Executors & Trustees | Willow",
-    metaDesc: "Executors and trustees get their own Willow portal with the documents and information they'll need, released when the time comes and verified by the family's attorney.",
-    eyebrow: "Solutions · Executors & trustees",
-    title: "What an executor needs, waiting when it's time.",
-    subtitle: "The people your client names get their own portal. They can see that something is waiting for them today, and the documents open once the attorney verifies a passing.",
-    secondary: { label: "See the client experience", to: "/for-clients" },
-    hero: { visual: <TeamRosterVignette />, print: "self" },
-    points: [
-      { title: "Their own portal", body: "Executors and trustees sign in to their own account and see only what has been shared with them." },
-      { title: "Released when it's time", body: "Sealed documents open once the attorney verifies the passing, usually from the death certificate." },
-      { title: "The attorney who knows the plan", body: "When they need help, they can book time with the attorney who drafted it." },
-    ],
-    rows: [
-      {
-        eyebrow: "What they'll find",
-        title: "The plan, and the information to carry it out.",
-        body: "Accounts, insurance, property and digital accounts, gathered by your client and shared with the person who'll need them.",
-        visual: <CategoriesVignette />,
-        print: "self",
-      },
-      {
-        eyebrow: "What they'll understand",
-        title: "Who gets what, in plain English.",
-        body: "The summary your attorney approved explains every gift and the order things happen in.",
-        visual: <WhoGetsWhatVignette />,
-        print: "self",
-      },
-    ],
-    faq: [
-      { q: "How does an executor get access?", a: "They report the passing from their portal. The client's attorney verifies it, usually from the death certificate, and the sealed documents are released." },
-      { q: "Does Willow file anything with the court?", a: "No. Willow keeps copies of the signed documents and explains them. The attorney guides the estate through probate." },
-    ],
-    related: ["/platform/sharing", "/solutions/guardians", "/solutions/agents"],
-  },
-  {
-    path: "/solutions/guardians",
-    metaTitle: "For Guardians | Willow",
-    metaDesc: "Guardians named in an estate plan get everything about the children in one place: per-child information, schools, health, guidance in the parents' words, and pets.",
-    eyebrow: "Solutions · Guardians",
-    title: "Everything about the children, ready on day one.",
-    subtitle: "Parents gather what a guardian would need, child by child: schools, doctors, routines, guidance in their own words. It's shared with the guardian now, or held until it's needed.",
-    hero: { visual: <CategoriesVignette />, print: "self" },
-    points: [
-      { title: "Child by child", body: "Each child's information, schooling and education plans, and the people who matter in their life." },
-      { title: "In the parents' words", body: "Guidance on values, routines and wishes, written by the parents for the guardian." },
-      { title: "Funds and pets too", body: "What's set aside for each child, and who looks after the pets." },
-    ],
-    rows: [
-      {
-        eyebrow: "Sharing",
-        title: "Shared now, or when it's needed.",
-        body: "Parents choose whether the guardian sees this today or once a passing is verified.",
-        visual: <SectionShareVignette />,
-        print: "self",
-      },
-    ],
-    related: ["/solutions/guardianship", "/platform/sharing", "/solutions/executors-trustees"],
-  },
-  {
-    path: "/solutions/agents",
-    metaTitle: "For Agents & Health Care Proxies | Willow",
-    metaDesc: "Agents under a power of attorney and health care proxies see exactly what they're authorized to do, explained in plain English and shared so they can act.",
-    eyebrow: "Solutions · Agents & health care proxies",
-    title: "What they can do, spelled out.",
-    subtitle: "Agents under a power of attorney and health care proxies see each power they hold, explained in plain English, and who is next in line if they can't serve.",
-    hero: { visual: <StepInVignette />, print: "self" },
-    points: [
-      { title: "Every power, explained", body: "Banking, property, taxes and more, each with a line on what it means in practice." },
-      { title: "Who's next in line", body: "The primary agent and each successor, in order." },
-      { title: "Shared so they can act", body: "Powers of attorney and health care proxies are shared now, so the people named can step in when they're needed." },
-    ],
-    related: ["/solutions/powers-of-attorney", "/platform/plan-summaries", "/solutions/executors-trustees"],
-  },
 
   /* ───────────────────────────── SOLUTIONS: BY PLAN ───────────────────────────── */
   {
@@ -644,7 +567,7 @@ export const PAGES: PageDef[] = [
       },
     ],
     faq: [FAQ_PAPER, { q: "Does Willow hold the original will?", a: "No. Willow stores copies. Keep originals as you do today." }],
-    related: ["/solutions/trusts", "/platform/plan-summaries", "/solutions/executors-trustees"],
+    related: ["/solutions/trusts", "/platform/plan-summaries", "/solutions/their-team"],
   },
   {
     path: "/solutions/trusts",
@@ -670,7 +593,7 @@ export const PAGES: PageDef[] = [
       },
     ],
     faq: [{ q: "Which kinds of trusts does Willow summarize?", a: "Revocable and irrevocable trusts, along with their amendments and restatements." }, FAQ_NO_ADVICE],
-    related: ["/solutions/wills", "/platform/plan-summaries", "/solutions/executors-trustees"],
+    related: ["/solutions/wills", "/platform/plan-summaries", "/solutions/their-team"],
   },
   {
     path: "/solutions/powers-of-attorney",
@@ -685,7 +608,7 @@ export const PAGES: PageDef[] = [
       { title: "Health care decisions", body: "Who decides, and who's next if they can't." },
       { title: "Ready to use", body: "Shared with the agents now, so they can act when they're needed." },
     ],
-    related: ["/solutions/agents", "/platform/plan-summaries", "/solutions/wills"],
+    related: ["/solutions/their-team", "/platform/plan-summaries", "/solutions/wills"],
   },
   {
     path: "/solutions/guardianship",
@@ -700,7 +623,7 @@ export const PAGES: PageDef[] = [
       { title: "Guidance and values", body: "What the parents want for the children, in their own words." },
       { title: "Funds and care", body: "What's set aside for each child, and who looks after the pets." },
     ],
-    related: ["/solutions/guardians", "/platform/sharing", "/solutions/wills"],
+    related: ["/solutions/their-team", "/platform/sharing", "/solutions/wills"],
   },
 ];
 

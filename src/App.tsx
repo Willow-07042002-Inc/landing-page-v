@@ -35,6 +35,7 @@ import TemplatePage from "./pages/site/TemplatePage";
 import SecurityPage from "./pages/site/SecurityPage";
 import AboutPage from "./pages/site/AboutPage";
 import LegalCenterPage from "./pages/site/LegalCenterPage";
+import TheirTeamPage from "./pages/site/TheirTeamPage";
 import { PAGES } from "./content/pages";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,10 @@ const App = () => (
           {PAGES.map((p) => (
             <Route key={p.path} path={p.path} element={<TemplatePage />} />
           ))}
+          <Route path="/solutions/their-team" element={<TheirTeamPage />} />
+          <Route path="/solutions/executors-trustees" element={<Navigate to="/solutions/their-team#executors-trustees" replace />} />
+          <Route path="/solutions/guardians" element={<Navigate to="/solutions/their-team#guardians" replace />} />
+          <Route path="/solutions/agents" element={<Navigate to="/solutions/their-team#agents" replace />} />
           <Route path="/security" element={<SecurityPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/legal" element={<LegalCenterPage />} />
