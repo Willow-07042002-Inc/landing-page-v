@@ -904,11 +904,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* As seen in: the two articles, linked */}
+      {/* As seen in: Yahoo Finance as on the live site, and the two linked articles */}
       <section className="bg-[#FCFCFD] pt-16 md:pt-24">
         <div className={HOME_WRAP}>
           <div className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">As seen in</div>
-          <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 md:gap-x-14">
+            <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-5 w-auto opacity-55 grayscale md:h-6" />
             <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity hover:opacity-90">
               <img src="/press-business-insider.svg" alt="Business Insider" className="h-6 w-auto md:h-7" />
             </a>
