@@ -258,12 +258,12 @@ const Navbar = () => {
         Skip to content
       </a>
 
-      <div className={`relative grid h-[72px] grid-cols-[1fr_auto] items-center lg:grid-cols-[1fr_auto_1fr] ${BAR_PAD}`}>
+      <div className={`relative grid h-[72px] grid-cols-[1fr_auto] items-center gap-x-6 lg:grid-cols-[1fr_auto_1fr] ${BAR_PAD}`}>
         <Link to="/" className="flex items-center justify-self-start" aria-label="Willow home" onClick={closeAll}>
           <img src={LOGO} alt="Willow" className="h-10 w-auto" />
         </Link>
 
-        <nav aria-label="Main" className="hidden h-full items-stretch gap-8 lg:flex">
+        <nav aria-label="Main" className="hidden h-full items-stretch gap-6 whitespace-nowrap lg:flex xl:gap-8">
           {NAV.map((menu) => {
             const open = openMenu === menu.label;
             const dim = openMenu !== null && !open;
@@ -289,7 +289,7 @@ const Navbar = () => {
           })}
         </nav>
 
-        <div className="hidden items-center gap-4 justify-self-end lg:flex" onMouseEnter={scheduleClose}>
+        <div className="hidden items-center gap-4 whitespace-nowrap justify-self-end lg:flex" onMouseEnter={scheduleClose}>
           <LoginMenu open={loginOpen} setOpen={setLoginOpen} />
           <Link
             to={DEMO_PATH}
@@ -301,7 +301,7 @@ const Navbar = () => {
         </div>
 
         {/* Phones and narrow windows */}
-        <div className="flex items-center gap-2 justify-self-end lg:hidden">
+        <div className="flex items-center gap-2 whitespace-nowrap justify-self-end lg:hidden">
           <Link to={DEMO_PATH} className="press hidden h-8 items-center rounded-[4px] bg-[#128F8B] px-3 text-[14px] font-medium text-white sm:flex">
             Request a demo
           </Link>
