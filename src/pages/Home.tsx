@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { Button } from "@/components/ui/button";
-import { Bell, ChevronDown, ChevronRight, Link2, Plus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { SharingHomeShot } from "@/components/ClientVignettes";
 import { Link } from "react-router-dom";
 import { LinkCards, SecurityBand } from "@/components/site/blocks";
@@ -40,7 +40,9 @@ const ScaledScreen = ({ children, w = 1440 }: { children: React.ReactNode; w?: n
   }, [w]);
   return (
     <div ref={outerRef} className="absolute inset-0 overflow-hidden">
-      <div style={{ width: w, height: 855, transform: `scale(${scale})`, transformOrigin: "top left" }}>{children}</div>
+      {/* antialiased, as the product's own <body> is: without it macOS draws
+          light-on-dark text (the W mark, white buttons) visibly heavier */}
+      <div className="antialiased" style={{ width: w, height: 855, transform: `scale(${scale})`, transformOrigin: "top left" }}>{children}</div>
     </div>
   );
 };
@@ -60,10 +62,65 @@ const MaskIcon = ({ src, color, size = 18 }: { src: string; color: string; size?
   />
 );
 
-// ---- Attorney dashboard, recreated from apps/professionals ----
+// ---- Attorney dashboard, recreated from apps/professionals as it is today
+// (origin/main = preview, Nov 17): components/dashboard/dashboard-content.tsx,
+// dashboard-column.tsx, leads-column.tsx, active-clients-column.tsx,
+// reminders-column.tsx, reminders-bell.tsx, top-bar.tsx and sidebar.tsx ----
+
+/* dashboard-content.tsx CARD_SHADOW */
 const PRO_CARD_SHADOW =
   "0 2px 4px rgba(16,24,40,0.05), 0 18px 36px -12px rgba(16,24,40,0.20), 0 40px 72px -24px rgba(16,24,40,0.18)";
 
+/* NotificationIcon / RemindersIcon, verbatim from packages/ui */
+const ProBellIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className={className}>
+    <path d="M12 2.5a1.35 1.35 0 0 0-1.35 1.35v.63C8.05 5.12 6.35 7.32 6.35 9.97c0 3.03-.78 4.63-1.55 5.6-.53.66-.03 1.68.82 1.68h12.76c.85 0 1.35-1.02.82-1.68-.77-.97-1.55-2.57-1.55-5.6 0-2.65-1.7-4.85-4.3-5.49v-.63A1.35 1.35 0 0 0 12 2.5Z" />
+    <path d="M9.9 18.7a2.1 2.1 0 0 0 4.2 0Z" />
+  </svg>
+);
+
+/* sidebar.tsx: the W mark, then Dashboard and Clients (Signings is hidden today) */
+const ProSidebar = ({ active }: { active: "dashboard" | "clients" }) => (
+  <div className="relative z-30 flex w-[68px] flex-shrink-0 flex-col border-r border-[#E5E7EB] bg-white">
+    <div className="flex h-16 items-center px-[14px]">
+      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 20, lineHeight: 1, paddingTop: 2 }}>
+        W
+      </span>
+    </div>
+    <div className="mx-3 border-t border-[#E5E7EB]" />
+    <div className="flex flex-col gap-0.5 px-2 pt-6">
+      <span className="flex items-center justify-center rounded-lg px-3 py-2">
+        <MaskIcon src="/mock/dashboard-icon.svg" color={active === "dashboard" ? "#309E96" : "#9CA3AF"} />
+      </span>
+      <span className="flex items-center justify-center rounded-lg px-3 py-2">
+        <MaskIcon src="/mock/clients-icon.svg" color={active === "clients" ? "#309E96" : "#9CA3AF"} />
+      </span>
+    </div>
+  </div>
+);
+
+/* top-bar.tsx: the bell with its unread count, then the attorney and firm */
+const ProTopBar = () => (
+  <div className="relative z-30 flex h-16 flex-shrink-0 items-center border-b border-[#E5E7EB] bg-white px-6" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+    <div className="ml-auto flex items-center gap-1">
+      <span className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#6B7280]">
+        <ProBellIcon className="h-5 w-5" />
+        <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#309E96] px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white">3</span>
+      </span>
+      <span className="flex items-center gap-3 rounded-lg px-2.5 py-2">
+        <span className="text-right">
+          <span className="block text-[13px] font-semibold leading-tight text-[#1F2933]">Rachel Alvarez</span>
+          <span className="mt-0.5 block text-[11px] leading-tight text-[#9CA3AF]">Alvarez Family Law</span>
+        </span>
+        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#F0F9F9] text-[11px] font-bold text-[#309E96] ring-1 ring-black/5">RA</span>
+        <WIcon name="chevronDown" className="h-3.5 w-3.5 text-[#9CA3AF]" />
+      </span>
+    </div>
+  </div>
+);
+
+/* dashboard-column.tsx DashboardColumn: icon, title, count, a plain text
+   action (no icon), rows on hairlines, and an optional footer link */
 const ProColumn = ({
   icon,
   title,
@@ -76,7 +133,7 @@ const ProColumn = ({
   icon: React.ReactNode;
   title: string;
   count: number;
-  action?: React.ReactNode;
+  action?: string;
   footer?: string;
   rounding: string;
   children: React.ReactNode;
@@ -89,81 +146,76 @@ const ProColumn = ({
           <h4 className="text-[15px] font-semibold text-[#1F2933]">{title}</h4>
           <span className="rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[12px] font-semibold text-[#6B7280]">{count}</span>
         </div>
-        {action}
+        {action && <span className="inline-flex items-center rounded-lg px-2.5 py-1 text-[13px] font-medium text-[#128F8B]">{action}</span>}
       </div>
       <div className="flex flex-1 flex-col divide-y divide-[#EEF0F2]">{children}</div>
       {footer && (
-        <div className="flex items-center justify-between border-t border-[#EEF0F2] px-5 py-3 text-[13px] font-medium text-[#309E96] hover:bg-[#F8FAFA]">
+        <div className="flex items-center justify-between border-t border-[#EEF0F2] px-5 py-3 text-[13px] font-medium text-[#309E96]">
           {footer}
-          <ChevronRight className="h-4 w-4" strokeWidth={2} />
+          <WIcon name="chevronRight" className="h-4 w-4" />
         </div>
       )}
     </div>
   </div>
 );
 
-const JourneyTrack = ({ step }: { step: number }) => (
-  <span className="flex w-[72px] flex-shrink-0 gap-[3px]">
-    {[1, 2, 3, 4, 5].map((s) => (
-      <span
-        key={s}
-        className="h-[3px] flex-1 rounded-full"
-        style={{ backgroundColor: s < step ? "#128F8B" : s === step ? "rgba(18,143,139,0.3)" : "#E5E7EB" }}
-      />
-    ))}
+/* The grey initials every dashboard row starts with (teal on hover) */
+const ProInitials = ({ name }: { name: string }) => (
+  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F4F6] text-[#9CA3AF] ring-1 ring-black/5 transition-colors group-hover:bg-[#F0F9F9] group-hover:text-[#309E96]">
+    <span className="text-[13px] font-semibold">{name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase()}</span>
   </span>
 );
 
+/* active-clients-column.tsx ClientLine: a single client says "Individual"; half
+   of a couple says who they're with, indented beside the couple's tie */
+const ProActiveClient = ({ name, sub, indent = false }: { name: string; sub: string; indent?: boolean }) => (
+  <div className={`group flex min-h-[84px] items-center justify-between gap-3 bg-white py-4 pr-5 ${indent ? "pl-10" : "pl-5"}`}>
+    <div className="flex min-w-0 flex-1 items-center gap-3.5">
+      <ProInitials name={name} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{name}</p>
+        <p className="truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{sub}</p>
+      </div>
+    </div>
+  </div>
+);
 
-/* SignedPlansIcon — verbatim from packages/ui/components/icons/signed-plans-icon.tsx
-   (added to the platform icon library Sept 2). */
-const PlansSignedIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden fill="currentColor" className="text-[#309E96]">
-    <path fillRule="evenodd" clipRule="evenodd" d="M7 2.5h6.5L18.6 7.6V19.4A2.1 2.1 0 0 1 16.5 21.5H7A2.1 2.1 0 0 1 4.9 19.4V4.6A2.1 2.1 0 0 1 7 2.5Zm6.6 1.1V6.8A1.1 1.1 0 0 0 14.7 7.9H17.9z" />
-  </svg>
+const ProActiveCouple = ({ a, b }: { a: string; b: string }) => (
+  <div className="relative bg-white">
+    <span aria-hidden className="pointer-events-none absolute bottom-7 left-5 top-7 w-1 rounded-full bg-[#D1D5DB]" />
+    <ProActiveClient name={a} sub={`Couple · with ${b.split(" ")[0]}`} indent />
+    <div className="ml-10 mr-5 h-px bg-[#F0F1F3]" />
+    <ProActiveClient name={b} sub={`Couple · with ${a.split(" ")[0]}`} indent />
+  </div>
+);
+
+/* reminders-column.tsx: a grey rail (teal on hover), the reminder, the action */
+const ProReminder = ({ title, sub, cta }: { title: string; sub?: string; cta: string }) => (
+  <div className="group flex min-h-[84px] items-center bg-white px-5 py-4">
+    <div className="flex w-full items-stretch gap-3.5">
+      <div className="w-1 flex-shrink-0 self-stretch rounded-full bg-[#D1D5DB] transition-colors group-hover:bg-[#7FC5BF]" />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{title}</p>
+        {sub && <p className="mt-0.5 text-[13px] text-[#9CA3AF]">{sub}</p>}
+        <span className="mt-1.5 inline-flex items-center gap-1 text-[13px] font-semibold text-[#309E96]">
+          {cta}
+          <WIcon name="arrowRight" className="h-3.5 w-3.5" />
+        </span>
+      </div>
+    </div>
+  </div>
 );
 
 const AttorneyDashboardScreen = () => (
   <div className="flex h-full w-full bg-[#F0F2F5] text-left" style={{ fontFamily: "Figtree, Inter, sans-serif", height: 855 }}>
-    {/* Sidebar */}
-    <div className="flex w-[68px] flex-shrink-0 flex-col border-r border-[#E5E7EB] bg-white">
-      <div className="flex h-16 items-center px-[14px]">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 20, lineHeight: 1, paddingTop: 2 }}>
-          W
-        </span>
-      </div>
-      <div className="mx-3 border-t border-[#E5E7EB]" />
-      <div className="flex flex-col gap-0.5 px-2 pt-6">
-        <span className="flex items-center justify-center rounded-lg px-3 py-2">
-          <MaskIcon src="/mock/dashboard-icon.svg" color="#309E96" />
-        </span>
-        <span className="flex items-center justify-center rounded-lg px-3 py-2 hover:bg-[#F8FAFA]">
-          <MaskIcon src="/mock/clients-icon.svg" color="#9CA3AF" />
-        </span>
-      </div>
-    </div>
+    <ProSidebar active="dashboard" />
 
     <div className="flex min-w-0 flex-1 flex-col">
-      {/* Top bar */}
-      <div className="flex h-16 flex-shrink-0 items-center border-b border-[#E5E7EB] bg-white px-6" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div className="ml-auto flex items-center gap-1">
-          <span className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#6B7280] hover:bg-[#F8FAFA]">
-            <Bell className="h-5 w-5" strokeWidth={1.8} />
-            <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#309E96] px-1 text-[10px] font-bold text-white ring-2 ring-white">3</span>
-          </span>
-          <span className="flex items-center gap-3 rounded-lg px-2.5 py-2 hover:bg-[#F8FAFA]">
-            <span className="text-right">
-              <span className="block text-[13px] font-semibold leading-tight text-[#1F2933]">Rachel Alvarez</span>
-              <span className="mt-0.5 block text-[11px] leading-tight text-[#9CA3AF]">Alvarez Family Law</span>
-            </span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F0F9F9] text-[11px] font-bold text-[#309E96] ring-1 ring-black/5">RA</span>
-            <ChevronDown className="h-3.5 w-3.5 text-[#9CA3AF]" />
-          </span>
-        </div>
-      </div>
+      <ProTopBar />
 
-      {/* Content */}
-      <div className="mx-auto w-full max-w-[1400px] px-12 py-12">
+      {/* The greeting types itself out on load and its caret blinks off; this
+          is how it rests */}
+      <div className="mx-auto w-full max-w-[1400px] px-16 py-12">
         <h3 className="text-[40px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.15, fontFamily: "Figtree, Inter, sans-serif" }}>
           Good morning, Rachel.
         </h3>
@@ -173,27 +225,23 @@ const AttorneyDashboardScreen = () => (
             icon={<MaskIcon src="/mock/leads-icon.svg" color="#309E96" size={20} />}
             title="New leads"
             count={3}
+            action="Copy link"
             rounding="rounded-l-2xl"
-            action={
-              <span className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium text-[#128F8B] hover:bg-[#F0F9F9] hover:text-[#0F7673]">
-                <Link2 className="h-3.5 w-3.5" strokeWidth={2} /> Copy link
-              </span>
-            }
           >
             {[
-              { n: "Jordan Lee", i: "JL", m: "Start a new estate plan", t: "Thursday at 2:30 PM" },
-              { n: "Amara Patel", i: "AP", m: "Update an existing plan", t: "Friday at 11:00 AM" },
-              { n: "Chris Novak", i: "CN", m: "Start a new estate plan", t: "Tue, Sep 15 at 9:15 AM" },
+              { n: "Jordan Lee", m: "Start a new estate plan", t: "Thursday at 2:30 PM" },
+              { n: "Amara Patel", m: "Update an existing plan", t: "Friday at 11:00 AM" },
+              { n: "Chris Novak", m: "Start a new estate plan", t: "Monday at 9:15 AM" },
             ].map((r) => (
-              <div key={r.n} className="group flex min-h-[84px] items-center justify-between gap-3 bg-white px-5 py-4 transition-colors hover:bg-[#F8FAFA]">
-                <div className="flex min-w-0 items-center gap-3.5">
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F4F6] text-[13px] font-semibold text-[#9CA3AF] ring-1 ring-black/5 group-hover:bg-[#F0F9F9] group-hover:text-[#309E96]">{r.i}</span>
-                  <span className="min-w-0">
-                    <span className="block truncate font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{r.n}</span>
-                    <span className="block truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{r.m}</span>
-                  </span>
+              <div key={r.n} className="group flex min-h-[84px] w-full items-center justify-between gap-3 bg-white px-5 py-4">
+                <div className="flex min-w-0 flex-1 items-center gap-3.5">
+                  <ProInitials name={r.n} />
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{r.n}</p>
+                    <p className="truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{r.m}</p>
+                  </div>
                 </div>
-                <span className="flex-shrink-0 whitespace-nowrap text-[12px] text-[#9CA3AF]">{r.t}</span>
+                <span className="flex flex-shrink-0 items-center whitespace-nowrap text-[12px] text-[#9CA3AF]">{r.t}</span>
               </div>
             ))}
           </ProColumn>
@@ -202,59 +250,26 @@ const AttorneyDashboardScreen = () => (
             icon={<MaskIcon src="/mock/clients-icon.svg" color="#309E96" size={20} />}
             title="Active clients"
             count={10}
+            action="Add"
             footer="View all 10 clients"
             rounding="rounded-none"
-            action={
-              <span className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium text-[#128F8B] hover:bg-[#F0F9F9] hover:text-[#0F7673]">
-                <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Add
-              </span>
-            }
           >
-            {[
-              { n: "Daniel Rosen", i: "DR", step: 3, label: "Step 3 of 5 · Planning meeting" },
-              { n: "Maria Rosen", i: "MR", step: 2, label: "Step 2 of 5 · Your information" },
-              { n: "Elena Ruiz", i: "ER", step: 5, label: "Step 5 of 5 · Signing" },
-              { n: "Marcus Webb", i: "MW", step: 4, label: "Step 4 of 5 · Review meeting" },
-            ].map((r) => (
-              <div key={r.n} className="group flex min-h-[84px] items-center justify-between gap-3 bg-white px-5 py-4 transition-colors hover:bg-[#F8FAFA]">
-                <div className="flex min-w-0 items-center gap-3.5">
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F4F6] text-[13px] font-semibold text-[#9CA3AF] ring-1 ring-black/5 group-hover:bg-[#F0F9F9] group-hover:text-[#309E96]">{r.i}</span>
-                  <span className="min-w-0">
-                    <span className="block truncate font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{r.n}</span>
-                    <span className="mt-1 flex items-center gap-2">
-                      <JourneyTrack step={r.step} />
-                      <span className="truncate text-[#9CA3AF]" style={{ fontSize: 12.5 }}>{r.label}</span>
-                    </span>
-                  </span>
-                </div>
-              </div>
-            ))}
+            <ProActiveCouple a="Daniel Rosen" b="Maria Rosen" />
+            <ProActiveClient name="Elena Ruiz" sub="Individual" />
+            <ProActiveClient name="Marcus Webb" sub="Individual" />
+            <ProActiveCouple a="Sam Whitfield" b="Olivia Grant" />
           </ProColumn>
 
           <ProColumn
-            icon={<PlansSignedIcon />}
-            title="Plans signed"
-            count={206}
-            footer="View all 206 clients"
+            icon={<ProBellIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />}
+            title="Required actions"
+            count={4}
             rounding="rounded-r-2xl"
           >
-            {[
-              { n: "Sam Whitfield", i: "SW", m: "sam.whitfield@gmail.com" },
-              { n: "Priya Anand", i: "PA", m: "priya.anand@outlook.com" },
-              { n: "Grace Liu", i: "GL", m: "grace.liu@yahoo.com" },
-              { n: "Olivia Grant", i: "OG", m: "olivia.grant@gmail.com" },
-            ].map((r) => (
-              <div key={r.n} className="group flex min-h-[84px] items-center justify-between gap-3 bg-white px-5 py-4 transition-colors hover:bg-[#F8FAFA]">
-                <div className="flex min-w-0 items-center gap-3.5">
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F4F6] text-[13px] font-semibold text-[#9CA3AF] ring-1 ring-black/5 transition-colors group-hover:bg-[#F0F9F9] group-hover:text-[#309E96]">{r.i}</span>
-                  <span className="min-w-0">
-                    <span className="block truncate font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{r.n}</span>
-                    <span className="block truncate text-[#9CA3AF]" style={{ fontSize: 13 }}>{r.m}</span>
-                  </span>
-                </div>
-                <span className="flex-shrink-0 rounded-full bg-[#E6F5F4] px-2.5 py-0.5 text-[11px] font-semibold text-[#0C7370]">Active</span>
-              </div>
-            ))}
+            <ProReminder title="Elena Ruiz's summary is ready for review" cta="Review summary" />
+            <ProReminder title="Marcus says something changed" sub="Have you moved, or bought or sold property?" cta="See what changed" />
+            <ProReminder title="Priya Anand's summary is ready for review" cta="Review summary" />
+            <ProReminder title="Sam says something changed" sub="Has your family dynamic changed?" cta="See what changed" />
           </ProColumn>
         </div>
       </div>
@@ -277,6 +292,8 @@ const WILLOW_ICON_PATHS = {
     "M11.15 15.85 11.4 16.04 11.54 16.11 11.69 16.16 12 16.2 12.31 16.16 12.46 16.11 12.6 16.04 12.85 15.85 18.95 9.73 19.04 9.6 19.16 9.31 19.2 9 19.16 8.69 19.11 8.54 19.04 8.4 18.85 8.15 18.6 7.96 18.31 7.84 18.16 7.81 17.84 7.81 17.69 7.84 17.4 7.96 17.27 8.05 12 13.3 6.73 8.05 6.46 7.89 6.31 7.84 6.16 7.81 5.84 7.81 5.54 7.89 5.27 8.05 5.15 8.15 4.96 8.4 4.84 8.69 4.81 8.84 4.81 9.16 4.84 9.31 4.89 9.46 5.05 9.73Z",
   chevronRight:
     "M15.85 12.85 16.04 12.6 16.11 12.46 16.16 12.31 16.2 12 16.16 11.69 16.11 11.54 16.04 11.4 15.85 11.15 9.73 5.05 9.6 4.96 9.31 4.84 9 4.8 8.69 4.84 8.54 4.89 8.4 4.96 8.15 5.15 7.96 5.4 7.84 5.69 7.81 5.84 7.81 6.16 7.84 6.31 7.96 6.6 8.05 6.73 13.3 12 8.05 17.27 7.96 17.4 7.84 17.69 7.81 17.84 7.81 18.16 7.84 18.31 7.96 18.6 8.15 18.85 8.4 19.04 8.69 19.16 8.84 19.19 9.16 19.19 9.31 19.16 9.46 19.11 9.73 18.95Z",
+  arrowRight:
+    "M3.4 10.8 3.24 10.81 2.94 10.89 2.67 11.05 2.45 11.27 2.36 11.4 2.24 11.69 2.21 11.84 2.21 12.16 2.24 12.31 2.36 12.6 2.45 12.73 2.67 12.95 2.94 13.11 3.09 13.16 3.4 13.2 14.6 13.2 14.6 15.29 14.62 15.47 14.69 15.64 14.8 15.78 14.95 15.9 15.21 15.98 15.48 15.97 15.72 15.85 20.06 12.56 20.25 12.35 20.34 12.09 20.34 11.91 20.29 11.73 20.19 11.57 20.06 11.44 15.72 8.15 15.56 8.06 15.39 8.01 15.12 8.03 14.87 8.15 14.74 8.28 14.62 8.53 14.6 8.71 14.6 10.8Z",
   document:
     "M7 2.5h6.5L18.6 7.6V19.4A2.1 2.1 0 0 1 16.5 21.5H7A2.1 2.1 0 0 1 4.9 19.4V4.6A2.1 2.1 0 0 1 7 2.5Zm6.6 1.1V6.8A1.1 1.1 0 0 0 14.7 7.9H17.9zM8.3 11.2A0.7 0.7 0 0 0 8.3 12.6H15.2A0.7 0.7 0 0 0 15.2 11.2Zm0 3A0.7 0.7 0 0 0 8.3 15.6H15.2A0.7 0.7 0 0 0 15.2 14.2Zm0 3A0.7 0.7 0 0 0 8.3 18.6H12.6A0.7 0.7 0 0 0 12.6 17.2Z",
 } as const;
@@ -380,42 +397,10 @@ const AttorneyClientsScreen = ({ open }: { open: boolean }) => {
   const motion = "300ms cubic-bezier(0, 0, 0.2, 1)";
   return (
     <div className="relative flex h-full w-full overflow-hidden bg-[#F0F2F5] text-left" style={{ fontFamily: "Figtree, Inter, sans-serif", height: 855 }}>
-      {/* Sidebar, with Clients the current page */}
-      <div className="relative z-30 flex w-[68px] flex-shrink-0 flex-col border-r border-[#E5E7EB] bg-white">
-        <div className="flex h-16 items-center px-[14px]">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 20, lineHeight: 1, paddingTop: 2 }}>
-            W
-          </span>
-        </div>
-        <div className="mx-3 border-t border-[#E5E7EB]" />
-        <div className="flex flex-col gap-0.5 px-2 pt-6">
-          <span className="flex items-center justify-center rounded-lg px-3 py-2">
-            <MaskIcon src="/mock/dashboard-icon.svg" color="#9CA3AF" />
-          </span>
-          <span className="flex items-center justify-center rounded-lg px-3 py-2">
-            <MaskIcon src="/mock/clients-icon.svg" color="#309E96" />
-          </span>
-        </div>
-      </div>
+      <ProSidebar active="clients" />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Top bar */}
-        <div className="relative z-30 flex h-16 flex-shrink-0 items-center border-b border-[#E5E7EB] bg-white px-6" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-          <div className="ml-auto flex items-center gap-1">
-            <span className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#6B7280]">
-              <Bell className="h-5 w-5" strokeWidth={1.8} />
-              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#309E96] px-1 text-[10px] font-bold text-white ring-2 ring-white">3</span>
-            </span>
-            <span className="flex items-center gap-3 rounded-lg px-2.5 py-2">
-              <span className="text-right">
-                <span className="block text-[13px] font-semibold leading-tight text-[#1F2933]">Rachel Alvarez</span>
-                <span className="mt-0.5 block text-[11px] leading-tight text-[#9CA3AF]">Alvarez Family Law</span>
-              </span>
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F0F9F9] text-[11px] font-bold text-[#309E96] ring-1 ring-black/5">RA</span>
-              <ChevronDown className="h-3.5 w-3.5 text-[#9CA3AF]" />
-            </span>
-          </div>
-        </div>
+        <ProTopBar />
 
         {/* Clients */}
         <div className="relative mx-auto w-full max-w-[1400px] px-16 py-12">
@@ -676,38 +661,26 @@ const HeroRotator = () => {
    its hero screenshot. Harvey's frame is 1376×750 at 1440 (radius 4px, 8px
    from 1025px) and its screen window sits centred with an even mat, 83% of the
    frame's width; the window shows 1440×775 of the 1440×855 canvas.
-   The screen is the attorney's Clients page, recreated from the product code.
-   With a mouse, pointing at the shot does what clicking a client does in the
-   product: Daniel Rosen's panel slides in from the right with his estate plan
-   documents, and the list behind it dims. Without hover (phones, tablets) the
-   panel stays open, and on a phone the window is shifted so the panel and the list both show. */
-const HeroShot = () => {
-  const [canHover] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches,
-  );
-  const [pointing, setPointing] = useState(false);
-  const open = canHover ? pointing : true;
-  return (
+   The screen is the attorney's Clients page, recreated from the product code,
+   with Daniel Rosen's panel open beside the dimmed list, as it is after
+   clicking a client in the product. On a phone the window is shifted so the
+   panel and the list both show. */
+const HeroShot = () => (
+  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[4px] md:aspect-[1376/750] min-[1025px]:rounded-[8px]">
+    <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+    <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
     <div
-      className="relative aspect-[4/3] w-full overflow-hidden rounded-[4px] md:aspect-[1376/750] min-[1025px]:rounded-[8px]"
-      onPointerEnter={(e) => e.pointerType === "mouse" && setPointing(true)}
-      onPointerLeave={() => setPointing(false)}
+      role="img"
+      aria-label="The Willow Clients page: clients and couples with joint accounts, and one client's estate plan documents open beside the list."
+      className="absolute left-[-25%] top-[7%] w-[170%] overflow-hidden rounded-lg bg-[#F0F2F5] [aspect-ratio:1440/855] md:left-[8.43%] md:top-[8.93%] md:w-[83.14%] md:[aspect-ratio:1440/775]"
+      style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
     >
-      <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
-      <div
-        role="img"
-        aria-label="The Willow Clients page: clients and couples with joint accounts, and one client's estate plan documents open beside the list."
-        className="absolute left-[-25%] top-[7%] w-[170%] overflow-hidden rounded-lg bg-[#F0F2F5] [aspect-ratio:1440/855] md:left-[8.43%] md:top-[8.93%] md:w-[83.14%] md:[aspect-ratio:1440/775]"
-        style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
-      >
-        <ScaledScreen>
-          <AttorneyClientsScreen open={open} />
-        </ScaledScreen>
-      </div>
+      <ScaledScreen>
+        <AttorneyClientsScreen open />
+      </ScaledScreen>
     </div>
-  );
-};
+  </div>
+);
 
 /* Two doors, as on harvey.ai: hovering a card widens it to a 1.4 share of the
    row and dims its neighbour (.aud-row / .aud-card in index.css). The attorney
@@ -1215,6 +1188,21 @@ const Home = () => {
         <StackedCapabilities />
       </section>
 
+      {/* One line from the founder, set simply: the line from the careers page */}
+      <section className="bg-[#FCFCFD] py-[var(--hv-xl)]">
+        <div className="hv-wrap hv-grid">
+          <figure className="hv-content text-center">
+            <blockquote className="hv-h2 col-span-full font-heading font-light text-[#222222]">
+              “Estate plans shouldn't live in binders.”
+            </blockquote>
+            <figcaption className="col-span-full mt-[var(--hv-md)]">
+              <p className="hv-body-1 font-medium text-[#222222]">Aaron Burlacoff</p>
+              <p className="hv-body-2 text-gray-600">Founder &amp; CEO, Willow</p>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       {/* The platform, page by page */}
       <LinkCards
         eyebrow="The platform"
@@ -1228,38 +1216,53 @@ const Home = () => {
 
       <SecurityBand />
 
-      {/* The founder's quote, set on harvey.ai's QuoteCarouselSection: a
-          square portrait on the left, the quote in heading-3 on the right,
-          centred on the portrait; a slightly deeper ground than the page.
-          The first line is the one from the careers page; the rest is from
-          the founder's note it replaces. The photo is the live headshot,
-          cropped square. */}
-      <section className="bg-[#F1F4F7] pb-[var(--hv-lg)] pt-[var(--hv-xl)]">
-        <div className="hv-wrap hv-grid">
-          <div className="hv-content">
-            <figure className="col-span-full grid grid-cols-2 gap-[var(--hv-lg)] min-[1025px]:grid-cols-6 min-[1025px]:gap-[var(--hv-sm)] min-[1445px]:grid-cols-10">
-              <div className="col-span-2 min-[1025px]:col-span-3 min-[1445px]:col-span-4">
+      {/* Our commitment to lawyers — the Golden Gate print fills the rounded
+          box; a smaller white box floats over it and carries the content */}
+      <section className="bg-white py-10 md:py-16">
+        <div className="container mx-auto max-w-7xl px-4 md:px-8">
+          <div className="relative overflow-hidden rounded-3xl">
+            <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
+            <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.15)" }} />
+            <div className="relative z-10 p-6 md:p-14 lg:p-16">
+              <div className="mx-auto max-w-5xl rounded-2xl bg-white p-8 md:p-12" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+          <div className="md:grid md:grid-cols-[1.55fr_1fr] md:gap-14 items-center">
+            <div>
+              <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">A note from our founder</div>
+              <blockquote className="mt-5 font-heading text-[17px] md:text-[19px] leading-relaxed text-[#222222]">
+                <p>
+                  "Estate attorneys bring judgment, discretion, and decades of earned trust. Technology brings access, continuity, and permanence. Together, they change what an estate plan can do for the people it was written for.
+                </p>
+                <p className="mt-4">
+                  Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.
+                </p>
+                <p className="mt-4">
+                  We're building more than a product. Alongside estate attorneys, we're setting a new standard for how plans are signed, stored, and carried forward — a future where families are never left guessing, and every attorney is free to do what they do best."
+                </p>
+              </blockquote>
+            </div>
+            <div className="mt-10 flex flex-col items-center text-center md:mt-0">
+              <div className="h-[72px] w-[72px] overflow-hidden rounded-full bg-gray-200">
                 <img
-                  src="/founder-aaron-burlacoff.jpg"
-                  alt="Aaron Burlacoff, founder and CEO of Willow"
-                  className="aspect-square w-full rounded-[8px] object-cover"
-                  loading="lazy"
+                  src="/Burlacoff Headshot.svg"
+                  alt="Aaron Burlacoff"
+                  className="h-full w-full object-cover"
+                  style={{ objectPosition: "center 25%", transform: "scale(1.7)", transformOrigin: "center center" }}
                 />
               </div>
-              <div className="col-span-2 flex flex-col justify-center gap-10 min-[1025px]:col-span-3 min-[1025px]:pl-4 min-[1445px]:col-span-5 min-[1445px]:col-start-6 min-[1445px]:pl-0">
-                <blockquote className="hv-h3 font-heading font-light text-[#222222]" style={{ textWrap: "pretty" }}>
-                  <span className="-ml-[0.45em]">“</span>Estate plans shouldn't live in binders. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.”
-                </blockquote>
-                <figcaption>
-                  <p className="hv-body-1 font-medium text-[#222222]">Aaron Burlacoff</p>
-                  <p className="hv-body-2 text-gray-600">Founder &amp; CEO, Willow</p>
-                </figcaption>
-                <Link to="/about" className="hv-body-1 group inline-flex w-max items-center gap-1.5 font-medium text-[#222222]">
-                  About Willow
-                  <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                </Link>
+              <div className="mt-4 text-[17px] font-semibold text-[#222222]">Aaron Burlacoff</div>
+              <div className="mt-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-400">Founder &amp; CEO, Willow</div>
+              <span className="my-5 block w-12 border-t border-gray-200" />
+              <Button
+                size="lg"
+                className="willow-btn h-11 px-6 text-[15px] font-medium"
+                onClick={() => navigate("/request-access")}
+              >
+                Elevate your practice today
+              </Button>
+            </div>
+          </div>
               </div>
-            </figure>
+            </div>
           </div>
         </div>
       </section>
