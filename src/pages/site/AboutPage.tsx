@@ -26,11 +26,11 @@ const PRESS = [
 const BELIEFS = [
   {
     title: "Attorneys stay at the center.",
-    body: "Willow doesn't give legal advice and doesn't replace the lawyer. Everything a family sees about their plan, their attorney has approved.",
+    body: "Willow doesn't give legal advice or replace the lawyer. Everything a family sees about their plan, their attorney has approved. And we build Willow with estate attorneys, not just for them: they put it in front of real clients and tell us what to build next.",
   },
   {
-    title: "Clients stay in control of their documents.",
-    body: "Clients decide who sees what and when. Anything sealed stays sealed until the attorney verifies it's time.",
+    title: "Clients stay in control.",
+    body: "The client portal gives clients full control: they decide what to share, with whom and when, and anything sealed stays sealed until their attorney verifies it's time. Their plan, documents and plain-English summary are always within reach, and staying in touch with their attorney is easy, from yearly check-ins to booking time.",
   },
 ];
 
