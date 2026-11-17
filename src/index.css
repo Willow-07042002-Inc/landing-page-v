@@ -326,21 +326,26 @@ body {
 .hv-body-1 { font-size: 18.5px; line-height: 26px; }
 .hv-body-2 { font-size: 15px; line-height: 21px; }
 @media (min-width: 1025px) {
-  /* Harvey's headline is shorter than Willow's, so between 1025 and 1300px
-     the size eases down just enough that "Ensure your clients" stays on one
-     line in the left half (half the measure is 50vw - 40px; the line is
-     9.05em wide in Merriweather Light). */
-  .hv-h1 { font-size: min(67px, calc(5.43vw - 4.3px)); }
+  /* Harvey's headline is shorter than Willow's, so between 1025 and about
+     1380px the size eases down just enough that "Ensure your clients" stays
+     on one line and each rotating phrase takes two lines at most: the left
+     half is 50vw - 40px, and that holds while it is at least 9.6em. */
+  .hv-h1 { font-size: min(67px, calc(5.2vw - 4.2px)); }
   .hv-h2 { font-size: 45px; }
   .hv-h3 { font-size: 30px; }
 }
 @media (min-width: 1445px) {
-  .hv-h1 { font-size: 74px; }
+  /* The headline gets half the measure (50vw - 45px). Each rotating phrase
+     must break into two lines at most, which holds while that half is at
+     least 9.6em, so the size eases down from 74px until about 1540px. */
+  .hv-h1 { font-size: min(74px, calc(5.2vw - 4.7px)); }
   .hv-h2 { font-size: 52px; }
   .hv-h3 { font-size: 33px; }
 }
 @media (min-width: 1730px) {
-  .hv-h1 { font-size: 89px; }
+  /* Harvey's 96px would be 89 here, but Willow's phrases are longer than
+     Harvey's headline: at 89 two of them take three lines; 84 keeps all to two */
+  .hv-h1 { font-size: 84px; }
   .hv-h2 { font-size: 60px; }
   .hv-h3 { font-size: 37px; }
 }

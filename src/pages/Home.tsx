@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { SharingHomeShot } from "@/components/ClientVignettes";
 import { Link } from "react-router-dom";
-import { LinkCards, SecurityBand } from "@/components/site/blocks";
-import { CARDS } from "@/content/pages";
 import {
   CheckInDemoVignette,
   ClientDetailJourneyVignette,
@@ -604,17 +602,19 @@ export const ClientEstatePlanScreen = () => (
   </div>
 );
 
-// Rotating phrases for the hero. The stem commands the attorney ("Ensure your
-// clients…"), so every phrase is an outcome they guarantee by using Willow.
+// Rotating phrases for the hero, as on willow-inc.com ("their plan" singular,
+// and "never lose" / "a document." on two lines, at Aaron's word, Nov 17). The
+// stem commands the attorney ("Ensure your clients…"), so every phrase is an
+// outcome they guarantee by using Willow.
 // Every phrase sits in the same grid cell, so the headline is always as tall
 // as its longest phrase at the current width and never jumps as they change.
 const HERO_PHRASES = [
-  "actually understand their plans.",
-  "share their plan on their terms.",
-  "never lose a document.",
-  "keep executors and guardians prepared.",
-  "keep coming back to you.",
-];
+  "actually understand their\u00A0plan.",
+  "can sign from anywhere.",
+  "never lose\na document.",
+  "keep executors and guardians prepared.",
+  "keep coming back to\u00A0you.",
+]
 
 const ROTATE_MS = 2800;
 
@@ -645,6 +645,7 @@ const HeroRotator = () => {
           className="[grid-area:1/1]"
           style={{
             textWrap: "balance",
+            whiteSpace: "pre-line",
             transform: i === index ? "translateY(0)" : i === prevIndex ? "translateY(-110%)" : "translateY(110%)",
             opacity: i === index ? 1 : 0,
             transition: reduced ? "none" : "transform 0.55s cubic-bezier(0.22,1,0.36,1), opacity 0.45s ease",
@@ -683,15 +684,16 @@ const HeroShot = () => (
 );
 
 /* Two doors, as on harvey.ai: hovering a card widens it to a 1.4 share of the
-   row and dims its neighbour (.aud-row / .aud-card in index.css). The attorney
+   row and dims its neighbour (.aud-row / .aud-card in index.css). The body
+   lines and button labels are lines from the live homepage. The attorney
    dashboard and the client's estate plan, both product screens already on
    willow-inc.com, drawn wider than the card, so widening shows more of them. */
 const AUDIENCES: { title: string; body: string; cta: string; to: string; image: string; shot: React.ReactNode }[] = [
   {
     title: "For attorneys",
-    body: "Every client and every next step in one place, from the first meeting to the signed plan and every year after.",
-    cta: "Explore Willow for attorneys",
-    to: "/platform",
+    body: "Every client, organized from engagement to signing.",
+    cta: "Request a demo",
+    to: "/request-access",
     image: "/nyc-skyline.jpg",
     shot: (
       <div className="relative w-[130vw] max-w-[1440px] min-[1025px]:w-[68vw]" style={{ aspectRatio: "1440 / 855" }}>
@@ -702,9 +704,9 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
     ),
   },
   {
-    title: "For clients & their team",
-    body: "A plan clients understand, kept in one place and shared with executors, guardians and agents on their terms.",
-    cta: "Explore Willow for clients",
+    title: "For clients",
+    body: "Learn how we keep your clients connected.",
+    cta: "Explore the client experience",
     to: "/for-clients",
     image: "/west-side-hwy.jpg",
     shot: (
@@ -717,24 +719,15 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
   },
 ];
 
-/* Set on harvey.ai's AudienceRouterSection: heading-2 and a 560px sentence,
-   a large step down to a row that is twice as wide as it is tall from 1025px
-   (stacked 3:4 cards below that, at most 500px tall). Each card's print is
+/* Set on harvey.ai's AudienceRouterSection: a row that is twice as wide as it
+   is tall from 1025px (stacked 3:4 cards below that, at most 500px tall). Every
+   line on the cards is from the live homepage, apart from the two titles. Each card's print is
    pinned to its outer edge at 5:4, so it doesn't move as the card widens. */
 const AudienceRouter = () => (
-  <section className="bg-[#FCFCFD] pt-[var(--hv-lg)]">
+  <section className="bg-[#FCFCFD]">
     <div className="hv-wrap hv-grid">
       <div className="hv-content">
         <div className="col-span-full flex flex-col gap-[var(--hv-lg)]">
-          <div className="flex flex-col items-center gap-[var(--hv-sm)] text-center">
-            <h2 className="hv-h2 font-heading font-light text-[#222222]">
-              One platform, <span className="text-[#138F8B]">for the attorney and the family.</span>
-            </h2>
-            <p className="hv-body-2 max-w-[560px] text-gray-600">
-              Attorneys run every client relationship from one place. Clients and the people they name get a plan they understand, shared on their terms.
-            </p>
-          </div>
-
           <div className="aud-row flex flex-col gap-[var(--hv-sm)] overflow-hidden min-[1025px]:aspect-[2/1] min-[1025px]:flex-row">
             {AUDIENCES.map((a, i) => (
               <Link
@@ -771,17 +764,17 @@ const AudienceRouter = () => (
 // screenshots on the right slide up and stack over one another.
 const CAPABILITIES: { title: string; body: string; print: string; visual: React.ReactNode; fitAspect?: string; fitWidth?: string }[] = [
   {
-    title: "Every client, and every action waiting on you.",
+    title: "Every client, organized from engagement to signing.",
     body:
-      "New leads from your booking page, every active client, and one list of what needs you: summaries to approve, release requests, emails ready to send.",
+      "See who's waiting on you and who you're waiting on. Send documents straight to your client's portal, so everything for the matter lives in one place.",
     print: "/central-park.jpg",
     visual: <ActiveClientsNextStepsVignette />,
     fitAspect: "900 / 400",
   },
   {
-    title: "Keep your signing ceremony. Lose the binder.",
+    title: "Sign digitally — from anywhere, or right in your office.",
     body:
-      "Sign the way you do today and upload the executed documents. Willow's own signing ceremony is built, and it opens state by state as the law allows.",
+      "Every signature is captured digitally, whether your client is across the country or across your conference table. No paper to lose. (Remote signing available in select states.)",
     print: "/golden-gate.jpg",
     visual: (
       <div className="absolute inset-0">
@@ -791,9 +784,9 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
     fitAspect: "2056 / 1258",
   },
   {
-    title: "Every document safe, and easy to understand.",
+    title: "Keep every document safe — and easy to understand.",
     body:
-      "Signed documents and every past version live in one secure place, with every gift, condition and power written out in plain English you've approved.",
+      "Signed documents live in secure online storage built around your state's regulations, with every gift, condition, and account written out in language the family can follow.",
     print: "/florida-coast.jpg",
     visual: <AssetBreakdownVignette />,
     fitAspect: "900 / 650",
@@ -801,16 +794,16 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
   {
     title: "Ensure your executors and guardians are prepared.",
     body:
-      "Willow understands each person's role and recommends what they should see. Anything sealed stays sealed until you verify a passing.",
+      "Willow understands everyone's role, recommends what each person should have access to, and releases it exactly when they need it — never a day earlier.",
     print: "/hudson-bridge.jpg",
     visual: <SharingRecommendationVignette h={660} />,
     fitAspect: "760 / 660",
     fitWidth: "76%",
   },
   {
-    title: "Relationships that last, and new ones with the family.",
+    title: "Grow client relationships — and build new ones with their families.",
     body:
-      "A yearly rhythm of check-ins and updates, each one approved by you, brings clients back when life changes, and introduces you to the executors and family who'll need an attorney next.",
+      "As your client's life moves forward, you always stay in the loop. When their executors, guardians, and the people around them need plans of their own, we'll put them in touch with the attorney who knows their family best.",
     print: "/willow-street.jpg",
     visual: <CheckInDemoVignette h={520} />,
     fitAspect: "900 / 520",
@@ -866,9 +859,13 @@ const StackedCapabilities = () => {
         </h2>
       </div>
 
-      {/* Desktop: pinned scrollytelling — half copy, half product image */}
-      <div ref={trackRef} className="relative hidden md:block" style={{ height: reduced ? "auto" : `${n * 55 + 100}vh`, marginTop: reduced ? 0 : -60 }}>
-        <div className={`${reduced ? "" : "sticky top-0 h-screen"} flex flex-col`} style={{ paddingTop: 76 }}>
+      {/* Desktop: pinned scrollytelling — half copy, half product image. Only
+          with motion allowed: it works by sliding each print up over the last,
+          and without the slide the waiting prints sat below the frame, on top
+          of the next section. */}
+      {!reduced && (
+      <div ref={trackRef} className="relative hidden md:block" style={{ height: `${n * 55 + 100}vh`, marginTop: -60 }}>
+        <div className="sticky top-0 flex h-screen flex-col" style={{ paddingTop: 76 }}>
           <div className="flex flex-1 items-center min-h-0">
           <div className="container mx-auto px-6 lg:px-10 max-w-7xl grid md:grid-cols-[38.2fr_61.8fr] gap-8 lg:gap-10 items-center w-full">
             <div className="flex flex-col">
@@ -940,14 +937,26 @@ const StackedCapabilities = () => {
           </div>
         </div>
       </div>
+      )}
 
-      {/* Mobile: simple stacked list */}
-      <div className="md:hidden container mx-auto px-4 pt-10 pb-6 flex flex-col gap-10">
+      {/* Phones, and any screen with reduced motion: a still list, each
+          capability beside its print from 768px */}
+      <div className={`${reduced ? "" : "md:hidden"} container mx-auto flex max-w-7xl flex-col gap-10 px-4 pb-6 pt-10 md:gap-20 md:px-6 md:pb-16 md:pt-14 lg:px-10`}>
         {CAPABILITIES.map((cap, i) => (
-          <div key={cap.title}>
-            <h3 className="font-heading font-bold text-xl text-[#222222] mb-2">{cap.title}</h3>
-            <p className="text-[17px] text-gray-600 leading-relaxed mb-4">{cap.body}</p>
-            <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl" style={{ aspectRatio: "1 / 1" }}>
+          <div key={cap.title} className="md:grid md:grid-cols-[38.2fr_61.8fr] md:items-center md:gap-8 lg:gap-10">
+            <div className="md:border-t md:border-gray-200 md:pt-4">
+              <h3 className="font-heading font-bold text-xl text-[#222222] mb-2 lg:text-2xl">{cap.title}</h3>
+              <p className="text-[17px] text-gray-600 leading-relaxed mb-4 lg:text-lg">{cap.body}</p>
+              {i === CAPABILITIES.length - 1 && (
+                <Button
+                  className="willow-btn mt-2 hidden h-10 px-5 text-[15px] font-medium md:inline-flex"
+                  onClick={() => (window.location.href = "/request-access")}
+                >
+                  Let's get started
+                </Button>
+              )}
+            </div>
+            <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl md:max-w-[560px] md:justify-self-end" style={{ aspectRatio: "1 / 1" }}>
               <img src={cap.print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
               <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
               <div
@@ -973,8 +982,8 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     topic: "practice",
     q: "Do my clients have to sign through Willow?",
     a: [
-      "No. Keep your signing ceremony exactly as it is today: pen, paper, conference room. Then upload the executed documents.",
-      "Your clients still get everything else: plain-English summaries, secure storage, sharing on their terms, and a yearly rhythm of staying in touch. Willow's own signing ceremony opens state by state as the law allows.",
+      "No. Digital execution is optional — and available in select states.",
+      "Keep your signing ceremony exactly as it is today — pen, paper, conference room — then upload the executed documents. Your clients still get everything else: plain-language summaries, secure storage, sharing on their terms, and a plan that stays current for life.",
     ],
   },
   {
@@ -982,61 +991,69 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     q: "How can I get started?",
     a: [
       "It starts with a short conversation.",
-      "We take time to understand your practice and your state, set up your account with you, walk through the platform, and load your first clients together. No process overhaul, just a better way to deliver what you already do.",
+      "We take time to understand your practice and jurisdiction to ensure your firm is a good fit. From there, we guide you through a brief onboarding call, walk through the platform, and answer any questions before you begin using Willow with clients. No process overhaul — just a better way to deliver what you already do.",
     ],
   },
   {
     topic: "practice",
     q: "Does Willow help create estate planning documents?",
     a: [
-      "No. You remain fully responsible for advising clients and drafting their documents.",
-      "Willow doesn't give legal advice. It stores the signed plan, drafts a plain-English summary for you to review and approve, shares it with the people your client names, and keeps you in touch as life moves forward.",
+      "You remain fully responsible for advising clients and drafting estate planning documents.",
+      "Willow does not provide legal advice. Instead, we support the execution, storage, and long-term management of the documents you prepare — allowing you to focus your time on what you do best while we help elevate the client experience.",
+    ],
+  },
+  {
+    topic: "practice",
+    q: "How does the signing ceremony work, and can I tailor it to my practice?",
+    a: [
+      "Willow supports attorney-led digital execution that aligns with state requirements around witnessing, recordings, and notarization. You remain in control of the ceremony and can pause at any time or build in breaks to review materials with your client.",
+      "For practices that prefer a more tailored approach, we can support custom execution flows built around existing regulations. Our goal is to make digital execution compliant and reliable — without forcing you into a one-size-fits-all format.",
     ],
   },
   {
     topic: "practice",
     q: "Who can access my clients' documents?",
     a: [
-      "Access is controlled by the client.",
-      "Only the people a client names, such as executors, guardians or agents, can see documents, through their own accounts. Anything sealed until a passing stays sealed until you verify it. Sharing can be changed at any time, and every change is recorded.",
+      "Access is fully controlled by the client.",
+      "Only individuals the client explicitly authorizes — such as family members, executors, or fiduciaries — can view documents through their own secure accounts. Permissions can be granted or revoked at any time, ensuring access remains intentional and appropriate.",
     ],
   },
   {
     topic: "practice",
-    q: "How does Willow help clients come back for updates?",
+    q: "How does Willow support revisiting plans over time?",
     a: [
-      "Once a plan is approved, Willow keeps a yearly rhythm of check-ins, short surveys and updates from your firm, each one approved by you before it's sent.",
-      "When a client says something has changed, you hear about it on your dashboard, and they can book time through your booking page.",
+      "As life moves forward, Willow helps surface natural moments when an update may be needed — and routes clients back to their attorney.",
+      "Clients can book time directly through your connected calendar, and both you and the client receive reminders along with a clear summary of relevant background and documents ahead of the conversation.",
     ],
   },
   {
     topic: "compliance",
-    q: "Where is Willow available?",
+    q: "Are there estate planning lawyers on the Willow team?",
     a: [
-      "Willow is available to firms and clients in every state and Washington, D.C., except Washington State.",
-      "Digital signing is separate: it switches on state by state as the law allows, and Where we're live lists each state as it opens.",
+      "Yes. Our team includes estate planning attorneys with over 35 years of combined experience.",
+      "They help shape our workflows, compliance standards, and long-term storage practices to ensure the platform aligns with how estate planning is practiced in the real world. Willow does not provide legal advice, and you remain the attorney of record.",
     ],
   },
   {
     topic: "compliance",
-    q: "How are documents stored?",
+    q: "Is Willow compliant with applicable state laws?",
     a: [
-      "Copies of signed documents and their past versions are stored in the United States, encrypted in transit and at rest. Every view, download and release is recorded, and the record is kept for seven years.",
-      "Willow keeps copies; originals stay with you, as they do today.",
+      "Yes. Willow operates only in states where electronic wills are legally recognized, and all execution and storage workflows are designed to align with applicable state law.",
     ],
   },
   {
     topic: "compliance",
-    q: "Is client information used to train AI?",
+    q: "How are documents and recordings stored long term?",
     a: [
-      "Never. Documents are read only to draft summaries for your review, AI processing stays in the United States, and nothing from a connected email or calendar account is ever sent to an AI provider.",
+      "Our storage is designed for long-term reliability, ensuring signed documents and required supporting materials are securely preserved over time.",
     ],
   },
   {
     topic: "compliance",
-    q: "Is Willow built with estate planning attorneys?",
+    q: "What happens if Willow is no longer operating?",
     a: [
-      "Yes. Willow is shaped alongside practicing estate planning attorneys, who use it with real clients and tell us what to build next. Willow does not provide legal advice, and you remain the attorney of record.",
+      "Like any law practice planning for continuity, Willow maintains a formal succession plan in the unlikely event we no longer offer our services.",
+      "In that situation, custodianship of each will and its associated records would be transferred in accordance with applicable state standards — and the decision about where a will is transferred always remains with the client.",
     ],
   },
 ];
@@ -1203,18 +1220,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* The platform, page by page */}
-      <LinkCards
-        eyebrow="The platform"
-        title="Everything after the signature,"
-        accent="in one place."
-        cards={["/platform/client-dashboard", "/platform/plan-summaries", "/platform/vault", "/platform/sharing", "/platform/check-ins", "/platform/booking"].map((p) => ({ ...CARDS[p], to: p }))}
-      />
-
       {/* FAQ */}
       <FaqSection />
-
-      <SecurityBand />
 
       {/* Our commitment to lawyers — the Golden Gate print fills the rounded
           box; a smaller white box floats over it and carries the content */}
@@ -1282,7 +1289,7 @@ const Home = () => {
                   your clients connected.
                 </h2>
                 <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
-                  Willow becomes a lasting touchpoint between your practice and the entire family. Everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
+                  Willow becomes a lasting touchpoint between your practice and the entire family — everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
                 </p>
                 <button
                   type="button"
