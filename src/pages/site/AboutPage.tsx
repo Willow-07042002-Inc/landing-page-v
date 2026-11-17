@@ -1,10 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta, PrimaryButton, SecondaryButton } from "@/components/site/blocks";
 
-/* About Willow: why it exists, what it believes, who's building it, and the
-   coverage it has had. Press items link to the real articles. */
+/* About Willow: why it exists, its two guiding principles, who's building it,
+   and the coverage it has had. Press items link to the real articles. */
 
 const PRESS = [
   {
@@ -23,18 +22,15 @@ const PRESS = [
   },
 ];
 
+/* Willow's two guiding principles */
 const BELIEFS = [
   {
-    title: "The attorney stays at the center.",
+    title: "Attorneys stay at the center.",
     body: "Willow doesn't give legal advice and doesn't replace the lawyer. Everything a family sees about their plan, their attorney has approved.",
   },
   {
-    title: "A plan is only useful if it's understood.",
-    body: "Every gift, trustee and power written out in words the family can follow, so no one is left guessing when it matters.",
-  },
-  {
-    title: "Nothing is shared before its time.",
-    body: "Families decide who sees what and when. Anything sealed stays sealed until the attorney verifies it's time.",
+    title: "Clients stay in control of their documents.",
+    body: "Clients decide who sees what and when. Anything sealed stays sealed until the attorney verifies it's time.",
   },
 ];
 
@@ -44,7 +40,7 @@ const AboutPage = () => {
     "Willow keeps the estate plan, and the attorney who wrote it, within reach of the family for as long as they need them."
   );
   return (
-    <PageShell quotes>
+    <PageShell>
       {/* Hero: a statement over a photograph */}
       <section className="px-5 pb-6 pt-6 md:px-8">
         <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl">
@@ -83,8 +79,8 @@ const AboutPage = () => {
       {/* What we believe */}
       <section className="bg-white py-16 md:py-24">
         <div className={WRAP}>
-          <SectionHead eyebrow="What we believe" title="Three ideas behind" accent="every decision we make." />
-          <div className="mt-12 grid gap-10 md:grid-cols-3">
+          <SectionHead eyebrow="What we believe" title="Two guiding principles behind" accent="every decision we make." />
+          <div className="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-2 md:gap-16">
             {BELIEFS.map((b) => (
               <div key={b.title} className="border-t-2 border-[#222222] pt-5">
                 <h3 className="font-heading text-xl font-bold leading-snug text-[#222222]">{b.title}</h3>
@@ -116,35 +112,6 @@ const AboutPage = () => {
               <div className="mt-0.5 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-gray-400">Founder &amp; CEO</div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* How we build */}
-      <section className="bg-[#F8FAFC] py-12 md:py-16">
-        <div className={WRAP}>
-        <div className="relative overflow-hidden rounded-3xl">
-        <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
-        <div className="relative z-10 grid gap-10 p-8 text-white md:p-14 lg:grid-cols-[1.2fr_1fr] lg:items-end lg:p-16">
-          <div>
-            <Eyebrow light>How we build</Eyebrow>
-            <h2 className="mt-4 font-heading text-[1.9rem] font-bold leading-tight md:text-[2.5rem]" style={{ textWrap: "balance" }}>
-              With estate attorneys, not just for them.
-            </h2>
-            <p className="mt-5 max-w-2xl text-[17px] leading-relaxed text-white/80">
-              Willow is shaped alongside estate planning attorneys in New York and Florida, who put it in front of real clients and tell us what to build next. We follow the law state by state, and we publish what we learn.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-            <Link to="/legislation-by-state" className="press inline-flex h-11 items-center justify-center gap-1.5 rounded-md bg-white px-6 text-[15px] font-medium text-[#064544] hover:bg-[#E6F5F4]">
-              Legislation by state <ArrowRight className="h-4 w-4" />
-            </Link>
-            <SecondaryButton to="/careers" light>
-              Join the team
-            </SecondaryButton>
-          </div>
-        </div>
-        </div>
         </div>
       </section>
 
