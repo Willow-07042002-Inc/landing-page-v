@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import {
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ForClientsPage from "./pages/ForClientsPage";
+const DevScreens = React.lazy(() => import("./pages/DevScreens"));
 import NewsPage from "./pages/NewsPage";
 import RegulatoryLibraryPage from "./pages/RegulatoryLibraryPage";
 import StateDetailPage from "./pages/StateDetailPage";
@@ -54,6 +56,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/for-clients" element={<ForClientsPage />} />
+          {import.meta.env.DEV && (
+            <Route path="/dev/screens" element={<React.Suspense fallback={null}><DevScreens /></React.Suspense>} />
+          )}
           {/* Platform and solutions pages, rendered from src/content/pages.tsx */}
           {PAGES.map((p) => (
             <Route key={p.path} path={p.path} element={<TemplatePage />} />

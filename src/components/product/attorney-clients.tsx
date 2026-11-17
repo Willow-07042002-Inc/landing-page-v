@@ -76,12 +76,18 @@ export const AttorneyClientsScreen = ({
   open,
   tab = "Estate Plan",
   panel,
+  headerPill,
+  dots = [],
 }: {
   open: boolean;
   /** Which of the panel's tabs is open */
   tab?: string;
   /** What sits under the tabs; Estate Plan > Documents when not given */
   panel?: React.ReactNode;
+  /** A pill beside the ⋯ in the header (client-detail-view.tsx), e.g. "Summary awaiting approval" */
+  headerPill?: React.ReactNode;
+  /** Tabs that carry the clay dot: "Estate Plan" (a summary to approve), "Team" (an access request) */
+  dots?: string[];
 }) => {
   const motion = "300ms cubic-bezier(0, 0, 0.2, 1)";
   return (
@@ -145,9 +151,12 @@ export const AttorneyClientsScreen = ({
                 Joint account: <span className="font-medium text-[#309E96]">Maria Rosen</span>
               </p>
             </div>
-            <span className="rounded p-1.5 text-[#9CA3AF]">
-              <WIcon name="more" className="h-5 w-5" />
-            </span>
+            <div className="flex items-center gap-3">
+              {headerPill}
+              <span className="rounded p-1.5 text-[#9CA3AF]">
+                <WIcon name="more" className="h-5 w-5" />
+              </span>
+            </div>
           </div>
 
           {/* Tabs, Estate Plan open */}
@@ -156,9 +165,10 @@ export const AttorneyClientsScreen = ({
               {CLIENT_PANEL_TABS.map((t) => (
                 <span
                   key={t}
-                  className={`whitespace-nowrap border-b-2 px-4 py-3 text-[13px] font-medium ${t === tab ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}
+                  className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-[13px] font-medium ${t === tab ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}
                 >
                   {t}
+                  {dots.includes(t) && <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#C8782F]" />}
                 </span>
               ))}
             </div>

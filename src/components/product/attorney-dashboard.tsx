@@ -30,7 +30,7 @@ export const ProColumn = ({
       <div className="flex min-h-[57px] items-center justify-between gap-3 border-b border-[#EEF0F2] px-5 py-3.5">
         <div className="flex items-center gap-2.5">
           {icon}
-          <h4 className="text-[15px] font-semibold text-[#1F2933]">{title}</h4>
+          <h4 className="text-[15px] font-semibold text-[#1F2933]" style={{ fontFamily: "Figtree, Inter, sans-serif" }}>{title}</h4>
           <span className="rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[12px] font-semibold text-[#6B7280]">{count}</span>
         </div>
         {action && <span className="inline-flex items-center rounded-lg px-2.5 py-1 text-[13px] font-medium text-[#128F8B]">{action}</span>}
