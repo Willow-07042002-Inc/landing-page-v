@@ -89,40 +89,31 @@ export const COMPANY_COLUMNS: NavColumn[] = [
   },
 ];
 
+/* Every menu's featured card is the USA Today piece, with its own headline
+   and illustration (as on /news) */
+const USA_TODAY_FEATURE: NavFeature = {
+  eyebrow: "USA Today",
+  title: "Digital Estate Planning Arrived Six Years Ago. The Technology Is Finally Catching Up.",
+  href: "https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/",
+  image: "/news/usatoday-digital-estate-planning.jpg",
+};
+
 export const NAV: NavMenu[] = [
   {
     label: "Platform",
     columns: PLATFORM_COLUMNS,
-    /* The USA Today piece, with its own headline and illustration (as on /news) */
-    feature: {
-      eyebrow: "USA Today",
-      title: "Digital Estate Planning Arrived Six Years Ago. The Technology Is Finally Catching Up.",
-      href: "https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/",
-      image: "/news/usatoday-digital-estate-planning.jpg",
-    },
+    feature: USA_TODAY_FEATURE,
   },
   { label: "Security", to: "/security" },
   {
     label: "Resources",
     columns: RESOURCE_COLUMNS,
-    feature: {
-      eyebrow: "Legislation by state",
-      title: "Where electronic wills stand, in every state.",
-      body: "Updated as the law changes.",
-      to: "/legislation-by-state",
-      image: "/nyc-skyline.jpg",
-    },
+    feature: USA_TODAY_FEATURE,
   },
   {
     label: "Company",
     columns: COMPANY_COLUMNS,
-    feature: {
-      eyebrow: "A note from our founder",
-      title: "A plan shouldn't disappear into a drawer the day it's signed.",
-      body: "Why we're building Willow alongside estate attorneys.",
-      to: "/about",
-      image: "/willow-street.jpg",
-    },
+    feature: USA_TODAY_FEATURE,
   },
 ];
 
