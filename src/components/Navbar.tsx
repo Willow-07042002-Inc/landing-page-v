@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowRight, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
-import { ATTORNEY_LOGIN, CLIENT_LOGIN, DEMO_PATH, NAV, type NavLink, type NavMenu } from "@/content/siteMap";
+import { ATTORNEY_LOGIN, CLIENT_LOGIN, DEMO_PATH, NAV, type NavFeature, type NavLink, type NavMenu } from "@/content/siteMap";
 
 /* Site header, laid out like harvey.ai's (measured Nov 16, 2026): a 72px bar
    across the full width with 40px side padding, the logo on the left, the
@@ -50,6 +50,37 @@ const MenuLink = ({ link, onNavigate }: { link: NavLink; onNavigate: () => void 
   );
 };
 
+/* The last column's card: a page on this site, or an article elsewhere (new tab) */
+const FeatureCard = ({ feature, onNavigate }: { feature: NavFeature; onNavigate: () => void }) => {
+  const inner = (
+    <>
+      <div className="aspect-[16/10] overflow-hidden rounded-md">
+        <img src={feature.image} alt="" aria-hidden className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]" />
+      </div>
+      <div className="mt-3 flex items-center gap-1.5 text-[13px] text-gray-500">
+        {feature.eyebrow}
+        {feature.href && <ExternalLink className="h-3 w-3 text-gray-400" aria-hidden />}
+      </div>
+      <div className="mt-1 text-[14px] font-medium leading-snug text-[#222222]">{feature.title}</div>
+      {feature.body && <div className="mt-1 text-[13px] leading-snug text-gray-500">{feature.body}</div>}
+    </>
+  );
+  return (
+    <div className="col-start-4 border-l border-gray-200 py-7 pl-10">
+      {feature.href ? (
+        <a href={feature.href} target="_blank" rel="noopener noreferrer" onClick={onNavigate} className="group block">
+          {inner}
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      ) : (
+        <Link to={feature.to!} onClick={onNavigate} className="group block">
+          {inner}
+        </Link>
+      )}
+    </div>
+  );
+};
+
 const MegaPanel = ({ menu, onNavigate }: { menu: NavMenu; onNavigate: () => void }) => (
   <div className={`grid grid-cols-4 ${BAR_PAD}`}>
     {menu.columns!.map((col, i) => (
@@ -69,18 +100,7 @@ const MegaPanel = ({ menu, onNavigate }: { menu: NavMenu; onNavigate: () => void
         </div>
       </div>
     ))}
-    {menu.feature && (
-      <div className="col-start-4 border-l border-gray-200 py-7 pl-10">
-        <Link to={menu.feature.to} onClick={onNavigate} className="group block">
-          <div className="aspect-[16/10] overflow-hidden rounded-md">
-            <img src={menu.feature.image} alt="" aria-hidden className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]" />
-          </div>
-          <div className="mt-3 text-[13px] text-gray-500">{menu.feature.eyebrow}</div>
-          <div className="mt-1 text-[14px] font-medium leading-snug text-[#222222]">{menu.feature.title}</div>
-          <div className="mt-1 text-[13px] leading-snug text-gray-500">{menu.feature.body}</div>
-        </Link>
-      </div>
-    )}
+    {menu.feature && <FeatureCard feature={menu.feature} onNavigate={onNavigate} />}
   </div>
 );
 

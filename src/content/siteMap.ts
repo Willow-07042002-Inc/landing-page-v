@@ -15,8 +15,9 @@ export type NavColumn = { title: string; to?: string; links: NavLink[] }; // `to
 export type NavFeature = {
   eyebrow: string;
   title: string;
-  body: string;
-  to: string;
+  body?: string;
+  to?: string; // internal route
+  href?: string; // external article, opens in a new tab
   image: string;
 };
 
@@ -93,12 +94,12 @@ export const NAV: NavMenu[] = [
   {
     label: "Platform",
     columns: PLATFORM_COLUMNS,
+    /* The USA Today piece, with its own headline and illustration (as on /news) */
     feature: {
-      eyebrow: "Plan summaries",
-      title: "Every plan, explained in plain English.",
-      body: "Willow drafts the summary. You review and approve every word.",
-      to: "/platform/plan-summaries",
-      image: "/florida-coast.jpg",
+      eyebrow: "USA Today",
+      title: "Digital Estate Planning Arrived Six Years Ago. The Technology Is Finally Catching Up.",
+      href: "https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/",
+      image: "/news/usatoday-digital-estate-planning.jpg",
     },
   },
   { label: "Security", to: "/security" },
