@@ -53,7 +53,7 @@ const AboutPage = () => {
           <div className="enter relative px-7 py-20 md:px-16 md:py-32">
             <Eyebrow light>About Willow</Eyebrow>
             <h1 className="mt-5 max-w-3xl font-heading text-[2.5rem] font-bold leading-[1.1] text-white md:text-[4rem]" style={{ textWrap: "balance" }}>
-              Estate plans shouldn't live in a binder.
+              Estate plans shouldn't live in binders.
             </h1>
             <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-white/85">
               Willow is the estate planning platform for attorneys and the families they serve. We keep the plan, and the attorney who wrote it, within reach for as long as the family needs them.
