@@ -28,6 +28,9 @@ type Role = {
   about: string[];
   doing: string[];
   bringing: string[];
+  /* Kept here, written and ready, but not shown on the page. Delete this
+     line to post the role again. */
+  parked?: boolean;
 };
 
 const ROLES: Role[] = [
@@ -90,6 +93,7 @@ const ROLES: Role[] = [
   {
     id: "lead-designer",
     title: "Lead Designer",
+    parked: true, // taken off the page Nov 17, 2026; the posting below is kept as written
     chips: ["Full-time", "New York metro"],
     about: [
       "You'd own how Willow looks and how it's built on the front end, designing the product and then shipping it yourself alongside engineering.",
@@ -117,6 +121,9 @@ const ROLES: Role[] = [
     ],
   },
 ];
+
+/* The roles the page shows: every role that isn't parked */
+const OPEN_ROLES = ROLES.filter((r) => !r.parked);
 
 /* Shared across every posting */
 const ABOUT_WILLOW = [
@@ -178,7 +185,7 @@ const Careers = () => {
               the heading and the jump button that used to lead here. */}
           <div id="open-positions" className="mx-auto mt-14 max-w-3xl scroll-mt-28 md:mt-16">
             <div className="border-t-2 border-[#222222]" />
-            {ROLES.map((r) => (
+            {OPEN_ROLES.map((r) => (
               <a
                 key={r.id}
                 href={`#${r.id}`}
@@ -222,7 +229,7 @@ const Careers = () => {
           </div>
 
           {/* One section per role */}
-          {ROLES.map((r) => (
+          {OPEN_ROLES.map((r) => (
             <div key={r.id} id={r.id} className="mx-auto mt-20 max-w-3xl scroll-mt-28 md:mt-28">
               <div className="border-t border-gray-200 pt-12 md:pt-16">
                 <h2 className="font-heading text-3xl font-light text-[#222222] sm:text-4xl" style={{ lineHeight: 1.2 }}>
