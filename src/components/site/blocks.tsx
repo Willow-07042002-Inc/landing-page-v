@@ -5,7 +5,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { DEMO_PATH } from "@/content/siteMap";
-import { RequiredActionsVignette } from "@/components/site/vignettes";
+import { ScaledScreen } from "@/components/product/kit";
+import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 
 /* The page system every marketing page is built from, in the language of the
    homepage and the For Clients page:
@@ -52,7 +53,7 @@ export const Eyebrow = ({ children, light = false }: { children: React.ReactNode
 
 export const PrimaryButton = ({
   to = DEMO_PATH,
-  children = "Book a demo",
+  children = "Request a demo",
   className = "",
   glow = false,
 }: {
@@ -134,7 +135,7 @@ export const PageHero = ({
   visual,
   visualAspect = "900 / 560",
 }: {
-  eyebrow: string;
+  eyebrow: React.ReactNode;
   title: React.ReactNode;
   accent?: string;
   subtitle: string;
@@ -447,7 +448,7 @@ export const SecurityBand = () => (
       out of the bottom-right corner ── */
 export const ClosingCta = ({
   title = "See Willow with your own practice.",
-  body = "Book a demo and walk through both sides of Willow live: the attorney workspace and the client experience, set up around your state and the way you work.",
+  body = "Request a demo and walk through both sides of Willow live: the attorney workspace and the client experience, set up around your state and the way you work.",
   image = "/west-side-hwy.jpg",
   shot,
 }: {
@@ -463,7 +464,11 @@ export const ClosingCta = ({
         right={
           <div className="relative h-[300px] sm:h-[380px] md:h-auto md:min-h-[460px]">
             <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[12%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
-              {shot ?? <RequiredActionsVignette />}
+              {shot ?? (
+                <ScaledScreen>
+                  <AttorneyDashboardScreen />
+                </ScaledScreen>
+              )}
             </div>
           </div>
         }
@@ -476,7 +481,7 @@ export const ClosingCta = ({
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <SecondaryButton to={DEMO_PATH} light>
-            Book a demo
+            Request a demo
           </SecondaryButton>
         </div>
       </DarkPrintCard>

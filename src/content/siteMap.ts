@@ -10,7 +10,7 @@ export type NavLink = {
   badge?: string; // e.g. "Coming"
 };
 
-export type NavColumn = { title: string; links: NavLink[] };
+export type NavColumn = { title: string; to?: string; links: NavLink[] }; // `to`: the heading links to its overview
 
 export type NavFeature = {
   eyebrow: string;
@@ -32,55 +32,28 @@ export const CLIENT_LOGIN = "https://clients.willow-inc.com/auth/login";
 export const DEMO_PATH = "/request-access";
 export const SUPPORT_EMAIL = "support@willow-inc.com";
 
+/* One Platform menu, two sides, named like the homepage's two cards: each
+   heading goes to the same overview page its card does. */
 export const PLATFORM_COLUMNS: NavColumn[] = [
   {
-    title: "Platform",
+    title: "For attorneys",
+    to: "/platform",
     links: [
-      { label: "Overview", desc: "One place from first meeting to signed plan", to: "/platform" },
-      { label: "Client dashboard", desc: "Leads, clients and every action waiting on you", to: "/platform/client-dashboard" },
-      { label: "Signing ceremony", desc: "Launching state by state, as the law allows", to: "/platform/signing", badge: "Coming" },
-      { label: "Vault", desc: "Every document, every version, and who opened it", to: "/platform/vault" },
-    ],
-  },
-  {
-    title: "For your clients",
-    links: [
-      { label: "Plan summaries", desc: "Every gift and condition in plain English, approved by you", to: "/platform/plan-summaries" },
-      { label: "Sharing & release", desc: "Share now, or seal until a passing is verified", to: "/platform/sharing" },
+      { label: "Overview", desc: "Your practice in one place", to: "/platform" },
+      { label: "Dashboard & clients", desc: "Leads, clients and every action waiting on you", to: "/platform/client-dashboard" },
+      { label: "Plan summaries", desc: "Every plan in plain English, approved by you", to: "/platform/plan-summaries" },
       { label: "Check-ins & updates", desc: "A yearly rhythm that brings clients back to you", to: "/platform/check-ins" },
       { label: "Booking page", desc: "New clients book video, phone or in-person time", to: "/platform/booking" },
-    ],
-  },
-  {
-    title: "Connect",
-    links: [
-      { label: "Integrations", desc: "Google Workspace, Microsoft 365 and Zoom", to: "/platform/integrations" },
-    ],
-  },
-];
-
-export const SOLUTION_COLUMNS: NavColumn[] = [
-  {
-    title: "For attorneys",
-    links: [
-      { label: "Solo practitioners", desc: "Run every matter from one dashboard", to: "/solutions/solo" },
-      { label: "Boutique firms", desc: "Every client, under your firm's name and branding", to: "/solutions/boutique-firms" },
+      { label: "Integrations", desc: "Connect Google Workspace, Microsoft 365 and Zoom", to: "/platform/integrations" },
     ],
   },
   {
     title: "For clients & their team",
+    to: "/for-clients",
     links: [
-      { label: "Clients & families", desc: "A plan everyone understands", to: "/for-clients" },
+      { label: "Overview", desc: "A plan the whole family understands", to: "/for-clients" },
+      { label: "Sharing & release", desc: "Share now, or seal until a passing is verified", to: "/platform/sharing" },
       { label: "Their team", desc: "Executors, trustees, guardians and agents, each with their own portal", to: "/solutions/their-team" },
-    ],
-  },
-  {
-    title: "By plan",
-    links: [
-      { label: "Wills", desc: "Signed, stored and explained", to: "/solutions/wills" },
-      { label: "Revocable trusts", desc: "Payout schedules anyone can follow", to: "/solutions/trusts" },
-      { label: "Powers of attorney", desc: "Every power, explained in plain English", to: "/solutions/powers-of-attorney" },
-      { label: "Guardianship for minors", desc: "Per-child guidance and funds", to: "/solutions/guardianship" },
     ],
   },
 ];
@@ -128,17 +101,6 @@ export const NAV: NavMenu[] = [
       image: "/florida-coast.jpg",
     },
   },
-  {
-    label: "Solutions",
-    columns: SOLUTION_COLUMNS,
-    feature: {
-      eyebrow: "For the people in the plan",
-      title: "Everyone prepared. Nothing shared early.",
-      body: "Executors, guardians and agents each get their own portal.",
-      to: "/solutions/their-team",
-      image: "/hudson-bridge.jpg",
-    },
-  },
   { label: "Security", to: "/security" },
   {
     label: "Resources",
@@ -166,30 +128,22 @@ export const NAV: NavMenu[] = [
 
 export const FOOTER_COLUMNS: NavColumn[] = [
   {
-    title: "Platform",
+    title: "For attorneys",
     links: [
       { label: "Overview", to: "/platform" },
-      { label: "Client dashboard", to: "/platform/client-dashboard" },
-      { label: "Signing ceremony", to: "/platform/signing" },
-      { label: "Vault", to: "/platform/vault" },
+      { label: "Dashboard & clients", to: "/platform/client-dashboard" },
       { label: "Plan summaries", to: "/platform/plan-summaries" },
-      { label: "Sharing & release", to: "/platform/sharing" },
       { label: "Check-ins & updates", to: "/platform/check-ins" },
       { label: "Booking page", to: "/platform/booking" },
       { label: "Integrations", to: "/platform/integrations" },
     ],
   },
   {
-    title: "Solutions",
+    title: "For clients & their team",
     links: [
-      { label: "Solo practitioners", to: "/solutions/solo" },
-      { label: "Boutique firms", to: "/solutions/boutique-firms" },
-      { label: "Clients & families", to: "/for-clients" },
+      { label: "Overview", to: "/for-clients" },
+      { label: "Sharing & release", to: "/platform/sharing" },
       { label: "Their team", to: "/solutions/their-team" },
-      { label: "Wills", to: "/solutions/wills" },
-      { label: "Revocable trusts", to: "/solutions/trusts" },
-      { label: "Powers of attorney", to: "/solutions/powers-of-attorney" },
-      { label: "Guardianship", to: "/solutions/guardianship" },
     ],
   },
   {

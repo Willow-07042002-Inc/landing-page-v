@@ -167,7 +167,7 @@ const AboutPage = () => {
             ))}
           </div>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <PrimaryButton>Book a demo</PrimaryButton>
+            <PrimaryButton>Request a demo</PrimaryButton>
             <SecondaryButton to="/news">All news</SecondaryButton>
           </div>
         </div>

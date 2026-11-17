@@ -201,7 +201,7 @@ const TheirTeamPage = () => {
         title="Keep exploring."
         cards={["/for-clients", "/platform/sharing", "/platform/plan-summaries"].map((p) => ({ ...CARDS[p], to: p }))}
       />
-      <ClosingCta shot={<RecipientPortalVignette state="sealed" />} title="Give the people in the plan a place to start." body="Book a demo and see the portal your clients' executors, guardians and agents receive, and how it brings them back to you." />
+      <ClosingCta shot={<RecipientPortalVignette state="sealed" />} title="Give the people in the plan a place to start." body="Request a demo and see the portal your clients' executors, guardians and agents receive, and how it brings them back to you." />
     </PageShell>
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import {
   PageShell,
   PageHero,
@@ -14,8 +14,10 @@ import {
   Statement,
   usePageMeta,
 } from "@/components/site/blocks";
-import { RecipientPortalVignette } from "@/components/site/vignettes";
 import { CARDS, pageByPath } from "@/content/pages";
+import { ScaledScreen } from "@/components/product/kit";
+import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
+import { ClientEstatePlanScreen } from "@/components/product/client-estate-plan";
 
 /* Renders any platform or solutions page from its definition in
    src/content/pages.tsx, in the homepage's order and clothes: the hero and
@@ -33,7 +35,14 @@ const split = (t?: string): { title?: string; accent?: string } => {
   return { title: t };
 };
 
-const CLIENT_SIDE = ["/solutions/wills", "/solutions/trusts", "/solutions/powers-of-attorney", "/solutions/guardianship"];
+/* Which side of the Platform menu a page sits on. The eyebrow names it and
+   links back to that side's overview (the same place the homepage card and
+   the menu heading go), and the related cards are that side's pages. */
+const CLIENT_SIDE = ["/platform/sharing", "/solutions/their-team"];
+const sideOf = (path: string) =>
+  CLIENT_SIDE.includes(path)
+    ? { label: "For clients & their team", to: "/for-clients", more: "More for clients & their team." }
+    : { label: "For attorneys", to: "/platform", more: "More for attorneys." };
 
 const TemplatePage = () => {
   const { pathname } = useLocation();
@@ -42,6 +51,7 @@ const TemplatePage = () => {
   usePageMeta(def?.metaTitle ?? "Willow", def?.metaDesc ?? "");
   if (!def) return <Navigate to="/" replace />;
 
+  const side = sideOf(path);
   const related = def.related.filter((p) => CARDS[p]).map((p) => ({ ...CARDS[p], to: p }));
   const heroAspect = def.hero.aspect ?? "900 / 560";
   const pts = split(def.pointsTitle);
@@ -51,7 +61,19 @@ const TemplatePage = () => {
   return (
     <PageShell quotes>
       <PageHero
-        eyebrow={def.eyebrow}
+        eyebrow={
+          path === side.to ? (
+            side.label
+          ) : (
+            <>
+              <Link to={side.to} className="underline-offset-4 hover:underline">
+                {side.label}
+              </Link>
+              <span className="mx-2 text-[#0C7370]/50">·</span>
+              {def.eyebrow}
+            </>
+          )
+        }
         title={def.title}
         accent={def.accent}
         subtitle={def.subtitle}
@@ -70,14 +92,13 @@ const TemplatePage = () => {
       {def.faq && <Faq items={def.faq} />}
       {def.security && <SecurityBand />}
       {related.length > 0 && (
-        <LinkCards
-          eyebrow={related.length > 3 ? "The platform" : "Related"}
-          title={related.length > 3 ? "Explore the platform," : "Keep exploring."}
-          accent={related.length > 3 ? "page by page." : undefined}
-          cards={related}
-        />
+        <LinkCards eyebrow={side.label} title={path === side.to ? "Everything here," : side.more} accent={path === side.to ? "page by page." : undefined} cards={related} />
       )}
-      <ClosingCta title={def.closing?.title} body={def.closing?.body} shot={CLIENT_SIDE.includes(path) ? <RecipientPortalVignette state="released" /> : undefined} />
+      <ClosingCta
+        title={def.closing?.title}
+        body={def.closing?.body}
+        shot={<ScaledScreen>{side.to === "/for-clients" ? <ClientEstatePlanScreen /> : <AttorneyDashboardScreen />}</ScaledScreen>}
+      />
     </PageShell>
   );
 };

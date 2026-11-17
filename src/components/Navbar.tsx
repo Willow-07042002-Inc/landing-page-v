@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 import { ATTORNEY_LOGIN, CLIENT_LOGIN, DEMO_PATH, NAV, type NavLink, type NavMenu } from "@/content/siteMap";
 
 /* Site header, laid out like harvey.ai's (measured Nov 16, 2026): a 72px bar
@@ -54,7 +54,14 @@ const MegaPanel = ({ menu, onNavigate }: { menu: NavMenu; onNavigate: () => void
   <div className={`grid grid-cols-4 ${BAR_PAD}`}>
     {menu.columns!.map((col, i) => (
       <div key={col.title} className={`py-7 ${i === 0 ? "pr-10" : "border-l border-gray-200 px-10"}`}>
-        <div className="mb-3 text-[13px] text-gray-500">{col.title}</div>
+        {col.to ? (
+          <Link to={col.to} onClick={onNavigate} className="mb-3 inline-flex items-center gap-1 text-[13px] text-gray-500 transition-colors hover:text-[#222222]">
+            {col.title}
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        ) : (
+          <div className="mb-3 text-[13px] text-gray-500">{col.title}</div>
+        )}
         <div className="flex flex-col gap-2">
           {col.links.map((l) => (
             <MenuLink key={l.label} link={l} onNavigate={onNavigate} />
@@ -149,7 +156,14 @@ const MobileSheet = ({ onClose }: { onClose: () => void }) => {
                 <div className="pb-4">
                   {menu.columns!.map((col) => (
                     <div key={col.title} className="mb-3">
-                      <div className="mb-1 pt-1 text-[13px] text-gray-500">{col.title}</div>
+                      {col.to ? (
+                        <Link to={col.to} onClick={onClose} className="mb-1 inline-flex items-center gap-1 pt-1 text-[13px] text-gray-500">
+                          {col.title}
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </Link>
+                      ) : (
+                        <div className="mb-1 pt-1 text-[13px] text-gray-500">{col.title}</div>
+                      )}
                       {col.links.map((l) =>
                         l.to ? (
                           <Link key={l.label} to={l.to} onClick={onClose} className="flex min-h-[44px] items-center text-[15.5px] text-gray-700">

@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { VignetteFrame } from "@/components/ProductVignettes";
-import { ClientEstatePlanScreen } from "@/pages/Home";
+import { ClientEstatePlanScreen } from "@/components/product/client-estate-plan";
 import {
   TeamRosterVignette,
   StepInVignette,
@@ -306,14 +306,14 @@ const ForClientsPage = () => {
                   to your clients?
                 </h2>
                 <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
-                  Book a demo and walk through the client experience live — see how a signed plan becomes something the whole family understands, and keeps coming back to.
+                  Request a demo and walk through the client experience live — see how a signed plan becomes something the whole family understands, and keeps coming back to.
                 </p>
                 <button
                   type="button"
                   onClick={() => navigate("/request-access")}
                   className="mt-8 inline-flex h-11 items-center rounded-md border border-white/70 bg-transparent px-6 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
                 >
-                  Book a Demo
+                  Request a demo
                 </button>
               </div>
               <div className="relative h-[340px] sm:h-[400px] md:h-auto md:min-h-[520px]">
