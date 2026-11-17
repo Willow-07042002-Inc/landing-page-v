@@ -17,7 +17,7 @@ import {
 import { CARDS, pageByPath } from "@/content/pages";
 import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
-import { ClientEstatePlanScreen } from "@/components/product/client-estate-plan";
+import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 
 /* Renders any platform or solutions page from its definition in
    src/content/pages.tsx, in the homepage's order and clothes: the hero and
@@ -97,7 +97,7 @@ const TemplatePage = () => {
       <ClosingCta
         title={def.closing?.title}
         body={def.closing?.body}
-        shot={<ScaledScreen>{side.to === "/for-clients" ? <ClientEstatePlanScreen /> : <AttorneyDashboardScreen />}</ScaledScreen>}
+        shot={<ScaledScreen>{side.to === "/for-clients" ? <ClientEstatePlanTodayScreen /> : <AttorneyDashboardScreen />}</ScaledScreen>}
       />
     </PageShell>
   );

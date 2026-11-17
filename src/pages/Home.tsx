@@ -19,7 +19,7 @@ import {
 import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
-import { ClientEstatePlanScreen } from "@/components/product/client-estate-plan";
+import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 
 // Rotating phrases for the hero, as on willow-inc.com ("their plan" singular,
 // and "never lose" / "a document." on two lines, at Aaron's word, Nov 17). The
@@ -133,7 +133,7 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
     shot: (
       <div className="relative w-[130vw] max-w-[1440px] min-[1025px]:w-[68vw]" style={{ aspectRatio: "1440 / 855" }}>
         <ScaledScreen>
-          <ClientEstatePlanScreen />
+          <ClientEstatePlanTodayScreen />
         </ScaledScreen>
       </div>
     ),

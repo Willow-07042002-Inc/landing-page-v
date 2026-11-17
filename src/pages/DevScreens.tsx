@@ -34,6 +34,15 @@ import {
   LeadPanel,
   DashboardWithLeadPanelScreen,
 } from "@/components/product/attorney-booking";
+import {
+  ClientEstatePlanTodayScreen,
+  ClientPlanSectionScreen,
+  ClientSharedScreen,
+  ClientShareTimingScreen,
+  SharedWithYouScreen,
+  CheckInScreen,
+} from "@/components/product/client-app";
+import { DashboardWithSendOrSkip, DashboardWithReleaseRequest } from "@/components/product/composites";
 
 const Shot = ({ name, children, h = 855, w = 1440 }: { name: string; children: React.ReactNode; h?: number; w?: number }) => (
   <section data-shot={name} className="mb-16">
@@ -71,6 +80,14 @@ export const DEV_SHOTS: { name: string; el: React.ReactNode; h?: number; w?: num
   { name: "integrations-calendars", el: <IntegrationsSettingsScreen page="calendars" /> },
   { name: "lead-panel", el: <LeadPanel />, w: 720, h: 791 },
   { name: "dashboard-lead-open", el: <DashboardWithLeadPanelScreen /> },
+  { name: "dashboard-send-or-skip", el: <DashboardWithSendOrSkip /> },
+  { name: "dashboard-release-request", el: <DashboardWithReleaseRequest /> },
+  { name: "client-estate-plan-today", el: <ClientEstatePlanTodayScreen /> },
+  { name: "client-step-in", el: <ClientPlanSectionScreen /> },
+  { name: "client-shared", el: <ClientSharedScreen />, h: 1845 },
+  { name: "client-share-timing", el: <ClientShareTimingScreen /> },
+  { name: "shared-with-you", el: <SharedWithYouScreen />, h: 2021 },
+  { name: "client-check-in", el: <CheckInScreen />, h: 900 },
 ];
 
 const DevScreens = () => (

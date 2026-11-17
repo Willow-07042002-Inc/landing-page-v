@@ -1,31 +1,4 @@
 import React from "react";
-import {
-  CheckInDemoVignette,
-  SharingRecommendationVignette,
-  AssetBreakdownVignette,
-  LeadIntakeVignette,
-} from "@/components/ProductVignettes";
-import {
-  TeamRosterVignette,
-  StepInVignette,
-  WhoGetsWhatVignette,
-  TrustVignette,
-  DocumentsVaultVignette,
-  CategoriesVignette,
-  ReleaseTimingVignette,
-  RoleChangeVignette,
-  SectionShareVignette,
-  LifeUpdateVignette,
-} from "@/components/ClientVignettes";
-import {
-  RequiredActionsVignette,
-  SummaryReviewVignette,
-  BookingVignette,
-  StayingInTouchVignette,
-  VaultVignette,
-  ConnectionsVignette,
-  SigningShot,
-} from "@/components/site/vignettes";
 import type { FeatureRowData } from "@/components/site/blocks";
 import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
@@ -45,6 +18,13 @@ import {
   DashboardWithLeadPanelScreen,
 } from "@/components/product/attorney-booking";
 import { DashboardWithSendOrSkip, DashboardWithReleaseRequest } from "@/components/product/composites";
+import {
+  ClientPlanSectionScreen,
+  ClientSharedScreen,
+  ClientShareTimingScreen,
+  SharedWithYouScreen,
+  CheckInScreen,
+} from "@/components/product/client-app";
 
 /* A recreated product screen at its real size, scaled to fit the frame */
 const screen = (el: React.ReactNode, w = 1440, h = 855) => (
@@ -53,10 +33,11 @@ const screen = (el: React.ReactNode, w = 1440, h = 855) => (
   </ScaledScreen>
 );
 
-/* Every platform and solutions page, as data. The copy says only what the
-   product does today (checked against the apps on Nov 16, 2026); anything
-   still being built is labelled as coming. Each page uses a different set of
-   photographs. */
+/* Every page in the Platform menu, as data: For attorneys (/platform/*) and
+   For clients & their team (/platform/sharing, /solutions/their-team; the
+   overview is ForClientsPage). The copy says only what the product does today,
+   and every picture is a screen recreated from the product code
+   (src/components/product, checked against origin/main on Nov 17, 2026). */
 
 export type PageDef = {
   path: string;
@@ -242,6 +223,14 @@ export const PAGES: PageDef[] = [
         print: "/central-park.jpg",
         aspect: "1440 / 855",
       },
+      {
+        eyebrow: "What your client sees",
+        title: "Their plan, section by section.",
+        body: "Once you approve, your client reads their plan in plain English: their family, who steps in if needed, and the powers each person holds.",
+        visual: screen(<ClientPlanSectionScreen />),
+        print: "/west-side-hwy.jpg",
+        aspect: "1440 / 855",
+      },
     ],
     faq: [FAQ_NO_ADVICE, FAQ_TRAINING],
     related: ["/platform", "/platform/client-dashboard", "/platform/sharing"],
@@ -249,47 +238,84 @@ export const PAGES: PageDef[] = [
   {
     path: "/platform/sharing",
     metaTitle: "Sharing & Release | Willow",
-    metaDesc: "Clients share their estate plan with executors, guardians and agents by role. Documents can be shared now, or sealed until a passing is verified by the attorney.",
-    eyebrow: "Platform · Sharing & release",
+    metaDesc: "Clients choose who gets each document of their estate plan, and when: now, or once a passing is verified by their attorney.",
+    eyebrow: "Sharing & release",
     title: "Everyone prepared.",
     accent: "Nothing shared early.",
-    subtitle: "Your client names their executors, guardians and agents. Willow recommends what each should see, and holds anything sealed until you've verified a passing.",
-    hero: { visual: <SharingRecommendationVignette />, print: "/willow-street.jpg", aspect: "760 / 660" },
+    subtitle: "Your client chooses who gets each document, and when: now, or once a passing is verified. Each person they name sees only what's theirs.",
+    hero: { visual: screen(<ClientSharedScreen />), print: "/willow-street.jpg", aspect: "1440 / 855" },
     points: [
-      { title: "Shared by role", body: "An executor needs different things than a guardian. Willow knows each role and recommends what to share with whom." },
-      { title: "Now, or sealed", body: "Share a document today, or seal it until a passing is verified. Until then, the person sees that something is waiting, but not what it says." },
-      { title: "You verify", body: "When someone reports a passing, you confirm it, usually from the death certificate, before anything sealed is released." },
+      { title: "Document by document", body: "For each document, your client picks the people on their team who should have it." },
+      { title: "Now, or after a passing", body: "Powers of attorney and medical proxies are shared right away, so the people named can act. A will can wait." },
+      { title: "The attorney verifies", body: "Anything held back opens only after you've confirmed the passing, and everyone it was shared with is emailed." },
     ],
     rows: [
       {
-        eyebrow: "Timing",
-        title: "Your client controls when each document opens.",
-        body: "Share now, share when they've passed, or describe a condition and leave the decision to you.",
-        visual: <ReleaseTimingVignette />,
-        print: "self",
+        eyebrow: "Who gets it, and when",
+        title: "One choice per person.",
+        body: "Your client ticks each person who should have a document, then picks whether they get it now or when they pass away.",
+        visual: screen(<ClientShareTimingScreen />),
+        print: "/hudson-bridge.jpg",
+        aspect: "1440 / 855",
       },
       {
-        eyebrow: "Supporting information",
-        title: "The documents, and the information to act on them.",
-        body: "Finances, digital accounts, the children's details and health information can each be shared with the person who'll need them.",
-        visual: <SectionShareVignette />,
-        print: "self",
+        eyebrow: "What you see",
+        title: "What's held back, and for whom.",
+        body: "The client's Team tab shows everyone they named, their roles, and what's being held back until it's needed.",
+        visual: screen(<AttorneyClientsScreen open tab="Team" panel={<TeamPanel />} />),
+        print: "/central-park.jpg",
+        aspect: "1440 / 855",
       },
       {
-        eyebrow: "Staying current",
-        title: "When the plan changes, sharing follows.",
-        body: "If an updated plan gives someone a new role, Willow proposes exactly what to change in what's already been shared. Your client reviews it once and approves.",
-        visual: <RoleChangeVignette />,
-        print: "self",
+        eyebrow: "When the time comes",
+        title: "You confirm it before anything opens.",
+        body: "A person in the plan lets you know about the passing and attaches the death certificate. You grant access, or deny it.",
+        visual: screen(<DashboardWithReleaseRequest />),
+        print: "/williamsburg.jpg",
+        aspect: "1440 / 855",
       },
     ],
     faq: [
-      { q: "Who verifies a death?", a: "The client's attorney. When a named person reports a passing, the request comes to you, and you release what was sealed once you've confirmed it." },
-      { q: "What about powers of attorney and health care proxies?", a: "They're shared now, so the people named can act when they're needed." },
-      { q: "Can a client change their mind?", a: "Any time. Sharing can be added, changed or removed, and each change is recorded." },
+      { q: "Who verifies a passing?", a: "The client's attorney. The request comes to you, and what was held back opens only when you grant it." },
+      { q: "Are powers of attorney held back?", a: "No. They're shared right away, so the people named can act when they're needed." },
+      { q: "Can a client change their mind?", a: "Yes. Your client can change who has each document, and when, from their Shared tab at any time." },
     ],
-    related: ["/solutions/their-team", "/platform/plan-summaries"],
+    related: ["/for-clients", "/solutions/their-team", "/platform/plan-summaries"],
     security: true,
+  },
+  {
+    path: "/solutions/their-team",
+    metaTitle: "Executors, Trustees, Guardians & Agents | Willow",
+    metaDesc: "The people a client names in their estate plan get their own view of it: their roles in plain English, what's been shared with them, and how to reach the attorney.",
+    eyebrow: "Their team",
+    title: "Everyone in the plan,",
+    accent: "ready when it matters.",
+    subtitle: "The people your client names, their executors, trustees, guardians and agents, each get their own view of the plan: their roles, what's been shared with them, and how to reach the attorney when it's time.",
+    hero: { visual: screen(<SharedWithYouScreen />), print: "/hudson-bridge.jpg", aspect: "1440 / 855" },
+    points: [
+      { title: "Their roles, explained", body: "Each person sees what they've been named in plain English: what an executor does, when an agent steps in." },
+      { title: "What's theirs to open", body: "Documents shared now open today. Anything held back shows as available after a passing." },
+      { title: "A way to reach the attorney", body: "When the time comes, they let the client's attorney know from the plan itself." },
+    ],
+    rows: [
+      {
+        eyebrow: "Who steps in",
+        title: "In order, with the powers they hold.",
+        body: "The plan spells out who steps in if your client can't decide for themselves, who's next in line, and what each power means.",
+        visual: screen(<ClientPlanSectionScreen />),
+        print: "/willow-street.jpg",
+        aspect: "1440 / 855",
+      },
+      {
+        eyebrow: "The attorney knows them too",
+        title: "Your client's people, on your client's record.",
+        body: "Everyone your client names appears on their Team tab, and agents get their own yearly check-in from you.",
+        visual: screen(<AttorneyClientsScreen open tab="Team" panel={<TeamPanel />} />),
+        print: "/central-park.jpg",
+        aspect: "1440 / 855",
+      },
+    ],
+    related: ["/for-clients", "/platform/sharing", "/platform/plan-summaries"],
   },
   {
     path: "/platform/check-ins",
@@ -306,6 +332,14 @@ export const PAGES: PageDef[] = [
       { title: "Nothing goes without you", body: "Each email is ready for you to read, change, then send or skip." },
     ],
     rows: [
+      {
+        eyebrow: "The client's side",
+        title: "Has anything changed?",
+        body: "A short check-in from your firm asks your client what's changed since they signed. They tap what applies.",
+        visual: screen(<CheckInScreen />, 1440, 900),
+        print: "/willow-street.jpg",
+        aspect: "1440 / 900",
+      },
       {
         eyebrow: "Going out",
         title: "Every email waits for you.",
