@@ -43,7 +43,7 @@ export const PLATFORM_COLUMNS: NavColumn[] = [
     ],
   },
   {
-    title: "Client experience",
+    title: "For your clients",
     links: [
       { label: "Plan summaries", desc: "Every gift and condition in plain English, approved by you", to: "/platform/plan-summaries" },
       { label: "Sharing & release", desc: "Share now, or seal until a passing is verified", to: "/platform/sharing" },
@@ -55,7 +55,6 @@ export const PLATFORM_COLUMNS: NavColumn[] = [
     title: "Connect",
     links: [
       { label: "Integrations", desc: "Google Workspace, Microsoft 365 and Zoom", to: "/platform/integrations" },
-      { label: "Security", desc: "How client information is protected", to: "/security" },
     ],
   },
 ];
@@ -66,7 +65,6 @@ export const SOLUTION_COLUMNS: NavColumn[] = [
     links: [
       { label: "Solo practitioners", desc: "Run every matter from one dashboard", to: "/solutions/solo" },
       { label: "Boutique firms", desc: "Every client, under your firm's name and branding", to: "/solutions/boutique-firms" },
-      { label: "Practice growth", desc: "Relationships that last past the signing", to: "/solutions/practice-growth" },
     ],
   },
   {
@@ -186,7 +184,6 @@ export const FOOTER_COLUMNS: NavColumn[] = [
     links: [
       { label: "Solo practitioners", to: "/solutions/solo" },
       { label: "Boutique firms", to: "/solutions/boutique-firms" },
-      { label: "Practice growth", to: "/solutions/practice-growth" },
       { label: "Clients & families", to: "/for-clients" },
       { label: "Their team", to: "/solutions/their-team" },
       { label: "Wills", to: "/solutions/wills" },

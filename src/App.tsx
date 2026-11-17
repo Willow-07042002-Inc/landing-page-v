@@ -84,6 +84,7 @@ const App = () => (
             ["/terms-of-service", "/terms"],
             ["/terms-and-conditions", "/terms"],
             ["/solutions", "/platform"],
+            ["/solutions/practice-growth", "/platform/check-ins"],
             ["/trust", "/security"],
             ["/company", "/about"],
             ["/about-us", "/about"],
