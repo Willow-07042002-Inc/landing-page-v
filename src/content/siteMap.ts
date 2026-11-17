@@ -70,7 +70,6 @@ export const RESOURCE_COLUMNS: NavColumn[] = [
   {
     title: "Guides",
     links: [
-      { label: "Zoom guide", desc: "Meeting links for consultations", to: "/zoom" },
       { label: "Requesting documents", desc: "After a passing, or to check a will is on file", to: "/request-documents" },
       { label: "New York State Bar", desc: "For NYSBA members", to: "/nysba" },
     ],
@@ -152,7 +151,6 @@ export const FOOTER_COLUMNS: NavColumn[] = [
     links: [
       { label: "Legislation by state", to: "/legislation-by-state" },
       { label: "Willow in the news", to: "/news" },
-      { label: "Zoom guide", to: "/zoom" },
       { label: "Requesting documents", to: "/request-documents" },
       { label: "New York State Bar", to: "/nysba" },
     ],
