@@ -110,7 +110,7 @@ export const COMPANY_COLUMNS: NavColumn[] = [
   {
     title: "Company",
     links: [
-      { label: "About Willow", desc: "Why Willow exists, and the team behind it", to: "/about" },
+      { label: "About Willow", desc: "Why Willow exists, and the team behind our mission", to: "/about" },
       { label: "Careers", desc: "Join our team as a founding member", to: "/careers" },
       { label: "Contact", desc: SUPPORT_EMAIL, href: `mailto:${SUPPORT_EMAIL}` },
       { label: "Legal center", desc: "Terms, privacy and every policy in one place", to: "/legal" },
