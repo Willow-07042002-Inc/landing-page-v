@@ -164,7 +164,7 @@ const SUBPROCESSORS: { provider: string; service: string; location: string; firm
   {
     provider: "Anthropic, PBC",
     service: "AI document analysis and draft summaries (see below)",
-    location: "United States and other locations where Anthropic operates",
+    location: "United States",
     firmData: true,
   },
   { provider: "Google LLC (Google Workspace)", service: "Email delivery", location: "United States and other locations where Google operates", firmData: true },
@@ -230,9 +230,12 @@ export const SubprocessorsPage = () => {
           to address misuse, as Anthropic's terms allow.
         </LI>
         <LI>
-          <B>Document files during analysis.</B> To analyze a document, Willow uploads the file to Anthropic's Files API for the
-          duration of the analysis. Zero data retention does not cover files stored this way. Willow deletes each file as soon as its
-          analysis finishes, and an hourly check deletes any file left behind, so a document is not kept by Anthropic beyond that.
+          <B>Documents are sent with each request.</B> To analyze a document, Willow sends the file to Anthropic as part of the
+          analysis request itself, so it is covered by zero data retention like the rest of the request. Willow does not store
+          documents with Anthropic.
+        </LI>
+        <LI>
+          <B>United States only.</B> Every analysis request is set to run in the United States.
         </LI>
         <LI>
           <B>No connected-account data.</B> Willow never sends calendar, contacts, email or meeting data from a connected account to
