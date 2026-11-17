@@ -260,13 +260,14 @@ const Navbar = () => {
         Skip to content
       </a>
 
-      {/* As on harvey.ai: the logo, then the menu 32px after it, the buttons pushed right */}
+      {/* As on harvey.ai: the menu sits 32px after the logo, and from 1445px it is
+          centred in the bar; the buttons are pushed right */}
       <div className={`relative mx-auto flex h-[72px] max-w-[1920px] items-center ${BAR_PAD}`}>
         <Link to="/" className="flex shrink-0 items-center" aria-label="Willow home" onClick={closeAll}>
           <img src={LOGO} alt="Willow" className="h-10 w-auto" />
         </Link>
 
-        <nav aria-label="Main" className="ml-8 hidden h-full items-stretch gap-6 whitespace-nowrap lg:flex xl:gap-8">
+        <nav aria-label="Main" className="ml-8 hidden h-full items-stretch gap-6 whitespace-nowrap lg:flex xl:gap-8 min-[1445px]:absolute min-[1445px]:inset-y-0 min-[1445px]:left-1/2 min-[1445px]:ml-0 min-[1445px]:-translate-x-1/2">
           {NAV.map((menu) => {
             const open = openMenu === menu.label;
             const dim = openMenu !== null && !open;
