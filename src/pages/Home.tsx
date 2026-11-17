@@ -404,24 +404,22 @@ const HeroRotator = () => {
   );
 };
 
-/* The homepage's container, matched to harvey.ai's: 1728px at most, the same
-   side padding as the navigation bar, and a 12-column grid with 20px gutters. */
-const HOME_WRAP = "mx-auto w-full max-w-[1728px] px-5 md:px-8 lg:px-9 xl:px-10";
-
 /* One product shot under the hero, matted in a print the way harvey.ai frames
-   its hero screenshot, with no scroll effects. The screen is the attorney
-   dashboard exactly as it appears on willow-inc.com today (1440×855); the
-   frame's shape gives it an even mat. On a phone the screen runs off the
-   bottom-right edge so it stays legible. */
+   its hero screenshot, with no scroll effects. Harvey's frame is 1376×750 at
+   1440 (radius 4px, 8px from 1025px) and its screen window sits centred with
+   an even mat, 83% of the frame's width. The screen here is the attorney
+   dashboard exactly as it appears on willow-inc.com today, shown to the same
+   window shape (1440×775 of its 1440×855 canvas). On a phone the screen runs
+   off the bottom-right edge so it stays legible. */
 const HeroShot = () => (
-  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl md:aspect-[1.71]">
+  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[4px] md:aspect-[1376/750] min-[1025px]:rounded-[8px]">
     <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
     <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
     <div
       role="img"
       aria-label="The Willow attorney dashboard: active clients and plans signed."
-      className="absolute left-[6%] top-[7%] w-[170%] overflow-hidden rounded-lg bg-[#F0F2F5] md:left-[8.5%] md:top-[7.9%] md:w-[83%] md:rounded-xl"
-      style={{ aspectRatio: "1440 / 855", boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
+      className="absolute left-[6%] top-[7%] w-[170%] overflow-hidden rounded-lg bg-[#F0F2F5] [aspect-ratio:1440/855] md:left-[8.43%] md:top-[8.93%] md:w-[83.14%] md:[aspect-ratio:1440/775]"
+      style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
     >
       <ScaledScreen>
         <AttorneyDashboardScreen />
@@ -442,19 +440,19 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
     to: "/platform",
     image: "/nyc-skyline.jpg",
     shot: (
-      <div className="relative w-[150vw] md:w-[min(52vw,720px)]" style={{ aspectRatio: "900 / 400" }}>
+      <div className="relative w-[130vw] max-w-[1440px] min-[1025px]:w-[68vw]" style={{ aspectRatio: "900 / 400" }}>
         <ActiveClientsNextStepsVignette />
       </div>
     ),
   },
   {
-    title: "For clients\n& their team",
+    title: "For clients & their team",
     body: "A plan clients understand, kept in one place and shared with executors, guardians and agents on their terms.",
     cta: "Explore Willow for clients",
     to: "/for-clients",
     image: "/west-side-hwy.jpg",
     shot: (
-      <div className="relative w-[200vw] md:w-[min(68vw,1000px)]" style={{ aspectRatio: "1440 / 855" }}>
+      <div className="relative w-[130vw] max-w-[1440px] min-[1025px]:w-[68vw]" style={{ aspectRatio: "1440 / 855" }}>
         <ScaledScreen>
           <ClientEstatePlanScreen />
         </ScaledScreen>
@@ -463,52 +461,51 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
   },
 ];
 
+/* Set on harvey.ai's AudienceRouterSection: heading-2 and a 560px sentence,
+   a large step down to a row that is twice as wide as it is tall from 1025px
+   (stacked 3:4 cards below that, at most 500px tall). Each card's print is
+   pinned to its outer edge at 5:4, so it doesn't move as the card widens. */
 const AudienceRouter = () => (
-  <section className="bg-[#FCFCFD] pt-20 md:pt-28">
-    <div className={HOME_WRAP}>
-      <div className="mx-auto max-w-3xl text-center">
-        <h2
-          className="font-heading text-[clamp(2.1rem,3.6vw,3.5rem)] font-light text-[#222222]"
-          style={{ lineHeight: 1.12, letterSpacing: "-0.01em", textWrap: "balance" }}
-        >
-          One platform,
-          <span className="block text-[#138F8B]">for the attorney and the family.</span>
-        </h2>
-        <p className="mx-auto mt-5 max-w-[560px] text-[16px] text-gray-600" style={{ lineHeight: 1.5 }}>
-          Attorneys run every client relationship from one place. Clients and the people they name get a plan they understand, shared on their terms.
-        </p>
-      </div>
+  <section className="bg-[#FCFCFD] pt-[var(--hv-lg)]">
+    <div className="hv-wrap hv-grid">
+      <div className="hv-content">
+        <div className="col-span-full flex flex-col gap-[var(--hv-lg)]">
+          <div className="flex flex-col items-center gap-[var(--hv-sm)] text-center">
+            <h2 className="hv-h2 font-heading font-light text-[#222222]">
+              One platform, <span className="text-[#138F8B]">for the attorney and the family.</span>
+            </h2>
+            <p className="hv-body-2 max-w-[560px] text-gray-600">
+              Attorneys run every client relationship from one place. Clients and the people they name get a plan they understand, shared on their terms.
+            </p>
+          </div>
 
-      <div className="aud-row mx-auto mt-12 flex max-w-[1370px] flex-col gap-4 md:mt-20 md:aspect-[2/1] md:flex-row md:gap-5 xl:w-[calc((100%-220px)/12*10+180px)]">
-        {AUDIENCES.map((a) => (
-          <Link
-            key={a.to}
-            to={a.to}
-            className="aud-card group relative flex aspect-[3/4] max-h-[520px] flex-1 flex-col overflow-hidden rounded-xl text-white md:aspect-auto md:max-h-none"
-          >
-            {/* The print keeps its width as the card grows, so the photo never re-crops mid-hover */}
-            <div className="absolute inset-y-0 left-0 aspect-[5/4] h-full min-w-full">
-              <img src={a.image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-            </div>
-            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
-            <div className="relative flex flex-col items-start gap-4 px-7 pt-7 md:px-10 md:pt-10">
-              <h3 className="whitespace-pre-line font-heading text-[clamp(1.6rem,2.3vw,2.25rem)] font-normal md:max-w-[320px]" style={{ lineHeight: 1.12 }}>
-                {a.title}
-              </h3>
-              <p className="max-w-[320px] text-[15px] text-white/85 md:text-[16px]" style={{ lineHeight: 1.4 }}>
-                {a.body}
-              </p>
-              <span className="mt-1 inline-flex h-9 items-center rounded-md border border-white/80 px-3.5 text-[14px] font-medium transition-colors duration-200 group-hover:bg-white/10">
-                {a.cta}
-              </span>
-            </div>
-            <div className="relative mt-8 pl-7 md:mt-10 md:pl-[88px]">
-              <div className="w-max overflow-hidden rounded-tl-lg bg-white" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
-                {a.shot}
-              </div>
-            </div>
-          </Link>
-        ))}
+          <div className="aud-row flex flex-col gap-[var(--hv-sm)] overflow-hidden min-[1025px]:aspect-[2/1] min-[1025px]:flex-row">
+            {AUDIENCES.map((a, i) => (
+              <Link
+                key={a.to}
+                to={a.to}
+                className="aud-card group relative flex aspect-[3/4] max-h-[500px] flex-1 flex-col overflow-hidden rounded-[8px] text-white min-[1025px]:aspect-auto min-[1025px]:max-h-none"
+              >
+                <div className={`absolute inset-0 min-[1025px]:aspect-[5/4] ${i === 0 ? "min-[1025px]:right-auto" : "min-[1025px]:left-auto"}`}>
+                  <img src={a.image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+                </div>
+                <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+                <div className="relative flex flex-col items-start gap-[var(--hv-sm)] px-[var(--hv-md)] pt-[var(--hv-md)]">
+                  <h3 className="hv-h3 font-heading font-normal min-[1025px]:max-w-[420px]">{a.title}</h3>
+                  <p className="hv-body-2 max-w-[480px] text-white/85 min-[1025px]:max-w-[300px]">{a.body}</p>
+                  <span className="inline-flex h-8 w-max items-center rounded-[4px] border border-white/80 px-3 text-[13px] font-medium transition-colors duration-300 group-hover:bg-white/10">
+                    {a.cta}
+                  </span>
+                </div>
+                <div className="relative mt-[var(--hv-md)] pl-[var(--hv-md)]">
+                  <div className="w-max overflow-hidden rounded-tl-[8px] bg-white min-[1025px]:ml-12" style={{ boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)" }}>
+                    {a.shot}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -872,25 +869,23 @@ const Home = () => {
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
 
-      {/* Hero, laid out like harvey.ai's: the headline on the left, the
-          sentence and the one button on the right, bottoms aligned */}
-      <section className="w-full bg-[#FCFCFD] pt-[calc(72px+env(safe-area-inset-top)+40px)] md:pt-[calc(72px+72px)] lg:pt-[calc(72px+80px)]">
-        <div className={HOME_WRAP}>
-          <div className="enter grid gap-y-8 lg:grid-cols-12 lg:items-end lg:gap-x-[18px] xl:gap-x-5">
-            <h1
-              className="font-heading text-[clamp(2.4rem,4vw,4.5rem)] font-light text-[#222222] lg:col-span-7 xl:col-span-6 xl:col-start-2"
-              style={{ lineHeight: 1.1, letterSpacing: "-0.0125em" }}
-            >
+      {/* Hero, on harvey.ai's grid (.hv-* in index.css): the headline on the
+          left half; from 1025px the sentence and the one button sit in the
+          right half with their bottom on the headline's last line. */}
+      <section className="w-full bg-[#FCFCFD] pt-[calc(72px+env(safe-area-inset-top)+var(--hv-lg))]">
+        <div className="hv-wrap hv-grid">
+          <div className="hv-content enter">
+            <h1 className="hv-h1 col-span-full font-heading font-light text-[#222222] min-[1025px]:col-span-3 min-[1445px]:col-span-6">
               <span className="block">Ensure your clients</span>
               <HeroRotator />
             </h1>
-            <div className="lg:col-span-4 lg:col-start-9 lg:pb-2 xl:col-start-8">
-              <p className="max-w-[460px] text-[17px] text-gray-600 md:text-[19px]" style={{ lineHeight: 1.4 }}>
+            <div className="col-span-full mt-[var(--hv-md)] flex flex-col items-start gap-[var(--hv-lg)] min-[1025px]:col-span-3 min-[1025px]:col-start-4 min-[1025px]:mb-[var(--hv-xs)] min-[1025px]:mt-0 min-[1025px]:gap-[var(--hv-md)] min-[1025px]:self-end min-[1445px]:col-span-4 min-[1445px]:col-start-7">
+              <p className="hv-body-1 max-w-[560px] text-gray-600 min-[1025px]:max-w-none" style={{ textWrap: "pretty" }}>
                 Modernize your practice with our all-in-one platform purpose-built for estate planning attorneys and the clients they serve.
               </p>
               <Link
                 to="/request-access"
-                className="press mt-8 inline-flex h-12 items-center justify-center rounded-md bg-[#128F8B] px-6 text-[15.5px] font-medium text-white hover:bg-[#0C7370] md:mt-10"
+                className="press inline-flex h-12 w-max items-center justify-center rounded-[4px] bg-[#128F8B] px-5 text-[15px] font-medium text-white transition-colors duration-300 hover:bg-[#0C7370]"
                 style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
                 data-hero-demo-button
               >
@@ -898,24 +893,33 @@ const Home = () => {
               </Link>
             </div>
           </div>
-          <div className="mt-12 md:mt-16 lg:mt-20">
-            <HeroShot />
-          </div>
+        </div>
+        <div className="hv-wrap mt-[var(--hv-lg)]">
+          <HeroShot />
         </div>
       </section>
 
-      {/* As seen in: Yahoo Finance as on the live site, and the two linked articles */}
-      <section className="bg-[#FCFCFD] pt-16 md:pt-24">
-        <div className={HOME_WRAP}>
-          <div className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">As seen in</div>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 md:gap-x-14">
-            <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-5 w-auto opacity-55 grayscale md:h-6" />
-            <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity hover:opacity-90">
-              <img src="/press-business-insider.svg" alt="Business Insider" className="h-6 w-auto md:h-7" />
-            </a>
-            <a href="https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity hover:opacity-90">
-              <img src="/press-usa-today.svg" alt="USA Today" className="h-5 w-auto md:h-6" />
-            </a>
+      {/* As seen in, set like harvey.ai's customer-logo band: a centred
+          heading, then the logos in cells the size of Harvey's (a sixth of the
+          measure, 96px tall). Yahoo Finance as on the live site, and the two
+          linked articles. */}
+      <section className="bg-[#FCFCFD] py-[var(--hv-xl)]">
+        <div className="hv-wrap hv-grid">
+          <div className="hv-content">
+            <div className="col-span-full flex flex-col items-center gap-[var(--hv-lg)]">
+              <h2 className="hv-h3 text-center font-heading font-light text-[#222222]">As seen in</h2>
+              <div className="grid w-full grid-cols-3 min-[1025px]:w-1/2">
+                <div className="flex h-16 items-center justify-center min-[1025px]:h-24">
+                  <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-auto max-h-7 w-auto max-w-[66%] opacity-55 grayscale" />
+                </div>
+                <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="flex h-16 items-center justify-center opacity-55 grayscale transition-opacity duration-300 hover:opacity-90 min-[1025px]:h-24">
+                  <img src="/press-business-insider.svg" alt="Business Insider" className="h-auto max-h-9 w-auto max-w-[66%]" />
+                </a>
+                <a href="https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/" target="_blank" rel="noopener noreferrer" className="flex h-16 items-center justify-center opacity-55 grayscale transition-opacity duration-300 hover:opacity-90 min-[1025px]:h-24">
+                  <img src="/press-usa-today.svg" alt="USA Today" className="h-auto max-h-7 w-auto max-w-[66%]" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -941,53 +945,38 @@ const Home = () => {
 
       <SecurityBand />
 
-      {/* Our commitment to lawyers — the Golden Gate print fills the rounded
-          box; a smaller white box floats over it and carries the content */}
-      <section className="bg-white py-10 md:py-16">
-        <div className="container mx-auto max-w-7xl px-4 md:px-8">
-          <div className="relative overflow-hidden rounded-3xl">
-            <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
-            <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.15)" }} />
-            <div className="relative z-10 p-6 md:p-14 lg:p-16">
-              <div className="mx-auto max-w-5xl rounded-2xl bg-white p-8 md:p-12" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
-          <div className="md:grid md:grid-cols-[1.55fr_1fr] md:gap-14 items-center">
-            <div>
-              <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">A note from our founder</div>
-              <blockquote className="mt-5 font-heading text-[17px] md:text-[19px] leading-relaxed text-[#222222]">
-                <p>
-                  "Estate attorneys bring judgment, discretion, and decades of earned trust. Technology brings access, continuity, and permanence. Together, they change what an estate plan can do for the people it was written for.
-                </p>
-                <p className="mt-4">
-                  Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.
-                </p>
-                <p className="mt-4">
-                  We're building more than a product. Alongside estate attorneys, we're setting a new standard for how plans are signed, stored, and carried forward: a future where families are never left guessing, and every attorney is free to do what they do best."
-                </p>
-              </blockquote>
-            </div>
-            <div className="mt-10 flex flex-col items-center text-center md:mt-0">
-              <div className="h-[72px] w-[72px] overflow-hidden rounded-full bg-gray-200">
+      {/* The founder's quote, set on harvey.ai's QuoteCarouselSection: a
+          square portrait on the left, the quote in heading-3 on the right,
+          centred on the portrait; a slightly deeper ground than the page.
+          The first line is the one from the careers page; the rest is from
+          the founder's note it replaces. The photo is the live headshot,
+          cropped square. */}
+      <section className="bg-[#F1F4F7] pb-[var(--hv-lg)] pt-[var(--hv-xl)]">
+        <div className="hv-wrap hv-grid">
+          <div className="hv-content">
+            <figure className="col-span-full grid grid-cols-2 gap-[var(--hv-lg)] min-[1025px]:grid-cols-6 min-[1025px]:gap-[var(--hv-sm)] min-[1445px]:grid-cols-10">
+              <div className="col-span-2 min-[1025px]:col-span-3 min-[1445px]:col-span-4">
                 <img
-                  src="/Burlacoff Headshot.svg"
-                  alt="Aaron Burlacoff"
-                  className="h-full w-full object-cover"
-                  style={{ objectPosition: "center 25%", transform: "scale(1.7)", transformOrigin: "center center" }}
+                  src="/founder-aaron-burlacoff.jpg"
+                  alt="Aaron Burlacoff, founder and CEO of Willow"
+                  className="aspect-square w-full rounded-[8px] object-cover"
+                  loading="lazy"
                 />
               </div>
-              <div className="mt-4 text-[17px] font-semibold text-[#222222]">Aaron Burlacoff</div>
-              <div className="mt-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-400">Founder &amp; CEO, Willow</div>
-              <span className="my-5 block w-12 border-t border-gray-200" />
-              <Button
-                size="lg"
-                className="willow-btn h-11 px-6 text-[15px] font-medium"
-                onClick={() => navigate("/request-access")}
-              >
-                Request a demo
-              </Button>
-            </div>
-          </div>
+              <div className="col-span-2 flex flex-col justify-center gap-10 min-[1025px]:col-span-3 min-[1025px]:pl-4 min-[1445px]:col-span-5 min-[1445px]:col-start-6 min-[1445px]:pl-0">
+                <blockquote className="hv-h3 font-heading font-light text-[#222222]" style={{ textWrap: "pretty" }}>
+                  <span className="-ml-[0.45em]">“</span>Estate plans shouldn't live in binders. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.”
+                </blockquote>
+                <figcaption>
+                  <p className="hv-body-1 font-medium text-[#222222]">Aaron Burlacoff</p>
+                  <p className="hv-body-2 text-gray-600">Founder &amp; CEO, Willow</p>
+                </figcaption>
+                <Link to="/about" className="hv-body-1 group inline-flex w-max items-center gap-1.5 font-medium text-[#222222]">
+                  About Willow
+                  <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                </Link>
               </div>
-            </div>
+            </figure>
           </div>
         </div>
       </section>

@@ -19,7 +19,9 @@ import { ATTORNEY_LOGIN, CLIENT_LOGIN, DEMO_PATH, NAV, type NavLink, type NavMen
 
 const LOGO = "/lovable-uploads/0f8b3b1d-f883-4294-a922-15b61c180de1.png";
 export const HEADER_H = 72;
-const BAR_PAD = "px-5 md:px-8 lg:px-9 xl:px-10";
+/* Side padding steps with harvey.ai's breakpoints (--hv-pad in index.css):
+   28px, then 32 from 1025px, 36 from 1445px, 40 from 1730px */
+const BAR_PAD = "px-[var(--hv-pad)]";
 
 const MenuLink = ({ link, onNavigate }: { link: NavLink; onNavigate: () => void }) => {
   const inner = (
@@ -92,7 +94,7 @@ const LoginMenu = ({ open, setOpen }: { open: boolean; setOpen: (o: boolean) => 
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen(!open)}
-        className="press flex h-8 items-center gap-1 rounded-[4px] border border-[#222222] py-[7px] pl-3 pr-[7px] text-[14px] font-medium text-[#222222] transition-colors hover:bg-[#222222]/5"
+        className="press flex h-8 items-center gap-1 rounded-[4px] border border-[#222222] py-[7px] pl-3 pr-[7px] text-[14px] font-medium text-[#222222] transition-colors duration-300 hover:bg-[#222222] hover:text-white"
       >
         Log in <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
@@ -252,18 +254,19 @@ const Navbar = () => {
     >
       {/* The bar's tint and blur live on their own layer (as on harvey.ai), so
           the fixed scrim below isn't trapped inside the header */}
-      <div className={`absolute inset-0 backdrop-blur-md transition-colors duration-200 ${active || mobileOpen ? "bg-[#FCFCFD]" : "bg-[#FCFCFD]/90"}`} aria-hidden />
+      <div className={`absolute inset-0 backdrop-blur-[16px] transition-colors duration-200 ${active || mobileOpen ? "bg-[#FCFCFD]" : "bg-[#FCFCFD]/[0.72]"}`} aria-hidden />
 
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:shadow">
         Skip to content
       </a>
 
-      <div className={`relative grid h-[72px] grid-cols-[1fr_auto] items-center gap-x-6 lg:grid-cols-[1fr_auto_1fr] ${BAR_PAD}`}>
-        <Link to="/" className="flex items-center justify-self-start" aria-label="Willow home" onClick={closeAll}>
+      {/* As on harvey.ai: the logo, then the menu 32px after it, the buttons pushed right */}
+      <div className={`relative mx-auto flex h-[72px] max-w-[1920px] items-center ${BAR_PAD}`}>
+        <Link to="/" className="flex shrink-0 items-center" aria-label="Willow home" onClick={closeAll}>
           <img src={LOGO} alt="Willow" className="h-10 w-auto" />
         </Link>
 
-        <nav aria-label="Main" className="hidden h-full items-stretch gap-6 whitespace-nowrap lg:flex xl:gap-8">
+        <nav aria-label="Main" className="ml-8 hidden h-full items-stretch gap-6 whitespace-nowrap lg:flex xl:gap-8">
           {NAV.map((menu) => {
             const open = openMenu === menu.label;
             const dim = openMenu !== null && !open;
@@ -289,7 +292,7 @@ const Navbar = () => {
           })}
         </nav>
 
-        <div className="hidden items-center gap-4 whitespace-nowrap justify-self-end lg:flex" onMouseEnter={scheduleClose}>
+        <div className="ml-auto hidden items-center gap-4 whitespace-nowrap pl-6 lg:flex" onMouseEnter={scheduleClose}>
           <LoginMenu open={loginOpen} setOpen={setLoginOpen} />
           <Link
             to={DEMO_PATH}
@@ -301,7 +304,7 @@ const Navbar = () => {
         </div>
 
         {/* Phones and narrow windows */}
-        <div className="flex items-center gap-2 whitespace-nowrap justify-self-end lg:hidden">
+        <div className="ml-auto flex items-center gap-2 whitespace-nowrap lg:hidden">
           <Link to={DEMO_PATH} className="press hidden h-8 items-center rounded-[4px] bg-[#128F8B] px-3 text-[14px] font-medium text-white sm:flex">
             Request a demo
           </Link>
