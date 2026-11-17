@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { PageShell, WRAP, Eyebrow, TwoTone, usePageMeta } from "@/components/site/blocks";
-import { DOCS, VERSION_DATE } from "@/pages/legal/legalDocs";
+import { PageShell, WRAP, usePageMeta } from "@/components/site/blocks";
+import { DOCS } from "@/pages/legal/legalDocs";
 import { openCookieSettings } from "@/lib/consent";
 import { SUPPORT_EMAIL } from "@/content/siteMap";
 
@@ -87,23 +87,11 @@ const LegalCenterPage = () => {
   );
   return (
     <PageShell>
-      {/* Set like every other page's hero (PageHero): centred, light serif with
-          an italic teal line; no demo button here */}
-      <section className="pb-14 pt-14 md:pb-20 md:pt-20">
-        <div className={`${WRAP} enter flex flex-col items-center text-center`}>
-          <div className="mb-5">
-            <Eyebrow>Legal center</Eyebrow>
-          </div>
-          <h1 className="mb-5 max-w-4xl font-heading text-[2rem] font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
-            <TwoTone lead="Every term and policy," accent="in one place." italic />
-          </h1>
-          <p className="max-w-2xl text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em" }}>
-            Which terms apply depends on how you use Willow. Each document below is the current version, last updated {VERSION_DATE}. Earlier versions are available on request at{" "}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="font-semibold text-[#0C7370] underline underline-offset-2">
-              {SUPPORT_EMAIL}
-            </a>
-            .
-          </p>
+      {/* Just the page's name at the top, set as the eyebrow every page uses
+          (it is the page's h1) */}
+      <section className="pb-10 pt-14 md:pb-14 md:pt-20">
+        <div className={`${WRAP} enter flex justify-center`}>
+          <h1 className="font-sans text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Legal center</h1>
         </div>
       </section>
       <section className="pb-20 md:pb-28">
