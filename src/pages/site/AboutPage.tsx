@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import { PageShell, ClosingCta, SectionHead, WRAP, usePageMeta } from "@/components/site/blocks";
+import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
 
 /* About Willow, set like harvey.ai's company page: the headline, the
    founder's vision, the two guiding principles, then the coverage. Press
@@ -72,7 +72,7 @@ const AboutPage = () => {
           set large and light on the page itself, left-aligned, no photograph */}
       <section className="pt-[var(--hv-lg)]">
         <div className={`${WRAP} enter`}>
-          <p className="hv-body-2 font-medium text-[#222222]">Our vision</p>
+          <Eyebrow>Our vision</Eyebrow>
           <h1 className="hv-h1 mt-[var(--hv-md)] max-w-4xl font-heading font-light text-[#222222]">
             Estate plans shouldn't live in binders.
           </h1>
@@ -89,13 +89,13 @@ const AboutPage = () => {
             <div className="relative z-10 p-4 sm:p-6 md:p-14 lg:p-16">
               <div className="mx-auto max-w-5xl rounded-2xl bg-white p-6 sm:p-8 md:p-12" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
                 <dl className="flex flex-col">
-                  <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] text-[#222222]">{LEAD_FIGURE.label}</dt>
+                  <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] text-gray-600">{LEAD_FIGURE.label}</dt>
                   <dd className="order-1 font-heading text-[clamp(32px,8vw,120px)] font-light leading-none tracking-[-0.02em] text-[#222222]">{LEAD_FIGURE.figure}</dd>
                 </dl>
                 <dl className="mt-[var(--hv-lg)] grid gap-x-8 gap-y-8 sm:grid-cols-2 md:gap-y-[var(--hv-md)]">
                   {FIGURES.map((f) => (
                     <div key={f.figure} className="flex flex-col border-t border-gray-200 pt-[var(--hv-md)]">
-                      <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[20em] text-[#222222]">{f.label}</dt>
+                      <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[20em] text-gray-600">{f.label}</dt>
                       <dd className="hv-h1 order-1 font-heading font-light text-[#222222]">{f.figure}</dd>
                     </div>
                   ))}
@@ -106,23 +106,25 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* The vision, in Aaron's words, centred on its own right under the top */}
+      {/* The vision, in Aaron's words, centred on its own right under the
+          top. Set as the landing page sets its founder quote: light serif,
+          then the name and "Founder & CEO, Willow" in the body sizes. */}
       <section className="pt-[var(--hv-xl)]">
         <div className={WRAP}>
-        <figure className="mx-auto max-w-3xl text-center">
-          <blockquote className="font-heading text-[1.25rem] leading-relaxed text-[#222222] md:text-[1.55rem]" style={{ textWrap: "balance" }}>
-            “Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.”
-          </blockquote>
-          <figcaption className="mt-8 flex items-center justify-center gap-3">
-            <span className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-200">
-              <img src="/Burlacoff Headshot.svg" alt="" className="h-full w-full object-cover" style={{ objectPosition: "center 25%", transform: "scale(1.7)" }} />
-            </span>
-            <span className="text-left">
-              <span className="block text-[15px] font-semibold text-[#222222]">Aaron Burlacoff</span>
-              <span className="block text-[12px] font-semibold uppercase tracking-[0.12em] text-gray-400">Founder &amp; CEO</span>
-            </span>
-          </figcaption>
-        </figure>
+          <figure className="mx-auto max-w-4xl text-center">
+            <blockquote className="hv-h3 font-heading font-light text-[#222222]">
+              “Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.”
+            </blockquote>
+            <figcaption className="mt-[var(--hv-md)] flex items-center justify-center gap-3">
+              <span className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-200">
+                <img src="/Burlacoff Headshot.svg" alt="" className="h-full w-full object-cover" style={{ objectPosition: "center 25%", transform: "scale(1.7)" }} />
+              </span>
+              <span className="text-left">
+                <span className="hv-body-1 block font-medium text-[#222222]">Aaron Burlacoff</span>
+                <span className="hv-body-2 block text-gray-600">Founder &amp; CEO, Willow</span>
+              </span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
@@ -130,7 +132,7 @@ const AboutPage = () => {
           ruled column each, a large light serif line, a sentence */}
       <section className="pb-[var(--hv-xl)] pt-[var(--hv-xl)]">
         <div className={WRAP}>
-          <h2 className="hv-body-2 font-sans font-medium text-[#222222]">Two guiding principles behind every decision we make</h2>
+          <h2 className="font-sans text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Two guiding principles behind every decision we make</h2>
           <div className="mt-[var(--hv-md)] grid gap-y-12 md:grid-cols-2 md:gap-x-12">
             {BELIEFS.map((b) => (
               <div key={b.title} className="border-t border-gray-300 pt-[var(--hv-md)]">
