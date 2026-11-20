@@ -38,25 +38,27 @@ const BELIEFS = [
 ];
 
 /* The figures, as on harvey.ai's company page, all from the Horizon deck
-   (Oct 2026): $124 trillion large across the top (Cerulli Associates), then
-   four stats in two columns of two rows. 72% and 52% are cited below (the
-   deck's 71% is 72% in its source). 89% and 46% have no primary source we
-   could find (the 89% poll measured something else) and are on the page
-   because Aaron chose to keep them, Nov 19 2026. The deck's 18 e-will states
-   and 10 years between updates were dropped at his request. */
-const LEAD_FIGURE = { figure: "$124 trillion", label: "is set to change hands" };
+   (Oct 2026): $124 trillion large across the top, then four stats in two
+   columns of two rows. No sources line on the page (Aaron's call, Nov 19
+   2026); where each one comes from, for whoever asks:
+   - $124 trillion through 2048: Cerulli Associates, Dec 2024,
+     https://www.cerulli.com/press-releases/cerulli-anticipates-124-trillion-in-wealth-will-transfer-through-2048
+   - 72%: USLegalWills.com survey, June 2016 (the deck's 71% is 72% there),
+     https://prnewswire.com/news-releases/uslegalwills-survey-reveals-that-72-of-americans-do-not-have-an-up-to-date-will-300290732.html
+   - 52%: Caring.com survey, March 2015,
+     https://www.caring.com/caregivers/estate-planning/wills-survey/2015-survey
+   - 89% and 46%: no primary source found (the 89% traces to a 2026
+     ClearEstate poll of Canadians that measured something else); on the
+     page because Aaron chose to keep them.
+   The deck's 18 e-will states and 10 years between updates were dropped at
+   his request. */
+const LEAD_FIGURE = { figure: "$124 trillion", label: "is set to change hands from one generation to the next" };
 
 const FIGURES = [
   { figure: "89%", label: "of executors aren't prepared when the time comes" },
   { figure: "52%", label: "of Americans don't know where their parents' estate plan is" },
   { figure: "46%", label: "of executors don't know they've been named" },
   { figure: "72%", label: "of Americans don't have an up-to-date will" },
-];
-
-const FIGURE_SOURCES = [
-  { label: "Cerulli Associates, 2024", href: "https://www.cerulli.com/press-releases/cerulli-anticipates-124-trillion-in-wealth-will-transfer-through-2048" },
-  { label: "USLegalWills.com survey, 2016", href: "https://prnewswire.com/news-releases/uslegalwills-survey-reveals-that-72-of-americans-do-not-have-an-up-to-date-will-300290732.html" },
-  { label: "Caring.com survey, 2015", href: "https://www.caring.com/caregivers/estate-planning/wills-survey/2015-survey" },
 ];
 
 const AboutPage = () => {
@@ -93,18 +95,6 @@ const AboutPage = () => {
               ))}
             </dl>
           </div>
-          <p className="mt-[var(--hv-md)] text-[12.5px] text-gray-500">
-            Sources:{" "}
-            {FIGURE_SOURCES.map((s, i) => (
-              <React.Fragment key={s.href}>
-                {i > 0 && "; "}
-                <a href={s.href} target="_blank" rel="noopener noreferrer" className="underline decoration-gray-300 underline-offset-2 hover:text-gray-700">
-                  {s.label}
-                </a>
-              </React.Fragment>
-            ))}
-            .
-          </p>
         </div>
       </section>
 
