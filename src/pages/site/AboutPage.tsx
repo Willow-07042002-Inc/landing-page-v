@@ -36,6 +36,37 @@ const BELIEFS = [
   },
 ];
 
+/* The problem, one side each. The families' numbers are from named surveys,
+   cited under the section. The deck's other figures (46% of executors don't
+   know they've been named, 89% of executors unprepared, 10 years between
+   updates) have no source that says that, so they stay off the site. The
+   attorneys' side is told in words: there is no published figure for it. */
+const PROBLEMS = [
+  {
+    eyebrow: "For families",
+    title: "You walk away with a binder.",
+    body: "The plan is signed, printed and put on a shelf. Life moves on, the plan rarely does, and when it matters most the family is left searching for it.",
+    points: [
+      { big: "72%", text: "of Americans don't have an up-to-date will." },
+      { big: "52%", text: "of adult children don't know where their parents keep their estate documents." },
+    ],
+  },
+  {
+    eyebrow: "For attorneys",
+    title: "The relationship ends at signing.",
+    body: "Estate planning is still a one-time transaction. The attorney collects a fee, the client goes quiet, and by the time the attorney is ready to retire, the relationships that built the practice are long gone.",
+    points: [
+      { big: "One fee", text: "collected at signing, then years of silence." },
+      { big: "Nothing to sell", text: "at exit, because the client relationships faded long ago." },
+    ],
+  },
+];
+
+const PROBLEM_SOURCES = [
+  { label: "USLegalWills.com survey, 2016", href: "https://prnewswire.com/news-releases/uslegalwills-survey-reveals-that-72-of-americans-do-not-have-an-up-to-date-will-300290732.html" },
+  { label: "Caring.com survey, 2015", href: "https://www.caring.com/caregivers/estate-planning/wills-survey/2015-survey" },
+];
+
 const AboutPage = () => {
   usePageMeta(
     "About Willow | The Estate Planning Platform for Attorneys",
@@ -78,6 +109,53 @@ const AboutPage = () => {
         </div>
       </section>
 
+      {/* The problem: what a signed plan leaves each side with */}
+      <section className="bg-[#062D2C] py-16 text-white md:py-24">
+        <div className={WRAP}>
+          <SectionHead
+            light
+            eyebrow="The problem"
+            title={
+              <>
+                A plan gets signed,
+                <span className="block text-[#4DB8B3]">then everyone walks away.</span>
+              </>
+            }
+          />
+          {/* Side by side, each column shares the row grid (subgrid), so the
+              two columns' points line up even when one paragraph runs longer */}
+          <div className="mx-auto mt-12 grid max-w-5xl gap-x-16 gap-y-12 md:grid-cols-2 md:grid-rows-[auto_auto_auto] md:gap-y-0">
+            {PROBLEMS.map((p) => (
+              <div key={p.title} className="grid gap-y-6 border-t border-white/25 pt-6 md:row-span-3 md:grid-rows-subgrid">
+                <div className="md:pb-2">
+                  <Eyebrow light>{p.eyebrow}</Eyebrow>
+                  <h3 className="mt-3 font-heading text-[1.4rem] font-bold leading-snug text-white">{p.title}</h3>
+                  <p className="mt-3 text-[16.5px] leading-relaxed text-white/75">{p.body}</p>
+                </div>
+                {p.points.map((pt) => (
+                  <div key={pt.big} className="border-t border-white/15 pt-5">
+                    <div className="font-heading text-[2.25rem] font-bold leading-none text-[#4DB8B3] md:text-[2.75rem]">{pt.big}</div>
+                    <p className="mt-2 text-[15.5px] leading-relaxed text-white/80">{pt.text}</p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <p className="mx-auto mt-12 max-w-5xl text-[12.5px] text-white/50">
+            Sources:{" "}
+            {PROBLEM_SOURCES.map((s, i) => (
+              <React.Fragment key={s.href}>
+                {i > 0 && "; "}
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className="underline decoration-white/30 underline-offset-2 hover:text-white/80">
+                  {s.label}
+                </a>
+              </React.Fragment>
+            ))}
+            .
+          </p>
+        </div>
+      </section>
+
       {/* What we believe */}
       <section className="bg-white py-16 md:py-24">
         <div className={WRAP}>
@@ -104,9 +182,6 @@ const AboutPage = () => {
             <blockquote className="mt-6 space-y-5 font-heading text-[1.2rem] leading-relaxed text-[#222222] md:text-[1.35rem]">
               <p>
                 Estate attorneys bring judgment, discretion, and decades of earned trust. Technology brings access, continuity, and permanence. Together, they change what an estate plan can do for the people it was written for.
-              </p>
-              <p>
-                A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.
               </p>
             </blockquote>
             <div className="mt-8">
@@ -135,6 +210,22 @@ const AboutPage = () => {
               </a>
             ))}
           </div>
+
+          {/* The vision, in Aaron's words, set on its own under the coverage */}
+          <figure className="mx-auto mt-16 max-w-3xl text-center md:mt-24">
+            <blockquote className="font-heading text-[1.25rem] leading-relaxed text-[#222222] md:text-[1.55rem]" style={{ textWrap: "balance" }}>
+              “Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.”
+            </blockquote>
+            <figcaption className="mt-8 flex items-center justify-center gap-3">
+              <span className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-200">
+                <img src="/Burlacoff Headshot.svg" alt="" className="h-full w-full object-cover" style={{ objectPosition: "center 25%", transform: "scale(1.7)" }} />
+              </span>
+              <span className="text-left">
+                <span className="block text-[15px] font-semibold text-[#222222]">Aaron Burlacoff</span>
+                <span className="block text-[12px] font-semibold uppercase tracking-[0.12em] text-gray-400">Founder &amp; CEO</span>
+              </span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
