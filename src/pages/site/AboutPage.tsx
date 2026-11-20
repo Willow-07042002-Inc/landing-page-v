@@ -37,17 +37,21 @@ const BELIEFS = [
   },
 ];
 
-/* The figures row, as on harvey.ai's company page: the stats from the
-   Horizon deck (Oct 2026) that a primary source states, each cited below the
-   row. The deck's 71% is 72% in its source. Left off because no source says
-   them: 46% of executors don't know they've been named, 89% of executors
-   aren't prepared (the poll behind it measured something else), 10 years
-   between plan updates, and 18 e-will states (sources count about 15 plus
-   D.C.). */
+/* The figures, as on harvey.ai's company page, all from the Horizon deck
+   (Oct 2026): the industry on the first line (three wide), families on the
+   second (four). $124T, 72% and 52% are cited below the row (the deck's 71%
+   is 72% in its source). 18, 10 years, 89% and 46% have no primary source
+   we could find (sources count about 15 e-will states plus D.C.; the 89%
+   poll measured something else) and are on the page because Aaron chose to
+   keep them, Nov 19 2026. */
 const FIGURES = [
-  { figure: "$124T", label: "in U.S. wealth set to change hands by 2048" },
-  { figure: "72%", label: "of Americans don't have an up-to-date will" },
+  { figure: "$124T", label: "in U.S. wealth set to change hands by 2048", wide: true },
+  { figure: "18", label: "states and jurisdictions that allow digitally signed wills", wide: true },
+  { figure: "10 years", label: "on average between estate plan updates", wide: true },
+  { figure: "89%", label: "of executors aren't prepared when the time comes" },
   { figure: "52%", label: "of Americans don't know where their parents' estate plan is" },
+  { figure: "46%", label: "of executors don't know they've been named" },
+  { figure: "72%", label: "of Americans don't have an up-to-date will" },
 ];
 
 const FIGURE_SOURCES = [
@@ -72,10 +76,11 @@ const AboutPage = () => {
             Estate plans shouldn't live in binders.
           </h1>
 
-          {/* Three figures, each under a thin rule, as on Harvey's page */}
-          <dl className="mt-[var(--hv-xl)] grid gap-y-10 md:grid-cols-3 md:gap-x-4">
+          {/* Each figure under a thin rule, as on Harvey's page: three across
+              on the first line, four on the second */}
+          <dl className="mt-[var(--hv-xl)] grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-12 md:gap-y-[var(--hv-lg)]">
             {FIGURES.map((f) => (
-              <div key={f.figure} className="flex flex-col border-t border-gray-300 pt-[var(--hv-md)]">
+              <div key={f.figure} className={`flex flex-col border-t border-gray-300 pt-[var(--hv-md)] ${f.wide ? "md:col-span-4" : "md:col-span-3"}`}>
                 {/* dt first for screen readers; the figure shows on top */}
                 <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[22em] text-[#222222]">{f.label}</dt>
                 <dd className="hv-h1 order-1 font-heading font-light text-[#222222]">{f.figure}</dd>
