@@ -2,8 +2,9 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
 
-/* About Willow: why it exists, its two guiding principles, who's building it,
-   and the coverage it has had. Press items link to the real articles. */
+/* About Willow: why it exists, the problem it answers, its two guiding
+   principles, and the coverage it has had, closed by the founder's vision.
+   Press items link to the real articles. */
 
 const PRESS = [
   {
@@ -167,27 +168,6 @@ const AboutPage = () => {
                 <p className="mt-3 text-[16.5px] leading-relaxed text-gray-600">{b.body}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Founder */}
-      <section className="py-16 md:py-24">
-        <div className={`${WRAP} grid items-center gap-12 lg:grid-cols-[0.8fr_1.4fr] lg:gap-20`}>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gray-200">
-            <img src="/%20A%20Burlacoff%20Headshot.jpg" alt="Aaron Burlacoff, Founder and CEO of Willow" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 30%", transform: "scale(1.18)" }} />
-          </div>
-          <div>
-            <Eyebrow>A note from our founder</Eyebrow>
-            <blockquote className="mt-6 space-y-5 font-heading text-[1.2rem] leading-relaxed text-[#222222] md:text-[1.35rem]">
-              <p>
-                Estate attorneys bring judgment, discretion, and decades of earned trust. Technology brings access, continuity, and permanence. Together, they change what an estate plan can do for the people it was written for.
-              </p>
-            </blockquote>
-            <div className="mt-8">
-              <div className="text-[17px] font-semibold text-[#222222]">Aaron Burlacoff</div>
-              <div className="mt-0.5 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-gray-400">Founder &amp; CEO</div>
-            </div>
           </div>
         </div>
       </section>
