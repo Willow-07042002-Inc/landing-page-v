@@ -1,10 +1,10 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
+import { PageShell, ClosingCta, SectionHead, WRAP, usePageMeta } from "@/components/site/blocks";
 
-/* About Willow: why it exists, its two guiding principles, and the coverage
-   it has had, closed by the founder's vision.
-   Press items link to the real articles. */
+/* About Willow, set like harvey.ai's company page: the headline, the
+   founder's vision, the two guiding principles, then the coverage. Press
+   items link to the real articles. */
 
 const PRESS = [
   {
@@ -44,44 +44,47 @@ const AboutPage = () => {
   );
   return (
     <PageShell>
-      {/* Hero: a statement over a photograph */}
-      <section className="px-5 pb-6 pt-6 md:px-8">
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl">
-          <img src="/central-park.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(6,45,44,0.86) 0%, rgba(6,45,44,0.55) 60%, rgba(6,45,44,0.25) 100%)" }} />
-          <div className="enter relative px-7 py-20 md:px-16 md:py-32">
-            <Eyebrow light>About Willow</Eyebrow>
-            <h1 className="mt-5 max-w-3xl font-heading text-[2.5rem] font-bold leading-[1.1] text-white md:text-[4rem]" style={{ textWrap: "balance" }}>
-              Estate plans shouldn't live in binders.
-            </h1>
-            <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-white/85">
-              Willow is the estate planning platform for attorneys and the families they serve. We keep the plan, and the attorney who wrote it, within reach for as long as the family needs them.
-            </p>
-          </div>
+      {/* Top, as on harvey.ai's company page: a small label and the headline
+          set large and light on the page itself, left-aligned, no photograph */}
+      <section className="pt-[var(--hv-lg)]">
+        <div className={`${WRAP} enter`}>
+          <p className="hv-body-2 font-medium text-[#222222]">About Willow</p>
+          <h1 className="hv-h1 mt-[var(--hv-md)] max-w-4xl font-heading font-light text-[#222222]">
+            Estate plans shouldn't live in binders.
+          </h1>
         </div>
       </section>
 
-      {/* Why we started */}
-      <section className="py-16 md:py-24">
-        <div className={`${WRAP} grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:gap-20`}>
-          <SectionHead center={false} eyebrow="Why we started" title="When it mattered most," accent="we couldn't find the will." />
-          <div className="space-y-5 text-[17.5px] leading-relaxed text-gray-700">
-            <p>
-              Willow began after a difficult family experience: when it mattered most, we couldn't access a loved one's will. The plan existed. The family simply couldn't reach it, or the people who knew it.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* What we believe */}
-      <section className="bg-white py-16 md:py-24">
+      {/* The vision, in Aaron's words, centred on its own right under the top */}
+      <section className="pt-[var(--hv-xl)]">
         <div className={WRAP}>
-          <SectionHead eyebrow="What we believe" title="Two guiding principles behind" accent="every decision we make." />
-          <div className="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-2 md:gap-16">
+        <figure className="mx-auto max-w-3xl text-center">
+          <blockquote className="font-heading text-[1.25rem] leading-relaxed text-[#222222] md:text-[1.55rem]" style={{ textWrap: "balance" }}>
+            “Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.”
+          </blockquote>
+          <figcaption className="mt-8 flex items-center justify-center gap-3">
+            <span className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-200">
+              <img src="/Burlacoff Headshot.svg" alt="" className="h-full w-full object-cover" style={{ objectPosition: "center 25%", transform: "scale(1.7)" }} />
+            </span>
+            <span className="text-left">
+              <span className="block text-[15px] font-semibold text-[#222222]">Aaron Burlacoff</span>
+              <span className="block text-[12px] font-semibold uppercase tracking-[0.12em] text-gray-400">Founder &amp; CEO</span>
+            </span>
+          </figcaption>
+        </figure>
+        </div>
+      </section>
+
+      {/* Then the two guiding principles, set like Harvey's figures row: a
+          ruled column each, a large light serif line, a sentence */}
+      <section className="pb-[var(--hv-xl)] pt-[var(--hv-xl)]">
+        <div className={WRAP}>
+          <h2 className="hv-body-2 font-sans font-medium text-[#222222]">Two guiding principles behind every decision we make</h2>
+          <div className="mt-[var(--hv-md)] grid gap-y-12 md:grid-cols-2 md:gap-x-12">
             {BELIEFS.map((b) => (
-              <div key={b.title} className="border-t-2 border-[#222222] pt-5">
-                <h3 className="font-heading text-xl font-bold leading-snug text-[#222222]">{b.title}</h3>
-                <p className="mt-3 text-[16.5px] leading-relaxed text-gray-600">{b.body}</p>
+              <div key={b.title} className="border-t border-gray-300 pt-[var(--hv-md)]">
+                <h3 className="hv-h2 font-heading font-light text-[#222222]">{b.title}</h3>
+                <p className="hv-body-1 mt-[var(--hv-sm)] max-w-[30em] text-gray-600">{b.body}</p>
               </div>
             ))}
           </div>
@@ -106,22 +109,6 @@ const AboutPage = () => {
               </a>
             ))}
           </div>
-
-          {/* The vision, in Aaron's words, set on its own under the coverage */}
-          <figure className="mx-auto mt-16 max-w-3xl text-center md:mt-24">
-            <blockquote className="font-heading text-[1.25rem] leading-relaxed text-[#222222] md:text-[1.55rem]" style={{ textWrap: "balance" }}>
-              “Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.”
-            </blockquote>
-            <figcaption className="mt-8 flex items-center justify-center gap-3">
-              <span className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-200">
-                <img src="/Burlacoff Headshot.svg" alt="" className="h-full w-full object-cover" style={{ objectPosition: "center 25%", transform: "scale(1.7)" }} />
-              </span>
-              <span className="text-left">
-                <span className="block text-[15px] font-semibold text-[#222222]">Aaron Burlacoff</span>
-                <span className="block text-[12px] font-semibold uppercase tracking-[0.12em] text-gray-400">Founder &amp; CEO</span>
-              </span>
-            </figcaption>
-          </figure>
         </div>
       </section>
 
