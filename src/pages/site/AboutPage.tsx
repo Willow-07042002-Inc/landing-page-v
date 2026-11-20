@@ -2,8 +2,8 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
 
-/* About Willow: why it exists, the problem it answers, its two guiding
-   principles, and the coverage it has had, closed by the founder's vision.
+/* About Willow: why it exists, its two guiding principles, and the coverage
+   it has had, closed by the founder's vision.
    Press items link to the real articles. */
 
 const PRESS = [
@@ -29,43 +29,12 @@ const PRESS = [
 const BELIEFS = [
   {
     title: "Attorneys stay at the center.",
-    body: "Willow keeps the attorney at the heart of the planning experience, so the client relationship doesn't end when the binder closes. We automate check-ins and make it easy for clients to book a call when it's time to update their plan. Attorneys approve every summary their clients see, and every attorney on Willow has a say in what we build next.",
+    body: "Willow keeps the attorney at the heart of the planning experience. We automate check-ins, make it easy for clients to book a call when it's time to update their plan, and attorneys approve every summary their clients see.",
   },
   {
     title: "Clients stay in control.",
-    body: "Clients get one secure place to keep everything their executors and family will need: a visual summary of their plan, secure access to their documents, and the ability to share their plan and supporting information, like finances and health, with their team. They decide who sees what, and when, so everyone is prepared to step in when needed.",
+    body: "Clients get one secure place for everything their executors and family will need: a visual summary of their plan and their documents. They decide who sees what, and when.",
   },
-];
-
-/* The problem, one side each. The families' numbers are from named surveys,
-   cited under the section. The deck's other figures (46% of executors don't
-   know they've been named, 89% of executors unprepared, 10 years between
-   updates) have no source that says that, so they stay off the site. The
-   attorneys' side is told in words: there is no published figure for it. */
-const PROBLEMS = [
-  {
-    eyebrow: "For families",
-    title: "You walk away with a binder.",
-    body: "The plan is signed, printed and put on a shelf. Life moves on, the plan rarely does, and when it matters most the family is left searching for it.",
-    points: [
-      { big: "72%", text: "of Americans don't have an up-to-date will." },
-      { big: "52%", text: "of adult children don't know where their parents keep their estate documents." },
-    ],
-  },
-  {
-    eyebrow: "For attorneys",
-    title: "The relationship ends at signing.",
-    body: "Estate planning is still a one-time transaction. The attorney collects a fee, the client goes quiet, and by the time the attorney is ready to retire, the relationships that built the practice are long gone.",
-    points: [
-      { big: "One fee", text: "collected at signing, then years of silence." },
-      { big: "Nothing to sell", text: "at exit, because the client relationships faded long ago." },
-    ],
-  },
-];
-
-const PROBLEM_SOURCES = [
-  { label: "USLegalWills.com survey, 2016", href: "https://prnewswire.com/news-releases/uslegalwills-survey-reveals-that-72-of-americans-do-not-have-an-up-to-date-will-300290732.html" },
-  { label: "Caring.com survey, 2015", href: "https://www.caring.com/caregivers/estate-planning/wills-survey/2015-survey" },
 ];
 
 const AboutPage = () => {
@@ -100,60 +69,7 @@ const AboutPage = () => {
             <p>
               Willow began after a difficult family experience: when it mattered most, we couldn't access a loved one's will. The plan existed. The family simply couldn't reach it, or the people who knew it.
             </p>
-            <p>
-              That happens every day. A plan is signed, placed in a binder, and the relationship with the attorney who wrote it goes quiet. Years later the family is left searching for documents, and for someone who can explain them.
-            </p>
-            <p>
-              We're building Willow so that doesn't happen: the plan stays current and understood, the people named in it are prepared, and the attorney remains at the heart of it as life moves forward.
-            </p>
           </div>
-        </div>
-      </section>
-
-      {/* The problem: what a signed plan leaves each side with */}
-      <section className="bg-[#062D2C] py-16 text-white md:py-24">
-        <div className={WRAP}>
-          <SectionHead
-            light
-            eyebrow="The problem"
-            title={
-              <>
-                A plan gets signed,
-                <span className="block text-[#4DB8B3]">then everyone walks away.</span>
-              </>
-            }
-          />
-          {/* Side by side, each column shares the row grid (subgrid), so the
-              two columns' points line up even when one paragraph runs longer */}
-          <div className="mx-auto mt-12 grid max-w-5xl gap-x-16 gap-y-12 md:grid-cols-2 md:grid-rows-[auto_auto_auto] md:gap-y-0">
-            {PROBLEMS.map((p) => (
-              <div key={p.title} className="grid gap-y-6 border-t border-white/25 pt-6 md:row-span-3 md:grid-rows-subgrid">
-                <div className="md:pb-2">
-                  <Eyebrow light>{p.eyebrow}</Eyebrow>
-                  <h3 className="mt-3 font-heading text-[1.4rem] font-bold leading-snug text-white">{p.title}</h3>
-                  <p className="mt-3 text-[16.5px] leading-relaxed text-white/75">{p.body}</p>
-                </div>
-                {p.points.map((pt) => (
-                  <div key={pt.big} className="border-t border-white/15 pt-5">
-                    <div className="font-heading text-[2.25rem] font-bold leading-none text-[#4DB8B3] md:text-[2.75rem]">{pt.big}</div>
-                    <p className="mt-2 text-[15.5px] leading-relaxed text-white/80">{pt.text}</p>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <p className="mx-auto mt-12 max-w-5xl text-[12.5px] text-white/50">
-            Sources:{" "}
-            {PROBLEM_SOURCES.map((s, i) => (
-              <React.Fragment key={s.href}>
-                {i > 0 && "; "}
-                <a href={s.href} target="_blank" rel="noopener noreferrer" className="underline decoration-white/30 underline-offset-2 hover:text-white/80">
-                  {s.label}
-                </a>
-              </React.Fragment>
-            ))}
-            .
-          </p>
         </div>
       </section>
 
