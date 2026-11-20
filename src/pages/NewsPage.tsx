@@ -1,45 +1,12 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import NewsCard from "@/components/site/NewsCard";
+import { NEWS_ARTICLES } from "@/content/news";
 
-/* News & writing — a simple dated list that grows one entry per article.
-   Each item links out to the piece (or, later, to posts of our own). */
-const ARTICLES: {
-  outlet: string;
-  date: string;
-  title: string;
-  excerpt: string;
-  href: string;
-  image?: string;
-  logo?: string;
-  logoH?: number;
-}[] = [
-  {
-    outlet: "Business Insider",
-    logo: "/press-business-insider.svg",
-    logoH: 20,
-    date: "September 15, 2026",
-    title: "$124 Trillion Is Changing Hands. Willow Announces Pilot to Prepare Estate-Planning Attorneys for the Next Generation",
-    // The article's own description line
-    excerpt:
-      "Willow has announced a pilot program with five boutique trusts and estates firms as the company develops a digital platform designed around the evolving requirements of electronic estate planning.",
-    href: "https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412",
-    image: "/news/bi-product-full.jpg",
-  },
-  {
-    outlet: "USA Today",
-    logo: "/press-usa-today.svg",
-    logoH: 15,
-    date: "September 9, 2026",
-    title: "Digital Estate Planning Arrived Six Years Ago. The Technology Is Finally Catching Up.",
-    // The article's own opening lines
-    excerpt:
-      "A week after the funeral, the daughter calls her father's lawyer. Everyone in the family is certain there was a will. They remember the appointment. They remember him coming home and saying it was taken care of. But no one can find it.",
-    href: "https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/",
-    image: "/news/usatoday-digital-estate-planning.jpg",
-  },
-];
-
+/* News & writing — a simple dated list that grows one entry per article
+   (content/news.ts, shared with the About page). Each item links out to the
+   piece (or, later, to posts of our own). */
 const NewsPage = () => (
   <div className="min-h-screen flex flex-col bg-[#F8FAFC]" style={{ color: "#222222" }}>
     <Navbar />
@@ -58,43 +25,8 @@ const NewsPage = () => (
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {ARTICLES.map((a) => (
-              <a
-                key={a.href}
-                href={a.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
-              >
-                {a.image && (
-                  <div className="overflow-hidden" style={{ aspectRatio: "16 / 8" }}>
-                    <img src={a.image} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />
-                  </div>
-                )}
-                <div className="p-7 md:p-9">
-                <div className="flex items-center gap-3">
-                  {a.logo ? (
-                    <img src={a.logo} alt={a.outlet} style={{ height: a.logoH ?? 16 }} className="w-auto" />
-                  ) : (
-                    <span className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#0C7370]">{a.outlet}</span>
-                  )}
-                  <span className="text-[12px] font-medium text-gray-400">{a.date}</span>
-                </div>
-                <h2 className="mt-3 font-heading text-xl font-bold text-[#222222] md:text-[22px]" style={{ lineHeight: 1.35 }}>
-                  {a.title}
-                </h2>
-                <p className="mt-3 text-[15px] text-gray-600" style={{ lineHeight: 1.6 }}>
-                  {a.excerpt}
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1 text-[14px] font-semibold text-[#128F8B]">
-                  Read the article
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </span>
-                </div>
-              </a>
+            {NEWS_ARTICLES.map((a) => (
+              <NewsCard key={a.href} article={a} />
             ))}
           </div>
         </div>

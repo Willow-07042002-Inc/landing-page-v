@@ -1,41 +1,51 @@
 import React from "react";
-import { ArrowRight } from "lucide-react";
 import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
+import NewsCard from "@/components/site/NewsCard";
+import { NEWS_ARTICLES } from "@/content/news";
+import { ScaledScreen } from "@/components/product/kit";
+import { SummaryReviewScreenCropped, SUMMARY_REVIEW_CROP_HEIGHT } from "@/components/product/attorney-review";
+import { ClientShareTimingScreen } from "@/components/product/client-app";
 
 /* About Willow, set like harvey.ai's company page: the headline, the
-   founder's vision, the two guiding principles, then the coverage. Press
-   items link to the real articles. */
-
-const PRESS = [
-  {
-    outlet: "Business Insider",
-    logo: "/press-business-insider.svg",
-    title: "$124 Trillion Is Changing Hands. Willow Announces Pilot to Prepare Estate-Planning Attorneys for the Next Generation",
-    date: "September 15, 2026",
-    href: "https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412",
-  },
-  {
-    outlet: "USA Today",
-    logo: "/press-usa-today.svg",
-    title: "Digital Estate Planning Arrived Six Years Ago. The Technology Is Finally Catching Up.",
-    date: "September 9, 2026",
-    href: "https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/",
-  },
-];
+   founder's vision, the two guiding principles, then the coverage (the same
+   cards as the In the news page, from content/news.ts). */
 
 /* Willow's two guiding principles, in Aaron's own words from his emails to
    attorneys (Nov 18 "Your feedback helped build Willow", the Saratoga
-   follow-ups, the April one-liner and the Early Look emails) */
-const BELIEFS = [
+   follow-ups, the April one-liner and the Early Look emails). Each card is
+   set like the landing page's "keep your clients connected" box: a print
+   under the dark teal wash, white copy, and a real product screen rising
+   out of the bottom-right corner. The screen shows the principle at work:
+   the attorney approving a client's summary; the client choosing who sees
+   their will, and when. `crop` is where the card's window opens on the
+   screen, in screen pixels: its top-left corner (x, y) and how much of the
+   screen's width the window spans (w). */
+const BELIEFS: {
+  title: string;
+  body: string;
+  print: string;
+  screen: React.ReactNode;
+  screenH: number;
+  crop: { x: number; y: number; w: number };
+}[] = [
   {
     title: "Attorneys stay at the center.",
     body: "Willow keeps the attorney at the heart of the planning experience. We automate check-ins, make it easy for clients to book a call when it's time to update their plan, and attorneys approve every summary their clients see.",
+    print: "/nyc-skyline.jpg",
+    screen: <SummaryReviewScreenCropped />,
+    screenH: SUMMARY_REVIEW_CROP_HEIGHT,
+    crop: { x: 290, y: 0, w: 1010 },
   },
   {
     title: "Clients stay in control.",
     body: "Clients get one secure place for everything their executors and family will need: a visual summary of their plan and their documents. They decide who sees what, and when.",
+    print: "/west-side-hwy.jpg",
+    screen: <ClientShareTimingScreen />,
+    screenH: 855,
+    crop: { x: 300, y: 120, w: 920 },
   },
 ];
+
 
 /* The figures, as on harvey.ai's company page, all from the Horizon deck
    (Oct 2026): $124 trillion large across the top, then four stats in two
@@ -133,11 +143,35 @@ const AboutPage = () => {
       <section className="pb-[var(--hv-xl)] pt-[var(--hv-xl)]">
         <div className={WRAP}>
           <h2 className="font-sans text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Two guiding principles behind every decision we make</h2>
-          <div className="mt-[var(--hv-md)] grid gap-y-12 md:grid-cols-2 md:gap-x-12">
+          <div className="mt-[var(--hv-md)] grid gap-6 md:grid-cols-2">
             {BELIEFS.map((b) => (
-              <div key={b.title} className="border-t border-gray-300 pt-[var(--hv-md)]">
-                <h3 className="hv-h2 font-heading font-light text-[#222222]">{b.title}</h3>
-                <p className="hv-body-1 mt-[var(--hv-sm)] max-w-[30em] text-gray-600">{b.body}</p>
+              <div key={b.title} className="relative flex flex-col overflow-hidden rounded-3xl">
+                <img src={b.print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+                <div className="relative z-10 p-8 md:p-10 lg:p-12">
+                  <h3 className="font-heading text-2xl font-bold text-white md:text-[1.75rem] lg:text-[2rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+                    {b.title}
+                  </h3>
+                  <p className="mt-5 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>
+                    {b.body}
+                  </p>
+                </div>
+                {/* The product screen, rising out of the bottom-right corner */}
+                <div className="relative z-10 mt-auto h-[260px] sm:h-[320px] lg:h-[360px]" aria-hidden>
+                  <div className="absolute -bottom-12 -right-12 left-8 top-2 overflow-hidden rounded-tl-xl bg-white md:left-10" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
+                    <div
+                      className="absolute top-0"
+                      style={{
+                        left: `${(-b.crop.x / b.crop.w) * 100}%`,
+                        width: `${(1440 / b.crop.w) * 100}%`,
+                        aspectRatio: `1440 / ${b.screenH}`,
+                        transform: `translateY(${(-b.crop.y / b.screenH) * 100}%)`,
+                      }}
+                    >
+                      <ScaledScreen h={b.screenH}>{b.screen}</ScaledScreen>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -148,18 +182,10 @@ const AboutPage = () => {
       <section className="py-16 md:py-24">
         <div className={WRAP}>
           <SectionHead eyebrow="In the news" title="Coverage of Willow." />
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
-            {PRESS.map((p) => (
-              <a key={p.href} href={p.href} target="_blank" rel="noopener noreferrer" className="lift group flex flex-col rounded-xl border border-gray-200 bg-white p-7">
-                <img src={p.logo} alt={p.outlet} className="h-6 w-auto self-start opacity-80" />
-                <div className="mt-6 font-heading text-[1.2rem] font-bold leading-snug text-[#222222]">{p.title}</div>
-                <div className="mt-auto flex items-center justify-between pt-6 text-[14px] text-gray-500">
-                  {p.date}
-                  <span className="inline-flex items-center gap-1 font-semibold text-[#0C7370]">
-                    Read <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-                  </span>
-                </div>
-              </a>
+          {/* The same cards as the In the news page */}
+          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+            {NEWS_ARTICLES.map((a) => (
+              <NewsCard key={a.href} article={a} headingLevel={3} />
             ))}
           </div>
         </div>
