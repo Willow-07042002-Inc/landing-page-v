@@ -38,16 +38,15 @@ const BELIEFS = [
 ];
 
 /* The figures, as on harvey.ai's company page, all from the Horizon deck
-   (Oct 2026): the industry on the first line (three wide), families on the
-   second (four). $124T, 72% and 52% are cited below the row (the deck's 71%
-   is 72% in its source). 18, 10 years, 89% and 46% have no primary source
-   we could find (sources count about 15 e-will states plus D.C.; the 89%
-   poll measured something else) and are on the page because Aaron chose to
-   keep them, Nov 19 2026. */
+   (Oct 2026): $124 trillion large across the top (Cerulli Associates), then
+   four stats in two columns of two rows. 72% and 52% are cited below (the
+   deck's 71% is 72% in its source). 89% and 46% have no primary source we
+   could find (the 89% poll measured something else) and are on the page
+   because Aaron chose to keep them, Nov 19 2026. The deck's 18 e-will states
+   and 10 years between updates were dropped at his request. */
+const LEAD_FIGURE = { figure: "$124 trillion", label: "is set to change hands" };
+
 const FIGURES = [
-  { figure: "$124T", label: "in U.S. wealth set to change hands by 2048", wide: true },
-  { figure: "18", label: "states and jurisdictions that allow digitally signed wills", wide: true },
-  { figure: "10 years", label: "on average between estate plan updates", wide: true },
   { figure: "89%", label: "of executors aren't prepared when the time comes" },
   { figure: "52%", label: "of Americans don't know where their parents' estate plan is" },
   { figure: "46%", label: "of executors don't know they've been named" },
@@ -76,17 +75,24 @@ const AboutPage = () => {
             Estate plans shouldn't live in binders.
           </h1>
 
-          {/* Each figure under a thin rule, as on Harvey's page: three across
-              on the first line, four on the second */}
-          <dl className="mt-[var(--hv-xl)] grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-12 md:gap-y-[var(--hv-lg)]">
-            {FIGURES.map((f) => (
-              <div key={f.figure} className={`flex flex-col border-t border-gray-300 pt-[var(--hv-md)] ${f.wide ? "md:col-span-4" : "md:col-span-3"}`}>
-                {/* dt first for screen readers; the figure shows on top */}
-                <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[22em] text-[#222222]">{f.label}</dt>
-                <dd className="hv-h1 order-1 font-heading font-light text-[#222222]">{f.figure}</dd>
-              </div>
-            ))}
-          </dl>
+          {/* Each figure under a thin rule, as on Harvey's page. $124 trillion
+              runs large across the top; the four stats sit below in two
+              columns of two rows. dt comes first for screen readers; the
+              figure shows on top. */}
+          <div className="mt-[var(--hv-xl)]">
+            <dl className="flex flex-col border-t border-gray-300 pt-[var(--hv-md)]">
+              <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] text-[#222222]">{LEAD_FIGURE.label}</dt>
+              <dd className="order-1 font-heading text-[clamp(40px,10.5vw,152px)] font-light leading-none tracking-[-0.02em] text-[#222222]">{LEAD_FIGURE.figure}</dd>
+            </dl>
+            <dl className="mt-[var(--hv-lg)] grid grid-cols-2 gap-x-4 gap-y-10 md:gap-y-[var(--hv-lg)]">
+              {FIGURES.map((f) => (
+                <div key={f.figure} className="flex flex-col border-t border-gray-300 pt-[var(--hv-md)]">
+                  <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[20em] text-[#222222]">{f.label}</dt>
+                  <dd className="hv-h1 order-1 font-heading font-light text-[#222222]">{f.figure}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
           <p className="mt-[var(--hv-md)] text-[12.5px] text-gray-500">
             Sources:{" "}
             {FIGURE_SOURCES.map((s, i) => (
