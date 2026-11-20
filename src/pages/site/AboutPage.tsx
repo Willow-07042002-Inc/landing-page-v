@@ -72,28 +72,36 @@ const AboutPage = () => {
           set large and light on the page itself, left-aligned, no photograph */}
       <section className="pt-[var(--hv-lg)]">
         <div className={`${WRAP} enter`}>
-          <p className="hv-body-2 font-medium text-[#222222]">About Willow</p>
+          <p className="hv-body-2 font-medium text-[#222222]">Our vision</p>
           <h1 className="hv-h1 mt-[var(--hv-md)] max-w-4xl font-heading font-light text-[#222222]">
             Estate plans shouldn't live in binders.
           </h1>
 
-          {/* Each figure under a thin rule, as on Harvey's page. $124 trillion
-              runs large across the top; the four stats sit below in two
-              columns of two rows. dt comes first for screen readers; the
-              figure shows on top. */}
-          <div className="mt-[var(--hv-xl)]">
-            <dl className="flex flex-col border-t border-gray-300 pt-[var(--hv-md)]">
-              <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] text-[#222222]">{LEAD_FIGURE.label}</dt>
-              <dd className="order-1 font-heading text-[clamp(40px,10.5vw,152px)] font-light leading-none tracking-[-0.02em] text-[#222222]">{LEAD_FIGURE.figure}</dd>
-            </dl>
-            <dl className="mt-[var(--hv-lg)] grid grid-cols-2 gap-x-4 gap-y-10 md:gap-y-[var(--hv-lg)]">
-              {FIGURES.map((f) => (
-                <div key={f.figure} className="flex flex-col border-t border-gray-300 pt-[var(--hv-md)]">
-                  <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[20em] text-[#222222]">{f.label}</dt>
-                  <dd className="hv-h1 order-1 font-heading font-light text-[#222222]">{f.figure}</dd>
-                </div>
-              ))}
-            </dl>
+          {/* The figures in a box like the homepage's founder note: the
+              Golden Gate print fills the rounded box, and a white card floats
+              over it. $124 trillion runs large across the top of the card; the
+              four stats sit below in two columns of two rows, each under a
+              thin rule. dt comes first for screen readers; the figure shows
+              on top. */}
+          <div className="relative mt-[var(--hv-xl)] overflow-hidden rounded-3xl">
+            <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
+            <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.15)" }} />
+            <div className="relative z-10 p-4 sm:p-6 md:p-14 lg:p-16">
+              <div className="mx-auto max-w-5xl rounded-2xl bg-white p-6 sm:p-8 md:p-12" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+                <dl className="flex flex-col">
+                  <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] text-[#222222]">{LEAD_FIGURE.label}</dt>
+                  <dd className="order-1 font-heading text-[clamp(32px,8vw,120px)] font-light leading-none tracking-[-0.02em] text-[#222222]">{LEAD_FIGURE.figure}</dd>
+                </dl>
+                <dl className="mt-[var(--hv-lg)] grid gap-x-8 gap-y-8 sm:grid-cols-2 md:gap-y-[var(--hv-md)]">
+                  {FIGURES.map((f) => (
+                    <div key={f.figure} className="flex flex-col border-t border-gray-200 pt-[var(--hv-md)]">
+                      <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[20em] text-[#222222]">{f.label}</dt>
+                      <dd className="hv-h1 order-1 font-heading font-light text-[#222222]">{f.figure}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
           </div>
         </div>
       </section>
