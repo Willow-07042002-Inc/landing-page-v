@@ -2,9 +2,6 @@ import React from "react";
 import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
 import NewsCard from "@/components/site/NewsCard";
 import { NEWS_ARTICLES } from "@/content/news";
-import { ScaledScreen } from "@/components/product/kit";
-import { SummaryReviewScreenCropped, SUMMARY_REVIEW_CROP_HEIGHT } from "@/components/product/attorney-review";
-import { ClientShareTimingScreen } from "@/components/product/client-app";
 
 /* About Willow, set like harvey.ai's company page: the headline, the
    founder's vision, the two guiding principles, then the coverage (the same
@@ -12,37 +9,15 @@ import { ClientShareTimingScreen } from "@/components/product/client-app";
 
 /* Willow's two guiding principles, in Aaron's own words from his emails to
    attorneys (Nov 18 "Your feedback helped build Willow", the Saratoga
-   follow-ups, the April one-liner and the Early Look emails). Each card is
-   set like the landing page's "keep your clients connected" box: a print
-   under the dark teal wash, white copy, and a real product screen rising
-   out of the bottom-right corner. The screen shows the principle at work:
-   the attorney approving a client's summary; the client choosing who sees
-   their will, and when. `crop` is where the card's window opens on the
-   screen, in screen pixels: its top-left corner (x, y) and how much of the
-   screen's width the window spans (w). */
-const BELIEFS: {
-  title: string;
-  body: string;
-  print: string;
-  screen: React.ReactNode;
-  screenH: number;
-  crop: { x: number; y: number; w: number };
-}[] = [
+   follow-ups, the April one-liner and the Early Look emails) */
+const BELIEFS = [
   {
     title: "Attorneys stay at the center.",
     body: "Willow keeps the attorney at the heart of the planning experience. We automate check-ins, make it easy for clients to book a call when it's time to update their plan, and attorneys approve every summary their clients see.",
-    print: "/nyc-skyline.jpg",
-    screen: <SummaryReviewScreenCropped />,
-    screenH: SUMMARY_REVIEW_CROP_HEIGHT,
-    crop: { x: 290, y: 0, w: 1010 },
   },
   {
     title: "Clients stay in control.",
     body: "Clients get one secure place for everything their executors and family will need: a visual summary of their plan and their documents. They decide who sees what, and when.",
-    print: "/west-side-hwy.jpg",
-    screen: <ClientShareTimingScreen />,
-    screenH: 855,
-    crop: { x: 300, y: 120, w: 920 },
   },
 ];
 
@@ -138,42 +113,32 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Then the two guiding principles, set like Harvey's figures row: a
-          ruled column each, a large light serif line, a sentence */}
+      {/* Then the two guiding principles in one dark box, set like the
+          landing page's "keep your clients connected" box: the print under
+          the dark teal wash, the heading across the top in white, then the
+          two principles side by side, each under a thin rule */}
       <section className="pb-[var(--hv-xl)] pt-[var(--hv-xl)]">
         <div className={WRAP}>
-          <h2 className="font-sans text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Two guiding principles behind every decision we make</h2>
-          <div className="mt-[var(--hv-md)] grid gap-6 md:grid-cols-2">
-            {BELIEFS.map((b) => (
-              <div key={b.title} className="relative flex flex-col overflow-hidden rounded-3xl">
-                <img src={b.print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-                <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
-                <div className="relative z-10 p-8 md:p-10 lg:p-12">
-                  <h3 className="font-heading text-2xl font-bold text-white md:text-[1.75rem] lg:text-[2rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
-                    {b.title}
-                  </h3>
-                  <p className="mt-5 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>
-                    {b.body}
-                  </p>
-                </div>
-                {/* The product screen, rising out of the bottom-right corner */}
-                <div className="relative z-10 mt-auto h-[260px] sm:h-[320px] lg:h-[360px]" aria-hidden>
-                  <div className="absolute -bottom-12 -right-12 left-8 top-2 overflow-hidden rounded-tl-xl bg-white md:left-10" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
-                    <div
-                      className="absolute top-0"
-                      style={{
-                        left: `${(-b.crop.x / b.crop.w) * 100}%`,
-                        width: `${(1440 / b.crop.w) * 100}%`,
-                        aspectRatio: `1440 / ${b.screenH}`,
-                        transform: `translateY(${(-b.crop.y / b.screenH) * 100}%)`,
-                      }}
-                    >
-                      <ScaledScreen h={b.screenH}>{b.screen}</ScaledScreen>
-                    </div>
+          <div className="relative overflow-hidden rounded-3xl">
+            <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
+            <div className="relative z-10 p-8 md:p-14 lg:p-16">
+              <h2 className="max-w-3xl font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+                Two guiding principles behind every decision we make.
+              </h2>
+              <div className="mt-10 grid gap-10 md:mt-12 md:grid-cols-2 md:gap-14">
+                {BELIEFS.map((b) => (
+                  <div key={b.title} className="border-t border-white/25 pt-6">
+                    <h3 className="font-heading text-xl font-bold text-white md:text-2xl" style={{ lineHeight: 1.25 }}>
+                      {b.title}
+                    </h3>
+                    <p className="mt-4 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>
+                      {b.body}
+                    </p>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
