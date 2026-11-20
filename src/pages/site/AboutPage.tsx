@@ -37,6 +37,25 @@ const BELIEFS = [
   },
 ];
 
+/* The figures row, as on harvey.ai's company page: the stats from the
+   Horizon deck (Oct 2026) that a primary source states, each cited below the
+   row. The deck's 71% is 72% in its source. Left off because no source says
+   them: 46% of executors don't know they've been named, 89% of executors
+   aren't prepared (the poll behind it measured something else), 10 years
+   between plan updates, and 18 e-will states (sources count about 15 plus
+   D.C.). */
+const FIGURES = [
+  { figure: "$124T", label: "in U.S. wealth set to change hands by 2048" },
+  { figure: "72%", label: "of Americans don't have an up-to-date will" },
+  { figure: "52%", label: "of Americans don't know where their parents' estate plan is" },
+];
+
+const FIGURE_SOURCES = [
+  { label: "Cerulli Associates, 2024", href: "https://www.cerulli.com/press-releases/cerulli-anticipates-124-trillion-in-wealth-will-transfer-through-2048" },
+  { label: "USLegalWills.com survey, 2016", href: "https://prnewswire.com/news-releases/uslegalwills-survey-reveals-that-72-of-americans-do-not-have-an-up-to-date-will-300290732.html" },
+  { label: "Caring.com survey, 2015", href: "https://www.caring.com/caregivers/estate-planning/wills-survey/2015-survey" },
+];
+
 const AboutPage = () => {
   usePageMeta(
     "About Willow | The Estate Planning Platform for Attorneys",
@@ -52,6 +71,29 @@ const AboutPage = () => {
           <h1 className="hv-h1 mt-[var(--hv-md)] max-w-4xl font-heading font-light text-[#222222]">
             Estate plans shouldn't live in binders.
           </h1>
+
+          {/* Three figures, each under a thin rule, as on Harvey's page */}
+          <dl className="mt-[var(--hv-xl)] grid gap-y-10 md:grid-cols-3 md:gap-x-4">
+            {FIGURES.map((f) => (
+              <div key={f.figure} className="flex flex-col border-t border-gray-300 pt-[var(--hv-md)]">
+                {/* dt first for screen readers; the figure shows on top */}
+                <dt className="hv-body-1 order-2 mt-[var(--hv-sm)] max-w-[22em] text-[#222222]">{f.label}</dt>
+                <dd className="hv-h1 order-1 font-heading font-light text-[#222222]">{f.figure}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-[var(--hv-md)] text-[12.5px] text-gray-500">
+            Sources:{" "}
+            {FIGURE_SOURCES.map((s, i) => (
+              <React.Fragment key={s.href}>
+                {i > 0 && "; "}
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className="underline decoration-gray-300 underline-offset-2 hover:text-gray-700">
+                  {s.label}
+                </a>
+              </React.Fragment>
+            ))}
+            .
+          </p>
         </div>
       </section>
 
