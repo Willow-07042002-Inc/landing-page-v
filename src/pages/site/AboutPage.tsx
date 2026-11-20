@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta, PrimaryButton, SecondaryButton } from "@/components/site/blocks";
+import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
 
 /* About Willow: why it exists, its two guiding principles, who's building it,
    and the coverage it has had. Press items link to the real articles. */
@@ -132,10 +132,6 @@ const AboutPage = () => {
                 </div>
               </a>
             ))}
-          </div>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <PrimaryButton>Request a demo</PrimaryButton>
-            <SecondaryButton to="/news">All news</SecondaryButton>
           </div>
         </div>
       </section>
