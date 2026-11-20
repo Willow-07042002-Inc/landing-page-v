@@ -22,15 +22,17 @@ const PRESS = [
   },
 ];
 
-/* Willow's two guiding principles */
+/* Willow's two guiding principles, in Aaron's own words from his emails to
+   attorneys (Nov 18 "Your feedback helped build Willow", the Saratoga
+   follow-ups, the April one-liner and the Early Look emails) */
 const BELIEFS = [
   {
     title: "Attorneys stay at the center.",
-    body: "Willow doesn't give legal advice or replace the lawyer. Everything a family sees about their plan, their attorney has approved. And we build Willow with estate attorneys, not just for them: they put it in front of real clients and tell us what to build next.",
+    body: "Willow keeps the attorney at the heart of the planning experience, so the client relationship doesn't end when the binder closes. We automate check-ins and make it easy for clients to book a call when it's time to update their plan. Attorneys approve every summary their clients see, and every attorney on Willow has a say in what we build next.",
   },
   {
     title: "Clients stay in control.",
-    body: "The client portal gives clients full control: they decide what to share, with whom and when, and anything sealed stays sealed until their attorney verifies it's time. Their plan, documents and plain-English summary are always within reach, and staying in touch with their attorney is easy, from yearly check-ins to booking time.",
+    body: "Clients get one secure place to keep everything their executors and family will need: a visual summary of their plan, secure access to their documents, and the ability to share their plan and supporting information, like finances and health, with their team. They decide who sees what, and when, so everyone is prepared to step in when needed.",
   },
 ];
 
