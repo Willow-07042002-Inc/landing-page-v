@@ -21,10 +21,10 @@ const QUESTIONS = ["Has your family dynamic changed?", "Have you moved, or bough
 const NOTE = "We bought a chalet in Stowe, Vermont. Should the chalet go into our trust too?";
 
 const PLAN = [
-  { name: "Last Will & Testament", detail: "Daniel" },
+  { name: "Last Will & Testament" },
   { name: "Revocable Living Trust", detail: "Joint with Maria" },
   { name: "Trust transfer deed", detail: "Joint with Maria" },
-  { name: "Power of Attorney", detail: "Durable" },
+  { name: "Power of Attorney" },
 ];
 const PEOPLE = [
   { initials: "MR", name: "Maria Rosen", role: "Executor" },
@@ -88,7 +88,7 @@ const ThePlan = () => (
         <li key={d.name} className="flex items-center gap-3 border-b border-[#F0F1F3] py-[9px] last:border-0">
           <FileText className="h-4 w-4 flex-shrink-0 text-[#128F8B]" strokeWidth={1.8} />
           <span className="flex-1 text-[14px] font-medium text-[#1F2933]">{d.name}</span>
-          <span className="text-[12.5px] text-[#9CA3AF]">{d.detail}</span>
+          {d.detail && <span className="text-[12.5px] text-[#9CA3AF]">{d.detail}</span>}
         </li>
       ))}
     </ul>
