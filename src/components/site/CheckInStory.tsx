@@ -266,7 +266,7 @@ const CheckInStory = () => {
                 }}
               >
                 <p className="text-[13px] font-medium text-[#0C7370]">Alvarez Family Law is checking in</p>
-                <h2 className="mt-1.5 font-heading text-[22px] font-bold leading-[1.3] text-[#1F2933]">Has anything changed since your plan was signed?</h2>
+                <h2 className="mt-1.5 font-heading text-[22px] font-bold leading-[1.3] text-[#1F2933]">Hi Daniel, has anything changed since your plan was last signed?</h2>
                 <div className="mt-5 space-y-2">
                   {QUESTIONS.map((q, i) => {
                     const on = i === 1 && picked;
@@ -299,10 +299,10 @@ const CheckInStory = () => {
                   ref={bookRef}
                   className="mt-4 flex h-11 items-center justify-center rounded-lg text-[15px] font-medium text-white"
                   style={{
-                    background: pressed ? "#0C7370" : "#128F8B",
+                    background: "#128F8B",
                     opacity: typed === NOTE.length ? 1 : 0.45,
                     transform: pressed ? "scale(0.98)" : "scale(1)",
-                    transition: "opacity 200ms ease, background-color 140ms ease, transform 140ms var(--ease-out)",
+                    transition: "opacity 200ms ease, transform 140ms var(--ease-out)",
                   }}
                 >
                   Book a call with Rachel
