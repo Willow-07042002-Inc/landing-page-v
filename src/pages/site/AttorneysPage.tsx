@@ -98,9 +98,10 @@ const STORY: (FeatureRowData & { id: string })[] = [
   },
 ];
 
-/* The hero: Daniel's record open on Staying in touch, drawn tall enough to show
-   the whole tab, down to what he said on his last check-in */
-const HERO_SCREEN_H = 1124;
+/* The hero: one real 1440 x 855 window, Daniel's record open on Staying in
+   touch and scrolled to where the check-ins, Emma's booking and what Daniel
+   said are all on screen */
+const HERO_PANEL_SCROLL = 212;
 
 /* The list the product's Integrations tab offers (integration-brands.tsx) */
 const TOOLS: { kind: string; note: string; apps: { name: string; Logo: (p: { className?: string }) => React.ReactElement }[] }[] = [
@@ -184,8 +185,8 @@ const AttorneysPage = () => {
         subtitle="Willow keeps clients coming back for updates and makes you the obvious choice for their family and executors."
         visualAspect="1440 / 855"
         visual={
-          <PrintFrame print="/nyc-skyline.jpg" aspect={`1440 / ${HERO_SCREEN_H}`} className="shadow-2xl">
-            {screen(<AttorneyClientsScreen open tab="Staying in touch" panel={<StayingInTouchPanel />} height={HERO_SCREEN_H} />, 1440, HERO_SCREEN_H)}
+          <PrintFrame print="/nyc-skyline.jpg" aspect="1440 / 855" className="shadow-2xl">
+            {screen(<AttorneyClientsScreen open tab="Staying in touch" panel={<StayingInTouchPanel />} panelScroll={HERO_PANEL_SCROLL} />)}
           </PrintFrame>
         }
       />
