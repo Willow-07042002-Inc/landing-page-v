@@ -193,7 +193,7 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
     fitAspect: "900 / 400",
   },
   {
-    title: "Sign digitally — from anywhere, or right in your office.",
+    title: "Sign digitally from anywhere, or right in your office.",
     body:
       "Every signature is captured digitally, whether your client is across the country or across your conference table. No paper to lose. (Remote signing available in select states.)",
     print: "/golden-gate.jpg",
@@ -205,7 +205,7 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
     fitAspect: "2056 / 1258",
   },
   {
-    title: "Keep every document safe — and easy to understand.",
+    title: "Keep every document safe and easy to understand.",
     body:
       "Signed documents live in secure online storage built around your state's regulations, with every gift, condition, and account written out in language the family can follow.",
     print: "/florida-coast.jpg",
@@ -215,14 +215,14 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
   {
     title: "Ensure your executors and guardians are prepared.",
     body:
-      "Willow understands everyone's role, recommends what each person should have access to, and releases it exactly when they need it — never a day earlier.",
+      "Willow understands everyone's role, recommends what each person should have access to, and releases it exactly when they need it, never a day earlier.",
     print: "/hudson-bridge.jpg",
     visual: <SharingRecommendationVignette h={660} />,
     fitAspect: "760 / 660",
     fitWidth: "76%",
   },
   {
-    title: "Grow client relationships — and build new ones with their families.",
+    title: "Grow client relationships and build new ones with their families.",
     body:
       "As your client's life moves forward, you always stay in the loop. When their executors, guardians, and the people around them need plans of their own, we'll put them in touch with the attorney who knows their family best.",
     print: "/willow-street.jpg",
@@ -588,31 +588,25 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="hv-wrap mt-[var(--hv-lg)]">
+        <div className="hv-wrap mt-10">
           <HeroShot />
         </div>
       </section>
 
-      {/* As seen in, set like harvey.ai's customer-logo band: a centred
-          heading, then the logos in cells the size of Harvey's (a sixth of the
-          measure, 96px tall). Yahoo Finance as on the live site, and the two
-          linked articles. */}
-      <section className="bg-[#FCFCFD] py-[var(--hv-xl)]">
-        <div className="hv-wrap hv-grid">
-          <div className="hv-content">
-            <div className="col-span-full flex flex-col items-center gap-[var(--hv-lg)]">
-              <h2 className="hv-h3 text-center font-heading font-light text-[#222222]">As seen in</h2>
-              <div className="grid w-full grid-cols-3 min-[1025px]:w-1/2">
-                <div className="flex h-16 items-center justify-center min-[1025px]:h-24">
-                  <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-auto max-h-7 w-auto max-w-[66%] opacity-55 grayscale" />
-                </div>
-                <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="flex h-16 items-center justify-center opacity-55 grayscale transition-opacity duration-300 hover:opacity-90 min-[1025px]:h-24">
-                  <img src="/press-business-insider.svg" alt="Business Insider" className="h-auto max-h-9 w-auto max-w-[66%]" />
-                </a>
-                <a href="https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/" target="_blank" rel="noopener noreferrer" className="flex h-16 items-center justify-center opacity-55 grayscale transition-opacity duration-300 hover:opacity-90 min-[1025px]:h-24">
-                  <img src="/press-usa-today.svg" alt="USA Today" className="h-auto max-h-7 w-auto max-w-[66%]" />
-                </a>
-              </div>
+      {/* As seen in: a small centred label above one quiet row of logos.
+          Yahoo Finance as on the live site, and the two linked articles. */}
+      <section className="bg-[#FCFCFD] py-[var(--hv-md)]">
+        <div className="hv-wrap">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <h2 className="font-sans text-[13px] font-normal text-gray-500">As seen in</h2>
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 min-[640px]:gap-x-12">
+              <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-[14px] w-auto opacity-50 grayscale min-[640px]:h-5" />
+              <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="opacity-50 grayscale transition-opacity duration-300 hover:opacity-90">
+                <img src="/press-business-insider.svg" alt="Business Insider" className="h-[18px] w-auto min-[640px]:h-6" />
+              </a>
+              <a href="https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/" target="_blank" rel="noopener noreferrer" className="opacity-50 grayscale transition-opacity duration-300 hover:opacity-90">
+                <img src="/press-usa-today.svg" alt="USA Today" className="h-[14px] w-auto min-[640px]:h-5" />
+              </a>
             </div>
           </div>
         </div>
@@ -646,7 +640,7 @@ const Home = () => {
 
       {/* Our commitment to lawyers — the Golden Gate print fills the rounded
           box; a smaller white box floats over it and carries the content */}
-      <section className="bg-white py-10 md:py-16">
+      <section className="bg-[#FCFCFD] py-10 md:py-16">
         <div className="container mx-auto max-w-7xl px-4 md:px-8">
           <div className="relative overflow-hidden rounded-3xl">
             <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
@@ -697,7 +691,7 @@ const Home = () => {
 
       {/* For clients — the darkened print card: white copy on the left, the
           client sharing home surfacing out of the bottom-right corner */}
-      <section className="bg-white pb-12 md:pb-16">
+      <section className="bg-[#FCFCFD] pb-12 md:pb-16">
         <div className="container mx-auto max-w-7xl px-4 md:px-8">
           <div className="relative overflow-hidden rounded-3xl">
             <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
