@@ -177,7 +177,7 @@ const AttorneysPage = () => {
         eyebrow="For attorneys"
         title="Signing shouldn't be the last time"
         accent="you hear from a client."
-        subtitle="Willow keeps you connected to every client, their plan and the people in it, from the first consultation to the day the family needs you most."
+        subtitle="Intake, scheduling, summaries, and follow-up: the administrative weight of an estate practice, organized so you can do what clients actually pay you for."
         secondary={{ label: "See the client side", to: "/for-clients" }}
         visualAspect="1440 / 855"
         visual={
