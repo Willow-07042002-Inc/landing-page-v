@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Bell, CalendarDays, ChevronDown, FileText } from "lucide-react";
 import { PrintFrame } from "@/components/site/blocks";
 import { ScaledScreen } from "@/components/product/kit";
 import { ZoomLogo } from "@/components/product/attorney-booking";
+import { CalendarCheckIcon, ChevronDownIcon, NotificationIcon, PoaIcon, PropertyIcon, TrustIcon, WillIcon } from "@/components/product/willow-icons";
 
 /* The For attorneys hero, staged the way harvey.ai opens its law firms page: a
    small card on a dark print plays out, then opens into the whole matter.
@@ -21,10 +21,10 @@ const QUESTIONS = ["Has your family dynamic changed?", "Have you moved, or bough
 const NOTE = "We bought a chalet in Stowe, Vermont. Should the chalet go into our trust too?";
 
 const PLAN = [
-  { name: "Last Will & Testament" },
-  { name: "Revocable Living Trust", detail: "Joint with Maria" },
-  { name: "Trust transfer deed", detail: "Joint with Maria" },
-  { name: "Power of Attorney" },
+  { name: "Last Will & Testament", Icon: WillIcon },
+  { name: "Revocable Living Trust", Icon: TrustIcon, detail: "Joint with Maria" },
+  { name: "Trust transfer deed", Icon: PropertyIcon, detail: "Joint with Maria" },
+  { name: "Power of Attorney", Icon: PoaIcon },
 ];
 const PEOPLE = [
   { initials: "MR", name: "Maria Rosen", role: "Executor" },
@@ -86,7 +86,7 @@ const ThePlan = () => (
     <ul className="mt-2">
       {PLAN.map((d) => (
         <li key={d.name} className="flex items-center gap-3 border-b border-[#F0F1F3] py-[9px] last:border-0">
-          <FileText className="h-4 w-4 flex-shrink-0 text-[#128F8B]" strokeWidth={1.8} />
+          <d.Icon className="h-[18px] w-[18px] flex-shrink-0 text-[#128F8B]" />
           <span className="flex-1 text-[14px] font-medium text-[#1F2933]">{d.name}</span>
           {d.detail && <span className="text-[12.5px] text-[#9CA3AF]">{d.detail}</span>}
         </li>
@@ -99,7 +99,7 @@ const TheCall = () => (
   <div>
     <Label>Check-in call</Label>
     <div className="mt-2.5 flex items-center gap-3">
-      <CalendarDays className="h-5 w-5 flex-shrink-0 text-[#128F8B]" strokeWidth={1.8} />
+      <CalendarCheckIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
       <div className="min-w-0 flex-1">
         <p className="text-[14.5px] font-medium text-[#1F2933]">Thursday, January 28</p>
         <p className="text-[13px] text-[#6B7280]">2:00 PM · 30 minutes</p>
@@ -319,14 +319,14 @@ const CheckInStory = () => {
                 }}
               >
                 <div className="flex items-center gap-3.5 px-6 py-5">
-                  <Bell className="h-5 w-5 flex-shrink-0 text-[#128F8B]" strokeWidth={1.9} />
+                  <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[15.5px] font-semibold leading-snug text-[#1F2933]">Daniel Rosen booked a check-in call</p>
                     <p className="mt-0.5 text-[13.5px] leading-snug text-[#6B7280]">Something changed · Thursday, Jan 28</p>
                   </div>
                   <span ref={moreRef} className="flex flex-shrink-0 items-center gap-1 text-[14px] font-medium text-[#0C7370]">
                     {open ? "See less" : "See more"}
-                    <ChevronDown className="h-4 w-4" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 300ms var(--ease-out)" }} />
+                    <ChevronDownIcon className="h-4 w-4" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 300ms var(--ease-out)" }} />
                   </span>
                 </div>
 
