@@ -290,13 +290,18 @@ const TouchWay = ({ title, next, base }: { title: string; next: string; base: st
         className="pointer-events-none rounded-lg border border-[#E5E7EB] bg-white px-2.5 py-1 text-[13px] text-[#1F2933] focus:outline-none"
       />
     </div>
+    {/* "Send one now" (preview, Nov 19) */}
+    <div className="flex justify-end pb-2.5">
+      <span className="text-[13px] font-medium text-[#6B7280]">Send one now</span>
+    </div>
   </div>
 );
 
 /* staying-in-touch.tsx, a client on the workflow with a plan approved: the
    three ways (agents, professionals, the client) each on with its next send;
-   then Daniel's people (Emma booked a meeting from her check-in, so hers are
-   paused until it); then what Daniel said on the changes form. Nobody has
+   then Daniel's people (Emma, his backup executor, booked a meeting from her
+   check-in; it has passed, so hers are no longer paused); then what Daniel
+   said on the changes form. Nobody has
    turned off the firm's newsletters and the household has accepted the
    terms, so neither notice shows above. Dates are this year's (no year). */
 export const StayingInTouchPanel = () => (
@@ -313,13 +318,9 @@ export const StayingInTouchPanel = () => (
       <StackSection title="Daniel's people">
         <div className="flex items-baseline gap-4">
           <div className="min-w-0 flex-1">
-            <p className="text-[14px] text-[#1F2933]">
-              Emma booked Tuesday, Feb 23
-              <span className="text-[#B45309]"> · check-ins paused</span>
-            </p>
-            <p className="text-[13px] text-[#9CA3AF]">Executor · emma.rosen@gmail.com</p>
+            <p className="text-[14px] text-[#1F2933]">Emma booked Tuesday, Feb 23</p>
+            <p className="text-[13px] text-[#9CA3AF]">Backup executor · emma.rosen@gmail.com</p>
           </div>
-          <span className="flex-shrink-0 text-[13px] font-medium text-[#309E96]">Resume check-ins</span>
         </div>
       </StackSection>
 

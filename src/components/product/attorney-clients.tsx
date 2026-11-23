@@ -78,6 +78,7 @@ export const AttorneyClientsScreen = ({
   panel,
   headerPill,
   dots = [],
+  height = 855,
 }: {
   open: boolean;
   /** Which of the panel's tabs is open */
@@ -88,10 +89,12 @@ export const AttorneyClientsScreen = ({
   headerPill?: React.ReactNode;
   /** Tabs that carry the clay dot: "Estate Plan" (a summary to approve), "Team" (an access request) */
   dots?: string[];
+  /** The window's height, for a shot that shows a whole tab */
+  height?: number;
 }) => {
   const motion = "300ms cubic-bezier(0, 0, 0.2, 1)";
   return (
-    <div className="relative flex h-full w-full overflow-hidden bg-[#F0F2F5] text-left" style={{ fontFamily: "Figtree, Inter, sans-serif", height: 855 }}>
+    <div className="relative flex h-full w-full overflow-hidden bg-[#F0F2F5] text-left" style={{ fontFamily: "Figtree, Inter, sans-serif", height }}>
       <ProSidebar active="clients" />
 
       <div className="flex min-w-0 flex-1 flex-col">

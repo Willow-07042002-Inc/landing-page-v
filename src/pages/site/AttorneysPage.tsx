@@ -15,7 +15,7 @@ import {
 import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
-import { TeamPanel } from "@/components/product/attorney-client-panel";
+import { StayingInTouchPanel, TeamPanel } from "@/components/product/attorney-client-panel";
 import { SummaryReviewScreenCropped, SUMMARY_REVIEW_CROP_HEIGHT } from "@/components/product/attorney-review";
 import {
   BookingPageScreen,
@@ -97,6 +97,10 @@ const STORY: (FeatureRowData & { id: string })[] = [
     aspect: "1440 / 855",
   },
 ];
+
+/* The hero: Daniel's record open on Staying in touch, drawn tall enough to show
+   the whole tab, down to what he said on his last check-in */
+const HERO_SCREEN_H = 1124;
 
 /* The list the product's Integrations tab offers (integration-brands.tsx) */
 const TOOLS: { kind: string; note: string; apps: { name: string; Logo: (p: { className?: string }) => React.ReactElement }[] }[] = [
@@ -180,8 +184,8 @@ const AttorneysPage = () => {
         subtitle="Willow keeps clients coming back for updates and makes you the obvious choice for their family and executors."
         visualAspect="1440 / 855"
         visual={
-          <PrintFrame print="/nyc-skyline.jpg" aspect="1440 / 855" className="shadow-2xl">
-            {screen(<AttorneyDashboardScreen />)}
+          <PrintFrame print="/nyc-skyline.jpg" aspect={`1440 / ${HERO_SCREEN_H}`} className="shadow-2xl">
+            {screen(<AttorneyClientsScreen open tab="Staying in touch" panel={<StayingInTouchPanel />} height={HERO_SCREEN_H} />, 1440, HERO_SCREEN_H)}
           </PrintFrame>
         }
       />
