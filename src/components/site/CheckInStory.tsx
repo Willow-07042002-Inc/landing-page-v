@@ -10,8 +10,9 @@ import { ZoomLogo } from "@/components/product/attorney-booking";
    notification, and "See more" brings down everything about the client. A
    designed scene rather than a screenshot, but every fact in it is one the
    product holds: the check-in questions are its defaults (touchpoints.ts) and
-   the family is the one in the product screens. It plays while on screen, and
-   people who prefer reduced motion see the opened matter. */
+   the family is the one in the product screens. It plays once when it comes on
+   screen and stops on the opened matter, which is also what people who prefer
+   reduced motion see. */
 
 const WIDE = { w: 1128, h: 670 };
 const COMPACT = { w: 400, h: 640 };
@@ -146,12 +147,12 @@ const CheckInStory = () => {
   const [picked, setPicked] = useState(false);
   const [typed, setTyped] = useState(0);
   const [pressed, setPressed] = useState(false);
-  const [shown, setShown] = useState(true);
   const [cursor, setCursor] = useState<Cursor>({ x: 0, y: 0, who: "Daniel", shown: false, down: false });
+  const finished = useRef(false);
 
   useEffect(() => {
     const frame = frameRef.current;
-    if (!frame) return;
+    if (!frame || finished.current) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setBeat("open");
       return;
@@ -176,7 +177,6 @@ const CheckInStory = () => {
       setPicked(false);
       setTyped(0);
       setPressed(false);
-      setShown(true);
       setCursor((c) => ({ ...c, shown: false, down: false }));
     };
     const click = async (id: number, after: () => void) => {
@@ -187,44 +187,41 @@ const CheckInStory = () => {
     };
 
     const play = async (id: number) => {
-      for (;;) {
-        reset();
-        await wait(700, id);
+      reset();
+      await wait(700, id);
 
-        /* Daniel answers */
-        setCursor({ x: size.w * 0.74, y: size.h * 0.86, who: "Daniel", shown: false, down: false });
-        await wait(80, id);
-        setCursor((c) => ({ ...c, shown: true, ...at(rowRef.current) }));
-        await wait(950, id);
-        await click(id, () => setPicked(true));
-        await wait(420, id);
-        for (let n = 1; n <= NOTE.length; n++) {
-          setTyped(n);
-          await wait(NOTE[n - 1] === " " ? 42 : 24, id);
-        }
-        await wait(450, id);
-        setCursor((c) => ({ ...c, ...at(bookRef.current) }));
-        await wait(850, id);
-        await click(id, () => setPressed(true));
-        await wait(420, id);
-
-        /* Rachel hears about it */
-        setCursor((c) => ({ ...c, shown: false }));
-        setBeat("notify");
-        await wait(1250, id);
-        setCursor({ x: size.w * 0.62, y: size.h * 0.62, who: "Rachel", shown: false, down: false });
-        await wait(80, id);
-        setCursor((c) => ({ ...c, shown: true, ...at(moreRef.current) }));
-        await wait(950, id);
-        await click(id, () => setBeat("open"));
-        await wait(360, id);
-        setCursor((c) => ({ ...c, shown: false }));
-
-        /* The whole client, then round again */
-        await wait(7000, id);
-        setShown(false);
-        await wait(420, id);
+      /* Daniel answers */
+      setCursor({ x: size.w * 0.74, y: size.h * 0.86, who: "Daniel", shown: false, down: false });
+      await wait(80, id);
+      setCursor((c) => ({ ...c, shown: true, ...at(rowRef.current) }));
+      await wait(950, id);
+      await click(id, () => setPicked(true));
+      await wait(420, id);
+      for (let n = 1; n <= NOTE.length; n++) {
+        setTyped(n);
+        await wait(NOTE[n - 1] === " " ? 42 : 24, id);
       }
+      await wait(450, id);
+      setCursor((c) => ({ ...c, ...at(bookRef.current) }));
+      await wait(850, id);
+      await click(id, () => setPressed(true));
+      await wait(420, id);
+
+      /* Rachel hears about it */
+      setCursor((c) => ({ ...c, shown: false }));
+      setBeat("notify");
+      await wait(1250, id);
+      setCursor({ x: size.w * 0.62, y: size.h * 0.62, who: "Rachel", shown: false, down: false });
+      await wait(80, id);
+      setCursor((c) => ({ ...c, shown: true, ...at(moreRef.current) }));
+      await wait(950, id);
+      await click(id, () => {
+        finished.current = true; // from here on the matter stays open
+        io.disconnect();
+        setBeat("open");
+      });
+      await wait(360, id);
+      setCursor((c) => ({ ...c, shown: false }));
     };
 
     const io = new IntersectionObserver(
@@ -253,7 +250,7 @@ const CheckInStory = () => {
             <img src="/nyc-skyline.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" decoding="async" />
             <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
 
-            <div className="absolute inset-0" style={{ opacity: shown ? 1 : 0, transition: "opacity 360ms ease" }}>
+            <div className="absolute inset-0">
               {/* The client's check-in */}
               <div
                 className="absolute left-1/2 top-1/2 rounded-2xl bg-white p-7"
