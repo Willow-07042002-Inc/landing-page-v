@@ -178,7 +178,6 @@ const AttorneysPage = () => {
         title="Signing shouldn't be the last time"
         accent="you hear from a client."
         subtitle="Willow keeps your clients and their families coming back to you as life moves forward."
-        secondary={{ label: "See the client side", to: "/for-clients" }}
         visualAspect="1440 / 855"
         visual={
           <PrintFrame print="/nyc-skyline.jpg" aspect="1440 / 855" className="shadow-2xl">
