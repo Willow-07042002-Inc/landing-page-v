@@ -403,8 +403,8 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     topic: "practice",
     q: "Do my clients have to sign through Willow?",
     a: [
-      "No. Digital execution is optional — and available in select states.",
-      "Keep your signing ceremony exactly as it is today — pen, paper, conference room — then upload the executed documents. Your clients still get everything else: plain-language summaries, secure storage, sharing on their terms, and a plan that stays current for life.",
+      "No. Digital execution is optional and available in select states.",
+      "Keep your signing ceremony exactly as it is today (pen, paper, conference room), then upload the executed documents. Your clients still get everything else: plain-language summaries, secure storage, sharing on their terms, and a plan that stays current for life.",
     ],
   },
   {
@@ -412,7 +412,7 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     q: "How can I get started?",
     a: [
       "It starts with a short conversation.",
-      "We take time to understand your practice and jurisdiction to ensure your firm is a good fit. From there, we guide you through a brief onboarding call, walk through the platform, and answer any questions before you begin using Willow with clients. No process overhaul — just a better way to deliver what you already do.",
+      "We take time to understand your practice and jurisdiction to ensure your firm is a good fit. From there, we guide you through a brief onboarding call, walk through the platform, and answer any questions before you begin using Willow with clients. No process overhaul, just a better way to deliver what you already do.",
     ],
   },
   {
@@ -420,7 +420,7 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     q: "Does Willow help create estate planning documents?",
     a: [
       "You remain fully responsible for advising clients and drafting estate planning documents.",
-      "Willow does not provide legal advice. Instead, we support the execution, storage, and long-term management of the documents you prepare — allowing you to focus your time on what you do best while we help elevate the client experience.",
+      "Willow does not provide legal advice. Instead, we support the execution, storage, and long-term management of the documents you prepare, allowing you to focus your time on what you do best while we help elevate the client experience.",
     ],
   },
   {
@@ -428,7 +428,7 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     q: "How does the signing ceremony work, and can I tailor it to my practice?",
     a: [
       "Willow supports attorney-led digital execution that aligns with state requirements around witnessing, recordings, and notarization. You remain in control of the ceremony and can pause at any time or build in breaks to review materials with your client.",
-      "For practices that prefer a more tailored approach, we can support custom execution flows built around existing regulations. Our goal is to make digital execution compliant and reliable — without forcing you into a one-size-fits-all format.",
+      "For practices that prefer a more tailored approach, we can support custom execution flows built around existing regulations. Our goal is to make digital execution compliant and reliable without forcing you into a one-size-fits-all format.",
     ],
   },
   {
@@ -436,14 +436,14 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     q: "Who can access my clients' documents?",
     a: [
       "Access is fully controlled by the client.",
-      "Only individuals the client explicitly authorizes — such as family members, executors, or fiduciaries — can view documents through their own secure accounts. Permissions can be granted or revoked at any time, ensuring access remains intentional and appropriate.",
+      "Only individuals the client explicitly authorizes, such as family members, executors, or fiduciaries, can view documents through their own secure accounts. Permissions can be granted or revoked at any time, ensuring access remains intentional and appropriate.",
     ],
   },
   {
     topic: "practice",
     q: "How does Willow support revisiting plans over time?",
     a: [
-      "As life moves forward, Willow helps surface natural moments when an update may be needed — and routes clients back to their attorney.",
+      "As life moves forward, Willow helps surface natural moments when an update may be needed and routes clients back to their attorney.",
       "Clients can book time directly through your connected calendar, and both you and the client receive reminders along with a clear summary of relevant background and documents ahead of the conversation.",
     ],
   },
@@ -474,7 +474,7 @@ const FAQ_ITEMS: { topic: "practice" | "compliance"; q: string; a: string[] }[] 
     q: "What happens if Willow is no longer operating?",
     a: [
       "Like any law practice planning for continuity, Willow maintains a formal succession plan in the unlikely event we no longer offer our services.",
-      "In that situation, custodianship of each will and its associated records would be transferred in accordance with applicable state standards — and the decision about where a will is transferred always remains with the client.",
+      "In that situation, custodianship of each will and its associated records would be transferred in accordance with applicable state standards, and the decision about where a will is transferred always remains with the client.",
     ],
   },
 ];
@@ -658,7 +658,7 @@ const Home = () => {
                   Our vision is to give every estate attorney the tools their clients deserve, and to keep the attorney at the center of that relationship. A plan shouldn't disappear into a drawer the day it's signed. It should stay with the family, current and within reach, and so should the lawyer who built it.
                 </p>
                 <p className="mt-4">
-                  We're building more than a product. Alongside estate attorneys, we're setting a new standard for how plans are signed, stored, and carried forward — a future where families are never left guessing, and every attorney is free to do what they do best."
+                  We're building more than a product. Alongside estate attorneys, we're setting a new standard for how plans are signed, stored, and carried forward: a future where families are never left guessing, and every attorney is free to do what they do best."
                 </p>
               </blockquote>
             </div>
@@ -704,7 +704,7 @@ const Home = () => {
                   your clients connected.
                 </h2>
                 <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
-                  Willow becomes a lasting touchpoint between your practice and the entire family — everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
+                  Willow becomes a lasting touchpoint between your practice and the entire family: everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
                 </p>
                 <button
                   type="button"
