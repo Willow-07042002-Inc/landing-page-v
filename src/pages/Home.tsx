@@ -593,19 +593,21 @@ const Home = () => {
         </div>
       </section>
 
-      {/* As seen in: a small centred label above one quiet row of logos.
-          Yahoo Finance as on the live site, and the two linked articles. */}
-      <section className="bg-[#FCFCFD] pb-12 pt-12 md:pb-16 md:pt-20 min-[1025px]:pb-[74px] min-[1025px]:pt-[120px]">
+      {/* As seen in, set as on the live site (small tracked label, the same
+          logo sizes), with equal space above and below so it sits centred
+          between the product shot and the cards. Yahoo Finance as on the
+          live site, and the two linked articles. */}
+      <section className="bg-[#FCFCFD] py-12 md:py-14 min-[1025px]:py-[72px]">
         <div className="hv-wrap">
-          <div className="flex flex-col items-center justify-center gap-[22px]">
-            <h2 className="font-sans text-[13px] font-normal text-gray-500">As seen in</h2>
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 min-[640px]:gap-x-12">
-              <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-[14px] w-auto opacity-50 grayscale min-[640px]:h-5" />
-              <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="opacity-50 grayscale transition-opacity duration-300 hover:opacity-90">
-                <img src="/press-business-insider.svg" alt="Business Insider" className="h-[18px] w-auto min-[640px]:h-6" />
+          <div className="flex flex-col items-center justify-center gap-5">
+            <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">As seen in</h2>
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 min-[640px]:gap-x-10 md:gap-x-14">
+              <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-[14px] w-auto opacity-55 grayscale min-[640px]:h-5 md:h-6" />
+              <a href="https://markets.businessinsider.com/news/currencies/124-trillion-is-changing-hands-willow-announces-pilot-to-prepare-estate-planning-attorneys-for-the-next-generation-1036548412" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity duration-300 hover:opacity-90">
+                <img src="/press-business-insider.svg" alt="Business Insider" className="h-[18px] w-auto min-[640px]:h-6 md:h-7" />
               </a>
-              <a href="https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/" target="_blank" rel="noopener noreferrer" className="opacity-50 grayscale transition-opacity duration-300 hover:opacity-90">
-                <img src="/press-usa-today.svg" alt="USA Today" className="h-[14px] w-auto min-[640px]:h-5" />
+              <a href="https://www.usatoday.com/press-release/story/42659/digital-estate-planning-arrived-six-years-ago-the-technology-is-finally-catching-up/" target="_blank" rel="noopener noreferrer" className="opacity-55 grayscale transition-opacity duration-300 hover:opacity-90">
+                <img src="/press-usa-today.svg" alt="USA Today" className="h-[14px] w-auto min-[640px]:h-5 md:h-6" />
               </a>
             </div>
           </div>
