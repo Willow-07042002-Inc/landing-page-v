@@ -37,7 +37,8 @@ import TemplatePage from "./pages/site/TemplatePage";
 import SecurityPage from "./pages/site/SecurityPage";
 import AboutPage from "./pages/site/AboutPage";
 import LegalCenterPage from "./pages/site/LegalCenterPage";
-import { PAGES } from "./content/pages";
+import AttorneysPage from "./pages/site/AttorneysPage";
+import { PAGES, PARKED_PAGES } from "./content/pages";
 
 const queryClient = new QueryClient();
 
@@ -58,9 +59,14 @@ const App = () => (
           {import.meta.env.DEV && (
             <Route path="/dev/screens" element={<React.Suspense fallback={null}><DevScreens /></React.Suspense>} />
           )}
-          {/* Platform and solutions pages, rendered from src/content/pages.tsx */}
-          {PAGES.map((p) => (
+          <Route path="/platform" element={<AttorneysPage />} />
+          {/* Deeper pages, rendered from src/content/pages.tsx. Parked ones
+              redirect to their part of the two main pages for now. */}
+          {PAGES.filter((p) => !PARKED_PAGES[p.path]).map((p) => (
             <Route key={p.path} path={p.path} element={<TemplatePage />} />
+          ))}
+          {Object.entries(PARKED_PAGES).map(([from, to]) => (
+            <Route key={from} path={from} element={<Navigate to={to} replace />} />
           ))}
           <Route path="/solutions/executors-trustees" element={<Navigate to="/solutions/their-team#executors-trustees" replace />} />
           <Route path="/solutions/guardians" element={<Navigate to="/solutions/their-team#guardians" replace />} />

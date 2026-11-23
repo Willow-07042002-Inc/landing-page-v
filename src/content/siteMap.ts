@@ -33,28 +33,14 @@ export const CLIENT_LOGIN = "https://clients.willow-inc.com/auth/login";
 export const DEMO_PATH = "/request-access";
 export const SUPPORT_EMAIL = "support@willow-inc.com";
 
-/* One Platform menu, two sides, named like the homepage's two cards: each
-   heading goes to the same overview page its card does. */
+/* Two pages for now, one for each side. The deeper pages stay written in
+   src/content/pages.tsx (PARKED_PAGES) for when we build them out. */
 export const PLATFORM_COLUMNS: NavColumn[] = [
   {
-    title: "For attorneys",
-    to: "/platform",
+    title: "Platform",
     links: [
-      { label: "Overview", desc: "Your practice in one place", to: "/platform" },
-      { label: "Dashboard & clients", desc: "Leads, clients and every action waiting on you", to: "/platform/client-dashboard" },
-      { label: "Plan summaries", desc: "Every plan in plain English, approved by you", to: "/platform/plan-summaries" },
-      { label: "Check-ins & updates", desc: "A yearly rhythm that brings clients back to you", to: "/platform/check-ins" },
-      { label: "Booking page", desc: "New clients book video, phone or in-person time", to: "/platform/booking" },
-      { label: "Integrations", desc: "Connect Google Workspace, Microsoft 365 and Zoom", to: "/platform/integrations" },
-    ],
-  },
-  {
-    title: "For clients & their team",
-    to: "/for-clients",
-    links: [
-      { label: "Overview", desc: "A plan the whole family understands", to: "/for-clients" },
-      { label: "Sharing & release", desc: "Share now, or seal until a passing is verified", to: "/platform/sharing" },
-      { label: "Their team", desc: "Executors, trustees, guardians and agents, each with their own portal", to: "/solutions/their-team" },
+      { label: "For attorneys", desc: "Your practice, from first consultation to the next generation", to: "/platform" },
+      { label: "For clients & their team", desc: "A plan the whole family understands, with everyone prepared", to: "/for-clients" },
     ],
   },
 ];
@@ -119,22 +105,10 @@ export const NAV: NavMenu[] = [
 
 export const FOOTER_COLUMNS: NavColumn[] = [
   {
-    title: "For attorneys",
+    title: "Platform",
     links: [
-      { label: "Overview", to: "/platform" },
-      { label: "Dashboard & clients", to: "/platform/client-dashboard" },
-      { label: "Plan summaries", to: "/platform/plan-summaries" },
-      { label: "Check-ins & updates", to: "/platform/check-ins" },
-      { label: "Booking page", to: "/platform/booking" },
-      { label: "Integrations", to: "/platform/integrations" },
-    ],
-  },
-  {
-    title: "For clients & their team",
-    links: [
-      { label: "Overview", to: "/for-clients" },
-      { label: "Sharing & release", to: "/platform/sharing" },
-      { label: "Their team", to: "/solutions/their-team" },
+      { label: "For attorneys", to: "/platform" },
+      { label: "For clients & their team", to: "/for-clients" },
     ],
   },
   {

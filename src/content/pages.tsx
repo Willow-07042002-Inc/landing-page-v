@@ -100,64 +100,6 @@ const FAQ_PAPER = {
 export const PAGES: PageDef[] = [
   /* ───────────────────────────── PLATFORM ───────────────────────────── */
   {
-    path: "/platform",
-    metaTitle: "Willow for Estate Planning Attorneys",
-    metaDesc: "Every estate planning client in one place: leads and clients, their documents, plain-English summaries you approve, yearly check-ins, a booking page, and your calendar, video and email connected.",
-    eyebrow: "Overview",
-    title: "Your practice,",
-    accent: "in one place.",
-    subtitle: "Every lead and client, their signed documents, a plain-English summary you approve, and a yearly rhythm that brings them back to you. Willow connects to the calendar, video and email apps you already use.",
-    secondary: { label: "See the client side", to: "/for-clients" },
-    hero: { visual: screen(<AttorneyDashboardScreen />), print: "/nyc-skyline.jpg", aspect: "1440 / 855" },
-    pointsTitle: "Built around the way you already work.",
-    points: [
-      { title: "Every client on one screen", body: "New leads, active clients and every action waiting on you, from the moment someone books a consultation." },
-      { title: "Plans in plain English", body: "Willow drafts a summary of each signed plan. You review it, edit it and approve it before your client sees a word." },
-      { title: "Connected to your apps", body: "Google Calendar or Outlook, Google Meet, Zoom or Microsoft Teams, and Gmail or Outlook. Bookings land on your calendar with the meeting link." },
-    ],
-    steps: {
-      eyebrow: "How it works",
-      title: "From first meeting to a family that's prepared.",
-      steps: [
-        { title: "A client books", body: "New clients book a consultation on your booking page and arrive on your dashboard as a lead." },
-        { title: "Add the client", body: "Turn the lead into a client, or add one yourself. Spouses are linked as a joint account." },
-        { title: "Upload the plan", body: "Drop in the signed PDFs. Willow reads them and drafts a plain-English summary." },
-        { title: "Approve the summary", body: "Review it, edit anything, and approve. Only then does your client see it." },
-        { title: "Stay in touch", body: "Yearly check-ins go to your client and the people they name, each email waiting for you to send or skip." },
-      ],
-    },
-    rowsEyebrow: "The attorney side",
-    rowsTitle: "Everything you need, page by page.",
-    rows: [
-      {
-        eyebrow: "Dashboard & clients",
-        title: "Open any client and everything is there.",
-        body: "Their signed documents, including what they hold jointly with a spouse, the people they named, your notes and your emails.",
-        visual: screen(<AttorneyClientsScreen open />),
-        print: "/central-park.jpg",
-        aspect: "1440 / 855",
-      },
-      {
-        eyebrow: "Plan summaries",
-        title: "Willow drafts it. You approve every word.",
-        body: "Review the summary section by section, check anything Willow flags, edit what you like, then approve it for your client.",
-        visual: screen(<SummaryReviewScreenCropped />, 1440, SUMMARY_REVIEW_CROP_HEIGHT),
-        print: "/florida-coast.jpg",
-        aspect: `1440 / ${SUMMARY_REVIEW_CROP_HEIGHT}`,
-      },
-      {
-        eyebrow: "Integrations",
-        title: "Connect the apps you already use.",
-        body: "Your calendar, your video meetings and your email, connected once in Settings.",
-        visual: screen(<IntegrationsSettingsScreen />),
-        print: "/nyc-street.jpg",
-        aspect: "1440 / 855",
-      },
-    ],
-    related: ["/platform/client-dashboard", "/platform/plan-summaries", "/platform/check-ins", "/platform/booking", "/platform/integrations", "/security"],
-    security: true,
-  },
-  {
     path: "/platform/client-dashboard",
     metaTitle: "Dashboard & Clients | Willow for Attorneys",
     metaDesc: "One dashboard for new leads, active clients and every action waiting on you, and one record per client with their documents, team, notes and emails.",
@@ -435,5 +377,19 @@ export const PAGES: PageDef[] = [
 
   /* ───────────────────────────── SOLUTIONS: BY PLAN ───────────────────────────── */
 ];
+
+/* Two pages for now: For attorneys (/platform, AttorneysPage) and For clients
+   & their team (/for-clients). The deeper pages above stay written and ready.
+   Each one redirects to its part of those pages; delete its line here to
+   publish it again. */
+export const PARKED_PAGES: Record<string, string> = {
+  "/platform/booking": "/platform#booking",
+  "/platform/client-dashboard": "/platform#dashboard",
+  "/platform/plan-summaries": "/platform#plan-summaries",
+  "/platform/check-ins": "/platform#check-ins",
+  "/platform/integrations": "/platform#integrations",
+  "/platform/sharing": "/for-clients",
+  "/solutions/their-team": "/for-clients",
+};
 
 export const pageByPath = (path: string) => PAGES.find((p) => p.path === path);

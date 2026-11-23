@@ -48,7 +48,7 @@ const useSvgId = (name: string) => `${name}-${useId().replace(/[^a-zA-Z0-9]/g, "
 
 /* ── Brand logos, verbatim from settings/integration-logos.tsx and mail-logos.tsx ── */
 
-const GoogleCalendarLogo = ({ className }: { className?: string }) => {
+export const GoogleCalendarLogo = ({ className }: { className?: string }) => {
   const clip = useSvgId("gcal-rounded");
   return (
     <svg className={className} viewBox="34 34 132 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -71,7 +71,7 @@ const GoogleCalendarLogo = ({ className }: { className?: string }) => {
   );
 };
 
-const GoogleMeetLogo = ({ className }: { className?: string }) => (
+export const GoogleMeetLogo = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 87.5 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path fill="#00832d" d="M49.5 36l8.53 9.75 11.47 7.33 2-17.02-2-16.64-11.69 6.44z" />
     <path fill="#0066da" d="M0 51.5V66c0 3.315 2.685 6 6 6h14.5l3-10.96-3-9.54-9.95-3z" />
@@ -83,7 +83,7 @@ const GoogleMeetLogo = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const ZoomLogo = ({ className }: { className?: string }) => {
+export const ZoomLogo = ({ className }: { className?: string }) => {
   const grad = useSvgId("zoom-grad");
   return (
     <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -99,11 +99,26 @@ const ZoomLogo = ({ className }: { className?: string }) => {
   );
 };
 
-const GoogleContactsLogo = ({ className }: { className?: string }) => (
+export const GoogleContactsLogo = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <circle cx="12" cy="12" r="12" fill="#4285F4" />
     <circle cx="12" cy="9.2" r="3.4" fill="#fff" />
     <path fill="#fff" d="M5.6 18.4c.9-3 3.4-4.6 6.4-4.6s5.5 1.6 6.4 4.6A9.6 9.6 0 0 1 12 21.6a9.6 9.6 0 0 1-6.4-3.2Z" />
+  </svg>
+);
+
+export const OutlookLogo = ({ className }: { className?: string }) => (
+  <img src="/outlook-logo.png" alt="" aria-hidden="true" className={`object-contain ${className ?? ""}`} />
+);
+
+export const MicrosoftTeamsLogo = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="37" cy="12.5" r="5" fill="#7B83EB" />
+    <rect x="29.5" y="20" width="14" height="15.5" rx="6.5" fill="#7B83EB" />
+    <circle cx="24" cy="11" r="6.5" fill="#5B5FC7" />
+    <rect x="15.5" y="19.5" width="18" height="18" rx="6.5" fill="#5B5FC7" />
+    <rect x="5" y="16.5" width="18.5" height="18.5" rx="3.5" fill="#4B53BC" />
+    <path fill="#fff" d="M8.7 20.6h11.1v2.8h-4.15V31h-2.8v-7.6H8.7z" />
   </svg>
 );
 
@@ -256,7 +271,7 @@ export type BookingPageStep = "about" | "situation" | "time";
  * Canvas: 1440×900. The page centres its 560px card in the space under the
  * firm's 72px header, as the product does at desktop widths.
  */
-export const BookingPageScreen = ({ step = "time" }: { step?: BookingPageStep }) => {
+export const BookingPageScreen = ({ step = "time", email = "jordan.lee@gmail.com" }: { step?: BookingPageStep; email?: string }) => {
   const steps: BookingPageStep[] = ["about", "situation", "time"];
   return (
     <div className="flex w-full flex-col bg-[#F8FAFA] text-left" style={{ fontFamily: FIG, height: 900, colorScheme: "light" }}>
@@ -353,7 +368,7 @@ export const BookingPageScreen = ({ step = "time" }: { step?: BookingPageStep })
                   <div>
                     <GroupLabel>How can we reach you?</GroupLabel>
                     <div className="grid grid-cols-2 gap-5">
-                      <LineInput value="jordan.lee@gmail.com" placeholder="Email address" />
+                      <LineInput value={email} placeholder="Email address" />
                       <LineInput value="(212) 555-0147" placeholder="Phone (optional)" />
                     </div>
                   </div>

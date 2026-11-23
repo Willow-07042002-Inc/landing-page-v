@@ -5,8 +5,6 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
-import { LinkCards } from "@/components/site/blocks";
-import { CARDS } from "@/content/pages";
 import {
   TeamRosterVignette,
   StepInVignette,
@@ -291,14 +289,6 @@ const ForClientsPage = () => {
           </div>
         </div>
       </section>
-
-      {/* This side's pages, as on every page of the Platform menu */}
-      <LinkCards
-        eyebrow="For clients & their team"
-        title="Everything here,"
-        accent="page by page."
-        cards={["/platform/sharing", "/solutions/their-team", "/platform/plan-summaries"].map((p) => ({ ...CARDS[p], to: p }))}
-      />
 
       {/* Closing — the demo ask, in the homepage's dark-card clothes: the
           print darkened, white copy left, the Playbook screen rising from the

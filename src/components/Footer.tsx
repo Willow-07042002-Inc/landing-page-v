@@ -4,7 +4,7 @@ import { openCookieSettings } from "@/lib/consent";
 import { ATTORNEY_LOGIN, CLIENT_LOGIN, DEMO_PATH, FOOTER_COLUMNS, type NavLink } from "@/content/siteMap";
 
 /* Site footer: the brand block and the two portals on the left, then the full
-   site map in four columns (the same map the header menus use), then the
+   site map in three columns (the same map the header menus use), then the
    disclaimer and copyright. Deep teal ground. */
 
 const linkCls = "text-[14px] text-white/75 transition-colors hover:text-white";
@@ -47,7 +47,7 @@ const Footer = () => (
           </div>
         </div>
 
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
           {FOOTER_COLUMNS.map((col) => (
             <div key={col.title}>
               <h3 className="mb-4 font-sans text-[12px] font-semibold uppercase tracking-[0.14em] text-white/50">{col.title}</h3>
