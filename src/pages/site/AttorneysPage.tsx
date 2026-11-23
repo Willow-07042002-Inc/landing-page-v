@@ -177,7 +177,7 @@ const AttorneysPage = () => {
         eyebrow="For attorneys"
         title="Signing shouldn't be the last time"
         accent="you hear from a client."
-        subtitle="Willow ensures your clients and their families want to come back to you as life moves forward."
+        subtitle="Willow keeps clients coming back for updates and makes you the obvious choice for their family and executors."
         visualAspect="1440 / 855"
         visual={
           <PrintFrame print="/nyc-skyline.jpg" aspect="1440 / 855" className="shadow-2xl">
