@@ -2,7 +2,6 @@ import React from "react";
 import {
   PageShell,
   PageHero,
-  PrintFrame,
   FeatureRow,
   SectionHead,
   ValuePoints,
@@ -15,7 +14,8 @@ import {
 import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
-import { StayingInTouchPanel, TeamPanel } from "@/components/product/attorney-client-panel";
+import { TeamPanel } from "@/components/product/attorney-client-panel";
+import CheckInStory from "@/components/site/CheckInStory";
 import { SummaryReviewScreenCropped, SUMMARY_REVIEW_CROP_HEIGHT } from "@/components/product/attorney-review";
 import {
   BookingPageScreen,
@@ -98,11 +98,6 @@ const STORY: (FeatureRowData & { id: string })[] = [
   },
 ];
 
-/* The hero: one real 1440 x 855 window, Daniel's record open on Staying in
-   touch and scrolled to where the check-ins, Emma's booking and what Daniel
-   said are all on screen */
-const HERO_PANEL_SCROLL = 212;
-
 /* The list the product's Integrations tab offers (integration-brands.tsx) */
 const TOOLS: { kind: string; note: string; apps: { name: string; Logo: (p: { className?: string }) => React.ReactElement }[] }[] = [
   {
@@ -183,12 +178,8 @@ const AttorneysPage = () => {
         title="Signing shouldn't be the last time"
         accent="you hear from a client."
         subtitle="Willow keeps clients coming back for updates and makes you the obvious choice for their family and executors."
-        visualAspect="1440 / 855"
-        visual={
-          <PrintFrame print="/nyc-skyline.jpg" aspect="1440 / 855" className="shadow-2xl">
-            {screen(<AttorneyClientsScreen open tab="Staying in touch" panel={<StayingInTouchPanel />} panelScroll={HERO_PANEL_SCROLL} />)}
-          </PrintFrame>
-        }
+        visualAspect="1128 / 670"
+        visual={<CheckInStory />}
       />
 
       {/* One family, step by step */}

@@ -78,7 +78,6 @@ export const AttorneyClientsScreen = ({
   panel,
   headerPill,
   dots = [],
-  panelScroll = 0,
 }: {
   open: boolean;
   /** Which of the panel's tabs is open */
@@ -89,8 +88,6 @@ export const AttorneyClientsScreen = ({
   headerPill?: React.ReactNode;
   /** Tabs that carry the clay dot: "Estate Plan" (a summary to approve), "Team" (an access request) */
   dots?: string[];
-  /** How far the client's panel is scrolled, in px: the window stays 855 tall */
-  panelScroll?: number;
 }) => {
   const motion = "300ms cubic-bezier(0, 0, 0.2, 1)";
   return (
@@ -145,7 +142,7 @@ export const AttorneyClientsScreen = ({
           transition: `transform ${motion}, box-shadow ${motion}`,
         }}
       >
-        <div className="px-16 py-10" style={{ marginTop: -panelScroll }}>
+        <div className="px-16 py-10">
           {/* Header: the name, and the spouse their account is joined with */}
           <div className="mb-6 flex items-start justify-between gap-3">
             <div>
