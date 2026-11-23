@@ -140,7 +140,8 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
   },
 ];
 
-/* Set on harvey.ai's AudienceRouterSection: a row that is twice as wide as it
+/* Set on harvey.ai's AudienceRouterSection: heading-2 and a 560px sentence
+   (the heading Aaron asked to have back, Nov 23), then a row that is twice as wide as it
    is tall from 1025px (stacked 3:4 cards below that, at most 500px tall). Every
    line on the cards is from the live homepage, apart from the two titles. Each card's print is
    pinned to its outer edge at 5:4, so it doesn't move as the card widens. */
@@ -149,6 +150,15 @@ const AudienceRouter = () => (
     <div className="hv-wrap hv-grid">
       <div className="hv-content">
         <div className="col-span-full flex flex-col gap-[var(--hv-lg)]">
+          <div className="flex flex-col items-center gap-[var(--hv-sm)] text-center">
+            <h2 className="hv-h2 font-heading font-light text-[#222222]">
+              One platform, <span className="text-[#138F8B]">for the attorney and the family.</span>
+            </h2>
+            <p className="hv-body-2 max-w-[560px] text-gray-600">
+              Attorneys run every client relationship from one place. Clients and the people they name get a plan they understand, shared on their terms.
+            </p>
+          </div>
+
           <div className="aud-row flex flex-col gap-[var(--hv-sm)] overflow-hidden min-[1025px]:aspect-[2/1] min-[1025px]:flex-row">
             {AUDIENCES.map((a, i) => (
               <Link
