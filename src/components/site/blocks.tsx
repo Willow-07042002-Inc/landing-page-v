@@ -151,7 +151,7 @@ export const PageHero = ({
       <h1 className="mb-5 max-w-4xl font-heading text-[2rem] font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
         {typeof title === "string" ? <TwoTone lead={title} accent={accent} italic /> : title}
       </h1>
-      <p className="mb-8 max-w-2xl text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em" }}>
+      <p className="mb-8 max-w-2xl text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em", textWrap: "balance" }}>
         {subtitle}
       </p>
       <div className="flex flex-col items-center gap-3 sm:flex-row">

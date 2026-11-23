@@ -177,7 +177,7 @@ const AttorneysPage = () => {
         eyebrow="For attorneys"
         title="Signing shouldn't be the last time"
         accent="you hear from a client."
-        subtitle="With Willow, clients keep coming back to you for updates, their families for plans of their own, and their executors when it's time to settle the estate."
+        subtitle="Turn every signed plan into a client for life and a family that calls you first."
         secondary={{ label: "See the client side", to: "/for-clients" }}
         visualAspect="1440 / 855"
         visual={
