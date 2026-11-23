@@ -145,7 +145,7 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
    line on the cards is from the live homepage, apart from the two titles. Each card's print is
    pinned to its outer edge at 5:4, so it doesn't move as the card widens. */
 const AudienceRouter = () => (
-  <section className="bg-[#FCFCFD]">
+  <section className="bg-[#FCFCFD] pb-6 md:pb-10 min-[1025px]:pb-14">
     <div className="hv-wrap hv-grid">
       <div className="hv-content">
         <div className="col-span-full flex flex-col gap-[var(--hv-lg)]">
@@ -588,16 +588,16 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="hv-wrap mt-10">
+        <div className="hv-wrap mt-14 md:mt-20 min-[1025px]:mt-[120px]">
           <HeroShot />
         </div>
       </section>
 
       {/* As seen in: a small centred label above one quiet row of logos.
           Yahoo Finance as on the live site, and the two linked articles. */}
-      <section className="bg-[#FCFCFD] py-[var(--hv-md)]">
+      <section className="bg-[#FCFCFD] pb-12 pt-12 md:pb-16 md:pt-20 min-[1025px]:pb-[74px] min-[1025px]:pt-[120px]">
         <div className="hv-wrap">
-          <div className="flex flex-col items-center justify-center gap-4">
+          <div className="flex flex-col items-center justify-center gap-[22px]">
             <h2 className="font-sans text-[13px] font-normal text-gray-500">As seen in</h2>
             <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 min-[640px]:gap-x-12">
               <img src="/press-yahoo-finance.svg" alt="Yahoo Finance" className="h-[14px] w-auto opacity-50 grayscale min-[640px]:h-5" />
@@ -618,21 +618,6 @@ const Home = () => {
       {/* Core capabilities */}
       <section className="bg-[#FCFCFD]">
         <StackedCapabilities />
-      </section>
-
-      {/* One line from the founder, set simply: the line from the careers page */}
-      <section className="bg-[#FCFCFD] py-[var(--hv-xl)]">
-        <div className="hv-wrap hv-grid">
-          <figure className="hv-content text-center">
-            <blockquote className="hv-h2 col-span-full font-heading font-light text-[#222222]">
-              “Estate plans shouldn't live in binders.”
-            </blockquote>
-            <figcaption className="col-span-full mt-[var(--hv-md)]">
-              <p className="hv-body-1 font-medium text-[#222222]">Aaron Burlacoff</p>
-              <p className="hv-body-2 text-gray-600">Founder &amp; CEO, Willow</p>
-            </figcaption>
-          </figure>
-        </div>
       </section>
 
       {/* FAQ */}
