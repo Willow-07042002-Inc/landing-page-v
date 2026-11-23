@@ -10,12 +10,13 @@ import { CalendarCheckIcon, ChevronDownIcon, NotificationIcon, PoaIcon, Property
    notification, and "See more" brings down everything about the client. A
    designed scene rather than a screenshot, but every fact in it is one the
    product holds: the check-in questions are its defaults (touchpoints.ts) and
-   the family is the one in the product screens. It plays once when it comes on
-   screen and stops on the opened matter, which is also what people who prefer
-   reduced motion see. */
+   the family is the one in the product screens. The check-in card rests on the
+   print until the visitor scrolls a little, then it plays once and stops on the
+   opened matter, which is also what people who prefer reduced motion see. */
 
 const WIDE = { w: 1128, h: 670 };
 const COMPACT = { w: 400, h: 640 };
+const START_AFTER_SCROLL = 60;
 
 const QUESTIONS = ["Has your family dynamic changed?", "Have you moved, or bought or sold property?", "Has what you own changed in a big way?"];
 const NOTE = "We bought a chalet in Stowe, Vermont. Should the chalet go into our trust too?";
@@ -188,7 +189,7 @@ const CheckInStory = () => {
 
     const play = async (id: number) => {
       reset();
-      await wait(700, id);
+      await wait(300, id);
 
       /* Daniel answers */
       setCursor({ x: size.w * 0.74, y: size.h * 0.86, who: "Daniel", shown: false, down: false });
@@ -224,16 +225,36 @@ const CheckInStory = () => {
       setCursor((c) => ({ ...c, shown: false }));
     };
 
+    /* Nothing starts until the visitor has scrolled a little and the print is
+       mostly on screen. Once it's going, only leaving the screen stops it. */
+    let scrolled = window.scrollY >= START_AFTER_SCROLL;
+    let inView = false;
+    let playing = false;
+    const sync = () => {
+      const go = scrolled && inView;
+      if (go === playing) return;
+      playing = go;
+      run += 1;
+      if (go) play(run).catch(() => undefined);
+    };
+    const onScroll = () => {
+      if (window.scrollY < START_AFTER_SCROLL) return;
+      scrolled = true;
+      window.removeEventListener("scroll", onScroll);
+      sync();
+    };
     const io = new IntersectionObserver(
       ([entry]) => {
-        run += 1;
-        if (entry.isIntersecting) play(run).catch(() => undefined);
+        inView = entry.intersectionRatio >= 0.5 || (playing && entry.isIntersecting);
+        sync();
       },
-      { threshold: 0.35 }
+      { threshold: [0, 0.5] }
     );
+    window.addEventListener("scroll", onScroll, { passive: true });
     io.observe(frame);
     return () => {
       run += 1;
+      window.removeEventListener("scroll", onScroll);
       io.disconnect();
     };
   }, [compact, size.h, size.w]);
