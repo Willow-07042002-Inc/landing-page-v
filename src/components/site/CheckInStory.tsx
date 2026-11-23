@@ -388,12 +388,12 @@ const CheckInStory = () => {
                 }}
               >
                 <div style={{ transform: `scale(${cursor.down ? 0.84 : 1})`, transformOrigin: "2px 2px", transition: "transform 120ms var(--ease-out)" }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}>
-                    <path d="M5 3l14 8.5-6.5 1.5L10 19.5 5 3z" fill={cursor.who === "Daniel" ? "#1F2933" : "#128F8B"} stroke="#fff" strokeWidth="1.4" strokeLinejoin="round" />
+                  <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.2))" }}>
+                    <path d="M5 3l14 8.5-6.3 1.4L9.5 19z" fill="#374151" stroke="#374151" strokeWidth="1" strokeLinejoin="round" />
                   </svg>
                   <span
-                    className="absolute left-[18px] top-[19px] whitespace-nowrap rounded-md px-2 py-[3px] text-[12px] font-medium text-white"
-                    style={{ background: cursor.who === "Daniel" ? "#1F2933" : "#128F8B", boxShadow: "0 2px 6px rgba(0,0,0,0.25)" }}
+                    className="absolute left-[18px] top-[19px] whitespace-nowrap rounded-md bg-[#374151] px-2 py-[3px] text-[12px] font-medium text-white"
+                    style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}
                   >
                     {cursor.who === "Daniel" ? "Daniel · Client" : "Rachel · Attorney"}
                   </span>
