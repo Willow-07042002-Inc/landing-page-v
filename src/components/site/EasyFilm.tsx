@@ -3,7 +3,7 @@ import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import { SummaryCards } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
-import { CheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* Keeping things easy, as a film on the product's real screens:
    1. the signed plan dropped into the upload box (add-client/setup-wizard.tsx,
@@ -14,8 +14,9 @@ import { CheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icon
       The film creates the account by itself; in the product the attorney
       confirms it
    2. the summary being written (Aaron, Nov 24): the will on its own, a page
-      of paper with its gifts marked as Willow reads them, fading to Daniel's
-      summary writing itself, then Approve. In the product the summary is
+      of paper with its gifts marked as Willow reads them, fading to the
+      summary alone writing itself: who gets the home, the cottage, the boat
+      and the rest. In the product the summary is
       written before the attorney opens it, behind the same working mark
       (summary-generating.tsx); the film shows the reading that goes into it
    3. the reaching out: Daniel's Staying in touch tab (client-detail/
@@ -87,7 +88,7 @@ const ACCOUNTS = [
 const FAN = [-8, -5, -2, 2, 5, 8];
 
 /** How long each chapter runs at normal speed */
-export const EASY_MS = [12910, 9090, 6390];
+export const EASY_MS = [12910, 8700, 6390];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -99,7 +100,7 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
 type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "explain" | "summary" | "touch";
 type Place = "off" | "carry" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "approve" | "tab" | null;
+type Tap = "continue" | "tab" | null;
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
 const FIGTREE = "Figtree, Inter, sans-serif";
@@ -371,24 +372,32 @@ const TheirDocuments = () => (
 );
 
 /* Chapter 2: Willow writing the summary (Aaron, Nov 24). First the will on
-   its own, a page of paper on the print: its two gifts marked as Willow
-   reads them. The page fades, and Daniel's summary writes itself in the
-   Estate Plan tab: What You'll Leave Behind, Maria if she survives him,
-   otherwise Emma and Leo in equal shares (the card, scenario tabs and share
-   bars as scenario-will-summary.tsx draws them), the product's working mark
-   breathing beneath (working-mark.tsx: the W and its legal puns, one every
-   2.8s) until it's done. Then Approve */
+   its own, a page of paper on the print, each gift marked as Willow reads
+   it: the home to Maria, the cottage to Emma, the boat to Leo, the rest to
+   Emma and Leo in equal shares. The page fades to the summary alone (no
+   record around it, nothing to approve), What You'll Leave Behind writing
+   itself line by line: Gifts & Bequests as GiftTable draws it (Recipient,
+   The Gift), then The Remaining Estate's share bars, with the product's
+   working mark breathing beneath (working-mark.tsx: the W and its legal
+   puns) until it's done */
 const PUNS = ["Reading the fine print…", "Hereinafter referred to as “loading”…", "Taking it under advisement…"];
 const SERIF = "Georgia, 'Times New Roman', serif";
-const WILL_A = "I give all the rest, residue and remainder of my estate to my wife, MARIA ROSEN, if she survives me.";
-const WILL_B = "If my wife does not survive me, I give my residuary estate in equal shares to my children, EMMA ROSEN and LEO ROSEN.";
-const SCENARIOS = ["If Maria survives you", "If Maria doesn’t survive you"];
-const SHARES = [
-  [{ name: "Maria Rosen", percent: 100 }],
-  [
-    { name: "Emma Rosen", percent: 50 },
-    { name: "Leo Rosen", percent: 50 },
-  ],
+/* The will's words for each gift, how long the marker takes over them, and
+   what the summary makes of them */
+const WILL_GIFTS = [
+  { text: "I give my home at 85 Grove Street, New York, New York, to my wife, MARIA ROSEN.", ms: 650 },
+  { text: "I give my cottage in Southampton, New York, to my daughter, EMMA ROSEN.", ms: 650 },
+  { text: "I give my boat to my son, LEO ROSEN.", ms: 450 },
+];
+const WILL_REST = { text: "I give all the rest, residue and remainder of my estate in equal shares to my children, EMMA ROSEN and LEO ROSEN.", ms: 800 };
+const SUMMARY_GIFTS = [
+  { to: "Maria Rosen", rel: "Your spouse", item: "Your home on Grove Street" },
+  { to: "Emma Rosen", rel: "Your child", item: "Your cottage in Southampton" },
+  { to: "Leo Rosen", rel: "Your child", item: "Your boat" },
+];
+const SUMMARY_REST = [
+  { name: "Emma Rosen", percent: 50 },
+  { name: "Leo Rosen", percent: 50 },
 ];
 
 /* A marker run over the words, line after line, as Willow reads them; it
@@ -416,6 +425,11 @@ const WillPaper = ({ size, show, hl, still }: { size: { w: number; h: number }; 
   const head = "mt-5 text-center text-[11.5px] font-bold uppercase tracking-[0.16em] text-[#1F2933]";
   const para = "mt-2.5 text-[13.5px] leading-[1.65] text-[#4B5563]";
   const side = Math.max(36, (size.w - 420) / 2);
+  const marked = (n: number, g: { text: string; ms: number }) => (
+    <p className={para} style={{ textIndent: 24 }}>
+      <Marked on={hl >= n} faint={hl > n} ms={g.ms} still={still}>{g.text}</Marked>
+    </p>
+  );
   return (
     <div
       className="pointer-events-none absolute inset-0"
@@ -441,19 +455,12 @@ const WillPaper = ({ size, show, hl, still }: { size: { w: number; h: number }; 
               <p className="text-center text-[15px] font-bold uppercase tracking-[0.18em] text-[#1F2933]">Last Will and Testament</p>
               <p className="mt-1 text-center text-[12.5px] uppercase tracking-[0.14em] text-[#4B5563]">of Daniel Rosen</p>
               <p className={`${para} mt-5`} style={{ textIndent: 24 }}>
-                I, DANIEL ROSEN, of the City, County and State of New York, declare this to be my Last Will and Testament.
+                I, DANIEL ROSEN, of New York, New York, declare this to be my Last Will and Testament.
               </p>
               <p className={head}>Article First</p>
-              <p className={para} style={{ textIndent: 24 }}>
-                I direct that my just debts, funeral expenses and the expenses of administering my estate be paid from my estate.
-              </p>
+              {WILL_GIFTS.map((g, i) => <React.Fragment key={i}>{marked(i + 1, g)}</React.Fragment>)}
               <p className={head}>Article Second</p>
-              <p className={para} style={{ textIndent: 24 }}>
-                <Marked on={hl >= 1} faint={hl >= 2} ms={900} still={still}>{WILL_A}</Marked>
-              </p>
-              <p className={para} style={{ textIndent: 24 }}>
-                <Marked on={hl >= 2} ms={1000} still={still}>{WILL_B}</Marked>
-              </p>
+              {marked(4, WILL_REST)}
               <p className={head}>Article Third</p>
               <p className={para} style={{ textIndent: 24 }}>
                 I appoint my wife, MARIA ROSEN, as Executor of this Will. If she fails to qualify or ceases to act, I appoint my daughter, EMMA ROSEN.
@@ -499,51 +506,65 @@ const WorkingRow = ({ pun }: { pun: number }) => (
   </div>
 );
 
-/* What You'll Leave Behind, open, writing itself */
-const LeaveBehindLive = ({ share, pun, ready, sent, tap, still }: { share: number; pun: number; ready: boolean; sent: boolean; tap: Tap; still: boolean }) => (
-  <div className="h-full overflow-hidden rounded-t-2xl bg-white" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-    <div className="flex items-center gap-3 p-4">
-      <img src="/mock/tree-icon.png" alt="" width={36} height={36} className="h-9 w-9 flex-shrink-0 object-contain" />
-      <div className="min-w-0 flex-1">
-        <div className="text-[15px] font-semibold text-[#1F2933]">What You’ll Leave Behind</div>
-        <div className="truncate text-[12.5px] text-[#9CA3AF]">How your estate is managed and distributed</div>
+/* A line of the summary arriving: in from just below */
+const Written = ({ still, children }: { still: boolean; children: React.ReactNode }) => (
+  <div style={{ animation: still ? undefined : "film-written 360ms var(--ease-out)" }}>
+    <style>{"@keyframes film-written { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }"}</style>
+    {children}
+  </div>
+);
+
+/* What You'll Leave Behind, open, writing itself. written: 1-3 the gifts
+   one by one, 4 the remaining estate */
+const SummaryLive = ({ written, pun, ready, still }: { written: number; pun: number; ready: boolean; still: boolean }) => {
+  const label = "text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]";
+  const cols = "grid grid-cols-[0.85fr_1.15fr] gap-x-5";
+  return (
+    <div className="h-full overflow-hidden rounded-t-2xl bg-white" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+      <div className="flex items-center gap-3 p-4">
+        <img src="/mock/tree-icon.png" alt="" width={36} height={36} className="h-9 w-9 flex-shrink-0 object-contain" />
+        <div className="min-w-0 flex-1">
+          <div className="text-[15px] font-semibold text-[#1F2933]">What You’ll Leave Behind</div>
+          <div className="truncate text-[12.5px] text-[#9CA3AF]">How your estate is managed and distributed</div>
+        </div>
+        <WIcon name="chevronDown" className="h-4 w-4 flex-shrink-0 rotate-180 text-[#6B7280]" />
       </div>
-      <WIcon name="chevronDown" className="h-4 w-4 flex-shrink-0 rotate-180 text-[#6B7280]" />
-    </div>
-    <div className="px-4 pb-4">
-      {share >= 1 && (
-        <Appear>
-          <div className="mb-3 inline-flex items-center gap-4 border-b border-[#E5E7EB] pb-2">
-            {SCENARIOS.map((s, i) => (
-              <span key={s} className="whitespace-nowrap text-[13px] font-medium" style={{ color: share - 1 === i ? "#128F8B" : "#6B7280", transition: "color 300ms ease" }}>
-                {s}
-              </span>
-            ))}
-          </div>
-          <p className="mb-3 text-[14px] font-semibold text-[#1F2933]">The Remaining Estate</p>
-          <Appear key={share}>
+      <div className="px-4 pb-4">
+        {written >= 1 && (
+          <Written still={still}>
+            <p className="mb-2.5 text-[14px] font-semibold text-[#1F2933]">Gifts &amp; Bequests</p>
+            <div className={`${cols} border-b border-[#E5E7EB] pb-2`}>
+              <span className={label}>Recipient</span>
+              <span className={label}>The Gift</span>
+            </div>
+          </Written>
+        )}
+        {SUMMARY_GIFTS.slice(0, Math.min(written, SUMMARY_GIFTS.length)).map((g) => (
+          <Written key={g.to + g.item} still={still}>
+            <div className={`${cols} border-b border-[#F0F2F4] py-2`}>
+              <div className="min-w-0">
+                <div className="text-[14px] font-semibold text-[#1F2933]">{g.to}</div>
+                <div className="mt-0.5 text-[12.5px] text-[#9CA3AF]">{g.rel}</div>
+              </div>
+              <div className="min-w-0 text-[14px] leading-[1.5] text-[#4B5563]">{g.item}</div>
+            </div>
+          </Written>
+        ))}
+        {written >= 4 && (
+          <Written still={still}>
+            <p className="mb-2.5 mt-4 text-[14px] font-semibold text-[#1F2933]">The Remaining Estate</p>
             <div className="space-y-3">
-              {SHARES[share - 1].map((r) => (
+              {SUMMARY_REST.map((r) => (
                 <ShareBar key={r.name} name={r.name} percent={r.percent} still={still} />
               ))}
             </div>
-          </Appear>
-        </Appear>
-      )}
-      {!ready && <WorkingRow pun={pun} />}
-      {/* Written: Approve Summary (the review page's button), here at its foot */}
-      {ready && (
-        <div className="mt-5" style={{ opacity: 1, animation: still ? undefined : "film-approve-in 320ms ease" }}>
-          <style>{"@keyframes film-approve-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }"}</style>
-          <div className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white" style={tapStyle(tap === "approve")}>
-            {sent && <CheckIcon className="h-4 w-4" />}
-            {sent ? "Approved and sent" : "Approve Summary"}
-          </div>
-        </div>
-      )}
+          </Written>
+        )}
+        {!ready && <WorkingRow pun={pun} />}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* Chapter 3: Daniel's check-ins as his record lists them, a few weeks on
    (early January 2027): the agent check-in went out on December 24, so its
@@ -609,10 +630,10 @@ const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
 };
 
 const FILM_LABEL =
-  "An attorney drops a client's signed estate plan into Willow, which reads it and files each document under the right person. Willow then reads the will and writes a plain-English summary of who gets what, which the attorney approves, and schedules every check-in, so the executor books a meeting without the attorney reaching out.";
+  "An attorney drops a client's signed estate plan into Willow, which reads it and files each document under the right person. Willow then reads the will and writes a plain-English summary of who gets what, and schedules every check-in, so the executor books a meeting without the attorney reaching out.";
 const TILE_LABELS = [
   "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person, and fills in the clients' names, emails, phones and address before opening the client's record.",
-  "A page of Daniel's will, its gifts marked as Willow reads them, fades to the summary Willow writes from it: Maria if she survives him, otherwise Emma and Leo in equal shares. The attorney approves it.",
+  "A page of Daniel's will, each gift marked as Willow reads it, fades to the summary Willow writes from it: his home to Maria, the cottage to Emma, the boat to Leo, and the rest of the estate to Emma and Leo in equal shares.",
   "The client's Staying in touch tab: each kind of check-in with its next date, and the executor booking a meeting from one.",
 ];
 
@@ -669,10 +690,9 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   const [fanY, setFanY] = useState(0);
   const [targets, setTargets] = useState<Point[]>([]);
   const [tap, setTap] = useState<Tap>(null);
-  const [sent, setSent] = useState(false);
   /* Chapter 2: what's marked in the will, what's written in the summary */
   const [hl, setHl] = useState(0);
-  const [share, setShare] = useState(0);
+  const [written, setWritten] = useState(0);
   const [pun, setPun] = useState(0);
   const [ready, setReady] = useState(false);
   /* Chapter 2 opens on the will as a page of paper, before the product */
@@ -744,13 +764,12 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
       setScan(-1);
       setTargets([]);
       setTap(null);
-      setHl(2);
-      setShare(2);
+      setHl(4);
+      setWritten(4);
       setPun(0);
       setReady(true);
       setPaper(false);
       setScrollB(0);
-      setSent(chapter >= 1);
       setTouchStep(chapter === 2 ? 2 : 0);
       setBeat((["docs", "explain", "touch"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
@@ -884,40 +903,44 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setBeat("docs");
         await wait(1600);
       },
-      /* 2. The will on its own, its gifts marked; it fades to the summary,
-         which writes itself; Approve */
+      /* 2. The will on its own, each gift marked; it fades to the summary,
+         which writes itself */
       async () => {
         reset();
         setHl(0);
-        setShare(0);
+        setWritten(0);
         setPun(0);
         setReady(false);
-        setSent(false);
         setPlace("hidden");
         setBeat("explain");
         setPaper(true);
-        await wait(600);
+        await wait(500);
         setHl(1);
-        await wait(1100);
+        await wait(750);
         setHl(2);
-        await wait(1300);
-        setPaper(false);
-        await wait(900);
-        setShare(1);
-        await wait(1300);
-        setPun(1);
-        setShare(2);
+        await wait(750);
+        setHl(3);
+        await wait(600);
+        setHl(4);
         await wait(1100);
-        setReady(true);
+        setPaper(false);
         await wait(800);
-        await tapOn("approve", () => setSent(true));
-        await wait(1800);
+        setWritten(1);
+        await wait(500);
+        setWritten(2);
+        await wait(500);
+        setWritten(3);
+        setPun(1);
+        await wait(600);
+        setWritten(4);
+        await wait(1000);
+        setReady(true);
+        await wait(1600);
       },
       /* 3. The reaching out: from the approved summary to Daniel's Staying in
          touch tab, his check-ins each with a date, then Emma's booking */
       async () => {
         reset();
-        setSent(true);
         setTouchStep(0);
         setPlace("hidden");
         setBeat("summary");
@@ -946,7 +969,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   }, [chapter, replay, inView, compact, clock, rewatch, hold, pad, lineH, sheetsH, zoneH, sheet.h]);
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
-  const inRecord = beat === "docs" || beat === "explain" || beat === "summary" || beat === "touch";
+  const inRecord = beat === "docs" || beat === "summary" || beat === "touch";
   const sorted = !(beat === "empty" || beat === "carry" || beat === "reading"); // stays on through the fade out
   const panelPad = compact ? "px-4 py-6" : "px-16 py-10";
   const list = DOCS;
@@ -1032,6 +1055,11 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                 </div>
               </div>
 
+              {/* The summary on its own, writing itself */}
+              <div className={`absolute inset-0 ${compact ? "px-4 pt-4" : "px-16 pt-10"}`} style={{ opacity: beat === "explain" ? 1 : 0, transition: "opacity 440ms ease" }}>
+                {beat === "explain" && <SummaryLive written={written} pun={pun} ready={ready} still={still} />}
+              </div>
+
               {/* The client */}
               <div className="absolute inset-0" style={{ opacity: inRecord ? 1 : 0, transition: "opacity 440ms ease" }}>
                 <div
@@ -1074,11 +1102,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                     {beat === "touch" && (
                       <Appear key="touch">
                         <RecordTouch step={touchStep} compact={compact} />
-                      </Appear>
-                    )}
-                    {beat === "explain" && (
-                      <Appear key="explain" className="h-full">
-                        <LeaveBehindLive share={share} pun={pun} ready={ready} sent={sent} tap={tap} still={still} />
                       </Appear>
                     )}
                     {beat === "summary" && (
