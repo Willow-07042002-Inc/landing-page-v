@@ -6,7 +6,6 @@ import { ProClientRowView, ProCoupleView } from "@/components/product/attorney-c
 import { ProColumn, ProReminder } from "@/components/product/attorney-dashboard";
 import {
   GoogleCalendarLogo,
-  GoogleContactsLogo,
   GoogleMeetLogo,
   MicrosoftTeamsLogo,
   OutlookLogo,
@@ -88,11 +87,21 @@ const InYourWords = () => (
   </div>
 );
 
+const GmailLogo = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="52 42 88 66" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path fill="#4285F4" d="M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6" />
+    <path fill="#34A853" d="M120 108h14c3.32 0 6-2.69 6-6V59l-20 15" />
+    <path fill="#FBBC04" d="M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2" />
+    <path fill="#EA4335" d="M72 74V48l24 18 24-18v26L96 92" />
+    <path fill="#C5221F" d="M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2" />
+  </svg>
+);
+
 type Logo = (p: { className?: string }) => React.ReactElement;
 const CONNECTORS: { name: string; Logo: Logo }[] = [
   { name: "Google Calendar", Logo: GoogleCalendarLogo },
   { name: "Outlook", Logo: OutlookLogo },
-  { name: "Google contacts", Logo: GoogleContactsLogo },
+  { name: "Gmail", Logo: GmailLogo },
   { name: "Google Meet", Logo: GoogleMeetLogo },
   { name: "Zoom", Logo: ZoomLogo },
   { name: "Microsoft Teams", Logo: MicrosoftTeamsLogo },
@@ -116,10 +125,10 @@ const WhatYouDeliver = () => (
 
         <article id="integrations" className={`${TILE} scroll-mt-24 p-7 lg:col-span-3 lg:min-h-[340px]`}>
           <TileTitle>Connect</TileTitle>
-          <ul className="mt-auto grid grid-cols-2 gap-2.5 pt-6 min-[420px]:grid-cols-3 sm:grid-cols-3 lg:grid-cols-2">
+          <ul className="mt-auto grid grid-cols-3 gap-1.5 pt-6">
             {CONNECTORS.map(({ name, Logo }) => (
-              <li key={name} title={name} className="flex h-[76px] items-center justify-center rounded-lg bg-white" style={{ boxShadow: UI_SHADOW }}>
-                <Logo className="h-9 w-9" />
+              <li key={name} title={name} className="flex h-11 items-center justify-center rounded-md bg-white">
+                <Logo className="h-5 w-5 object-contain" />
                 <span className="sr-only">{name}</span>
               </li>
             ))}
