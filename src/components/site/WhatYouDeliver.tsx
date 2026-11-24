@@ -4,6 +4,7 @@ import { LightHead } from "@/components/site/StayingAhead";
 import { FloatStack } from "@/components/product/kit";
 import { ProClientRowView, ProCoupleView } from "@/components/product/attorney-clients";
 import { CheckIcon } from "@/components/product/willow-icons";
+import { CalendarCheck, Phone } from "lucide-react";
 import {
   GoogleCalendarLogo,
   GoogleMeetLogo,
@@ -22,7 +23,8 @@ import {
      small  On your terms (one line, Aaron's ask): one real decision asked
             as a question, When a client says something has changed: They
             book directly or We call them (the check-in's Call after the
-            check-in setting), and a visitor can pick
+            check-in setting), as two switch rows in the style of Harvey's
+            Knowledge tile, tied so one is always on
      small  Connect: the apps it connects to
      wide   Speak to clients in your own voice: a plan summary where the
             attorney types their own wording over one power, then Approve
@@ -242,47 +244,47 @@ const SummaryEdit = () => {
 
 /* One real decision, asked as a question: the client check-in's Call after
    the check-in (touchpoint-panel.tsx), which sets what a client's portal
-   offers once they say something has changed. The product's They book and
-   We call them, drawn as two answers to pick from (its third, No call, is
-   left out to keep the tile simple; Aaron, Nov 24: one thing, a question,
-   made to look good in the white card). A visitor can pick either */
-const FOLLOW_UPS = ["They book directly", "We call them"] as const;
+   offers once they say something has changed. Its They book and We call
+   them (the third, No call, left out to keep the tile simple) as rows in
+   the Harvey Knowledge tile's style: each its own small white row with an
+   icon, a label and the product's switch. The two are tied, so switching
+   one off switches the other on, and the tile always reads as one decision
+   (Aaron, Nov 24). A visitor can flip them */
+const FOLLOW_UPS = [
+  { label: "They book directly", Icon: CalendarCheck },
+  { label: "We call them", Icon: Phone },
+] as const;
+type FollowUp = (typeof FOLLOW_UPS)[number]["label"];
 
 const FollowUpChoice = () => {
-  const [value, setValue] = useState<(typeof FOLLOW_UPS)[number]>("We call them");
+  const [value, setValue] = useState<FollowUp>("We call them");
+  const flip = (label: FollowUp) => setValue(label === value ? FOLLOW_UPS.find((o) => o.label !== label)!.label : label);
   return (
-    <div className="w-full rounded-t-2xl bg-white px-4 pb-4 pt-3.5 text-left" style={{ boxShadow: UI_SHADOW }}>
-      <p id="follow-up-question" className="text-[13.5px] font-semibold leading-snug text-[#1F2933]">
+    <div className="text-left" style={{ fontFamily: PRODUCT_FONT }}>
+      <p id="follow-up-question" className="text-[13px] font-medium text-[#6B7280]" style={{ textWrap: "balance" }}>
         When a client says something has changed
       </p>
-      <div role="radiogroup" aria-labelledby="follow-up-question" className="mt-3 space-y-2">
-        {FOLLOW_UPS.map((o) => {
-          const on = o === value;
+      <div role="radiogroup" aria-labelledby="follow-up-question" className="mt-2.5 space-y-1.5">
+        {FOLLOW_UPS.map(({ label, Icon }) => {
+          const on = label === value;
           return (
             <button
-              key={o}
+              key={label}
               type="button"
               role="radio"
               aria-checked={on}
-              onClick={() => setValue(o)}
-              className={`flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-[13px] transition-[background-color,border-color,color,box-shadow,transform] duration-200 active:scale-[0.98] ${
-                on ? "border-[#309E96] bg-[#F0F9F9] font-semibold text-[#1F2933]" : "border-[#E5E7EB] bg-white font-medium text-[#4B5563] hover:border-[#C4C9D0] hover:bg-[#FAFBFB]"
-              }`}
-              style={{
-                transitionTimingFunction: "var(--ease-out)",
-                boxShadow: on ? "0 0 0 3px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
-              }}
+              onClick={() => flip(label)}
+              className="flex w-full items-center gap-3 rounded-[10px] bg-white px-3.5 py-3 text-left transition-transform duration-150 active:scale-[0.98]"
+              style={{ boxShadow: "0 1px 2px rgba(16,24,40,0.06), 0 0 0 1px rgba(16,24,40,0.04)", transitionTimingFunction: "var(--ease-out)" }}
             >
-              <span
-                aria-hidden
-                className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border transition-colors duration-200 ${on ? "border-[#309E96]" : "border-[#C4C9D0]"}`}
-              >
+              <Icon aria-hidden strokeWidth={1.75} className="h-4 w-4 flex-shrink-0 text-[#309E96]" />
+              <span className="min-w-0 flex-1 text-[14px] text-[#1F2933]">{label}</span>
+              <span aria-hidden className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 ${on ? "bg-[#309E96]" : "bg-[#E5E7EB]"}`}>
                 <span
-                  className="h-2 w-2 rounded-full bg-[#309E96] transition-transform duration-200"
-                  style={{ transform: on ? "scale(1)" : "scale(0)", transitionTimingFunction: "var(--ease-out)" }}
+                  className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-200"
+                  style={{ transform: on ? "translateX(18px)" : "translateX(3px)", transitionTimingFunction: "var(--ease-out)" }}
                 />
               </span>
-              {o}
             </button>
           );
         })}
@@ -331,12 +333,8 @@ const WhatYouDeliver = () => (
         <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
           <TileTitle>On your terms</TileTitle>
           <TileBody>You decide how you follow up with clients.</TileBody>
-          <div className="mt-auto pt-4">
-            {/* Taller between 1024 and 1200px, where the question takes
-                three lines */}
-            <Bleed heightClass="h-[166px] lg:h-[206px] min-[1200px]:h-[166px]" fadeFrom={100} live>
-              <FollowUpChoice />
-            </Bleed>
+          <div className="mt-auto pb-5 pt-4">
+            <FollowUpChoice />
           </div>
         </article>
 
