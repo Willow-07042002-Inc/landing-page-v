@@ -19,9 +19,11 @@ import {
      tall   Bring the clients you already have: the Clients list, Daniel and
             Maria first, running off the bottom (importing contacts is being
             built, Nov 24, and Aaron cleared claiming it)
-     small  Willow fits around your process: the check-in panel's own
+     small  On your terms (one line, Aaron's ask; Willow set up around what
+            the attorney is comfortable with): the check-in panel's own
             switches (Ask me before each one goes out, and the questions),
-            which flip when clicked
+            which flip when clicked. True as worded: check-ins send on their
+            own unless Ask me is on, and summaries always wait for review
      small  Connect: the apps it connects to
      wide   Speak to clients in your own voice: a plan summary where the
             attorney types their own wording over one power, then Approve
@@ -335,8 +337,8 @@ const WhatYouDeliver = () => (
         </article>
 
         <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
-          <TileTitle>Willow fits around your process</TileTitle>
-          <TileBody>Keep your safeguards and choose what waits for your approval.</TileBody>
+          <TileTitle>On your terms</TileTitle>
+          <TileBody>You decide how much Willow handles on its own and what waits for your review.</TileBody>
           <div className="mt-auto pt-4">
             <Bleed height={108} fadeFrom={58} live>
               <FitWidth width={250}>
