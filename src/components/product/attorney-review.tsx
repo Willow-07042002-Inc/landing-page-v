@@ -103,7 +103,16 @@ const ReviewTopBar = () => (
    scrolls. Nothing edited yet: undo and redo are greyed and there is no
    "Reset edits"; one AI note waits in Suggested reviews (a note, not a gate,
    so Approve Summary is live). */
-const SummaryHead = () => (
+/** Optional live state, for the marketing film's walk through one edit */
+export type SummaryLive = {
+  edited?: boolean;
+  approveLabel?: React.ReactNode;
+  approveStyle?: React.CSSProperties;
+  remainingNote?: React.ReactNode;
+  remainingAction?: React.ReactNode;
+};
+
+const SummaryHead = ({ edited = false, approveLabel = "Approve Summary", approveStyle }: SummaryLive) => (
   <div className="relative z-20 bg-[#F0F2F5] pb-3 pt-5">
     <div className="mx-auto max-w-[900px] px-4">
       <div className="flex flex-row items-start justify-between gap-6">
@@ -117,7 +126,7 @@ const SummaryHead = () => (
         </div>
         <div className="flex shrink-0 flex-nowrap items-center justify-end gap-2">
           <div className="flex items-center gap-1 rounded-full bg-white px-1.5 py-1" style={{ boxShadow: SHADOW_SM }}>
-            <span aria-label="Undo" className="flex h-8 w-8 items-center justify-center rounded-full text-[#C4C9D0]">
+            <span aria-label="Undo" className={`flex h-8 w-8 items-center justify-center rounded-full ${edited ? "text-[#374151]" : "text-[#C4C9D0]"}`} style={{ transition: "color 200ms ease" }}>
               <Icon name="undo" className="h-4 w-4" />
             </span>
             <span aria-label="Redo" className="flex h-8 w-8 items-center justify-center rounded-full text-[#C4C9D0]">
@@ -130,9 +139,9 @@ const SummaryHead = () => (
               1
             </span>
           </span>
-          <span className="flex items-center gap-2 rounded-full bg-[#128F8B] px-5 py-2.5 text-white transition-colors hover:bg-[#0F7673]" style={{ fontSize: 14, fontWeight: 500 }}>
+          <span className="flex items-center gap-2 rounded-full bg-[#128F8B] px-5 py-2.5 text-white transition-colors hover:bg-[#0F7673]" style={{ fontSize: 14, fontWeight: 500, ...approveStyle }}>
             <Icon name="done" className="h-4 w-4" />
-            Approve Summary
+            {approveLabel}
           </span>
         </div>
       </div>
@@ -187,6 +196,8 @@ const EditToggle = () => (
     <Icon name="edit" className="h-3.5 w-3.5" /> Edit
   </span>
 );
+
+export const SummaryEditToggle = EditToggle;
 
 /* scenario-blocks.tsx house primitives */
 const SubBlock = ({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) => (
@@ -258,7 +269,7 @@ const RoleChain = ({ role, steps }: { role: string; steps: string[] }) => (
               <div className={last ? "" : "pb-4"} style={{ paddingTop: 1 }}>
                 <div className="text-[#1F2933]" style={{ fontSize: 15, fontWeight: 500 }}>{name}</div>
                 <div className="mt-0.5 text-[#9CA3AF]" style={{ fontSize: 12.5 }}>
-                  {i === 0 ? "First choice" : `Second in line — steps in if ${steps[i - 1]} can’t serve`}
+                  {i === 0 ? "First choice" : `Second in line, steps in if ${steps[i - 1]} can’t serve`}
                 </div>
               </div>
             </div>
@@ -272,7 +283,7 @@ const RoleChain = ({ role, steps }: { role: string; steps: string[] }) => (
 /* The adapter's own protection copy (extracted-will-adapter.ts, "Built-in
    protections"): no-bond, digital-assets and simultaneous-death */
 const PROTECTIONS = [
-  { title: "No Bond Required", blurb: "Your fiduciaries serve without posting a bond — less cost and delay." },
+  { title: "No Bond Required", blurb: "Your fiduciaries serve without posting a bond, for less cost and delay." },
   { title: "Digital Assets", blurb: "Your executors can access your accounts, photos, and files." },
   { title: "Simultaneous-Death Rule", blurb: "If the order of deaths is ever unclear, your will settles it." },
 ];
@@ -281,7 +292,7 @@ const PROTECTIONS = [
    plan, at rest: From your firm, You & Your Family (open), If You Need
    Someone to Step In, What You'll Leave Behind (open), How Your Plan
    Protects You (open), Your Documents. */
-export const SummaryCards = ({ flush = false }: { flush?: boolean }) => (
+export const SummaryCards = ({ flush = false, remainingNote, remainingAction }: { flush?: boolean } & Pick<SummaryLive, "remainingNote" | "remainingAction">) => (
   <div className={flush ? "" : "mx-auto max-w-[900px] px-4 pb-16 pt-6"}>
     <div className="space-y-1.5 rounded-2xl bg-[#F3F4F6]" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
       {/* client-firm-cell.tsx → FromYourFirmCard: the firm's building (no logo
@@ -326,7 +337,7 @@ export const SummaryCards = ({ flush = false }: { flush?: boolean }) => (
         </div>
 
         <SubBlock title="1. Debts & Taxes">
-          <P>Debts, expenses, and any estate taxes are settled from the estate itself before anything is given out — no one who receives a gift below owes tax on it.</P>
+          <P>Debts, expenses, and any estate taxes are settled from the estate itself before anything is given out, so no one who receives a gift below owes tax on it.</P>
         </SubBlock>
 
         {/* A will with no specific gifts: the attorney's quiet way in */}
@@ -336,9 +347,9 @@ export const SummaryCards = ({ flush = false }: { flush?: boolean }) => (
         </span>
 
         <Hr />
-        <SubBlock title="2. The Remaining Estate" action={<EditToggle />}>
+        <SubBlock title="2. The Remaining Estate" action={remainingAction ?? <EditToggle />}>
           <p className="mb-4 text-[#6B7280]" style={{ fontSize: 13, lineHeight: 1.5 }}>
-            Once debts and taxes are settled, here’s what happens to your estate.
+            {remainingNote ?? "Once debts and taxes are settled, here’s what happens to your estate."}
           </p>
           <div className="space-y-4">
             <ShareRow name="Maria Rosen" percent={100} />
@@ -408,14 +419,14 @@ export const SummaryReviewScreen = () => (
  * down to the card's bottom edge. (In a 1440 × 855 frame the same view cuts
  * through the executor chain.) Pass h={SUMMARY_REVIEW_CROP_HEIGHT}.
  */
-export const SummaryReviewScreenCropped = () => (
+export const SummaryReviewScreenCropped = ({ edited, approveLabel, approveStyle, remainingNote, remainingAction }: SummaryLive = {}) => (
   <div className="flex w-full overflow-hidden bg-[#F0F2F5] text-left text-[#1F2933]" style={{ fontFamily: FIGTREE, height: SUMMARY_REVIEW_CROP_HEIGHT }}>
     <ReviewSidebar />
     <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
       <ReviewTopBar />
-      <SummaryHead />
+      <SummaryHead edited={edited} approveLabel={approveLabel} approveStyle={approveStyle} />
       <div style={{ marginTop: -CROP_SCROLL }}>
-        <SummaryCards />
+        <SummaryCards remainingNote={remainingNote} remainingAction={remainingAction} />
       </div>
     </div>
   </div>

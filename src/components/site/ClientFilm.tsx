@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { PrintFrame } from "@/components/site/blocks";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
-import { ProSummaryAwaitingPill } from "@/components/product/attorney-client-panel";
-import { SummaryCards } from "@/components/product/attorney-review";
+import { SummaryCards, SummaryEditToggle, SummaryReviewScreenCropped } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
 import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, SpinnerIcon, ViewIcon } from "@/components/product/willow-icons";
 
@@ -12,8 +11,8 @@ import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, SpinnerIcon, ViewI
       documents, emails and phones from Outlook (add-client/setup-wizard.tsx,
       api/clients/find-contact). The film creates the account by itself; in the
       product the attorney confirms it
-   2. Willow writes the summary, shown in the Estate Plan tab, and the attorney
-      approves it (estate-plans-tab.tsx; the product opens it on its own page)
+   2. the summary in the Estate Plan tab, then the real approval page, where the
+      attorney rewords one line and approves it (scenario-summary-approval.tsx)
    3. the check-ins ahead, year after year (client-detail/staying-in-touch.tsx)
    4. the check-ins reach the people in the plan, and one books a call.
    Every chapter uses the same move: paper fans out, is read, and files itself
@@ -28,7 +27,7 @@ const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
 
 export const FILM_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
-export const FILM_MS = [8910, 7500, 4160, 4380];
+export const FILM_MS = [11740, 8800, 4160, 4380];
 /** Optional: lets the dev review page (/dev/film) pause and slow the film */
 export type FilmClock = { rate: number; paused: boolean };
 
@@ -77,10 +76,22 @@ const SHEETS: Record<"docs" | "checks" | "team", SheetData[]> = {
 };
 const FAN = [-8, -5, -2, 2, 5, 8];
 
-type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "drafting" | "summary" | "ahead" | "team";
+/* The one line the attorney rewords on the approval page */
+const NOTE_BEFORE = "Once debts and taxes are settled, here’s what happens to your estate.";
+const NOTE_AFTER = "Once your debts and taxes are paid, everything you leave goes to Maria.";
+
+/* A button pressing itself: nothing crosses the screen to click it */
+const tapStyle = (on: boolean): React.CSSProperties => ({
+  transform: on ? "scale(0.96)" : "scale(1)",
+  boxShadow: on ? "0 0 0 6px rgba(48,158,150,0.22)" : "0 0 0 0 rgba(48,158,150,0)",
+  transition: "transform 180ms var(--ease-out), box-shadow 340ms ease",
+});
+
+type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "review" | "ahead" | "team";
 type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Cursor = Point & { shown: boolean; down: boolean };
+type Tap = "continue" | "summary" | "approve" | "edit" | "final" | null;
+type EditStage = "idle" | "select" | "typing" | "done";
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
 const FIGTREE = "Figtree, Inter, sans-serif";
@@ -131,20 +142,21 @@ const Progress = ({ step = 1 }: { step?: 1 | 2 }) => (
   </div>
 );
 
-/* Step 2 of the real form, filling itself in: the names and address from the
-   documents, then each email and phone from the attorney's Outlook, together */
-const TheirAccounts = ({ found, pulse, compact }: { found: boolean; pulse: boolean; compact: boolean }) => {
+/* Step 2 of the real form, filling itself in: names from the documents, then
+   Outlook finds Daniel, then Maria, then their address appears underneath */
+const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: number; looking: number; address: boolean; pulse: boolean; compact: boolean }) => {
   const field = `min-w-0 truncate border-b border-[#E5E7EB] leading-[22px] text-[#1F2933] ${compact ? "py-2 text-[14px]" : "py-2.5 text-[15px]"}`;
   const section = compact ? "bg-white p-4" : "bg-white p-6";
-  const fade = "opacity 520ms ease";
-  const filled = (empty: string, value: string) => (
+  const clear = "opacity 170ms ease";
+  const fade = "opacity 460ms ease 170ms";
+  const filled = (on: boolean, empty: React.ReactNode, value: string) => (
     <div className={`relative ${field}`}>
-      <span className="block truncate text-[#9CA3AF]" style={{ opacity: found ? 0 : 1, transition: fade }}>{empty}</span>
-      <span className="absolute inset-x-0 truncate" style={{ top: compact ? 8 : 10, opacity: found ? 1 : 0, transition: fade }}>{value}</span>
+      <span className="flex items-center gap-1.5 truncate text-[#9CA3AF]" style={{ opacity: on ? 0 : 1, transition: clear }}>{empty}</span>
+      <span className="absolute inset-x-0 truncate" style={{ top: compact ? 8 : 10, opacity: on ? 1 : 0, transition: fade }}>{value}</span>
     </div>
   );
-  const note = (
-    <span className="flex flex-shrink-0 items-center gap-1 text-[12px] text-[#9CA3AF]" style={{ opacity: found ? 1 : 0, transition: fade }}>
+  const note = (on: boolean) => (
+    <span className="flex flex-shrink-0 items-center gap-1 text-[12px] text-[#9CA3AF]" style={{ opacity: on ? 1 : 0, transition: on ? fade : clear }}>
       <OutlookLogo className="h-3.5 w-3.5" />
       Found in Outlook
     </span>
@@ -153,8 +165,20 @@ const TheirAccounts = ({ found, pulse, compact }: { found: boolean; pulse: boole
     <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
       <div className="flex flex-col gap-1.5">
         {ACCOUNTS.map((p) => {
-          const email = filled(`Looking for ${p.first}'s email…`, p.email);
-          const phone = filled("Phone", p.phone);
+          const on = found >= p.n;
+          const email = filled(
+            on,
+            looking === p.n ? (
+              <>
+                <SpinnerIcon className="h-3.5 w-3.5 flex-shrink-0 animate-spin text-[#309E96]" />
+                Looking for {p.first}&apos;s email&hellip;
+              </>
+            ) : (
+              "Email *"
+            ),
+            p.email
+          );
+          const phone = filled(on, "Phone", p.phone);
           return (
             <div key={p.n} className={section}>
               <div className="mb-2 flex items-baseline justify-between gap-3">
@@ -169,7 +193,7 @@ const TheirAccounts = ({ found, pulse, compact }: { found: boolean; pulse: boole
                   </div>
                   <div className="relative">
                     {email}
-                    <span className="absolute right-0 top-1/2 -translate-y-1/2 bg-white pl-2">{note}</span>
+                    {on && <span className="absolute right-0 top-1/2 -translate-y-1/2 bg-white pl-2">{note(on)}</span>}
                   </div>
                   {phone}
                 </div>
@@ -179,7 +203,7 @@ const TheirAccounts = ({ found, pulse, compact }: { found: boolean; pulse: boole
                   <div className={field}>Rosen</div>
                   <div>
                     {email}
-                    <div className="mt-1">{note}</div>
+                    <div className="mt-1">{note(on)}</div>
                   </div>
                   {phone}
                 </div>
@@ -187,27 +211,31 @@ const TheirAccounts = ({ found, pulse, compact }: { found: boolean; pulse: boole
             </div>
           );
         })}
-        <div className={section}>
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">
-            Their home address <span className="font-normal normal-case tracking-normal">(from their documents)</span>
-          </p>
-          {compact ? (
-            <div className={field}>85 Grove Street, New York, 10014</div>
-          ) : (
-            <div className="grid grid-cols-2 gap-x-6">
-              <div className={field}>85 Grove Street</div>
-              <div className="grid grid-cols-[1fr_96px] gap-x-6">
-                <div className={field}>New York</div>
-                <div className={field}>10014</div>
-              </div>
+        <div style={{ display: "grid", gridTemplateRows: address ? "1fr" : "0fr", transition: "grid-template-rows 420ms var(--ease-in-out)" }}>
+          <div className="min-h-0 overflow-hidden">
+            <div className={section} style={{ opacity: address ? 1 : 0, transition: "opacity 360ms ease 120ms" }}>
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">
+                Their home address <span className="font-normal normal-case tracking-normal">(from their documents)</span>
+              </p>
+              {compact ? (
+                <div className={field}>85 Grove Street, New York, 10014</div>
+              ) : (
+                <div className="grid grid-cols-2 gap-x-6">
+                  <div className={field}>85 Grove Street</div>
+                  <div className="grid grid-cols-[1fr_96px] gap-x-6">
+                    <div className={field}>New York</div>
+                    <div className={field}>10014</div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
         <div className={compact ? "bg-white p-3" : "bg-white px-6 py-4"}>
           <div
             className="flex h-11 w-full items-center justify-center rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white"
             style={{
-              opacity: found ? 1 : 0.5,
+              opacity: address ? 1 : 0.5,
               transform: pulse ? "scale(0.97)" : "scale(1)",
               boxShadow: pulse ? "0 0 0 6px rgba(48,158,150,0.24)" : "0 0 0 0 rgba(48,158,150,0)",
               transition: "opacity 420ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease",
@@ -317,21 +345,27 @@ const Sheet = ({ d, scanning, scanned }: { d: SheetData; scanning: boolean; scan
   </div>
 );
 
-const SubTabs = ({ active }: { active: "Documents" | "Summary" }) => (
-  <div className="mb-6 border-b border-[#E5E7EB]">
+const SubTabs = ({ active, pulse = false, right }: { active: "Documents" | "Summary"; pulse?: boolean; right?: React.ReactNode }) => (
+  <div className="mb-6 flex flex-shrink-0 items-center justify-between gap-3 border-b border-[#E5E7EB] pb-px">
     <div className="flex">
       {(["Documents", "Summary"] as const).map((t) => (
-        <span key={t} data-sub={t} className={`whitespace-nowrap border-b-2 px-4 py-3 text-[13px] font-medium ${t === active ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}>
+        <span
+          key={t}
+          data-sub={t}
+          className={`whitespace-nowrap rounded-t-md border-b-2 px-4 py-3 text-[13px] font-medium ${t === active ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}
+          style={t === "Summary" ? { ...tapStyle(pulse), background: pulse ? "rgba(48,158,150,0.10)" : "transparent" } : undefined}
+        >
           {t}
         </span>
       ))}
     </div>
+    {right}
   </div>
 );
 
-const TheirDocuments = () => (
+const TheirDocuments = ({ pulse }: { pulse: boolean }) => (
   <>
-    <SubTabs active="Documents" />
+    <SubTabs active="Documents" pulse={pulse} />
     <div className="space-y-6">
       <div>
         <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
@@ -463,7 +497,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const approveRef = useRef<HTMLSpanElement>(null);
+  const reviewRef = useRef<HTMLDivElement>(null);
+  const continueRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const checkRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -481,15 +516,19 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const [targets, setTargets] = useState<Point[]>([]);
   const [filed, setFiled] = useState(false);
   const [booked, setBooked] = useState(false);
-  const [approved, setApproved] = useState(false);
-  const [found, setFound] = useState(false);
+  const [tap, setTap] = useState<Tap>(null);
+  const [edit, setEdit] = useState<EditStage>("idle");
+  const [typed, setTyped] = useState(0);
+  const [sent, setSent] = useState(false);
+  const [reviewScroll, setReviewScroll] = useState(0);
+  const [found, setFound] = useState(0);
+  const [looking, setLooking] = useState(0);
+  const [address, setAddress] = useState(false);
   const [pulse, setPulse] = useState(false);
   const [summaryScroll, setSummaryScroll] = useState(0);
   const [cardH, setCardH] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
   const [scrollA, setScrollA] = useState(0);
-  const [pressed, setPressed] = useState(false);
-  const [cursor, setCursor] = useState<Cursor>({ x: 0, y: 0, shown: false, down: false });
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -520,10 +559,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
       setScan(-1);
       setFiled(true);
       setBooked(chapter === 3);
-      setApproved(chapter === 1);
+      setEdit(chapter === 1 ? "done" : "idle");
+      setTyped(NOTE_AFTER.length);
+      setSent(chapter === 1);
       setSummaryScroll(0);
-      setCursor((c) => ({ ...c, shown: false }));
-      setBeat((["docs", "summary", "ahead", "team"] as Beat[])[chapter]);
+      setBeat((["docs", "review", "ahead", "team"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
       return;
     }
@@ -570,12 +610,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
       setTargets([]);
       setFiled(false);
       setBooked(false);
-      setApproved(false);
-      setFound(false);
+      setFound(0);
+      setLooking(0);
+      setAddress(false);
       setPulse(false);
-      setSummaryScroll(0);
-      setPressed(false);
-      setCursor((c) => ({ ...c, shown: false, down: false }));
+      setTap(null);
     };
     const readSheets = async (n: number, each: number) => {
       for (let i = 0; i < n; i++) {
@@ -592,18 +631,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
       setPlace("fan");
       await wait(620);
     };
-    const clickOn = async (el: Element | null | undefined, after: () => void) => {
-      const b = box(el);
-      setCursor({ x: b.x + 90, y: b.y + 110, shown: false, down: false });
-      await wait(60);
-      setCursor({ x: b.x, y: b.y, shown: true, down: false });
-      await wait(880);
-      setCursor((c) => ({ ...c, down: true }));
-      setPressed(true);
-      await wait(140);
+    const tapOn = async (name: Exclude<Tap, null>, after: () => void) => {
+      setTap(name);
+      await wait(190);
       after();
-      setPressed(false);
-      setCursor((c) => ({ ...c, down: false }));
+      setTap(null);
     };
 
     const chapters: (() => Promise<void>)[] = [
@@ -633,21 +665,31 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         await wait(680);
         await readSheets(DOCS.length, 210);
         await wait(320);
-        const rows = iconRefs.current.map((el) => box(el));
-        const toScroll = Math.max(0, rows[5].bottom + 40 - R.h);
-        setTargets(rows.map((b) => ({ x: b.x, y: b.y - toScroll })));
+        /* In order, under each person. Then down to Continue */
+        setTargets(iconRefs.current.map((el) => { const b = box(el); return { x: b.x, y: b.y }; }));
         setCardH(innerRef.current?.offsetHeight ?? null);
-        setScrollA(toScroll);
         setBeat("filed");
         setPlace("file");
-        await wait(1500);
+        await wait(1450);
         setPlace("hidden");
+        setScrollA(Math.max(0, box(continueRef.current).bottom + 32 - R.h));
+        await wait(900);
+        await tapOn("continue", () => setBeat("accounts"));
 
-        /* The account fills itself in from the documents and Outlook */
-        setBeat("accounts");
-        await wait(760);
-        setFound(true);
-        await wait(1250);
+        /* Outlook finds Daniel, then Maria; their address comes in underneath */
+        await wait(620);
+        setLooking(1);
+        await wait(720);
+        setFound(1);
+        setLooking(0);
+        await wait(420);
+        setLooking(2);
+        await wait(720);
+        setFound(2);
+        setLooking(0);
+        await wait(420);
+        setAddress(true);
+        await wait(900);
         setPulse(true);
         await wait(190);
         setPulse(false);
@@ -655,24 +697,42 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         setBeat("docs");
         await wait(1150);
       },
-      /* 2. Rachel opens Summary: Willow writes it, there in the Estate Plan tab */
+      /* 2. The summary, then one line reworded on the approval page */
       async () => {
         reset();
+        setEdit("idle");
+        setTyped(0);
+        setSent(false);
+        setSummaryScroll(0);
+        setReviewScroll(0);
         setPlace("hidden");
         setBeat("docs");
-        await wait(120);
-        await clickOn(rootRef.current?.querySelector('[data-sub="Summary"]'), () => setBeat("drafting"));
-        setCursor((c) => ({ ...c, shown: false }));
-        await wait(1500);
-        setBeat("summary");
         await wait(620);
+        await tapOn("summary", () => setBeat("summary"));
+        await wait(360);
         const win = box(cardsRef.current);
         const heading = [...(cardsRef.current?.querySelectorAll("div") ?? [])].find((e) => e.textContent?.trim() === "What You'll Leave Behind");
         setSummaryScroll(Math.max(0, box(heading).top - win.top - 34));
-        await wait(2100);
-        await clickOn(approveRef.current, () => setApproved(true));
+        await wait(1800);
+        await tapOn("approve", () => setBeat("review"));
+        if (compact) {
+          const line = box(reviewRef.current?.querySelector("[data-note]"));
+          const top = box(reviewRef.current?.querySelector("[data-review-cards]"));
+          setReviewScroll(Math.max(0, line.top - top.top - 120));
+        }
         await wait(1000);
-        setCursor((c) => ({ ...c, shown: false }));
+        await tapOn("edit", () => setEdit("select"));
+        await wait(420);
+        setEdit("typing");
+        for (let n = 1; n <= NOTE_AFTER.length; n++) {
+          setTyped(n);
+          await wait(22);
+        }
+        await wait(260);
+        setEdit("done");
+        await wait(620);
+        await tapOn("final", () => setSent(true));
+        await wait(1400);
       },
       /* 3. The check-ins ahead, year after year */
       async () => {
@@ -725,6 +785,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
   const inRecord = !uploading && beat !== "accounts";
   const reading = beat === "reading";
+  const sorted = !(beat === "empty" || beat === "carry" || beat === "reading"); // stays on through the fade out
   const panelPad = compact ? "px-4 py-6" : "px-16 py-10";
   const list = SHEETS[sheetSet];
 
@@ -747,6 +808,39 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     const d = i * 70;
     return { x: to.x, y: to.y, r: 0, s: 0.16, o: 0, t: `transform 620ms var(--ease-in-out) ${d}ms, opacity 140ms ease ${d + 500}ms` };
   };
+
+  const approveLabel = sent ? "Sent to Daniel" : "Approve Summary";
+  const editing = edit === "select" || edit === "typing";
+  const remainingNote = (
+    <span
+      data-note
+      className="block rounded-[3px]"
+      style={{
+        color: edit === "idle" ? undefined : "#1F2933",
+        boxShadow: editing ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
+        transition: "box-shadow 180ms ease",
+      }}
+    >
+      {edit === "idle" && NOTE_BEFORE}
+      {edit === "select" && <span className="bg-[#CDEBE8]">{NOTE_BEFORE}</span>}
+      {edit === "typing" && (
+        <>
+          {NOTE_AFTER.slice(0, typed)}
+          <span className="ml-px inline-block h-[14px] w-px translate-y-[2px] bg-[#1F2933]" />
+        </>
+      )}
+      {edit === "done" && NOTE_AFTER}
+    </span>
+  );
+  const remainingAction =
+    edit === "idle" ? (
+      <span className="rounded" style={tapStyle(tap === "edit")}><SummaryEditToggle /></span>
+    ) : (
+      <span className="inline-flex items-center gap-1 text-[#309E96]" style={{ fontSize: 12, fontWeight: 600 }}>
+        {edit === "done" && <CheckIcon className="h-3.5 w-3.5" />}
+        {edit === "done" ? "Edited" : "Editing"}
+      </span>
+    );
 
   return (
     <div
@@ -780,11 +874,20 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                   <Progress />
                   <div ref={cardRef} className="relative overflow-hidden rounded-2xl bg-white" style={{ height: cardH ?? cardEmpty, transition: "height 460ms var(--ease-in-out)" }}>
                     <div ref={innerRef} className={compact ? "bg-white p-6" : "bg-white p-8"}>
-                      <div style={{ opacity: reading ? 0 : 1, transition: "opacity 160ms ease" }}>
-                        <DropLine active={beat === "carry"} />
+                      {(beat === "empty" || beat === "carry") && <DropLine active={beat === "carry"} />}
+                      <div className={beat === "empty" || beat === "carry" ? "mt-2" : ""}>
+                        <DocGroups on={sorted} iconRefs={iconRefs} />
                       </div>
-                      <div className="mt-2">
-                        <DocGroups on={beat === "filed"} iconRefs={iconRefs} />
+                      <div className="mt-5 flex justify-end">
+                        <Fade on={sorted} delay={880}>
+                          <div
+                            ref={continueRef}
+                            className="inline-flex h-11 items-center justify-center rounded-[10px] bg-[#309E96] px-6 text-[15px] font-semibold text-white"
+                            style={tapStyle(tap === "continue")}
+                          >
+                            Continue
+                          </div>
+                        </Fade>
                       </div>
                     </div>
                     <div className="absolute inset-x-0 top-0" style={{ paddingTop: pad, opacity: reading ? 1 : 0, transition: "opacity 200ms ease" }}>
@@ -799,7 +902,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                 <div className={panelPad}>
                   <Title startOver />
                   <Progress step={2} />
-                  <TheirAccounts found={found} pulse={pulse} compact={compact} />
+                  <TheirAccounts found={found} looking={looking} address={address} pulse={pulse} compact={compact} />
                 </div>
               </div>
 
@@ -814,7 +917,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      {!compact && beat === "summary" && !approved && <ProSummaryAwaitingPill />}
                       <span className="rounded p-1.5 text-[#9CA3AF]"><WIcon name="more" className="h-5 w-5" /></span>
                     </div>
                   </div>
@@ -833,45 +935,18 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                     </div>
                   </div>
                   <div className="mt-6 min-h-0 flex-1">
-                    {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
-                    {beat === "drafting" && (
-                      <Appear key="drafting">
-                        <SubTabs active="Summary" />
-                        <div className="rounded-2xl border border-[#E5E7EB] bg-white">
-                          <WorkingMark line="Generating Daniel's summary…" />
-                        </div>
-                      </Appear>
-                    )}
-                    {beat === "summary" && (
+                    {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments pulse={tap === "summary"} /></Appear>}
+                    {(beat === "summary" || beat === "review") && (
                       <Appear key="summary" className="flex h-full flex-col">
-                        <SubTabs active="Summary" />
-                        <div className="flex flex-shrink-0 items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] bg-white px-5 py-3.5">
-                          <span className="flex min-w-0 items-center gap-3">
-                            {approved ? (
-                              <CheckIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
-                            ) : (
-                              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 18, lineHeight: 1, paddingTop: 2 }}>W</span>
-                            )}
-                            <span className="min-w-0">
-                              <span className="block text-[14px] font-semibold leading-tight text-[#1F2933]">
-                                {approved ? "Daniel can see this summary" : "Daniel's summary is ready for your approval"}
-                              </span>
-                              <span className="mt-0.5 block text-[12.5px] leading-snug text-[#6B7280]">
-                                {approved ? "Approved. You can edit and re-approve it anytime." : "Review and approve it before Daniel can see it."}
-                              </span>
-                            </span>
-                          </span>
-                          {!approved && (
-                            <span
-                              ref={approveRef}
-                              className="inline-flex h-9 flex-shrink-0 items-center rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white"
-                              style={{ transform: pressed ? "scale(0.97)" : "scale(1)", transition: "transform 140ms var(--ease-out)" }}
-                            >
+                        <SubTabs
+                          active="Summary"
+                          right={
+                            <span className="inline-flex h-9 flex-shrink-0 items-center rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white" style={tapStyle(tap === "approve")}>
                               Approve
                             </span>
-                          )}
-                        </div>
-                        <div ref={cardsRef} className="mt-3 min-h-0 flex-1 overflow-hidden rounded-t-2xl">
+                          }
+                        />
+                        <div ref={cardsRef} className="min-h-0 flex-1 overflow-hidden rounded-t-2xl">
                           <div style={{ transform: `translateY(${-summaryScroll}px)`, transition: "transform 1700ms var(--ease-in-out)" }}>
                             <SummaryCards flush />
                           </div>
@@ -903,6 +978,33 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
               </div>
             </div>
 
+            {/* The approval page */}
+            <div ref={reviewRef} className="pointer-events-none absolute inset-0 z-30" style={{ opacity: beat === "review" ? 1 : 0, transition: "opacity 360ms ease" }}>
+              {compact ? (
+                <div className="flex h-full flex-col overflow-hidden bg-[#F0F2F5] px-4 pt-5 text-left" style={{ fontFamily: FIGTREE }}>
+                  <h3 className="text-[20px] font-semibold leading-snug text-[#1F2933]" style={{ fontFamily: FIGTREE }}>Review Daniel&apos;s estate plan summary</h3>
+                  <p className="mt-1 text-[13.5px] leading-normal text-[#6B7280]">Once you approve, the summary will appear on Daniel&apos;s account.</p>
+                  <span className="mt-3 flex h-10 flex-shrink-0 items-center justify-center gap-2 rounded-full bg-[#128F8B] text-[14px] font-medium text-white" style={tapStyle(tap === "final")}>
+                    <CheckIcon className="h-4 w-4" />
+                    {approveLabel}
+                  </span>
+                  <div data-review-cards className="mt-3 min-h-0 flex-1 overflow-hidden rounded-t-2xl">
+                    <div style={{ transform: `translateY(${-reviewScroll}px)` }}>
+                      <SummaryCards flush remainingNote={remainingNote} remainingAction={remainingAction} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <SummaryReviewScreenCropped
+                  edited={edit === "done"}
+                  approveLabel={approveLabel}
+                  approveStyle={tapStyle(tap === "final")}
+                  remainingNote={remainingNote}
+                  remainingAction={remainingAction}
+                />
+              )}
+            </div>
+
             {/* Paper */}
             {list.map((d, i) => {
               const p = sheetAt(i);
@@ -923,24 +1025,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
               );
             })}
 
-            {/* Rachel */}
-            <div
-              className="pointer-events-none absolute left-0 top-0 z-50"
-              style={{
-                opacity: cursor.shown ? 1 : 0,
-                transform: `translate(${cursor.x}px, ${cursor.y}px)`,
-                transition: `transform 820ms ${MOVE}, opacity 200ms ease`,
-              }}
-            >
-              <div style={{ transform: `scale(${cursor.down ? 0.84 : 1})`, transformOrigin: "2px 2px", transition: "transform 120ms var(--ease-out)" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.2))" }}>
-                  <path d="M5 3l14 8.5-6.3 1.4L9.5 19z" fill="#374151" stroke="#374151" strokeWidth="1" strokeLinejoin="round" />
-                </svg>
-                <span className="absolute left-[18px] top-[19px] whitespace-nowrap rounded-md bg-[#374151] px-2 py-[3px] text-[12px] font-medium text-white" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}>
-                  Rachel · Attorney
-                </span>
-              </div>
-            </div>
           </div>
         </ScaledScreen>
       </PrintFrame>
