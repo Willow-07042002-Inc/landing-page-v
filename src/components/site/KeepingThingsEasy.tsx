@@ -27,7 +27,7 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
   {
     id: "reaching-out",
     title: "Check-ins that send themselves",
-    body: "Once the plan is approved, every check-in has a date on the client’s page, and Willow sends each one when it’s due. When an executor books a meeting from one, you see it there.",
+    body: "Write the check-in once. Willow gives every client their own date and sends it when it’s due, every year.",
   },
 ];
 

@@ -1,9 +1,8 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
-import { SummaryCards } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
-import { CloseIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CalendarCheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* Keeping things easy, as a film on the product's real screens:
    1. the signed plan dropped into the upload box (add-client/setup-wizard.tsx,
@@ -19,11 +18,9 @@ import { CloseIcon, ViewIcon } from "@/components/product/willow-icons";
       and the rest. In the product the summary is
       written before the attorney opens it, behind the same working mark
       (summary-generating.tsx); the film shows the reading that goes into it
-   3. the reaching out: Daniel's Staying in touch tab (client-detail/
-      staying-in-touch.tsx on main), each kind of check-in with its next date,
-      and Emma, the executor, booking a meeting from one, with no click from
-      the attorney. The film leaves out the "Sends based on" dates and the
-      pause the product puts on Emma's check-ins once she books
+   3. the check-ins (Aaron, Nov 24: the same as "Automate client check-ins"
+      above): the client check-in written once and saved, folding into the
+      month, which fills with each client's day; it rests on the month
    Each chapter is its own sequence, with its own start and end. The film plays
    them in order once from where it's opened and stops on the last frame.
    People who prefer reduced motion see each chapter at rest.
@@ -87,9 +84,6 @@ const ACCOUNTS = [
 
 const FAN = [-8, -5, -2, 2, 5, 8];
 
-/** How long each chapter runs at normal speed */
-export const EASY_MS = [12910, 7900, 6390];
-
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
   transform: on ? "scale(0.96)" : "scale(1)",
@@ -97,10 +91,10 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
   transition: "transform 180ms var(--ease-out), box-shadow 340ms ease",
 });
 
-type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "explain" | "summary" | "touch";
+type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "explain" | "checkin";
 type Place = "off" | "carry" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "tab" | null;
+type Tap = "continue" | "save" | null;
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
 const FIGTREE = "Figtree, Inter, sans-serif";
@@ -602,75 +596,210 @@ const SummaryLive = ({ written, pun, ready, still }: { written: number; pun: num
   );
 };
 
-/* Chapter 3: Daniel's check-ins as his record lists them, a few weeks on
-   (early January 2027): the agent check-in went out on December 24, so its
-   next one is a year away, and the others are a year after the plan. Dates
-   carry the year only when it isn't this one, as the product writes them */
-const TOUCH_WAYS = [
-  { label: "Agent check-ins", next: "December 24" },
-  { label: "Professional check-ins", next: "November 24" },
-  { label: "Client check-ins", next: "November 24" },
+/* Chapter 3 (Aaron, Nov 24): the same as "Automate client check-ins" in
+   the section above (KeepInTouchFilm.tsx, chapter 1, copied here so this
+   tile can sit in its own frame). The client check-in as the attorney
+   writes it, saved, folding into the month it fills, each client on their
+   own day a year after they signed. It rests on the month. The month is an
+   illustration: the product keeps each client's next date
+   (staying-in-touch.tsx), not a calendar. January 2027 starts on a Friday */
+const CHECKIN_TYPED = "It’s been a year since we signed your plan, so I’m checking in. Has anything changed, like a move, a new grandchild or a change in what you own?";
+const MONTH = { name: "January 2027", lead: 5, days: 31 };
+const CHECKINS = [
+  { day: 4, name: "Elena Ruiz" },
+  { day: 7, name: "Marcus Webb" },
+  { day: 12, name: "Daniel Rosen" },
+  { day: 13, name: "Priya Anand" },
+  { day: 20, name: "Sam Whitfield" },
+  { day: 22, name: "Olivia Grant" },
+  { day: 26, name: "Grace Liu" },
+];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+/* The month's bar, weekday row and week rows, in film pixels */
+const CAL = { head: 64, week: 34, row: 98, rowCompact: 74 };
+/* The waits in chapter 3's script */
+const C3 = { read: 500, perChar: 18, after: 300, fold: 400, land: 650, chip: 230, hold: 2000 };
+const ARIAL = "Arial, 'Segoe UI', sans-serif";
+const RING_ON = "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)";
+const RING_OFF = "0 0 0 0 rgba(48,158,150,0)";
+
+/* A fill-in as the composer shows it: a quiet pill in place of the name */
+const FillIn = ({ children }: { children: React.ReactNode }) => (
+  <span className="mx-px inline-flex items-center rounded-md bg-[#E6F5F4] px-1.5 text-[13px] font-medium leading-[22px] text-[#0F7673]">{children}</span>
+);
+
+/* A drawer's top line: its name, and its button */
+const Bar = ({ title, compact, children }: { title: string; compact: boolean; children?: React.ReactNode }) => (
+  <div className={`flex items-center justify-between gap-3 border-b border-[#EEF0F2] ${compact ? "px-5 py-3.5" : "px-7 py-4"}`}>
+    <span className="truncate text-[17px] font-semibold text-[#1F2933]">{title}</span>
+    {children && <span className="flex flex-shrink-0 items-center gap-2">{children}</span>}
+  </div>
+);
+
+/* Over an email: when it goes out on its own, its subject, who it's to */
+const EmailHead = ({ when, subject, to, compact }: { when: string; subject: React.ReactNode; to: React.ReactNode; compact: boolean }) => (
+  <div className={`border-b border-[#EEF0F2] ${compact ? "px-5 py-3" : "px-7 py-3.5"}`}>
+    <p className="flex items-center gap-2 text-[13px] font-semibold text-[#0F7673]">
+      <CalendarCheckIcon className="h-4 w-4 flex-shrink-0 text-[#309E96]" />
+      {when}
+    </p>
+    <p className="mt-1.5 text-[14.5px] font-semibold leading-[24px] text-[#1F2933]">{subject}</p>
+    <p className="mt-1 flex flex-wrap items-center gap-x-1 gap-y-1 text-[12.5px] text-[#6B7280]">To {to}</p>
+  </div>
+);
+
+/* The email as touch-email.ts lays it out: the logo (Willow's while the firm
+   has none), the words, the button */
+const mailPara = (compact: boolean): React.CSSProperties => ({ fontSize: compact ? 14 : 15, lineHeight: 1.7 });
+
+/* The client check-in as the attorney writes it: the words typed in (the
+   full text held underneath, so nothing below moves), then Save */
+const ClientCheckIn = ({ typed, saved, tap, compact }: { typed: number; saved: boolean; tap: Tap; compact: boolean }) => {
+  const writing = typed < CHECKIN_TYPED.length;
+  const dirty = typed > 0 && !saved;
+  return (
+    <>
+      <Bar title="Client check-in" compact={compact}>
+        <span
+          className="inline-flex h-[34px] items-center rounded-md px-[13px] text-[13.5px] font-semibold"
+          style={{ background: dirty ? "#309E96" : "#F3F4F6", color: dirty ? "#FFFFFF" : "#9CA3AF", ...tapStyle(tap === "save"), transition: "background-color 200ms ease, color 200ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}
+        >
+          Save
+        </span>
+      </Bar>
+      <EmailHead
+        compact={compact}
+        when={compact ? "Sends automatically after 1 year" : "Sends automatically after 1 year, then once a year"}
+        subject="Checking in: has anything changed?"
+        to={<><FillIn>First name</FillIn><FillIn>Last name</FillIn></>}
+      />
+      <div className={compact ? "px-5 pb-6 pt-3.5" : "px-7 pb-8 pt-5"} style={{ fontFamily: ARIAL }}>
+        <img src="/logo.png" alt="" className={compact ? "mb-3" : "mb-4"} style={{ height: compact ? 19 : 24, width: "auto" }} />
+        <p className="mb-3 text-[#374151]" style={mailPara(compact)}>Hi <FillIn>First name</FillIn>,</p>
+        <p className="relative -mx-1.5 mb-3 rounded-[4px] px-1.5 text-[#374151]" style={{ ...mailPara(compact), boxShadow: writing ? RING_ON : RING_OFF, transition: "box-shadow 180ms ease" }}>
+          <span className="invisible">{CHECKIN_TYPED}</span>
+          <span className="absolute inset-0 px-1.5">
+            {CHECKIN_TYPED.slice(0, typed)}
+            {writing && <span className="ml-px inline-block h-[15px] w-px translate-y-[2px] bg-[#1F2933]" />}
+          </span>
+        </p>
+        <span className="mt-1 inline-block rounded-md bg-[#309E96] font-semibold text-white" style={{ padding: compact ? "10px 18px" : "11px 22px", fontSize: compact ? 14 : 15 }}>
+          Let us know what’s changed
+        </span>
+      </div>
+    </>
+  );
+};
+
+/* Then the month the check-in fills, each client on their own day */
+const CheckInMonth = ({ chips, still, compact }: { chips: number; still: boolean; compact: boolean }) => {
+  const rowH = compact ? CAL.rowCompact : CAL.row;
+  return (
+    <>
+      <div className={`flex items-center justify-between border-b border-[#EEF0F2] ${compact ? "px-5" : "px-7"}`} style={{ height: CAL.head }}>
+        <span className="text-[17px] font-semibold text-[#1F2933]">Client check-ins</span>
+        <span className="text-[14px] font-medium text-[#6B7280]">{MONTH.name}</span>
+      </div>
+      <div className="grid grid-cols-7 items-center border-b border-[#EEF0F2] text-center text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]" style={{ height: CAL.week }}>
+        {WEEKDAYS.map((d) => (
+          <span key={d}>{compact ? d[0] : d}</span>
+        ))}
+      </div>
+      <div className="grid grid-cols-7">
+        {Array.from({ length: 42 }, (_, i) => {
+          const d = i - MONTH.lead + 1;
+          const at = CHECKINS.findIndex((c) => c.day === d);
+          const on = at >= 0 && chips > at;
+          return (
+            <div
+              key={i}
+              className={`min-w-0 border-b border-[#F0F1F3] ${i % 7 === 6 ? "" : "border-r"} ${compact ? "px-1 pt-1" : "px-1.5 pt-1.5"}`}
+              style={{ height: rowH, background: i % 7 === 0 || i % 7 === 6 ? "#FAFAFB" : "#FFFFFF" }}
+            >
+              {d >= 1 && d <= MONTH.days && <span className="block text-[12px] font-medium text-[#6B7280]">{d}</span>}
+              {at >= 0 && (
+                <span
+                  className="mt-1 block truncate rounded-md bg-[#E6F5F4] font-medium text-[#0C7370]"
+                  style={{
+                    fontSize: compact ? 10.5 : 11.5,
+                    padding: compact ? "2px 4px" : "3px 5px",
+                    opacity: on ? 1 : 0,
+                    transform: on ? "scale(1)" : "scale(0.85)",
+                    transformOrigin: "left center",
+                    transition: still ? "none" : "opacity 220ms ease, transform 300ms var(--ease-out)",
+                  }}
+                >
+                  {compact ? CHECKINS[at].name.split(" ")[0] : CHECKINS[at].name}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+
+/** How long each chapter runs at normal speed */
+export const EASY_MS = [
+  12910,
+  7900,
+  C3.read + CHECKIN_TYPED.length * C3.perChar + C3.after + 190 + C3.fold + C3.land + CHECKINS.length * C3.chip + C3.hold,
 ];
 
-/* client-detail/staying-in-touch.tsx: one switch per kind of check-in with
-   its next date, then "Daniel's people", where Emma's booking arrives
-   (StackGroup, StackSection and SwitchLine, as the product draws them).
-   step: 0 nothing yet, 1 the check-ins, 2 Emma has booked */
-const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
-  const box = compact ? "bg-white p-5" : "bg-white p-8";
-  const label = `${compact ? "mb-3" : "mb-4"} text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]`;
+/* The check-in and the month, each a white card on the panel; the check-in
+   folds from its top centre into the first client's day as the month rises
+   behind it */
+const CheckInPieces = ({ typed, saved, filed, chips, tap, still, compact, stage }: { typed: number; saved: boolean; filed: boolean; chips: number; tap: Tap; still: boolean; compact: boolean; stage: { w: number; h: number } }) => {
+  const place = compact ? { left: 16, right: 16, top: 16 } : { left: 48, right: 48, top: 40 };
+  const card = { left: place.left, right: place.right, top: place.top, bottom: -24 };
+  const shadow = "0 2px 10px rgba(11,18,32,0.08), 0 1px 2px rgba(11,18,32,0.06)";
+  const cell = CHECKINS[0].day - 1 + MONTH.lead;
+  const colW = (stage.w - place.left - place.right) / 7;
+  const x = place.left + colW * ((cell % 7) + 0.5);
+  const y = place.top + CAL.head + CAL.week + (compact ? CAL.rowCompact : CAL.row) * (Math.floor(cell / 7) + 0.5);
+  const s = 0.1;
+  const h = stage.h + 24 - place.top;
+  const fold = { x: x - stage.w / 2, y: y - place.top - (h * s) / 2 };
   return (
-    <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
-      <div className="flex flex-col gap-1.5">
-        <div className={box}>
-          <p className={label}>Staying in touch</p>
-          {TOUCH_WAYS.map((w, i) => (
-            <div
-              key={w.label}
-              className={`flex items-center gap-[13px] ${compact ? "py-[10px]" : "py-[13px]"} ${i < TOUCH_WAYS.length - 1 ? "border-b border-[#E5E7EB]" : ""}`}
-              style={{
-                opacity: step >= 1 ? 1 : 0,
-                transform: step >= 1 ? "translateY(0)" : "translateY(6px)",
-                transition: `opacity 300ms ease ${i * 110}ms, transform 420ms var(--ease-out) ${i * 110}ms`,
-              }}
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block text-[15px] text-[#1F2933]">{w.label}</span>
-                <span className="mt-px block text-[12.5px] text-[#9CA3AF]">Next: {w.next}</span>
-              </span>
-              <span className="relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full bg-[#309E96]">
-                <span className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow" style={{ transform: "translateX(18px)" }} />
-              </span>
-            </div>
-          ))}
-        </div>
-        <div
-          className={box}
-          data-touch-people
-          data-booked={step >= 2 ? "" : undefined}
-          style={{
-            opacity: step >= 2 ? 1 : 0,
-            transform: step >= 2 ? "translateY(0)" : "translateY(14px)",
-            transition: "opacity 320ms ease, transform 520ms var(--ease-out)",
-          }}
-        >
-          <p className={label}>Daniel’s people</p>
-          <div className="-mx-3 rounded-lg px-3 py-2.5" style={{ background: step >= 2 ? "#F0F9F8" : "rgba(240,249,248,0)", transition: "background-color 600ms ease 300ms" }}>
-            <p className="text-[14px] text-[#1F2933]">Emma booked Tuesday, Jan 12</p>
-            <p className="text-[13px] text-[#9CA3AF]">Executor · emma.rosen@example.com</p>
-          </div>
+    <>
+      <div
+        className="absolute"
+        style={{
+          ...card,
+          opacity: filed ? 1 : 0,
+          transform: filed ? "translateY(0)" : "translateY(48px)",
+          transition: still ? "none" : filed ? "opacity 320ms ease 160ms, transform 680ms var(--ease-out) 160ms" : "opacity 220ms ease, transform 320ms ease",
+        }}
+      >
+        <div className="h-full overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: shadow }}>
+          <CheckInMonth chips={chips} still={still} compact={compact} />
         </div>
       </div>
-    </div>
+      <div
+        className="absolute"
+        style={{
+          ...card,
+          transformOrigin: "50% 0",
+          opacity: filed ? 0 : 1,
+          transform: filed ? `translate(${fold.x}px, ${fold.y}px) scale(${s})` : "none",
+          transition: still ? "none" : filed ? "transform 640ms var(--ease-in-out), opacity 220ms ease 440ms" : "opacity 320ms ease",
+        }}
+      >
+        <div className="h-full overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: shadow }}>
+          <ClientCheckIn typed={typed} saved={saved} tap={tap} compact={compact} />
+        </div>
+      </div>
+    </>
   );
 };
 
 const FILM_LABEL =
-  "An attorney drops a client's signed estate plan into Willow, which reads it and files each document under the right person. Willow then reads the will and writes a plain-English summary of who gets what, and schedules every check-in, so the executor books a meeting without the attorney reaching out.";
+  "An attorney drops a client's signed estate plan into Willow, which reads it and files each document under the right person. Willow then reads the will and writes a plain-English summary of who gets what. The attorney writes one client check-in, and Willow puts every client on their own day in the month and sends it.";
 const TILE_LABELS = [
   "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person, and fills in the clients' names, emails, phones and address before opening the client's record.",
   "A page of Daniel's will, each gift marked as Willow reads it, fades to the summary Willow writes from it: his home to Maria, the cottage to Emma, the sloop to his brother Jacob, and the rest of the estate to Emma and Leo in equal shares.",
-  "The client's Staying in touch tab: each kind of check-in with its next date, and the executor booking a meeting from one.",
+  "The attorney writes one client check-in and saves it; it folds into the month, where each client gets their own day a year after they signed.",
 ];
 
 type Props = {
@@ -742,14 +871,14 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   const accountsRef = useRef<HTMLDivElement>(null);
   /* At rest on a last frame: nothing animates into place */
   const [still, setStill] = useState(false);
-  const [touchStep, setTouchStep] = useState(0);
+  /* Chapter 3: the check-in typed and saved, folded into the month, the clients on it */
+  const [typed, setTyped] = useState(0);
+  const [saved, setSaved] = useState(false);
+  const [filed, setFiled] = useState(false);
+  const [chips, setChips] = useState(0);
   const [cardH, setCardH] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
   const [scrollA, setScrollA] = useState(0);
-  /* In the short narrow frame the record scrolls down to Emma's booking */
-  const recordRef = useRef<HTMLDivElement>(null);
-  const [touchLift, setTouchLift] = useState(0);
-
   useEffect(() => {
     const frame = frameRef.current;
     if (!frame) return;
@@ -763,7 +892,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
 
   /* The tab row scrolls in the narrow layout: keep the open tab in sight,
      moving only as far as it takes, so no tab is left cut in half */
-  const openTab = beat === "touch" ? "Staying in touch" : "Estate Plan";
+  const openTab = "Estate Plan";
   useEffect(() => {
     const row = tabsRef.current;
     const tab = row?.querySelector<HTMLElement>(`[data-tab="${openTab}"]`);
@@ -772,15 +901,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
     row.scrollTo({ left: over > 0 ? over + 16 : 0, behavior: "smooth" });
   }, [openTab]);
 
-  useLayoutEffect(() => {
-    if (beat !== "touch") return;
-    const people = recordRef.current?.querySelector<HTMLElement>("[data-touch-people]");
-    const need = bottomWithin(people, recordRef.current) + 20 - root.h;
-    /* When it has to move, it moves up to the tab row, so no line is left cut in half */
-    const tabsTop = tabsRef.current?.offsetTop ?? 0;
-    setTouchLift(need > 0 ? Math.max(need, tabsTop - 12) : 0);
-  }, [beat, root.h]);
-  const lift = beat === "touch" && touchStep >= 2 ? touchLift : 0;
 
   useEffect(() => {
     const key = `${chapter}:${replay}:${compact}:${hold}`;
@@ -806,8 +926,11 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
       setReady(true);
       setPaper(false);
       setScrollB(0);
-      setTouchStep(chapter === 2 ? 2 : 0);
-      setBeat((["docs", "explain", "touch"] as Beat[])[chapter]);
+      setTyped(CHECKIN_TYPED.length);
+      setSaved(true);
+      setFiled(true);
+      setChips(CHECKINS.length);
+      setBeat((["docs", "explain", "checkin"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
       return;
     }
@@ -974,20 +1097,31 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setReady(true);
         await wait(1400);
       },
-      /* 3. The reaching out: from the approved summary to Daniel's Staying in
-         touch tab, his check-ins each with a date, then Emma's booking */
+      /* 3. The client check-in, written once and saved, folds into the
+         month, which fills with each client's day */
       async () => {
         reset();
-        setTouchStep(0);
+        setTyped(0);
+        setSaved(false);
+        setFiled(false);
+        setChips(0);
         setPlace("hidden");
-        setBeat("summary");
-        await wait(700);
-        await tapOn("tab", () => setBeat("touch"));
-        await wait(300);
-        setTouchStep(1);
-        await wait(2000);
-        setTouchStep(2);
-        await wait(3200);
+        setBeat("checkin");
+        await wait(C3.read);
+        for (let n = 1; n <= CHECKIN_TYPED.length; n++) {
+          setTyped(n);
+          await wait(C3.perChar);
+        }
+        await wait(C3.after);
+        await tapOn("save", () => setSaved(true));
+        await wait(C3.fold);
+        setFiled(true);
+        await wait(C3.land);
+        for (let n = 1; n <= CHECKINS.length; n++) {
+          setChips(n);
+          await wait(C3.chip);
+        }
+        await wait(C3.hold);
       },
     ];
 
@@ -1006,7 +1140,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   }, [chapter, replay, inView, compact, clock, rewatch, hold, pad, lineH, sheetsH, zoneH, sheet.h]);
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
-  const inRecord = beat === "docs" || beat === "summary" || beat === "touch";
+  const inRecord = beat === "docs";
   const sorted = !(beat === "empty" || beat === "carry" || beat === "reading"); // stays on through the fade out
   const panelPad = compact ? "px-4 py-6" : "px-16 py-10";
   const list = DOCS;
@@ -1097,13 +1231,14 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                 {beat === "explain" && <SummaryLive written={written} pun={pun} ready={ready} still={still} />}
               </div>
 
+              {/* The check-in, folding into the month */}
+              <div className="absolute inset-0" style={{ opacity: beat === "checkin" ? 1 : 0, transition: "opacity 300ms ease" }}>
+                {beat === "checkin" && <CheckInPieces typed={typed} saved={saved} filed={filed} chips={chips} tap={tap} still={still} compact={compact} stage={stage} />}
+              </div>
+
               {/* The client */}
               <div className="absolute inset-0" style={{ opacity: inRecord ? 1 : 0, transition: "opacity 440ms ease" }}>
-                <div
-                  ref={recordRef}
-                  className={`relative flex h-full flex-col ${compact ? "px-4 pt-6" : "px-16 pt-10"}`}
-                  style={{ transform: `translateY(${-lift}px)`, transition: lift ? "transform 700ms var(--ease-in-out)" : "none" }}
-                >
+                <div className={`relative flex h-full flex-col ${compact ? "px-4 pt-6" : "px-16 pt-10"}`}>
                   <div className={`${compact ? "mb-4" : "mb-6"} flex flex-shrink-0 items-start justify-between gap-3`}>
                     <div>
                       <h3 className="text-[26px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>Daniel Rosen</h3>
@@ -1125,8 +1260,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                           style={{
                             borderColor: t === openTab ? "#309E96" : "transparent",
                             color: t === openTab ? "#309E96" : "#6B7280",
-                            background: tap === "tab" && t === "Staying in touch" ? "rgba(48,158,150,0.12)" : "rgba(48,158,150,0)",
-                            transition: "color 200ms ease, border-color 200ms ease, background-color 180ms ease",
+                            transition: "color 200ms ease, border-color 200ms ease",
                           }}
                         >
                           {t}
@@ -1136,16 +1270,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                   </div>
                   <div className={`${compact ? "mt-4" : "mt-6"} min-h-0 flex-1`}>
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
-                    {beat === "touch" && (
-                      <Appear key="touch">
-                        <RecordTouch step={touchStep} compact={compact} />
-                      </Appear>
-                    )}
-                    {beat === "summary" && (
-                      <Appear key="summary" className="h-full overflow-hidden rounded-t-2xl">
-                        <SummaryCards flush familyOpen={false} leaveOpen={false} protectsOpen={false} />
-                      </Appear>
-                    )}
                   </div>
                 </div>
               </div>
