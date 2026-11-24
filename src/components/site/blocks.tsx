@@ -445,46 +445,54 @@ export const SecurityBand = () => (
 );
 
 /* ── Closing: the dark print card, white copy left, a product screen rising
-      out of the bottom-right corner ── */
-export const ClosingCta = ({
-  title = "See Willow with your own practice.",
-  body = "Request a demo and walk through both sides of Willow live: the attorney workspace and the client experience, set up around your state and the way you work.",
-  image = "/west-side-hwy.jpg",
-  shot,
-}: {
+      out of the bottom-right corner. `more` stacks further closing cards
+      (ClosingCard) under it in the same section. ── */
+type ClosingCardProps = {
   title?: string;
   body?: string;
   image?: string;
   shot?: React.ReactNode;
-}) => (
-  <section className="bg-[#F8FAFC] py-12 md:py-16">
-    <div className={WRAP}>
-      <DarkPrintCard
-        image={image}
-        right={
-          <div className="relative h-[300px] sm:h-[380px] md:h-auto md:min-h-[460px]">
-            <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[12%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
-              {shot ?? (
-                <ScaledScreen>
-                  <AttorneyDashboardScreen />
-                </ScaledScreen>
-              )}
-            </div>
-          </div>
-        }
-      >
-        <h2 className="font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
-          {title}
-        </h2>
-        <p className="mt-6 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>
-          {body}
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <SecondaryButton to={DEMO_PATH} light>
-            Request a demo
-          </SecondaryButton>
+};
+
+export const ClosingCard = ({
+  title = "See Willow with your own practice.",
+  body = "Request a demo and walk through both sides of Willow live: the attorney workspace and the client experience, set up around your state and the way you work.",
+  image = "/west-side-hwy.jpg",
+  shot,
+}: ClosingCardProps) => (
+  <DarkPrintCard
+    image={image}
+    right={
+      <div className="relative h-[300px] sm:h-[380px] md:h-auto md:min-h-[460px]">
+        <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[12%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
+          {shot ?? (
+            <ScaledScreen>
+              <AttorneyDashboardScreen />
+            </ScaledScreen>
+          )}
         </div>
-      </DarkPrintCard>
+      </div>
+    }
+  >
+    <h2 className="font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+      {title}
+    </h2>
+    <p className="mt-6 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>
+      {body}
+    </p>
+    <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <SecondaryButton to={DEMO_PATH} light>
+        Request a demo
+      </SecondaryButton>
+    </div>
+  </DarkPrintCard>
+);
+
+export const ClosingCta = ({ more, ...card }: ClosingCardProps & { more?: React.ReactNode }) => (
+  <section className="bg-[#F8FAFC] py-12 md:py-16">
+    <div className={`${WRAP} space-y-6 md:space-y-8`}>
+      <ClosingCard {...card} />
+      {more}
     </div>
   </section>
 );
