@@ -373,7 +373,7 @@ const TheirDocuments = () => (
    You'll Leave Behind writing itself line by line: Gifts & Bequests as
    GiftTable draws it (Recipient, The Gift), then The Remaining Estate's
    share bars, with the product's working mark breathing beneath
-   (working-mark.tsx: the W and its legal puns) until the last line is in */
+   (working-mark.tsx: the W and its legal puns) until the first line is in */
 const PUNS = ["Reading the fine print…", "Hereinafter referred to as “loading”…", "Taking it under advisement…"];
 const SERIF = "Georgia, 'Times New Roman', serif";
 /* The will's words for each gift, how long the marker takes over them, and
@@ -543,7 +543,7 @@ const Reveal = ({ show = true, still, children }: { show?: boolean; still: boole
 
 /* What You'll Leave Behind, open, writing itself. written: 1-3 the gifts
    one by one, 4 the remaining estate */
-const SummaryLive = ({ written, pun, ready, still }: { written: number; pun: number; ready: boolean; still: boolean }) => {
+const SummaryLive = ({ written, pun, still }: { written: number; pun: number; still: boolean }) => {
   const label = "text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]";
   const cols = "grid grid-cols-[0.85fr_1.15fr] gap-x-5";
   return (
@@ -587,8 +587,9 @@ const SummaryLive = ({ written, pun, ready, still }: { written: number; pun: num
             </div>
           </Reveal>
         )}
-        {/* The working mark stays until the last line is in, then folds away */}
-        <Reveal show={!ready} still={still}>
+        {/* The working mark only while nothing is written: it folds away as
+            the first line comes in (Aaron, Nov 24) */}
+        <Reveal show={written === 0} still={still}>
           <WorkingRow pun={pun} />
         </Reveal>
       </div>
@@ -859,7 +860,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   const [hl, setHl] = useState(0);
   const [written, setWritten] = useState(0);
   const [pun, setPun] = useState(0);
-  const [ready, setReady] = useState(false);
   /* Chapter 2 opens on the will as a page of paper, before the product */
   const [paper, setPaper] = useState(false);
   /* Chapter 1's second step: who Outlook has found, who it's looking for */
@@ -923,7 +923,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
       setHl(4);
       setWritten(4);
       setPun(0);
-      setReady(true);
       setPaper(false);
       setScrollB(0);
       setTyped(CHECKIN_TYPED.length);
@@ -1069,7 +1068,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setHl(0);
         setWritten(0);
         setPun(0);
-        setReady(false);
         setPlace("hidden");
         setBeat("explain");
         setPaper(true);
@@ -1089,13 +1087,9 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setWritten(2);
         await wait(650);
         setWritten(3);
-        setPun(1);
         await wait(700);
         setWritten(4);
-        /* The mark goes once the shares have counted up */
-        await wait(1300);
-        setReady(true);
-        await wait(1400);
+        await wait(2700);
       },
       /* 3. The client check-in, written once and saved, folds into the
          month, which fills with each client's day */
@@ -1228,7 +1222,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
 
               {/* The summary on its own, writing itself */}
               <div className={`absolute inset-0 ${compact ? "px-4 pt-4" : "px-16 pt-10"}`} style={{ opacity: beat === "explain" ? 1 : 0, transition: "opacity 440ms ease" }}>
-                {beat === "explain" && <SummaryLive written={written} pun={pun} ready={ready} still={still} />}
+                {beat === "explain" && <SummaryLive written={written} pun={pun} still={still} />}
               </div>
 
               {/* The check-in, folding into the month */}
