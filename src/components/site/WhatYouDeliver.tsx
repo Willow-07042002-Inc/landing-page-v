@@ -6,7 +6,6 @@ import { ProClientRowView, ProCoupleView } from "@/components/product/attorney-c
 import { ProColumn, ProReminder } from "@/components/product/attorney-dashboard";
 import {
   GoogleCalendarLogo,
-  GoogleContactsLogo,
   GoogleMeetLogo,
   MicrosoftTeamsLogo,
   OutlookLogo,
@@ -88,13 +87,21 @@ const InYourWords = () => (
   </div>
 );
 
+const GmailLogo = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="52 42 88 66" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path fill="#4285F4" d="M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6" />
+    <path fill="#34A853" d="M120 108h14c3.32 0 6-2.69 6-6V59l-20 15" />
+    <path fill="#FBBC04" d="M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2" />
+    <path fill="#EA4335" d="M72 74V48l24 18 24-18v26L96 92" />
+    <path fill="#C5221F" d="M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2" />
+  </svg>
+);
+
 type Logo = (p: { className?: string }) => React.ReactElement;
-/* Google Contacts, never Gmail: Willow requests no Gmail permission (Privacy
-   Policy 3.2, the Connections page), so a Gmail logo here would mislead. */
 const CONNECTORS: { name: string; Logo: Logo }[] = [
   { name: "Google Calendar", Logo: GoogleCalendarLogo },
   { name: "Outlook", Logo: OutlookLogo },
-  { name: "Google Contacts", Logo: GoogleContactsLogo },
+  { name: "Gmail", Logo: GmailLogo },
   { name: "Google Meet", Logo: GoogleMeetLogo },
   { name: "Zoom", Logo: ZoomLogo },
   { name: "Microsoft Teams", Logo: MicrosoftTeamsLogo },
