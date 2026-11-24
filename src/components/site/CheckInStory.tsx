@@ -387,9 +387,10 @@ const CheckInStory = () => {
                   transition: `transform 820ms ${MOVE}, opacity 200ms ease`,
                 }}
               >
-                <div style={{ transform: `scale(${cursor.down ? 0.84 : 1})`, transformOrigin: "2px 2px", transition: "transform 120ms var(--ease-out)" }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.2))" }}>
-                    <path d="M5 3l14 8.5-6.3 1.4L9.5 19z" fill="#374151" stroke="#374151" strokeWidth="1" strokeLinejoin="round" />
+                <div style={{ transform: `scale(${cursor.down ? 0.88 : 1})`, transformOrigin: "4px 2px", transition: "transform 120ms var(--ease-out)" }}>
+                  {/* A plain mouse pointer, one solid gray */}
+                  <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.18))" }}>
+                    <path d="M4 2v17l4.2-3.8 2.6 6 2.5-1.1-2.6-5.9H16.3z" fill="#374151" stroke="#374151" strokeWidth="0.8" strokeLinejoin="round" />
                   </svg>
                   <span
                     className="absolute left-[18px] top-[19px] whitespace-nowrap rounded-md bg-[#374151] px-2 py-[3px] text-[12px] font-medium text-white"
