@@ -1,43 +1,45 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PrintFrame } from "@/components/site/blocks";
-import { ScaledScreen } from "@/components/product/kit";
-import { CheckIcon, PoaIcon, PropertyIcon, SpinnerIcon, TrustIcon, UploadIcon, WillIcon } from "@/components/product/willow-icons";
+import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
+import { CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
+import { ChevronLeftIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 
-/* The step after the hero: the attorney drops a signed plan in, Willow reads
-   and sorts it, and the clients' account is there. A designed scene, staged on
-   the product's "Upload their estate plan" flow: it reads what each PDF is and
-   whose it is, groups them by person, and tucks a deed under its trust
-   (read-plan-document.ts, household.ts, plan-documents.tsx). It plays once when
-   it comes into view and stops on the account, which is also what people who
-   prefer reduced motion see. */
+/* The product's "Upload their estate plan", played through once: the attorney's
+   800px panel with the same spacing, type and colours as the real screens
+   (add-client/setup-wizard.tsx, plan-documents.tsx, working-mark.tsx,
+   packages/ui willow-popup-header.tsx, client-detail-view.tsx). Six PDFs go in,
+   Willow reads what each one is and whose it is, they're filed under each
+   person, and the account opens on the client's real Estate Plan tab. It stops
+   there, which is also what people who prefer reduced motion see. */
 
-const WIDE = { w: 720, h: 520 };
-const COMPACT = { w: 400, h: 530 };
-const PILE = { wide: { x: 604, y: 408 }, compact: { x: 318, y: 442 } };
+const WIDE = { w: 800, h: 720 };
+const COMPACT = { w: 420, h: 720 };
 
 const DOCS = [
-  { name: "Last Will & Testament", Icon: WillIcon },
-  { name: "Power of Attorney", Icon: PoaIcon },
-  { name: "Last Will & Testament", Icon: WillIcon },
-  { name: "Power of Attorney", Icon: PoaIcon },
-  { name: "Revocable Living Trust", Icon: TrustIcon },
-  { name: "Trust transfer deed", Icon: PropertyIcon, nested: true },
+  { file: "Last Will of Daniel Rosen.pdf", kind: "Last Will & Testament", tag: "Last Will", head: "Last Will and Testament", of: "of Daniel Rosen" },
+  { file: "Power of Attorney, Daniel.pdf", kind: "Power of Attorney", tag: "Power of Attorney", head: "Power of Attorney", of: "of Daniel Rosen" },
+  { file: "Last Will of Maria Rosen.pdf", kind: "Last Will & Testament", tag: "Last Will", head: "Last Will and Testament", of: "of Maria Rosen" },
+  { file: "Power of Attorney, Maria.pdf", kind: "Power of Attorney", tag: "Power of Attorney", head: "Power of Attorney", of: "of Maria Rosen" },
+  { file: "Rosen Revocable Trust.pdf", kind: "Revocable Living Trust", tag: "Living Trust", head: "Revocable Trust Agreement", of: "The Rosen Family Trust" },
+  { file: "Deed to the Rosen Trust.pdf", kind: "Deed", tag: "Deed", head: "Trust Transfer Deed", of: "to The Rosen Family Trust" },
 ];
-const GROUPS = [
-  { label: "Daniel", docs: [0, 1] },
-  { label: "Maria", docs: [2, 3] },
-  { label: "Daniel and Maria", docs: [4, 5] },
+/* plan-documents.tsx groups by who made each one; a deed sits under its trust */
+const GROUPS: { label: string; rows: { doc: number; under?: number }[] }[] = [
+  { label: "Daniel Rosen", rows: [{ doc: 0 }, { doc: 1 }] },
+  { label: "Maria Rosen", rows: [{ doc: 2 }, { doc: 3 }] },
+  { label: "Daniel Rosen and Maria Rosen", rows: [{ doc: 4, under: 5 }] },
 ];
-const STAGES = ["Their documents", "Create their accounts"];
-const FAN = [-9, -5, -2, 2, 5, 9];
-const TILE = { w: 62, h: 80 };
+const FAN = [-8, -5, -2, 2, 5, 8];
 
-type Beat = "rest" | "drag" | "reading" | "sorted" | "created";
+type Beat = "empty" | "carry" | "reading" | "filed" | "details" | "confirm" | "record";
 type Point = { x: number; y: number };
 type Cursor = Point & { shown: boolean; down: boolean };
 
-const CARD_SHADOW = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
+const PRIMARY = "inline-flex h-11 items-center justify-center gap-1.5 rounded-[10px] bg-[#309E96] px-6 text-[15px] font-semibold text-white";
+const QUIET = "inline-flex h-10 w-full items-center justify-center rounded-[10px] text-[14px] font-medium text-[#6B7280]";
+const LABEL = "text-xs font-medium uppercase tracking-wide text-[#9CA3AF]";
+const FIELD = "w-full border-b border-[#E5E7EB] py-2.5 text-[15px] leading-[22px] text-[#1F2933]";
 
 const useCompact = () => {
   const [compact, setCompact] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches);
@@ -50,41 +52,155 @@ const useCompact = () => {
   return compact;
 };
 
-const Reveal = ({ on, delay, children }: { on: boolean; delay: number; children: React.ReactNode }) => (
-  <div
-    style={{
-      opacity: on ? 1 : 0,
-      transform: on ? "translateY(0)" : "translateY(6px)",
-      transition: on ? `opacity 260ms ease ${delay}ms, transform 360ms var(--ease-out) ${delay}ms` : "none",
-    }}
-  >
-    {children}
+const Fade = ({ on, delay = 0, children }: { on: boolean; delay?: number; children: React.ReactNode }) => (
+  <div style={{ opacity: on ? 1 : 0, transition: on ? `opacity 240ms ease ${delay}ms` : "none" }}>{children}</div>
+);
+
+const Progress = ({ step }: { step: 1 | 2 }) => (
+  <div className="mb-6 mt-3">
+    <p className="mb-2 text-[15px] font-semibold text-[#309E96]">
+      {step} of 2<span className="font-medium text-[#9CA3AF]"> · {step === 1 ? "Their documents" : "Create their accounts"}</span>
+    </p>
+    <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F2]">
+      <div className="h-full rounded-full bg-[#309E96]" style={{ width: step === 1 ? "50%" : "100%" }} />
+    </div>
   </div>
 );
 
-const Paper = ({ Icon }: { Icon: (p: { className?: string }) => React.ReactElement }) => (
-  <div className="flex h-full w-full flex-col rounded-md border border-[#E5E7EB] bg-white p-2" style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.16)" }}>
-    <Icon className="h-5 w-5 text-[#128F8B]" />
-    <span className="mt-2 h-[3px] w-full rounded-full bg-[#E5E7EB]" />
-    <span className="mt-[5px] h-[3px] w-full rounded-full bg-[#E5E7EB]" />
-    <span className="mt-[5px] h-[3px] w-3/5 rounded-full bg-[#E5E7EB]" />
+const Title = ({ startOver }: { startOver: boolean }) => (
+  <div className="flex items-baseline justify-between gap-4">
+    <h3 className="text-[28px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: "Figtree, Inter, sans-serif" }}>
+      Upload your client&apos;s estate plan
+    </h3>
+    <span className="flex-shrink-0 text-[13px] font-medium text-[#6B7280]" style={{ opacity: startOver ? 1 : 0, transition: "opacity 200ms ease" }}>
+      Start over
+    </span>
+  </div>
+);
+
+const DropLine = ({ prompt, active }: { prompt: string; active?: boolean }) => (
+  <div className="border-b py-3" style={{ borderColor: active ? "#309E96" : "#E5E7EB", transition: "border-color 160ms ease" }}>
+    <div className="flex items-baseline justify-between gap-4">
+      <p className="text-[14px] text-[#6B7280]">{prompt}</p>
+      <span className="text-[14px] font-medium text-[#309E96]">Choose PDFs</span>
+    </div>
+  </div>
+);
+
+/* working-mark.tsx: the W, breathing, and a line of legal wordplay */
+const WorkingMark = () => (
+  <div className="flex flex-col items-center py-8 text-center">
+    <span className="flex h-9 w-9 animate-pulse items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 18, lineHeight: 1, paddingTop: 2 }}>
+      W
+    </span>
+    <p className="mt-3 text-[15px] font-semibold text-[#1F2933]">Reading the fine print&hellip;</p>
+  </div>
+);
+
+const DocRowView = ({ d, nested, iconRef }: { d: (typeof DOCS)[number]; nested?: boolean; iconRef?: (el: HTMLSpanElement | null) => void }) => (
+  <div className={nested ? "py-2.5" : "py-3"}>
+    <div className="flex items-start justify-between gap-3">
+      <span ref={iconRef} className="mt-0.5 flex-shrink-0">
+        <WIcon name="document" className={`block text-[#309E96] ${nested ? "h-4 w-4" : "h-5 w-5"}`} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className={`truncate font-medium text-[#1F2933] ${nested ? "text-[13.5px]" : "text-[14px]"}`}>{d.file}</p>
+        <div className="mt-1">
+          <span className="inline-block border-b border-dashed border-[#D1D5DB] py-0.5 text-[13px] text-[#374151]">{d.kind}</span>
+        </div>
+      </div>
+      <div className="mt-0.5 flex shrink-0 items-center gap-1 text-[#9CA3AF]">
+        <span className="rounded p-1"><ViewIcon className="block h-4 w-4" /></span>
+        <span className="rounded p-1"><CloseIcon className="block h-4 w-4" /></span>
+      </div>
+    </div>
+  </div>
+);
+
+const DocGroups = ({ on, iconRefs }: { on: boolean; iconRefs?: React.MutableRefObject<(HTMLSpanElement | null)[]> }) => {
+  const ref = (n: number) => (iconRefs ? (el: HTMLSpanElement | null) => { iconRefs.current[n] = el; } : undefined);
+  return (
+    <div className="flex flex-col">
+      {GROUPS.map((g, gi) => (
+        <div key={g.label} className={gi > 0 ? "mt-5" : ""}>
+          <Fade on={on} delay={g.rows[0].doc * 70 + 340}>
+            <p className="pt-2 text-[12px] font-medium uppercase tracking-wide text-[#9CA3AF]">{g.label}</p>
+          </Fade>
+          {g.rows.map(({ doc, under }) => (
+            <div key={doc} className="py-1">
+              <Fade on={on} delay={doc * 70 + 440}>
+                <DocRowView d={DOCS[doc]} iconRef={ref(doc)} />
+              </Fade>
+              {under !== undefined && (
+                <div className="pl-8">
+                  <Fade on={on} delay={under * 70 + 440}>
+                    <DocRowView d={DOCS[under]} nested iconRef={ref(under)} />
+                  </Fade>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/* A signed PDF on its way in */
+const Sheet = ({ d, scanning, scanned }: { d: (typeof DOCS)[number]; scanning: boolean; scanned: boolean }) => (
+  <div className="relative h-full w-full overflow-hidden rounded-[5px] bg-white px-2.5 pt-3" style={{ boxShadow: "0 1px 2px rgba(11,18,32,0.14), 0 10px 22px rgba(6,45,44,0.22)" }}>
+    <p className="text-center font-heading text-[7px] font-bold uppercase leading-[1.35] tracking-[0.05em] text-[#1F2933]">{d.head}</p>
+    <p className="mt-0.5 text-center font-heading text-[6.5px] leading-tight text-[#475569]">{d.of}</p>
+    <div className="mx-auto my-2 w-5 border-t border-[#94A3B8]" />
+    {[100, 94, 98, 88, 96, 70].map((w, i) => (
+      <div key={i} className="mb-[5px] h-[2.5px] rounded-full bg-[#E2E8F0]" style={{ width: `${w}%` }} />
+    ))}
+    <div
+      className="absolute inset-x-0 h-9"
+      style={{
+        top: scanning || scanned ? "100%" : "-36px",
+        opacity: scanning ? 1 : 0,
+        background: "linear-gradient(180deg, rgba(48,158,150,0), rgba(48,158,150,0.26))",
+        borderBottom: "2px solid #309E96",
+        transition: scanning ? "top 360ms linear" : "opacity 120ms ease",
+      }}
+    />
+    <div
+      className="absolute inset-x-1.5 bottom-1.5 whitespace-nowrap rounded bg-[#F0F9F9] py-1 text-center text-[9px] font-semibold text-[#0F7673]"
+      style={{ opacity: scanned ? 1 : 0, transform: scanned ? "translateY(0)" : "translateY(3px)", transition: "opacity 180ms ease, transform 220ms var(--ease-out)" }}
+    >
+      {d.tag}
+    </div>
   </div>
 );
 
 const PlanDropStory = () => {
   const compact = useCompact();
   const size = compact ? COMPACT : WIDE;
-  const pile = compact ? PILE.compact : PILE.wide;
+  const pad = compact ? 24 : 32;
+  const cardEmpty = pad * 2 + 46;
+  const cardReading = pad * 2 + 135;
+  const sheet = compact ? { w: 112, h: 146 } : { w: 104, h: 136 };
+
   const frameRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const dropRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLDivElement>(null);
-  const rowRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const addRef = useRef<HTMLDivElement>(null);
+  const createRef = useRef<HTMLDivElement>(null);
+  const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const finished = useRef(false);
 
-  const [beat, setBeat] = useState<Beat>("rest");
-  const [dropAt, setDropAt] = useState<Point | null>(null);
+  const [beat, setBeat] = useState<Beat>("empty");
+  const [scan, setScan] = useState(-1);
+  const [cardH, setCardH] = useState<number | null>(null);
+  const [cardTop, setCardTop] = useState(0);
+  const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
   const [rowsAt, setRowsAt] = useState<Point[]>([]);
+  const [scrollA, setScrollA] = useState(0);
+  const [scrollB, setScrollB] = useState(0);
+  const [pressed, setPressed] = useState<"continue" | "add" | "create" | null>(null);
   const [cursor, setCursor] = useState<Cursor>({ x: 0, y: 0, shown: false, down: false });
 
   useEffect(() => {
@@ -92,61 +208,99 @@ const PlanDropStory = () => {
     if (!frame || finished.current) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       finished.current = true;
-      setBeat("created");
+      setBeat("record");
       return;
     }
 
-    const { w } = compact ? COMPACT : WIDE;
-    const start = compact ? PILE.compact : PILE.wide;
+    const { w, h } = compact ? COMPACT : WIDE;
+    const space = compact ? 24 : 32;
     let run = 0;
     const wait = (ms: number, id: number) =>
       new Promise<void>((resolve, reject) => {
         window.setTimeout(() => (id === run ? resolve() : reject(new Error("stopped"))), ms);
       });
-    /* Where an element's centre sits on the stage, before the stage is scaled */
-    const at = (el: HTMLElement | null): Point => {
+    /* An element's box on the stage, before the stage is scaled */
+    const box = (el: HTMLElement | null) => {
       const stage = stageRef.current;
-      if (!el || !stage) return { x: 0, y: 0 };
+      if (!el || !stage) return { top: 0, bottom: 0, x: 0, y: 0 };
       const s = stage.getBoundingClientRect();
       const r = el.getBoundingClientRect();
       const k = s.width / w;
-      return { x: (r.left + r.width / 2 - s.left) / k, y: (r.top + r.height / 2 - s.top) / k };
+      return { top: (r.top - s.top) / k, bottom: (r.bottom - s.top) / k, x: (r.left + r.width / 2 - s.left) / k, y: (r.top + r.height / 2 - s.top) / k };
+    };
+    const click = async (id: number, name: "continue" | "add" | "create", after: () => void) => {
+      setCursor((c) => ({ ...c, down: true }));
+      setPressed(name);
+      await wait(140, id);
+      after();
+      setPressed(null);
+      setCursor((c) => ({ ...c, down: false }));
     };
 
     const play = async (id: number) => {
-      setBeat("rest");
-      setCursor({ x: start.x + 70, y: start.y + 60, shown: false, down: false });
-      await wait(380, id);
+      setBeat("empty");
+      setScan(-1);
+      setCardH(space * 2 + 46);
+      setScrollA(0);
+      setScrollB(0);
+      setPressed(null);
+      setCursor({ x: w + 70, y: h - 30, shown: false, down: true });
+      await wait(420, id);
 
-      /* Rachel picks up the signed plan */
-      setCursor((c) => ({ ...c, shown: true, x: start.x, y: start.y }));
-      await wait(880, id);
-      setCursor((c) => ({ ...c, down: true }));
-      await wait(160, id);
-
-      /* and drops it in */
-      const drop = at(dropRef.current);
+      /* Rachel drags the signed plan onto the drop line */
+      const card = box(cardRef.current);
+      const drop = { x: w / 2, y: card.top + space + 23 };
+      setCardTop(card.top);
       setDropAt(drop);
-      setBeat("drag");
-      setCursor((c) => ({ ...c, ...drop }));
-      await wait(880, id);
-      setCursor((c) => ({ ...c, down: false }));
-      setBeat("reading");
-      await wait(1500, id);
+      setBeat("carry");
+      setCursor((c) => ({ ...c, shown: true, x: drop.x + 30, y: drop.y + 40 }));
+      await wait(960, id);
 
-      /* Each document goes to the person it belongs to */
-      setRowsAt(rowRefs.current.map((el) => at(el)));
-      setBeat("sorted");
-      await wait(1250, id);
-      setCursor((c) => ({ ...c, ...at(continueRef.current) }));
-      await wait(880, id);
-      setCursor((c) => ({ ...c, down: true }));
-      await wait(140, id);
-      finished.current = true;
-      io.disconnect();
-      setBeat("created");
+      /* Willow reads each one */
       setCursor((c) => ({ ...c, down: false }));
-      await wait(360, id);
+      setCardH(space * 2 + 135);
+      setBeat("reading");
+      await wait(160, id);
+      setCursor((c) => ({ ...c, x: w - 70, y: h - 44 }));
+      await wait(520, id);
+      for (let n = 0; n < DOCS.length; n++) {
+        setScan(n);
+        await wait(210, id);
+      }
+      setScan(DOCS.length);
+      await wait(320, id);
+
+      /* and files it under the right person */
+      setRowsAt(iconRefs.current.map((el) => { const b = box(el); return { x: b.x, y: b.y }; }));
+      setCardH(innerRef.current?.offsetHeight ?? null);
+      setBeat("filed");
+      await wait(1320, id);
+
+      const go = box(continueRef.current);
+      const toGo = Math.max(0, go.bottom + 36 - h);
+      setScrollA(toGo);
+      setCursor((c) => ({ ...c, x: go.x, y: go.y - toGo }));
+      await wait(880, id);
+      await click(id, "continue", () => setBeat("details"));
+
+      /* Their details, read from the documents */
+      await wait(1250, id);
+      const add = box(addRef.current);
+      const toAdd = Math.max(0, add.bottom + 36 - h);
+      setScrollB(toAdd);
+      setCursor((c) => ({ ...c, x: add.x, y: add.y - toAdd }));
+      await wait(1050, id);
+      await click(id, "add", () => setBeat("confirm"));
+      await wait(620, id);
+
+      setCursor((c) => ({ ...c, ...(() => { const b = box(createRef.current); return { x: b.x, y: b.y }; })() }));
+      await wait(860, id);
+      await click(id, "create", () => {
+        finished.current = true;
+        io.disconnect();
+        setBeat("record");
+      });
+      await wait(320, id);
       setCursor((c) => ({ ...c, shown: false }));
     };
 
@@ -168,22 +322,36 @@ const PlanDropStory = () => {
     };
   }, [compact]);
 
-  const uploading = beat === "rest" || beat === "drag" || beat === "reading";
-  const sorted = beat === "sorted" || beat === "created";
-  const created = beat === "created";
-  const stage = created ? 1 : 0;
-  const pad = compact ? "px-[22px]" : "px-7";
-  const spread = compact ? 46 : 66;
+  const stepOne = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
+  const stepTwo = beat === "details" || beat === "confirm";
+  const filed = !(beat === "empty" || beat === "carry" || beat === "reading");
+  const panel = compact ? "px-4 py-6" : "px-16 py-10";
+  const section = compact ? "bg-white p-6" : "bg-white p-8";
+  const press = (name: "continue" | "add" | "create"): React.CSSProperties => ({
+    transform: pressed === name ? "scale(0.98)" : "scale(1)",
+    transition: "transform 140ms var(--ease-out)",
+  });
 
-  const tile = (i: number) => {
-    const drop = dropAt ?? pile;
+  const sheetAt = (i: number) => {
     const off = (i - 2.5) * 3;
-    if (beat === "rest") return { x: pile.x + off, y: pile.y - off, r: FAN[i], s: 1, o: 1, t: "none" };
-    if (beat === "drag") return { x: drop.x + off, y: drop.y - off, r: FAN[i], s: 1, o: 1, t: `transform 820ms ${MOVE}` };
-    if (beat === "reading") return { x: drop.x + (i - 2.5) * spread, y: drop.y - 26, r: 0, s: 1, o: 1, t: "transform 420ms var(--ease-out)" };
-    const to = rowsAt[i] ?? drop;
+    if (beat === "empty") return { x: size.w + 130 + off, y: size.h - 70 - off, r: FAN[i], s: 0.92, o: 1, t: "none" };
+    if (beat === "carry") return { x: dropAt.x + off, y: dropAt.y - off, r: FAN[i], s: 0.92, o: 1, t: `transform 900ms ${MOVE}` };
+    if (beat === "reading") {
+      const cols = compact ? 3 : 6;
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      return {
+        x: size.w / 2 + (col - (cols - 1) / 2) * (sheet.w + 8),
+        y: cardTop + cardReading + 20 + sheet.h / 2 + row * (sheet.h + 8),
+        r: 0,
+        s: 1,
+        o: 1,
+        t: `transform 560ms var(--ease-in-out) ${i * 30}ms`,
+      };
+    }
+    const to = rowsAt[i] ?? dropAt;
     const d = i * 70;
-    return { x: to.x, y: to.y, r: 0, s: 0.28, o: 0, t: `transform 620ms var(--ease-in-out) ${d}ms, opacity 160ms ease ${d + 500}ms` };
+    return { x: to.x, y: to.y, r: 0, s: 0.16, o: 0, t: `transform 620ms var(--ease-in-out) ${d}ms, opacity 140ms ease ${d + 500}ms` };
   };
 
   return (
@@ -191,161 +359,212 @@ const PlanDropStory = () => {
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="An attorney drops a client's signed estate plan into Willow. Willow reads the documents, sorts them under Daniel, Maria and both of them, and creates their account."
+      aria-label="An attorney drops a client's signed estate plan into Willow. Willow reads the six documents, files them under Daniel, Maria and both of them, fills in their details and opens their account."
     >
-      <PrintFrame print="self" aspect={`${size.w} / ${size.h}`} className="shadow-2xl">
+      <PrintFrame print="/central-park.jpg" aspect={`${size.w} / ${size.h}`}>
         <ScaledScreen w={size.w} h={size.h}>
-          <div ref={stageRef} aria-hidden className="relative overflow-hidden text-left" style={{ width: size.w, height: size.h, fontFamily: "Inter, sans-serif" }}>
-            <img src="/central-park.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
-            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
-
+          <div ref={stageRef} aria-hidden className="relative overflow-hidden bg-[#F0F2F5] text-left" style={{ width: size.w, height: size.h, fontFamily: "Figtree, Inter, sans-serif" }}>
+            {/* 1 of 2 · Their documents */}
             <div
-              className="absolute left-1/2 flex -translate-x-1/2 flex-col overflow-hidden rounded-2xl bg-white"
-              style={{ top: compact ? 30 : 50, width: compact ? 364 : 620, height: compact ? 470 : 420, boxShadow: CARD_SHADOW }}
+              className="absolute inset-x-0 top-0"
+              style={{ opacity: stepOne ? 1 : 0, transform: `translateY(${-scrollA}px)`, transition: "opacity 200ms ease, transform 640ms var(--ease-in-out)" }}
             >
-              <div className={`${pad} pt-6`}>
-                <h3 className="font-heading text-[20px] font-bold leading-snug text-[#1F2933]">Upload your client&rsquo;s estate plan</h3>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  {STAGES.map((s, i) => (
-                    <div key={s}>
-                      <div className="h-[3px] rounded-full" style={{ background: i <= stage ? "#128F8B" : "#E5E7EB", transition: "background-color 240ms ease" }} />
-                      <p className="mt-1.5 text-[12px] font-medium" style={{ color: i === stage ? "#0C7370" : "#9CA3AF", transition: "color 240ms ease" }}>{s}</p>
+              <div className={panel}>
+                <Title startOver={beat !== "empty"} />
+                <Progress step={1} />
+                <div
+                  ref={cardRef}
+                  className="relative overflow-hidden rounded-2xl bg-white"
+                  style={{ height: cardH ?? cardEmpty, transition: "height 460ms var(--ease-in-out)" }}
+                >
+                  <div ref={innerRef} className={section}>
+                    <div style={{ opacity: beat === "reading" ? 0 : 1, transition: "opacity 160ms ease" }}>
+                      <DropLine prompt="Drop all their documents here." active={beat === "carry"} />
                     </div>
-                  ))}
+                    <div className="mt-2">
+                      <DocGroups on={filed} iconRefs={iconRefs} />
+                    </div>
+                    <div className="mt-5 flex justify-end">
+                      <Fade on={filed} delay={880}>
+                        <div ref={continueRef} className={PRIMARY} style={press("continue")}>Continue</div>
+                      </Fade>
+                    </div>
+                  </div>
+                  <div className="absolute inset-x-0 top-0" style={{ paddingTop: pad, opacity: beat === "reading" ? 1 : 0, transition: "opacity 200ms ease" }}>
+                    <WorkingMark />
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="relative min-h-0 flex-1">
-                {/* Drop them in */}
-                <div className={`absolute inset-0 ${pad} pb-6 pt-3`} style={{ opacity: uploading ? 1 : 0, transition: "opacity 200ms ease" }}>
-                  <div
-                    ref={dropRef}
-                    className="relative flex h-full flex-col items-center justify-center rounded-xl border-[1.5px] border-dashed"
-                    style={{
-                      borderColor: beat === "drag" || beat === "reading" ? "#128F8B" : "#D1D5DB",
-                      background: beat === "drag" || beat === "reading" ? "#E6F5F4" : "#FAFBFC",
-                      transition: "background-color 180ms ease, border-color 180ms ease",
-                    }}
-                  >
-                    <div className="flex flex-col items-center" style={{ opacity: beat === "rest" ? 1 : 0, transition: "opacity 160ms ease" }}>
-                      <UploadIcon className="h-7 w-7 text-[#128F8B]" />
-                      <p className="mt-3 text-[15px] font-medium text-[#1F2933]">Drop all their documents here.</p>
-                    </div>
-                    <div
-                      className="absolute inset-x-0 flex items-center justify-center gap-2 text-[14px] font-medium text-[#0C7370]"
-                      style={{ bottom: compact ? 72 : 52, opacity: beat === "reading" ? 1 : 0, transition: "opacity 180ms ease" }}
-                    >
-                      <SpinnerIcon className="h-4 w-4 animate-spin" />
-                      Reading 6 documents&hellip;
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sorted by person */}
-                <div className={`absolute inset-0 flex flex-col ${pad} pb-6 pt-3`} style={{ opacity: beat === "sorted" ? 1 : 0, transition: "opacity 180ms ease" }}>
-                  <div className={compact ? "flex-1" : "grid flex-1 grid-cols-2 content-start gap-x-8 gap-y-3.5"}>
-                    {GROUPS.map((g, gi) => (
-                      <div key={g.label} className={compact ? (gi > 0 ? "mt-2.5" : "") : gi === 2 ? "col-span-2 border-t border-[#F0F1F3] pt-3.5" : ""}>
-                        <Reveal on={sorted} delay={g.docs[0] * 70 + 360}>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9CA3AF]">{g.label}</p>
-                        </Reveal>
-                        <ul className={!compact && gi === 2 ? "mt-1 grid grid-cols-2 gap-x-8" : "mt-1"}>
-                          {g.docs.map((n) => {
-                            const d = DOCS[n];
-                            return (
-                              <li key={n} className={compact && d.nested ? "pl-7" : ""}>
-                                <Reveal on={sorted} delay={n * 70 + 480}>
-                                  <div className="flex items-center gap-3 py-[6px]">
-                                    <span ref={(el) => { rowRefs.current[n] = el; }} className="flex-shrink-0">
-                                      <d.Icon className="block h-[18px] w-[18px] text-[#128F8B]" />
-                                    </span>
-                                    <span className="text-[14px] font-medium text-[#1F2933]">{d.name}</span>
-                                  </div>
-                                </Reveal>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                  <Reveal on={sorted} delay={900}>
-                    <div
-                      ref={continueRef}
-                      className="flex h-10 items-center justify-center rounded-lg bg-[#128F8B] text-[14.5px] font-medium text-white"
-                      style={{ transform: cursor.down && beat === "sorted" ? "scale(0.98)" : "scale(1)", transition: "transform 140ms var(--ease-out)" }}
-                    >
-                      Create their accounts
-                    </div>
-                  </Reveal>
-                </div>
-
-                {/* Their account */}
-                <div className={`absolute inset-0 flex flex-col ${pad} pb-6 pt-2`} style={{ opacity: created ? 1 : 0, transition: "opacity 220ms ease" }}>
-                  <Reveal on={created} delay={80}>
-                    <div className="flex items-center gap-2 text-[14px] font-medium text-[#0C7370]">
-                      <CheckIcon className="h-4 w-4" />
-                      Account created
-                    </div>
-                  </Reveal>
-                  <Reveal on={created} delay={150}>
-                    <div className="mt-3 flex items-center gap-3.5 rounded-xl bg-[#E6F5F4] px-4 py-3.5">
-                      <div className="flex flex-shrink-0">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[12.5px] font-semibold text-[#0C7370]">DR</span>
-                        <span className="-ml-2.5 flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#E6F5F4] bg-white text-[12.5px] font-semibold text-[#0C7370]">MR</span>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-heading text-[17px] font-bold leading-snug text-[#1F2933]">Daniel and Maria Rosen</p>
-                        <p className="mt-0.5 text-[13px] text-[#4B5563]">Joint account</p>
-                      </div>
-                    </div>
-                  </Reveal>
-                  <div className="mt-3 flex-1">
-                    {GROUPS.map((g, gi) => (
-                      <Reveal key={g.label} on={created} delay={230 + gi * 70}>
-                        <div className="flex items-center justify-between gap-3 border-b border-[#F0F1F3] py-[9px]">
-                          <span className="text-[14px] font-medium text-[#1F2933]">{g.label}</span>
-                          <span className="flex items-center gap-2">
-                            {g.docs.map((n) => {
-                              const D = DOCS[n].Icon;
-                              return <D key={n} className="h-[17px] w-[17px] text-[#128F8B]" />;
-                            })}
-                            <span className="ml-1 text-[12.5px] text-[#6B7280]">2 documents</span>
-                          </span>
+            {/* 2 of 2 · Create their accounts */}
+            <div
+              className="absolute inset-x-0 top-0"
+              style={{ opacity: stepTwo ? 1 : 0, transform: `translateY(${-scrollB}px)`, transition: "opacity 220ms ease, transform 900ms var(--ease-in-out)" }}
+            >
+              <div className={panel}>
+                <span className="mb-4 inline-flex items-center gap-2 text-[15px] font-medium text-[#6B7280]">
+                  <ChevronLeftIcon className="h-4 w-4" />
+                  Back to their documents
+                </span>
+                <Title startOver />
+                <Progress step={2} />
+                <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
+                  <div className="flex flex-col gap-1.5">
+                    {[
+                      { n: 1, first: "Daniel", email: "daniel.rosen@gmail.com" },
+                      { n: 2, first: "Maria", email: "maria.rosen@gmail.com" },
+                    ].map((p) => (
+                      <div key={p.n} className={section}>
+                        <div className="mb-4 flex items-baseline justify-between gap-3">
+                          <p className={LABEL}>Client {p.n}</p>
+                          {p.n === 1 && <p className="text-[11.5px] text-[#9CA3AF]">* Required</p>}
                         </div>
-                      </Reveal>
+                        <div className={`grid gap-6 ${compact ? "grid-cols-1" : "grid-cols-2"}`}>
+                          <div className={FIELD}>{p.first}</div>
+                          <div className={FIELD}>Rosen</div>
+                          <div className={FIELD}>{p.email}</div>
+                          <div className={`${FIELD} text-[#9CA3AF]`}>Phone</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div className={section}>
+                      <p className={`${LABEL} mb-4`}>
+                        Their home address <span className="font-normal normal-case tracking-normal">(from their documents)</span>
+                      </p>
+                      <div className="space-y-4">
+                        <div className={FIELD}>Berkeley Place</div>
+                        <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                          <div className={FIELD}>Brooklyn</div>
+                          <div className={FIELD}>11217</div>
+                        </div>
+                        <div className="block pt-2">
+                          <span className={`${LABEL} mb-1 block`}>State of residence</span>
+                          <div className={FIELD}>New York</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={section}>
+                      <p className={`${LABEL} mb-2`}>
+                        Documents <span className="font-normal normal-case tracking-normal">(6)</span>
+                      </p>
+                      <DocGroups on />
+                      <div className="mt-2">
+                        <DropLine prompt="Add more documents." />
+                      </div>
+                    </div>
+                    <div className={section}>
+                      <div ref={addRef} className={PRIMARY} style={{ ...press("add"), width: "fit-content" }}>Add the couple</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* The account, on the client's Estate Plan tab */}
+            <div className="absolute inset-x-0 top-0" style={{ opacity: beat === "record" ? 1 : 0, transition: "opacity 260ms ease" }}>
+              <div className={panel}>
+                <div className="mb-6 flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-[26px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: "Figtree, Inter, sans-serif" }}>Daniel Rosen</h3>
+                    <p className="mt-1 text-[15px] text-[#6B7280]">
+                      Joint account: <span className="font-medium text-[#309E96]">Maria Rosen</span>
+                    </p>
+                  </div>
+                  <span className="rounded p-1.5 text-[#9CA3AF]"><WIcon name="more" className="h-5 w-5" /></span>
+                </div>
+                <div className="overflow-hidden border-b border-[#E5E7EB]">
+                  <div className="flex">
+                    {CLIENT_PANEL_TABS.map((t) => (
+                      <span key={t} className={`whitespace-nowrap border-b-2 px-4 py-3 text-[13px] font-medium ${t === "Estate Plan" ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}>
+                        {t}
+                      </span>
                     ))}
                   </div>
-                  <Reveal on={created} delay={480}>
-                    <div className="flex h-10 items-center justify-center rounded-lg bg-[#128F8B] text-[14.5px] font-medium text-white">Start their summary</div>
-                  </Reveal>
+                </div>
+                <div className="mb-6 mt-6 border-b border-[#E5E7EB]">
+                  <div className="flex">
+                    <span className="whitespace-nowrap border-b-2 border-[#309E96] px-4 py-3 text-[13px] font-medium text-[#309E96]">Documents</span>
+                    <span className="whitespace-nowrap border-b-2 border-transparent px-4 py-3 text-[13px] font-medium text-[#6B7280]">Summary</span>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
+                    <FloatStack>
+                      <ProDocRow label="Last Will & Testament" />
+                      <ProDocRow label="Power of Attorney" />
+                    </FloatStack>
+                  </div>
+                  <div>
+                    <ProDocSectionLabel label="Joint with Maria" />
+                    <FloatStack>
+                      <div>
+                        <ProDocRow label="Revocable Living Trust" detail="Joint trust (married couple)" />
+                        <div className="px-8 pb-4">
+                          <div className="border-t border-[#E5E7EB]" />
+                          <div className="pl-8 pt-3">
+                            <ProDocRow nested label="Deed" detail="Trust transfer deed" />
+                          </div>
+                        </div>
+                      </div>
+                    </FloatStack>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Add the couple? */}
+            <div
+              className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 p-4"
+              style={{ opacity: beat === "confirm" ? 1 : 0, backdropFilter: "blur(2px)", transition: "opacity 200ms ease" }}
+            >
+              <div
+                className="w-full max-w-[420px] rounded-2xl bg-white p-7"
+                style={{
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.16), 0 4px 16px rgba(0,0,0,0.08)",
+                  transform: beat === "confirm" ? "scale(1)" : "scale(0.97)",
+                  transition: "transform 240ms var(--ease-out)",
+                }}
+              >
+                <div className="text-center">
+                  <h2 className="mx-auto font-semibold text-[#1F2933]" style={{ fontFamily: "Merriweather, Georgia, serif", fontSize: 24, lineHeight: 1.3, textWrap: "balance" }}>
+                    Add Daniel Rosen and Maria Rosen?
+                  </h2>
+                  <p className="mx-auto text-[#6B7280]" style={{ fontSize: 14, lineHeight: 1.6, marginTop: 8, textWrap: "balance" }}>
+                    Daniel and Maria will each get an email from you with a link to sign in, now or later from your client list.
+                  </p>
+                </div>
+                <div className="mt-6 flex flex-col items-center gap-1">
+                  <div ref={createRef} className={`w-full ${PRIMARY}`} style={press("create")}>Create and send</div>
+                  <div className={QUIET}>Create, send later</div>
                 </div>
               </div>
             </div>
 
             {/* The signed plan */}
             {DOCS.map((d, i) => {
-              const p = tile(i);
+              const p = sheetAt(i);
               return (
                 <div
-                  key={i}
-                  className="pointer-events-none absolute left-0 top-0 z-[5]"
+                  key={d.file}
+                  className="pointer-events-none absolute left-0 top-0 z-20"
                   style={{
-                    width: TILE.w,
-                    height: TILE.h,
+                    width: sheet.w,
+                    height: sheet.h,
                     opacity: p.o,
-                    transform: `translate(${p.x - TILE.w / 2}px, ${p.y - TILE.h / 2}px) rotate(${p.r}deg) scale(${p.s})`,
+                    transform: `translate(${p.x - sheet.w / 2}px, ${p.y - sheet.h / 2}px) rotate(${p.r}deg) scale(${p.s})`,
                     transition: p.t,
                   }}
                 >
-                  <Paper Icon={d.Icon} />
+                  <Sheet d={d} scanning={scan === i} scanned={scan > i} />
                 </div>
               );
             })}
 
             {/* Rachel */}
             <div
-              className="pointer-events-none absolute left-0 top-0 z-10"
+              className="pointer-events-none absolute left-0 top-0 z-40"
               style={{
                 opacity: cursor.shown ? 1 : 0,
                 transform: `translate(${cursor.x}px, ${cursor.y}px)`,
