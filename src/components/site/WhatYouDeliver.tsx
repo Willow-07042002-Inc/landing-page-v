@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { WRAP } from "@/components/site/blocks";
 import { LightHead } from "@/components/site/StayingAhead";
 import { FloatStack, WIcon } from "@/components/product/kit";
@@ -12,7 +12,8 @@ import {
 } from "@/components/product/attorney-booking";
 
 /* Will it fit my practice? The film above shows what Willow does; these tiles
-   answer the attorney's next question on a grid of eight squares (four by two),
+   answer the attorney's next question on a grid of eight squares (four by two
+   from 1024px, two columns below, stacked on phones),
    each with a small piece of the real product:
      1-3  Bring the clients you already have: the text, and the Rosens as the
           Clients list shows a couple (importing contacts is being built, Nov 24,
@@ -20,8 +21,8 @@ import {
      4    Draft and sign your way: the signed PDFs on a client's plan
      5    Connect: the apps it connects to
      6-8  Built on your preferences: the check-in panel's own switches (Ask me
-          before each one goes out, How often, the check-in questions), which
-          flip when clicked */
+          before each one goes out, and the check-in questions), which flip
+          when clicked */
 
 const UI_SHADOW = "0 1px 2px rgba(16,24,40,0.05), 0 10px 24px -8px rgba(16,24,40,0.14)";
 const PRODUCT_FONT = "Figtree, Inter, sans-serif";
@@ -45,6 +46,26 @@ const Bleed = ({ height, fadeFrom, children }: { height: number; fadeFrom?: numb
     {children}
   </div>
 );
+
+/* A piece of the product laid out at its own width and scaled down to fit when
+   its tile is narrower (the small squares between 1024 and 1280px), so its
+   labels never wrap or cut off */
+const FitWidth = ({ width, children }: { width: number; children: React.ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setScale(Math.min(1, entry.contentRect.width / width)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [width]);
+  return (
+    <div ref={ref}>
+      <div style={scale < 1 ? { width, transform: `scale(${scale})`, transformOrigin: "top left" } : undefined}>{children}</div>
+    </div>
+  );
+};
 
 /* A client's signed plan as the Estate Plan tab lists it (estate-plans-tab.tsx
    DocumentRow), with rows tightened for a small tile */
@@ -143,8 +164,8 @@ const WhatYouDeliver = () => (
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
       <LightHead title="Built to work with" accent="the practice you already run." />
 
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 xl:grid-cols-4 xl:grid-rows-[252px_252px]">
-        <article className={`${TILE} gap-6 p-6 sm:col-span-2 sm:flex-row sm:items-center xl:col-span-3`}>
+      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-4 lg:grid-rows-[minmax(252px,auto)_minmax(252px,auto)]">
+        <article className={`${TILE} gap-6 p-6 sm:col-span-2 sm:flex-row sm:items-center lg:col-span-3`}>
           <div className="sm:w-[40%] sm:flex-shrink-0 sm:self-start">
             <TileTitle>Bring the clients you already have</TileTitle>
             <TileBody>Import your contacts, add the plans you&rsquo;ve already signed, and see every client in one list.</TileBody>
@@ -159,7 +180,9 @@ const WhatYouDeliver = () => (
           <TileBody>Keep your process. Willow starts from the signed PDF.</TileBody>
           <div className="mt-auto pt-4">
             <Bleed height={124}>
-              <SignedPlan />
+              <FitWidth width={236}>
+                <SignedPlan />
+              </FitWidth>
             </Bleed>
           </div>
         </article>
@@ -177,7 +200,7 @@ const WhatYouDeliver = () => (
           </ul>
         </article>
 
-        <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row xl:col-span-3`}>
+        <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row lg:col-span-3`}>
           <div className="sm:w-[40%] sm:flex-shrink-0 sm:pb-6">
             <TileTitle>Built on your preferences</TileTitle>
             <TileBody>Choose the questions clients are asked, how often they hear from you, and what waits for your approval.</TileBody>
