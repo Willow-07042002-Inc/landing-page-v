@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { WRAP } from "@/components/site/blocks";
 import { LightHead } from "@/components/site/StayingAhead";
-import { FloatStack, WIcon } from "@/components/product/kit";
-import { ProCoupleView, ProDocSectionLabel } from "@/components/product/attorney-clients";
+import { FloatStack } from "@/components/product/kit";
+import { ProClientRowView, ProCoupleView } from "@/components/product/attorney-clients";
+import { CheckIcon } from "@/components/product/willow-icons";
 import {
   GoogleCalendarLogo,
   GoogleMeetLogo,
@@ -12,17 +13,19 @@ import {
 } from "@/components/product/attorney-booking";
 
 /* Will it fit my practice? The film above shows what Willow does; these tiles
-   answer the attorney's next question on a grid of eight squares (four by two
-   from 1024px, two columns below, stacked on phones),
+   answer the attorney's next question in the Harvey-like sizes Aaron prefers
+   (a tall half-width tile, two small ones beside it, a wide one under them),
    each with a small piece of the real product:
-     1-3  Bring the clients you already have: the text, and the Rosens as the
-          Clients list shows a couple (importing contacts is being built, Nov 24,
-          and Aaron cleared claiming it)
-     4    Draft and sign your way: the signed PDFs on a client's plan
-     5    Connect: the apps it connects to
-     6-8  Built on your preferences: the check-in panel's own switches (Ask me
-          before each one goes out, and the check-in questions), which flip
-          when clicked */
+     tall   Bring the clients you already have: the Clients list, Daniel and
+            Maria first, running off the bottom (importing contacts is being
+            built, Nov 24, and Aaron cleared claiming it)
+     small  Speak to clients in your own voice: Approve Summary over a plan
+            summary the attorney has reworded (the Keeping things easy film's
+            edit), and the button can be pressed
+     small  Connect: the apps it connects to
+     wide   Check-ins that fit your firm: the check-in panel's own switches
+            (Ask me before each one goes out, and the check-in questions),
+            which flip when clicked */
 
 const UI_SHADOW = "0 1px 2px rgba(16,24,40,0.05), 0 10px 24px -8px rgba(16,24,40,0.14)";
 const PRODUCT_FONT = "Figtree, Inter, sans-serif";
@@ -40,16 +43,32 @@ const TileBody = ({ children }: { children: React.ReactNode }) => (
 );
 
 /* A piece of the product running off the bottom of its tile. `fadeFrom`: where
-   the fade starts, in percent of the height */
-const Bleed = ({ height, fadeFrom, children }: { height: number; fadeFrom?: number; children: React.ReactNode }) => (
-  <div aria-hidden className="overflow-hidden px-1 pt-1" style={{ height, WebkitMaskImage: fadeOut(fadeFrom), maskImage: fadeOut(fadeFrom), fontFamily: PRODUCT_FONT }}>
+   the fade starts, in percent of the height. `live`: it holds something a
+   visitor can press, so it stays in the accessibility tree */
+const Bleed = ({
+  height,
+  heightClass = "",
+  fadeFrom,
+  live = false,
+  children,
+}: {
+  height?: number;
+  heightClass?: string;
+  fadeFrom?: number;
+  live?: boolean;
+  children: React.ReactNode;
+}) => (
+  <div
+    aria-hidden={live ? undefined : true}
+    className={`px-1 pt-1 ${heightClass}`}
+    style={{ height, overflow: "clip", WebkitMaskImage: fadeOut(fadeFrom), maskImage: fadeOut(fadeFrom), fontFamily: PRODUCT_FONT }}
+  >
     {children}
   </div>
 );
 
 /* A piece of the product laid out at its own width and scaled down to fit when
-   its tile is narrower (the small squares between 1024 and 1280px), so its
-   labels never wrap or cut off */
+   its tile is narrower, so its labels never wrap or cut off */
 const FitWidth = ({ width, children }: { width: number; children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -67,38 +86,47 @@ const FitWidth = ({ width, children }: { width: number; children: React.ReactNod
   );
 };
 
-/* A client's signed plan as the Estate Plan tab lists it (estate-plans-tab.tsx
-   DocumentRow), with rows tightened for a small tile */
-const DocLine = ({ label, detail }: { label: string; detail?: string }) => (
-  <div className="flex items-center gap-3 px-4 py-3">
-    <WIcon name="document" className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
-    <div className="min-w-0 flex-1">
-      <p className="truncate text-[14px] font-semibold text-[#1F2933]">{label}</p>
-      {detail && <p className="mt-0.5 truncate text-[12px] text-[#9CA3AF]">{detail}</p>}
-    </div>
-    <WIcon name="more" className="h-4 w-4 flex-shrink-0 text-[#9CA3AF]" />
-  </div>
-);
-
-const SignedPlan = () => (
-  <div className="w-full text-left">
-    <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
-    <FloatStack>
-      <DocLine label="Last Will & Testament" />
-      <DocLine label="Revocable Living Trust" detail="Joint trust (married couple)" />
-      <DocLine label="Power of Attorney" />
-    </FloatStack>
-  </div>
-);
-
-/* Daniel and Maria as the Clients list shows a couple */
-const Couple = () => (
-  <div className="w-full max-w-[460px] text-left" style={{ fontFamily: PRODUCT_FONT }}>
+/* The Clients list once a firm's clients are in: Daniel and Maria as a
+   couple, then clients on their own, running off the bottom of the tile */
+const ClientList = () => (
+  <div className="mx-auto w-full max-w-[500px] text-left">
     <FloatStack>
       <ProCoupleView a={{ name: "Daniel Rosen", email: "daniel.rosen@gmail.com" }} b={{ name: "Maria Rosen", email: "maria.rosen@gmail.com" }} />
+      <ProClientRowView c={{ name: "Elena Ruiz", email: "elena.ruiz@gmail.com" }} />
+      <ProClientRowView c={{ name: "Marcus Webb", email: "marcus.webb@outlook.com" }} />
+      <ProClientRowView c={{ name: "Jordan Lee", email: "jordan.lee@gmail.com" }} />
+      <ProClientRowView c={{ name: "Priya Anand", email: "priya.anand@outlook.com" }} />
+      <ProClientRowView c={{ name: "Grace Liu", email: "grace.liu@yahoo.com" }} />
     </FloatStack>
   </div>
 );
+
+/* A plan summary in the attorney's words: the review page's Approve Summary
+   (attorney-review.tsx SummaryHead), over the real property power's meaning
+   as the attorney has reworded it, in its edit outline (the same edit the
+   Keeping things easy film makes). Pressing Approve marks it approved. */
+const YourWords = () => {
+  const [approved, setApproved] = useState(false);
+  return (
+    <div className="text-left">
+      <button
+        type="button"
+        onClick={() => setApproved(true)}
+        disabled={approved}
+        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13.5px] font-medium text-white transition-[background-color,transform] duration-150 ${approved ? "bg-[#309E96]" : "bg-[#128F8B] hover:bg-[#0F7673] active:scale-[0.97]"}`}
+        style={{ transitionTimingFunction: "var(--ease-out)" }}
+      >
+        <CheckIcon className="h-4 w-4" />
+        {approved ? "Approved" : "Approve Summary"}
+      </button>
+      <div aria-hidden className="mt-2.5 rounded-t-2xl bg-white px-4 pb-4 pt-3.5" style={{ boxShadow: UI_SHADOW }}>
+        <p className="rounded-[3px] text-[13px] leading-[1.5] text-[#1F2933]" style={{ boxShadow: "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" }}>
+          Buy, sell, lease, mortgage, or manage your home and any other real estate
+        </p>
+      </div>
+    </div>
+  );
+};
 
 /* The product's switch (settings/shared.tsx Toggle) and switch line
    (panel-kit.tsx SwitchLine); here a visitor can flip them */
@@ -124,7 +152,7 @@ const SwitchLine = ({ label, initial }: { label: string; initial: boolean }) => 
    out, then the survey's questions (packages/types/surveys.ts), one of them
    off near the top so the switches read as choices */
 const Preferences = () => (
-  <div className="w-full overflow-hidden rounded-t-2xl bg-white px-5 pt-4 text-left" style={{ boxShadow: UI_SHADOW, fontFamily: PRODUCT_FONT }}>
+  <div className="w-full rounded-t-2xl bg-white px-5 pt-4 text-left" style={{ boxShadow: UI_SHADOW }}>
     <p className="text-[15px] font-semibold text-[#1F2933]">Client check-in</p>
     <div className="mt-1">
       <SwitchLine label="Ask me before each one goes out" initial />
@@ -164,30 +192,30 @@ const WhatYouDeliver = () => (
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
       <LightHead title="Built to work with" accent="the practice you already run." />
 
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-4 lg:grid-rows-[minmax(252px,auto)_minmax(252px,auto)]">
-        <article className={`${TILE} gap-6 p-6 sm:col-span-2 sm:flex-row sm:items-center lg:col-span-3`}>
-          <div className="sm:w-[40%] sm:flex-shrink-0 sm:self-start">
-            <TileTitle>Bring the clients you already have</TileTitle>
-            <TileBody>Import your contacts, add the plans you&rsquo;ve already signed, and see every client in one list.</TileBody>
-          </div>
-          <div aria-hidden className="flex min-w-0 flex-1 justify-center">
-            <Couple />
+      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12 lg:grid-rows-[minmax(252px,auto)_minmax(252px,auto)]">
+        <article className={`${TILE} px-6 pt-6 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>
+          <TileTitle>Bring the clients you already have</TileTitle>
+          <TileBody>Import your contacts, add the plans you&rsquo;ve already signed, and see every client in one list.</TileBody>
+          <div className="mt-auto pt-5">
+            <Bleed height={385} fadeFrom={68}>
+              <ClientList />
+            </Bleed>
           </div>
         </article>
 
-        <article className={`${TILE} px-6 pt-6`}>
-          <TileTitle>Draft and sign your way</TileTitle>
-          <TileBody>Keep your process. Willow starts from the signed PDF.</TileBody>
+        <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
+          <TileTitle>Speak to clients in your own voice</TileTitle>
+          <TileBody>Put each plan summary in your words, then approve it.</TileBody>
           <div className="mt-auto pt-4">
-            <Bleed height={124}>
+            <Bleed height={120} fadeFrom={66} live>
               <FitWidth width={236}>
-                <SignedPlan />
+                <YourWords />
               </FitWidth>
             </Bleed>
           </div>
         </article>
 
-        <article id="integrations" className={`${TILE} scroll-mt-24 p-6`}>
+        <article id="integrations" className={`${TILE} scroll-mt-24 p-6 lg:col-span-3`}>
           <TileTitle>Connect</TileTitle>
           <TileBody>Your calendar, video and contacts, connected once.</TileBody>
           <ul className="mt-auto grid grid-cols-3 gap-1.5 pt-4">
@@ -200,15 +228,18 @@ const WhatYouDeliver = () => (
           </ul>
         </article>
 
-        <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row lg:col-span-3`}>
-          <div className="sm:w-[40%] sm:flex-shrink-0 sm:pb-6">
-            <TileTitle>Built on your preferences</TileTitle>
-            <TileBody>Choose the questions clients are asked, how often they hear from you, and what waits for your approval.</TileBody>
+        {/* Side by side where the tile is wide enough for the switches to
+            read on one line; between 1024 and 1200px the panel sits under
+            the text instead */}
+        <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row lg:col-span-6 lg:flex-col lg:gap-4 min-[1200px]:flex-row min-[1200px]:gap-6`}>
+          <div className="sm:w-[40%] sm:flex-shrink-0 sm:pb-6 lg:w-auto lg:pb-0 min-[1200px]:w-[35%] min-[1200px]:pb-6">
+            <TileTitle>Check-ins that fit your firm</TileTitle>
+            <TileBody>Choose what clients are asked, how often, and what waits for your approval.</TileBody>
           </div>
-          <div className="min-w-0 flex-1 self-end">
-            <div className="px-1 pt-1" style={{ height: 228, overflow: "clip", WebkitMaskImage: fadeOut(84), maskImage: fadeOut(84) }}>
+          <div className="min-w-0 flex-1 self-end lg:mt-auto lg:w-full lg:flex-none lg:self-stretch min-[1200px]:mt-0 min-[1200px]:w-auto min-[1200px]:flex-1 min-[1200px]:self-end">
+            <Bleed heightClass="h-[228px] lg:h-[150px] min-[1200px]:h-[228px]" fadeFrom={80} live>
               <Preferences />
-            </div>
+            </Bleed>
           </div>
         </article>
       </div>
