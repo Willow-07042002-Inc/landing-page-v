@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PrintFrame } from "@/components/site/blocks";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
-import { CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
+import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import { ChevronLeftIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* The product's "Upload their estate plan", played through once: the attorney's
@@ -12,7 +12,7 @@ import { ChevronLeftIcon, CloseIcon, ViewIcon } from "@/components/product/willo
    person, and the account opens on the client's real Estate Plan tab. It stops
    there, which is also what people who prefer reduced motion see. */
 
-const WIDE = { w: 800, h: 720 };
+const WIDE = { w: 800, h: 791 }; // the panel, under the top bar of a 1440 x 855 screen
 const COMPACT = { w: 420, h: 720 };
 
 const DOCS = [
@@ -361,9 +361,22 @@ const PlanDropStory = () => {
       role="img"
       aria-label="An attorney drops a client's signed estate plan into Willow. Willow reads the six documents, files them under Daniel, Maria and both of them, fills in their details and opens their account."
     >
-      <PrintFrame print="/central-park.jpg" aspect={`${size.w} / ${size.h}`}>
-        <ScaledScreen w={size.w} h={size.h}>
-          <div ref={stageRef} aria-hidden className="relative overflow-hidden bg-[#F0F2F5] text-left" style={{ width: size.w, height: size.h, fontFamily: "Figtree, Inter, sans-serif" }}>
+      <PrintFrame print="/central-park.jpg" aspect={compact ? `${size.w} / ${size.h}` : "1440 / 855"}>
+        <ScaledScreen w={compact ? size.w : 1440} h={compact ? size.h : 855}>
+          <div className="relative" style={{ width: compact ? size.w : 1440, height: compact ? size.h : 855 }}>
+          {!compact && (
+            <>
+              <AttorneyClientsScreen open={false} />
+              <div aria-hidden className="absolute bottom-0 left-[68px] right-0 top-16 z-10 bg-black/20" />
+            </>
+          )}
+          <div
+            ref={stageRef}
+            data-upload-stage
+            aria-hidden
+            className={`${compact ? "relative" : "absolute right-0 top-16 z-20"} overflow-hidden bg-[#F0F2F5] text-left`}
+            style={{ width: size.w, height: size.h, fontFamily: "Figtree, Inter, sans-serif", boxShadow: compact ? undefined : "-4px 0 24px rgba(0,0,0,0.08)" }}
+          >
             {/* 1 of 2 · Their documents */}
             <div
               className="absolute inset-x-0 top-0"
@@ -580,6 +593,7 @@ const PlanDropStory = () => {
                 </span>
               </div>
             </div>
+          </div>
           </div>
         </ScaledScreen>
       </PrintFrame>
