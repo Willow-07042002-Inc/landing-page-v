@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ScaledScreen, WIcon } from "@/components/product/kit";
 import { ZoomLogo } from "@/components/product/attorney-booking";
-import { CalendarCheckIcon, CheckIcon, ChevronDownIcon, NotificationIcon, UploadIcon } from "@/components/product/willow-icons";
+import { CalendarCheckIcon, CheckIcon, ChevronDownIcon, NotificationIcon, PropertyIcon, TrustIcon, UploadIcon, WillIcon } from "@/components/product/willow-icons";
 import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type FilmProps } from "@/components/site/film-kit";
 
 /* "A practice families keep coming back to": four chapters, each one piece of
@@ -19,10 +19,13 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
       then it's posted to clients' dashboards. In the product
       (dashboard-content.tsx) the attorney pastes the article's link, Willow
       reads its headline and blurb, and posts carry no image.
-   3. The yearly note to the executors and guardians a plan names
+   3. Imagined, not on main (Aaron, Nov 24): a tax or law update arrives;
+      Willow reads it against every client's plan, flags the clients it may
+      affect and why, drafts one email to them, and the attorney sends it.
+   4. The yearly note to the executors and guardians a plan names
       (DEFAULTS.agent_checkin), a line typed onto it offering them a plan of
       their own, and saved.
-   4. Maria, Daniel's executor, asks for access to his plan, and the firm
+   5. Maria, Daniel's executor, asks for access to his plan, and the firm
       meets first: the request opens (the way the hero's check-in card
       opens) to where it stands, the meeting she booked, her note, and who's
       invited, each with how they're related to Daniel and their role.
@@ -71,7 +74,22 @@ const PAST = [
   { title: "Why the way your home is titled matters", body: "How a deed fits with the rest of your estate plan.", date: "August 18, 2026", img: "/articles/house-keys.jpg", pos: "50% 50%" },
 ];
 
-/* Chapter 3: what the attorney types onto the advisors' check-in */
+/* Chapter 3, imagined (no such feature on main; Aaron asked for it on the
+   page, Nov 24): a New York estate tax update read against the firm's 48
+   plans. Each client flagged with why, in a plan's own terms, and the
+   document it's in. No figures, so nothing here dates or misstates the law */
+const LAW = { tag: "New York estate tax", title: "The estate tax exemption changes for 2027", plans: 48 };
+/* The documents it reads through, one after another while it counts */
+const READING = ["Elena Ruiz’s will", "Marcus Webb’s will", "Grace Liu’s trust", "Daniel Rosen’s trust", "Sam Whitfield’s will", "Priya Anand’s will", "Olivia Grant’s deed", "Daniel Rosen’s will"];
+const AFFECTED = [
+  { initials: "ER", name: "Elena Ruiz", why: "Her will’s trust gift is set by the exemption", doc: "Will", Icon: WillIcon },
+  { initials: "DR", name: "Daniel Rosen", why: "Joint estate near the New York exemption", doc: "Trust", Icon: TrustIcon },
+  { initials: "MW", name: "Marcus Webb", why: "Estate near the New York exemption", doc: "Will", Icon: WillIcon },
+  { initials: "PA", name: "Priya Anand", why: "Her will leaves a credit shelter trust", doc: "Will", Icon: WillIcon },
+  { initials: "OG", name: "Olivia Grant", why: "Owns a home in New York", doc: "Deed", Icon: PropertyIcon },
+];
+
+/* Chapter 4: what the attorney types onto the executors' note */
 const TEAM_TYPED = " And if you’d ever like a plan of your own, I’d be glad to help.";
 
 /* Chapter 4: Maria's request. "You asked to meet first..." is the request
@@ -93,19 +111,21 @@ const REQUEST_W = { wide: 760, compact: 392 };
 const TAP = 190;
 const C1 = { read: 900, perChar: 22, after: 350, fold: 450, land: 650, chip: 230, hold: 2400 };
 const C2 = { rest: 900, carry: 950, over: 300, loading: 900, preview: 1700, hold: 2200 };
+const CL = { rest: 700, perPlan: 35, found: 400, read: 1800, draft: 2200, sent: 2200 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
 const C4 = { read: 2200, hold: 5600 };
 
-export const KEEP_CHAPTERS = 4;
+export const KEEP_CHAPTERS = 5;
 /** How long each chapter runs at normal speed */
 export const KEEP_MS = [
   C1.read + CHECKIN_TYPED.length * C1.perChar + C1.after + TAP + C1.fold + C1.land + CHECKINS.length * C1.chip + C1.hold,
   C2.rest + C2.carry + C2.over + C2.loading + C2.preview + TAP + C2.hold,
+  CL.rest + LAW.plans * CL.perPlan + CL.found + CL.read + TAP + CL.draft + TAP + CL.sent,
   C3.read + TAP + TEAM_TYPED.length * C3.perChar + C3.after + C3.beforeSave + TAP + C3.hold,
   C4.read + TAP + C4.hold,
 ];
 
-type Tap = "post" | "message" | "save" | "more" | null;
+type Tap = "post" | "draft" | "send" | "message" | "save" | "more" | null;
 type Carry = "off" | "in" | "drop";
 type Edit = "idle" | "typing" | "done";
 
@@ -379,7 +399,102 @@ const Article = ({ compact }: { compact: boolean }) => (
   </div>
 );
 
-/* 3. The yearly note to the executors and guardians a plan names (the
+/* Something arriving once it's on screen, the i-th a beat after the last */
+const Enter = ({ i, children }: { i: number; children: React.ReactNode }) => {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setOn(true), 16);
+    return () => window.clearTimeout(t);
+  }, []);
+  return (
+    <div style={{ opacity: on ? 1 : 0, transform: on ? "translateY(0)" : "translateY(8px)", transition: `opacity 300ms ease ${i * 110}ms, transform 420ms var(--ease-out) ${i * 110}ms` }}>
+      {children}
+    </div>
+  );
+};
+
+/* 3. The update, read against every plan (step 0, counting), the clients it
+   may affect (1), the email drafted to them (2), sent (3). The actions sit
+   in the bar, where the other chapters' Save does */
+const LawUpdate = ({ step, scanned, tap, compact }: { step: number; scanned: number; tap: Tap; compact: boolean }) => {
+  const n = AFFECTED.length;
+  const action = step === 1 ? "Draft an email" : step === 2 ? `Send to ${n} clients` : step === 3 ? `Sent to ${n} clients` : null;
+  const pad = compact ? "px-5" : "px-7";
+  return (
+    <>
+      <Bar title="Tax and law updates" compact={compact}>
+        {action && (
+          <Appear key={action}>
+            <span
+              className="inline-flex h-[34px] items-center gap-1.5 rounded-md px-[13px] text-[13.5px] font-semibold"
+              style={{ background: step === 3 ? "#E6F5F4" : "#309E96", color: step === 3 ? "#0F7673" : "#FFFFFF", ...tapStyle((tap === "draft" && step === 1) || (tap === "send" && step === 2)) }}
+            >
+              {step === 3 && <CheckIcon className="h-4 w-4" />}
+              {action}
+            </span>
+          </Appear>
+        )}
+      </Bar>
+      <div className={`border-b border-[#EEF0F2] ${pad} ${compact ? "py-3.5" : "py-4"}`}>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0F7673]">{LAW.tag}</p>
+        <p className="mt-1 font-semibold text-[#1F2933]" style={{ fontFamily: MERRIWEATHER, fontSize: compact ? 17 : 19, lineHeight: 1.3 }}>{LAW.title}</p>
+        {step === 0 ? (
+          <div className="mt-3">
+            <div className="h-1.5 overflow-hidden rounded-full bg-[#EEF0F2]">
+              <div className="h-full rounded-full bg-[#309E96]" style={{ width: `${(scanned / LAW.plans) * 100}%`, transition: "width 120ms linear" }} />
+            </div>
+            <p className="mt-2 truncate text-[13px] text-[#6B7280]">Reading {READING[Math.floor(scanned / 3) % READING.length]} · {scanned} of {LAW.plans}</p>
+          </div>
+        ) : (
+          <p className="mt-2.5 flex items-center gap-1.5 text-[13px] font-medium text-[#0F7673]">
+            <CheckIcon className="h-4 w-4" />
+            Read against {LAW.plans} plans · May affect {n} clients
+          </p>
+        )}
+      </div>
+      {step === 1 && (
+        <div className={`${pad} ${compact ? "pt-3" : "pt-4"}`}>
+          {AFFECTED.map((a, i) => (
+            <Enter key={a.name} i={i}>
+              <div className={`flex items-center gap-3 ${compact ? "py-2.5" : "py-3"} ${i < n - 1 ? "border-b border-[#F0F1F3]" : ""}`}>
+                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]">{a.initials}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium text-[#1F2933]" style={{ fontSize: compact ? 14 : 14.5 }}>{a.name}</span>
+                  <span className="block text-[#6B7280]" style={{ fontSize: compact ? 12.5 : 13 }}>{a.why}</span>
+                </span>
+                {!compact && (
+                  <span className="flex flex-shrink-0 items-center gap-1.5 text-[12.5px] text-[#6B7280]">
+                    <a.Icon className="h-4 w-4 text-[#128F8B]" />
+                    {a.doc}
+                  </span>
+                )}
+              </div>
+            </Enter>
+          ))}
+        </div>
+      )}
+      {step >= 2 && (
+        <Appear>
+          <div className={`border-b border-[#EEF0F2] ${pad} ${compact ? "py-3" : "py-3.5"}`}>
+            <p className="flex flex-wrap items-center gap-x-1 gap-y-1 text-[12.5px] text-[#6B7280]">
+              To {AFFECTED.map((a) => <Role key={a.name}>{compact ? a.name.split(" ")[0] : a.name}</Role>)}
+            </p>
+            <p className="mt-1.5 text-[14.5px] font-semibold leading-[24px] text-[#1F2933]">New York’s estate tax is changing for 2027</p>
+          </div>
+          <Mail compact={compact}>
+            <p className="mb-3 text-[#374151]" style={para(compact)}>Hi <FillIn>First name</FillIn>,</p>
+            <p className="mb-3 text-[#374151]" style={para(compact)}>
+              New York’s estate tax exemption changes on January 1. I’ve looked at your plan, and it may affect you. There’s nothing to do today, but I’d like to walk you through it.
+            </p>
+            <MailButton compact={compact}>Book a meeting</MailButton>
+          </Mail>
+        </Appear>
+      )}
+    </>
+  );
+};
+
+/* 4. The yearly note to the executors and guardians a plan names (the
    product's "Note to executors & guardians" card, its default words), with a
    line typed on that offers them a plan of their own */
 const TeamCheckIn = ({ edit, typed, saved, tap, compact }: { edit: Edit; typed: number; saved: boolean; tap: Tap; compact: boolean }) => {
@@ -565,6 +680,8 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
   const [teamTyped, setTeamTyped] = useState(0);
   const [saved, setSaved] = useState(false);
   const [request, setRequest] = useState(false);
+  const [lawStep, setLawStep] = useState(0);
+  const [scanned, setScanned] = useState(0);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -589,10 +706,12 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       setNews(c === 1 ? 3 : 0);
       setOver(false);
       setCarry("off");
-      setTeamEdit(c === 2 ? "done" : "idle");
+      setLawStep(c === 2 ? 3 : 0);
+      setScanned(c === 2 ? LAW.plans : 0);
+      setTeamEdit(c === 3 ? "done" : "idle");
       setTeamTyped(0);
-      setSaved(c === 2);
-      setRequest(c === 3);
+      setSaved(c === 3);
+      setRequest(c === 4);
     };
 
     const key = `${chapter}:${replay}:${compact}`;
@@ -671,7 +790,23 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
         await tapOn("post", () => setNews(3));
         await wait(C2.hold);
       },
-      /* 3. A line of the attorney's own onto the executors' yearly note */
+      /* 3. A law update read against every plan; the clients it may affect
+         get one email, drafted and sent */
+      async () => {
+        await wait(CL.rest);
+        for (let n = 1; n <= LAW.plans; n++) {
+          setScanned(n);
+          await wait(CL.perPlan);
+        }
+        await wait(CL.found);
+        setLawStep(1);
+        await wait(CL.read);
+        await tapOn("draft", () => setLawStep(2));
+        await wait(CL.draft);
+        await tapOn("send", () => setLawStep(3));
+        await wait(CL.sent);
+      },
+      /* 4. A line of the attorney's own onto the executors' yearly note */
       async () => {
         await wait(C3.read);
         await tapOn("message", () => setTeamEdit("typing"));
@@ -685,7 +820,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
         await tapOn("save", () => setSaved(true));
         await wait(C3.hold);
       },
-      /* 4. The executor's request arrives; it opens to the meeting she
+      /* 5. The executor's request arrives; it opens to the meeting she
          booked, her note, and everyone invited */
       async () => {
         await wait(C4.read);
@@ -731,7 +866,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="Willow sends the check-in the attorney writes to every client once a year, each on their own date, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when a client passes and the executor asks for access, shows the meeting she booked first, her note, and the family invited with her."
+      aria-label="Willow sends the check-in the attorney writes to every client once a year, each on their own date, posts the firm's articles to every client's dashboard, reads each tax or law update against every plan and emails the clients it may affect, writes every year to the executors and guardians each plan names, and when a client passes and the executor asks for access, shows the meeting she booked first, her note, and the family invited with her."
     >
       <Print size={size}>
         <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: size.w, height: size.h }}>
@@ -768,10 +903,13 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
             <ArticleFeed step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
           </Piece>
           <Piece on={shown === 2} place={place}>
+            <LawUpdate step={lawStep} scanned={scanned} tap={tap} compact={compact} />
+          </Piece>
+          <Piece on={shown === 3} place={place}>
             <TeamCheckIn edit={teamEdit} typed={teamTyped} saved={saved} tap={tap} compact={compact} />
           </Piece>
-          {/* 4. The request, placed so it sits in the middle once opened */}
-          <Rise on={shown === 3} z={10} style={{ left: 0, right: 0, top: compact ? 40 : 141 }}>
+          {/* 5. The request, placed so it sits in the middle once opened */}
+          <Rise on={shown === 4} z={10} style={{ left: 0, right: 0, top: compact ? 40 : 141 }}>
             <div className="mx-auto" style={{ width: compact ? REQUEST_W.compact : REQUEST_W.wide }}>
               <AccessRequest open={request} tap={tap} compact={compact} />
             </div>

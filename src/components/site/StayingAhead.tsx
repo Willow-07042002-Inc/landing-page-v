@@ -22,12 +22,18 @@ export const KEEP_CHAPTERS: Chapter[] = [
     id: "check-ins",
     also: ["survey"],
     title: "Automate client check-ins",
-    body: "Every year, Willow asks each client what’s changed since they signed. The email is in your words, and you can preview the questions before anything goes out.",
+    body: "Write the check-in once, in your words. Willow sends it to every client a year after they sign, then every year, asking what’s changed.",
   },
   {
     id: "firm-updates",
     title: "Share your firm’s content and updates",
     body: "Add a link to anything your firm publishes, and it appears on every client’s dashboard, so you stay in view between check-ins.",
+  },
+  {
+    id: "law-changes",
+    also: ["tax-updates", "legislation"],
+    title: "Tell clients when the law changes",
+    body: "When a tax or estate law changes, Willow reads it against every client’s plan and flags who it may affect. Look over the email it drafts, then send it to all of them at once.",
   },
   {
     id: "family",
@@ -212,7 +218,7 @@ const ChapterFilmSection = ({
   );
 };
 
-/* After signing: check-ins, the firm's content, the family, the executor's call */
+/* After signing: check-ins, the firm's content, law changes, the family, the executors' call */
 const StayingAhead = () => (
   <ChapterFilmSection
     name="keep"
