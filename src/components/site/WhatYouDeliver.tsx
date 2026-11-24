@@ -110,7 +110,7 @@ const CONNECTORS: { name: string; Logo: Logo }[] = [
 const WhatYouDeliver = () => (
   <section className="bg-[#F8FAFC] py-16 md:py-24">
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
-      <LightHead title="Built with attorneys," accent="for attorneys." />
+      <LightHead title="Built to work with" accent="the practice you already run." />
 
       <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12 lg:grid-rows-[252px_252px]">
         <article className={`${TILE} px-6 pt-6 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>

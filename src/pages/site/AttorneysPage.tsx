@@ -1,15 +1,18 @@
 import React from "react";
-import { PageShell, PageHero, SecurityBand, ClosingCta, WRAP, usePageMeta } from "@/components/site/blocks";
+import { PageShell, PageHero, ClosingCta, WRAP, usePageMeta } from "@/components/site/blocks";
 import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import CheckInStory from "@/components/site/CheckInStory";
 import StayingAhead from "@/components/site/StayingAhead";
 import WhatYouDeliver from "@/components/site/WhatYouDeliver";
+import SecurityControls from "@/components/site/SecurityControls";
 
 /* For attorneys, with the look of harvey.ai's solution pages and a layout of
    its own: the hero, what Willow believes, how attorneys stay ahead for every
    client (task by task, on the real product), what the practice delivers
-   (quiet tiles with pieces of the product), then security and the demo. */
+   (quiet tiles with pieces of the product), then security set like the
+   homepage FAQ with Harvey-style rows, and the demo. No attorney reviews
+   on this page. */
 
 const Belief = () => (
   <section className="bg-[#F8FAFC] pb-16 md:pb-24">
@@ -30,7 +33,7 @@ const AttorneysPage = () => {
     "Keep clients coming back for updates and become the obvious choice for their family and executors. Willow starts from the plan you've already signed."
   );
   return (
-    <PageShell quotes>
+    <PageShell>
       <PageHero
         eyebrow="For attorneys"
         title="Signing shouldn't be the last time"
@@ -42,7 +45,7 @@ const AttorneysPage = () => {
       <Belief />
       <StayingAhead />
       <WhatYouDeliver />
-      <SecurityBand />
+      <SecurityControls />
       <ClosingCta shot={<ScaledScreen><AttorneyDashboardScreen /></ScaledScreen>} />
     </PageShell>
   );
