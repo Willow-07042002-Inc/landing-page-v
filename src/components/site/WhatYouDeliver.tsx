@@ -19,11 +19,10 @@ import {
      tall   Bring the clients you already have: the Clients list, Daniel and
             Maria first, running off the bottom (importing contacts is being
             built, Nov 24, and Aaron cleared claiming it)
-     small  On your terms (one line, Aaron's ask; Willow set up around what
-            the attorney is comfortable with): the check-in panel's own
-            switches (Ask me before each one goes out, and the questions),
-            which flip when clicked. True as worded: check-ins send on their
-            own unless Ask me is on, and summaries always wait for review
+     small  On your terms (one line, Aaron's ask): one real decision asked
+            as a question, When a client says something has changed: They
+            book directly or We call them (the check-in's Call after the
+            check-in setting), and a visitor can pick
      small  Connect: the apps it connects to
      wide   Speak to clients in your own voice: a plan summary where the
             attorney types their own wording over one power, then Approve
@@ -74,25 +73,6 @@ const Bleed = ({
     {children}
   </div>
 );
-
-/* A piece of the product laid out at its own width and scaled down to fit when
-   its tile is narrower, so its labels never wrap or cut off */
-const FitWidth = ({ width, children }: { width: number; children: React.ReactNode }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([entry]) => setScale(Math.min(1, entry.contentRect.width / width)));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [width]);
-  return (
-    <div ref={ref}>
-      <div style={scale < 1 ? { width, transform: `scale(${scale})`, transformOrigin: "top left" } : undefined}>{children}</div>
-    </div>
-  );
-};
 
 /* The Clients list once a firm's clients are in: Daniel and Maria as a
    couple, then clients on their own, running off the bottom of the tile */
@@ -260,44 +240,56 @@ const SummaryEdit = () => {
   );
 };
 
-/* The product's switch (settings/shared.tsx Toggle) and switch line
-   (panel-kit.tsx SwitchLine); here a visitor can flip them */
-const SwitchLine = ({ label, initial }: { label: string; initial: boolean }) => {
-  const [on, setOn] = useState(initial);
+/* One real decision, asked as a question: the client check-in's Call after
+   the check-in (touchpoint-panel.tsx), which sets what a client's portal
+   offers once they say something has changed. The product's They book and
+   We call them, drawn as two answers to pick from (its third, No call, is
+   left out to keep the tile simple; Aaron, Nov 24: one thing, a question,
+   made to look good in the white card). A visitor can pick either */
+const FOLLOW_UPS = ["They book directly", "We call them"] as const;
+
+const FollowUpChoice = () => {
+  const [value, setValue] = useState<(typeof FOLLOW_UPS)[number]>("We call them");
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      onClick={() => setOn(!on)}
-      className="flex w-full items-center gap-3 border-b border-[#E5E7EB] py-2.5 text-left"
-    >
-      <span className="min-w-0 flex-1 text-[13.5px] leading-snug text-[#1F2933]">{label}</span>
-      <span className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 ${on ? "bg-[#309E96]" : "bg-[#D1D5DB]"}`}>
-        <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-200 ${on ? "translate-x-[18px]" : "translate-x-[3px]"}`} />
-      </span>
-    </button>
+    <div className="w-full rounded-t-2xl bg-white px-4 pb-4 pt-3.5 text-left" style={{ boxShadow: UI_SHADOW }}>
+      <p id="follow-up-question" className="text-[13.5px] font-semibold leading-snug text-[#1F2933]">
+        When a client says something has changed
+      </p>
+      <div role="radiogroup" aria-labelledby="follow-up-question" className="mt-3 space-y-2">
+        {FOLLOW_UPS.map((o) => {
+          const on = o === value;
+          return (
+            <button
+              key={o}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => setValue(o)}
+              className={`flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-[13px] transition-[background-color,border-color,color,box-shadow,transform] duration-200 active:scale-[0.98] ${
+                on ? "border-[#309E96] bg-[#F0F9F9] font-semibold text-[#1F2933]" : "border-[#E5E7EB] bg-white font-medium text-[#4B5563] hover:border-[#C4C9D0] hover:bg-[#FAFBFB]"
+              }`}
+              style={{
+                transitionTimingFunction: "var(--ease-out)",
+                boxShadow: on ? "0 0 0 3px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
+              }}
+            >
+              <span
+                aria-hidden
+                className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border transition-colors duration-200 ${on ? "border-[#309E96]" : "border-[#C4C9D0]"}`}
+              >
+                <span
+                  className="h-2 w-2 rounded-full bg-[#309E96] transition-transform duration-200"
+                  style={{ transform: on ? "scale(1)" : "scale(0)", transitionTimingFunction: "var(--ease-out)" }}
+                />
+              </span>
+              {o}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 };
-
-/* The check-in's settings, with the real labels: Ask me before each one goes
-   out, then the survey's questions (packages/types/surveys.ts), one of them
-   off near the top so the switches read as choices */
-const Preferences = () => (
-  <div className="w-full rounded-t-2xl bg-white px-4 pt-3.5 text-left" style={{ boxShadow: UI_SHADOW }}>
-    <p className="text-[14px] font-semibold text-[#1F2933]">Client check-in</p>
-    <div className="mt-1">
-      <SwitchLine label="Ask me before each one goes out" initial />
-    </div>
-    <p className="mt-3 text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">Questions to ask</p>
-    <div className="mt-1">
-      <SwitchLine label="Has your family changed?" initial />
-      <SwitchLine label="Have you changed a beneficiary on an account or policy?" initial={false} />
-      <SwitchLine label="Have you moved, or bought or sold property?" initial />
-      <SwitchLine label="Have your wishes for medical care changed?" initial />
-    </div>
-  </div>
-);
 
 const GmailLogo = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="52 42 88 66" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -338,12 +330,12 @@ const WhatYouDeliver = () => (
 
         <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
           <TileTitle>On your terms</TileTitle>
-          <TileBody>You decide how much Willow handles on its own and what waits for your review.</TileBody>
+          <TileBody>You decide how you follow up with clients.</TileBody>
           <div className="mt-auto pt-4">
-            <Bleed height={108} fadeFrom={58} live>
-              <FitWidth width={250}>
-                <Preferences />
-              </FitWidth>
+            {/* Taller between 1024 and 1200px, where the question takes
+                three lines */}
+            <Bleed heightClass="h-[166px] lg:h-[206px] min-[1200px]:h-[166px]" fadeFrom={100} live>
+              <FollowUpChoice />
             </Bleed>
           </div>
         </article>
