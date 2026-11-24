@@ -221,8 +221,8 @@ const DropLine = ({ active }: { active?: boolean }) => (
 );
 
 /* working-mark.tsx: the W, breathing, and a line of legal wordplay */
-const WorkingMark = ({ line = "Reading the fine print…" }: { line?: string }) => (
-  <div className="flex flex-col items-center py-8 text-center">
+const WorkingMark = ({ line = "Reading the fine print…", tight = false }: { line?: string; tight?: boolean }) => (
+  <div className={`flex flex-col items-center text-center ${tight ? "" : "py-8"}`}>
     <span className="flex h-9 w-9 animate-pulse items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 18, lineHeight: 1, paddingTop: 2 }}>
       W
     </span>
@@ -610,13 +610,17 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         const card = box(cardRef.current);
         const drop = { x: cx, y: card.top + space + 23 };
         setDropAt(drop);
-        setFanY(card.top + space * 2 + 135 + 20 + sh / 2);
+        /* While it reads, the card holds the mark and, under it, the documents */
+        const markH = 72;
+        const gap = 20;
+        const sheetsH = compact ? sh * 2 + 8 : sh;
+        setFanY(card.top + space + markH + gap + sh / 2);
         setBeat("carry");
         setPlace("carry");
         setCursor((c) => ({ ...c, shown: true, x: drop.x + 30, y: drop.y + 40 }));
         await wait(960);
         setCursor((c) => ({ ...c, down: false }));
-        setCardH(space * 2 + 135);
+        setCardH(space * 2 + markH + gap + sheetsH);
         setBeat("reading");
         setPlace("fan");
         await wait(160);
@@ -779,7 +783,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                       </div>
                     </div>
                     <div className="absolute inset-x-0 top-0" style={{ paddingTop: pad, opacity: reading ? 1 : 0, transition: "opacity 200ms ease" }}>
-                      <WorkingMark />
+                      <WorkingMark tight />
                     </div>
                   </div>
                 </div>
