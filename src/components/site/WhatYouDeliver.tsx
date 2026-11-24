@@ -4,7 +4,6 @@ import { LightHead } from "@/components/site/StayingAhead";
 import { FloatStack } from "@/components/product/kit";
 import { ProClientRowView, ProCoupleView } from "@/components/product/attorney-clients";
 import { CheckIcon } from "@/components/product/willow-icons";
-import { CalendarCheck, Phone } from "lucide-react";
 import {
   GoogleCalendarLogo,
   GoogleMeetLogo,
@@ -47,8 +46,8 @@ const TileTitle = ({ children }: { children: React.ReactNode }) => (
   </h3>
 );
 
-const TileBody = ({ children }: { children: React.ReactNode }) => (
-  <p className="mt-2 max-w-md text-[15px] leading-relaxed text-gray-600">{children}</p>
+const TileBody = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <p id={id} className="mt-2 max-w-md text-[15px] leading-relaxed text-gray-600">{children}</p>
 );
 
 /* A piece of the product running off the bottom of its tile. `fadeFrom`: where
@@ -246,26 +245,20 @@ const SummaryEdit = () => {
    the check-in (touchpoint-panel.tsx), which sets what a client's portal
    offers once they say something has changed. Its They book and We call
    them (the third, No call, left out to keep the tile simple) as rows in
-   the Harvey Knowledge tile's style: each its own small white row with an
-   icon, a label and the product's switch. The two are tied, so switching
-   one off switches the other on, and the tile always reads as one decision
-   (Aaron, Nov 24). A visitor can flip them */
-const FOLLOW_UPS = [
-  { label: "They book directly", Icon: CalendarCheck },
-  { label: "We call them", Icon: Phone },
-] as const;
-type FollowUp = (typeof FOLLOW_UPS)[number]["label"];
+   the Harvey Knowledge tile's style: each its own small white row with a
+   label and the product's switch, no icons, and the tile's own line asks
+   the question (Aaron: no third line of text). The two are tied, so
+   switching one off switches the other on, and the tile always reads as one
+   decision (Aaron, Nov 24). A visitor can flip them */
+const FOLLOW_UPS = ["They book directly", "We call them"] as const;
+type FollowUp = (typeof FOLLOW_UPS)[number];
 
-const FollowUpChoice = () => {
+const FollowUpChoice = ({ labelledBy }: { labelledBy: string }) => {
   const [value, setValue] = useState<FollowUp>("We call them");
-  const flip = (label: FollowUp) => setValue(label === value ? FOLLOW_UPS.find((o) => o.label !== label)!.label : label);
+  const flip = (label: FollowUp) => setValue(label === value ? FOLLOW_UPS.find((o) => o !== label)! : label);
   return (
-    <div className="text-left" style={{ fontFamily: PRODUCT_FONT }}>
-      <p id="follow-up-question" className="text-[13px] font-medium text-[#6B7280]" style={{ textWrap: "balance" }}>
-        When a client says something has changed
-      </p>
-      <div role="radiogroup" aria-labelledby="follow-up-question" className="mt-2.5 space-y-1.5">
-        {FOLLOW_UPS.map(({ label, Icon }) => {
+    <div role="radiogroup" aria-labelledby={labelledBy} className="space-y-1.5 text-left" style={{ fontFamily: PRODUCT_FONT }}>
+        {FOLLOW_UPS.map((label) => {
           const on = label === value;
           return (
             <button
@@ -274,11 +267,10 @@ const FollowUpChoice = () => {
               role="radio"
               aria-checked={on}
               onClick={() => flip(label)}
-              className="flex w-full items-center gap-3 rounded-[10px] bg-white px-3.5 py-3 text-left transition-transform duration-150 active:scale-[0.98]"
+              className="flex w-full items-center gap-3 rounded-[10px] bg-white px-4 py-3.5 text-left transition-transform duration-150 active:scale-[0.98]"
               style={{ boxShadow: "0 1px 2px rgba(16,24,40,0.06), 0 0 0 1px rgba(16,24,40,0.04)", transitionTimingFunction: "var(--ease-out)" }}
             >
-              <Icon aria-hidden strokeWidth={1.75} className="h-4 w-4 flex-shrink-0 text-[#309E96]" />
-              <span className="min-w-0 flex-1 text-[14px] text-[#1F2933]">{label}</span>
+              <span className="min-w-0 flex-1 text-[14.5px] text-[#1F2933]">{label}</span>
               <span aria-hidden className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 ${on ? "bg-[#309E96]" : "bg-[#E5E7EB]"}`}>
                 <span
                   className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-200"
@@ -288,7 +280,6 @@ const FollowUpChoice = () => {
             </button>
           );
         })}
-      </div>
     </div>
   );
 };
@@ -332,9 +323,9 @@ const WhatYouDeliver = () => (
 
         <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
           <TileTitle>On your terms</TileTitle>
-          <TileBody>You decide how you follow up with clients.</TileBody>
+          <TileBody id="follow-up-question">When a client&rsquo;s life changes, you choose what happens next.</TileBody>
           <div className="mt-auto pb-5 pt-4">
-            <FollowUpChoice />
+            <FollowUpChoice labelledBy="follow-up-question" />
           </div>
         </article>
 
