@@ -45,13 +45,20 @@ export const ProCoupleView = ({ a, b }: { a: ProClientRow; b: ProClientRow }) =>
 );
 
 /* estate-plans-tab.tsx DocumentRow: the bare document icon, label, detail line, ⋯ */
-export const ProDocRow = ({ label, detail, nested = false }: { label: string; detail?: string; nested?: boolean }) => (
-  <div className={nested ? "flex w-full items-center justify-between gap-4 py-1.5" : "flex w-full items-center justify-between gap-4 px-8 py-4"}>
-    <div className="flex min-w-0 flex-1 items-center gap-3">
-      <WIcon name="document" className={`flex-shrink-0 text-[#309E96] ${nested ? "h-4 w-4" : "h-5 w-5"}`} />
+/* `roomy`: taller rows for a screen with space to fill (the For attorneys film) */
+export const ProDocRow = ({ label, detail, nested = false, roomy = false }: { label: string; detail?: string; nested?: boolean; roomy?: boolean }) => (
+  <div
+    className={
+      nested
+        ? `flex w-full items-center justify-between gap-4 ${roomy ? "py-3" : "py-1.5"}`
+        : `flex w-full items-center justify-between gap-4 px-8 ${roomy ? "py-6" : "py-4"}`
+    }
+  >
+    <div className={`flex min-w-0 flex-1 items-center ${roomy ? "gap-4" : "gap-3"}`}>
+      <WIcon name="document" className={`flex-shrink-0 text-[#309E96] ${nested ? (roomy ? "h-5 w-5" : "h-4 w-4") : roomy ? "h-6 w-6" : "h-5 w-5"}`} />
       <div className="min-w-0 flex-1">
-        <p className={nested ? "font-medium text-[#1F2933]" : "font-semibold text-[#1F2933]"} style={{ fontSize: nested ? 13.5 : 15 }}>{label}</p>
-        {detail && <p className="mt-0.5 truncate text-[12.5px] text-[#9CA3AF]">{detail}</p>}
+        <p className={nested ? "font-medium text-[#1F2933]" : "font-semibold text-[#1F2933]"} style={{ fontSize: nested ? (roomy ? 15 : 13.5) : roomy ? 16.5 : 15 }}>{label}</p>
+        {detail && <p className={`truncate text-[#9CA3AF] ${roomy ? "mt-1 text-[13.5px]" : "mt-0.5 text-[12.5px]"}`}>{detail}</p>}
       </div>
     </div>
     <span className="rounded p-1.5 text-[#9CA3AF]">

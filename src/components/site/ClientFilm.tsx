@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
+import { FloatStack, ProSidebar, ProTopBar, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
-import { SummaryCards, SummaryEditToggle } from "@/components/product/attorney-review";
+import { RoleChain, SummaryCards, SummaryEditToggle } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
 import { CheckIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/product/willow-icons";
 
@@ -11,9 +11,12 @@ import { CheckIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/p
       api/clients/find-contact). The film creates the account by itself; in the
       product the attorney confirms it
    2. the summary in the Estate Plan tab: the attorney opens the step-in card,
-      rewords one health care wish and approves it (in the product that editing
-      happens on the approval page, scenario-summary-approval.tsx)
-   3. the client check-in's email and preferences (settings/touchpoint-panel.tsx)
+      puts one of the power of attorney's powers in plain words, closes it and
+      approves the summary (in the product that editing happens on the approval
+      page, scenario-summary-approval.tsx)
+   3. the attorney's Settings > Staying in touch: down the three check-in lists,
+      then the client check-in's preferences (maintenance-tab.tsx,
+      touchpoint-panel.tsx)
    4. the check-ins reach the people in the plan, and one books a call.
    Each chapter is its own sequence, with its own start and end. The film plays
    them in order once from where it's opened and stops on the last frame.
@@ -51,9 +54,9 @@ type SheetData = { head: string; of: string; tag: string };
 
 const DOCS = [
   { file: "Last Will of Daniel Rosen.pdf", kind: "Last Will & Testament", tag: "Last Will", head: "Last Will and Testament", of: "of Daniel Rosen" },
-  { file: "Health Care Proxy, Daniel.pdf", kind: "Health Care Proxy", tag: "Health Care Proxy", head: "Health Care Proxy", of: "of Daniel Rosen" },
+  { file: "Power of Attorney, Daniel.pdf", kind: "Power of Attorney", tag: "Power of Attorney", head: "Power of Attorney", of: "of Daniel Rosen" },
   { file: "Last Will of Maria Rosen.pdf", kind: "Last Will & Testament", tag: "Last Will", head: "Last Will and Testament", of: "of Maria Rosen" },
-  { file: "Health Care Proxy, Maria.pdf", kind: "Health Care Proxy", tag: "Health Care Proxy", head: "Health Care Proxy", of: "of Maria Rosen" },
+  { file: "Power of Attorney, Maria.pdf", kind: "Power of Attorney", tag: "Power of Attorney", head: "Power of Attorney", of: "of Maria Rosen" },
   { file: "Rosen Revocable Trust.pdf", kind: "Revocable Living Trust", tag: "Living Trust", head: "Revocable Trust Agreement", of: "The Rosen Family Trust" },
   { file: "Deed to the Rosen Trust.pdf", kind: "Deed", tag: "Deed", head: "Trust Transfer Deed", of: "to The Rosen Family Trust" },
 ];
@@ -83,22 +86,35 @@ const SHEETS: Record<"docs" | "team", SheetData[]> = {
 };
 const FAN = [-8, -5, -2, 2, 5, 8];
 
-/* The health care wish the attorney rewords in chapter 2 */
-const WISH_BEFORE = "In a hospital or care facility, as your doctors advise.";
-const WISH_AFTER = "At home for as long as it’s safe, with hospice care if needed.";
-const WISHES = [
-  { label: "Life support", text: "Your agent decides, based on what you’ve told them." },
-  { label: "Pain relief", text: "Keep you comfortable even if it may shorten your life." },
-  { label: "Where you want care", text: null },
-  { label: "Organ donation", text: "You wish to donate any organs that could help someone." },
+/* The power of attorney's powers, as the step-in card lists them
+   (AgentPowersView); the attorney puts the first one in plain words in chapter 2 */
+const POWER_BEFORE = "Buy, sell, mortgage, lease and manage real property";
+const POWER_AFTER = "Buy, sell, rent out or borrow against your property";
+const POWERS = [
+  { power: "Real estate transactions", desc: null },
+  { power: "Banking transactions", desc: "Operate accounts, move funds, and buy or sell securities" },
+  { power: "Retirement benefit transactions", desc: "Manage IRAs and employer plans, and take required distributions" },
+  { power: "Tax matters", desc: "Prepare, sign and file returns, and deal with taxing authorities" },
 ];
 
-/* The line of the check-in the attorney makes their own in chapter 3 */
-const MAIL_BEFORE = "It’s been a while since we finished your estate plan, and I wanted to check in.";
-const MAIL_AFTER = "I hope you and Maria are doing well. It’s time for our yearly check-in.";
+/* Chapter 3: the attorney's own check-in settings (Settings > Staying in
+   touch). Nav, sections, rows and defaults as settings-home.tsx,
+   maintenance-tab.tsx and packages/types/touchpoints.ts have them */
+const SETTINGS_NAV = [
+  { group: "Personal settings", items: ["Profile", "Connections"] },
+  { group: "Firm settings", items: ["Firm details", "Branding", "Team", "Billing", "Firm history"] },
+  { group: "Client experience", items: ["Meeting types", "Availability", "Calendars", "Staying in touch", "Surveys", "Dashboard content", "Access requests"] },
+];
+const CHECKINS = [
+  { section: "Agent check-ins", title: "Everyone on the team", line: "Email · “Checking in on [client]'s estate plan”", first: "After 1 month" },
+  { section: "Professional check-ins", title: "Financial advisor and accountant", line: "Email · “Checking in from [firm] on behalf of [client]”", first: "After 1 year" },
+  { section: "Client check-ins", title: "The client", line: "Survey · 6 questions", first: "After 1 year" },
+];
+/* What the attorney changes on the client check-in: the first one comes sooner */
+const FIRST_SOONER = "After 6 months";
 
 /** How long each chapter runs at normal speed */
-export const FILM_MS = [12460, 5780 + WISH_AFTER.length * 22, 5400 + MAIL_AFTER.length * 22, 4380];
+export const FILM_MS = [12460, 8290 + POWER_AFTER.length * 22, 6670, 4380];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -110,7 +126,7 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
 type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "ahead" | "team";
 type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "message" | "ask" | "often" | "save" | null;
+type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "ask" | "first" | "save" | null;
 type EditStage = "idle" | "select" | "typing" | "done";
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
@@ -379,19 +395,19 @@ const TheirDocuments = () => (
       <div>
         <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
         <FloatStack>
-          <ProDocRow label="Last Will & Testament" />
-          <ProDocRow label="Health Care Proxy" />
+          <ProDocRow roomy label="Last Will & Testament" />
+          <ProDocRow roomy label="Power of Attorney" />
         </FloatStack>
       </div>
       <div>
         <ProDocSectionLabel label="Joint with Maria" />
         <FloatStack>
           <div>
-            <ProDocRow label="Revocable Living Trust" detail="Joint trust (married couple)" />
-            <div className="px-8 pb-4">
+            <ProDocRow roomy label="Revocable Living Trust" detail="Joint trust (married couple)" />
+            <div className="px-8 pb-5">
               <div className="border-t border-[#E5E7EB]" />
-              <div className="pl-8 pt-3">
-                <ProDocRow nested label="Deed" detail="Trust transfer deed" />
+              <div className="pl-10 pt-3">
+                <ProDocRow roomy nested label="Deed" detail="Trust transfer deed" />
               </div>
             </div>
           </div>
@@ -416,38 +432,26 @@ const Rewrite = ({ stage, before, after, typed }: { stage: EditStage; before: st
   </>
 );
 
-/* Chapter 2: the step-in card, as its health care proxy reads (scenario-blocks.tsx) */
+/* Chapter 2: the step-in card for Daniel's power of attorney: his agents in
+   order (RoleChainView), then what they can do (AgentPowersView: one document,
+   so its label instead of tabs; Power / What this means) */
 const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap: Tap }) => {
   const editing = edit === "select" || edit === "typing";
   return (
     <Appear>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Health Care Proxy</p>
-      <div className="mt-3 space-y-3">
-        {[
-          { n: 1, name: "Maria Rosen", note: "First choice" },
-          { n: 2, name: "Leo Rosen", note: "Second in line if Maria can’t serve" },
-        ].map((p) => (
-          <div key={p.n} className="flex gap-3">
-            <span className={`flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${p.n === 1 ? "bg-[#128F8B] text-white" : "border border-[#CBD2D9] bg-white text-[#6B7280]"}`}>{p.n}</span>
-            <div>
-              <p className="text-[15px] font-medium text-[#1F2933]">{p.name}</p>
-              <p className="mt-0.5 text-[12.5px] text-[#9CA3AF]">{p.note}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div data-wishes className="mt-7">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Your wishes</p>
-        <div className="mt-2 overflow-hidden rounded-xl" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+      <RoleChain role="Financial Agent" steps={["Maria Rosen", "Leo Rosen"]} />
+      <div data-powers className="mt-8">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Financial Agent powers</p>
+        <div className="overflow-hidden rounded-xl" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
           <div className="flex bg-[#128F8B] text-[13px] font-semibold text-white">
-            <div className="w-[34%] flex-shrink-0 px-4 py-2.5">Wish</div>
-            <div className="min-w-0 flex-1 px-4 py-2.5">What your document says</div>
+            <div className="w-[34%] flex-shrink-0 px-5 py-3">Power</div>
+            <div className="min-w-0 flex-1 px-5 py-3">What this means</div>
           </div>
-          {WISHES.map((w, i) => (
-            <div key={w.label} className={`flex items-start border-b border-[#E5E7EB] last:border-b-0 ${i % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]"}`}>
-              <div className="w-[34%] flex-shrink-0 px-4 py-3 text-[14px] font-medium text-[#1F2933]">{w.label}</div>
-              <div className="min-w-0 flex-1 px-4 py-3 text-[14px] leading-[1.5] text-[#6B7280]">
-                {w.text ?? (
+          {POWERS.map((w, i) => (
+            <div key={w.power} className={`flex items-start border-b border-[#E5E7EB] last:border-b-0 ${i % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]"}`}>
+              <div className="w-[34%] flex-shrink-0 px-5 py-4 text-[14px] font-medium text-[#1F2933]">{w.power}</div>
+              <div className="min-w-0 flex-1 px-5 py-4 text-[14px] leading-[1.5] text-[#6B7280]">
+                {w.desc ?? (
                   <span
                     className="block rounded-[3px]"
                     style={{
@@ -456,7 +460,7 @@ const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap:
                       transition: "box-shadow 180ms ease",
                     }}
                   >
-                    <Rewrite stage={edit} before={WISH_BEFORE} after={WISH_AFTER} typed={typed} />
+                    <Rewrite stage={edit} before={POWER_BEFORE} after={POWER_AFTER} typed={typed} />
                   </span>
                 )}
               </div>
@@ -464,7 +468,7 @@ const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap:
           ))}
         </div>
       </div>
-      <div data-wish-action className="mt-4 flex justify-end">
+      <div data-powers-action className="mt-4 flex justify-end">
         {editing ? (
           <span className="inline-flex items-center gap-1 rounded text-[#309E96]" style={{ fontSize: 12, fontWeight: 600, ...tapStyle(tap === "done") }}>
             <CheckIcon className="h-3.5 w-3.5" />
@@ -478,69 +482,135 @@ const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap:
   );
 };
 
-/* Chapter 3: the client check-in's card (settings/touchpoint-panel.tsx) */
-const CheckInEmail = ({ edit, typed, ask, often, saved, tap, compact }: { edit: EditStage; typed: number; ask: boolean; often: boolean; saved: boolean; tap: Tap; compact: boolean }) => {
-  const section = compact ? "bg-white px-4 py-3.5" : "bg-white px-6 py-5";
-  const editing = edit === "select" || edit === "typing";
-  const label = "mb-1 text-[12px] font-medium text-[#6B7280]";
-  return (
-    <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
-      <div className="flex flex-col gap-1.5">
-        <div className={`flex items-center justify-between gap-3 ${compact ? "bg-white px-4 py-3" : "bg-white px-6 py-4"}`}>
-          <span>
-            <span className="block text-[15px] font-semibold leading-snug text-[#1F2933]">Client check-in</span>
-            <span className="block text-[12.5px] text-[#9CA3AF]">To Daniel and Maria</span>
-          </span>
-          <span className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white" style={tapStyle(tap === "save")}>
-            {saved && <CheckIcon className="h-3.5 w-3.5" />}
-            {saved ? "Saved" : "Save"}
-          </span>
-        </div>
-        <div className={section}>
-          <p className={label}>Subject</p>
-          <p className="truncate border-b border-[#E5E7EB] pb-2 text-[14.5px] text-[#1F2933]">Checking in: has anything changed?</p>
-          <p className={`${label} mt-3`}>Message</p>
-          <div className="flex items-center gap-3 border-b border-[#E5E7EB] pb-1.5 text-[12.5px] text-[#6B7280]">
-            <span className="font-bold">B</span>
-            <span className="italic">I</span>
-            <span className="h-3.5 w-px bg-[#E5E7EB]" />
-            <span>Fill-ins</span>
-            <span>Links</span>
-            <span>Files</span>
-            {!compact && <span>Signature</span>}
+/* Chapter 3: the attorney's Settings > Staying in touch (settings/page.tsx
+   ?tab=maintenance). The three check-in lists (maintenance-tab.tsx,
+   journey-column.tsx, board-card.tsx), and the Client check-in's drawer
+   (touchpoint-panel.tsx, panel-kit.tsx) with its Preferences open. On phones
+   the settings nav is hidden, as it is below lg in the product */
+const PrefRow = ({ label, children, last }: { label: string; children: React.ReactNode; last?: boolean }) => (
+  <div className={`flex items-center justify-between gap-3 py-2 ${last ? "" : "border-b border-[#E5E7EB]"}`}>
+    <span className="text-[13.5px] text-[#1F2933]">{label}</span>
+    {children}
+  </div>
+);
+
+const PanelSection = ({ title, summary, open, children }: { title: string; summary?: string; open?: boolean; children?: React.ReactNode }) => (
+  <div className="border-b border-[#EEF0F2]">
+    <div className="flex items-center gap-3 px-[21px] py-[13px]">
+      <span className="flex-shrink-0 text-[15px] font-semibold text-[#1F2933]">{title}</span>
+      <span className="min-w-0 flex-1 truncate text-right text-[12px] text-[#9CA3AF]">{open ? "" : summary}</span>
+      <WIcon name="chevronDown" className={`h-4 w-4 flex-shrink-0 text-[#9CA3AF] ${open ? "rotate-180" : ""}`} />
+    </div>
+    {open && <div className="px-[21px] pb-[21px]">{children}</div>}
+  </div>
+);
+
+const StayingInTouch = ({ hi, drawer, ask, sooner, saved, tap, compact }: { hi: number; drawer: boolean; ask: boolean; sooner: boolean; saved: boolean; tap: Tap; compact: boolean }) => {
+  const dirty = (ask || sooner) && !saved;
+  const menu = "inline-flex items-center gap-1 border-b border-[#E5E7EB] text-[13.5px] font-medium text-[#1F2933]";
+  const board = (
+    <div className="flex w-full min-w-0 flex-col gap-1.5 overflow-hidden rounded-2xl bg-[#F3F4F6]">
+      {CHECKINS.map((c, i) => (
+        <div key={c.section} className={compact ? "bg-white px-5 pb-3 pt-4" : "bg-white px-8 pb-5 pt-6"}>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]">{c.section}</p>
+            <WIcon name="more" className="h-4 w-4 text-[#9CA3AF]" />
           </div>
-          <div className="mt-2.5 space-y-2 text-[14px] leading-[1.5] text-[#374151]">
-            <p>Hi Daniel,</p>
-            <p
-              className="rounded-[3px]"
-              style={{
-                color: edit === "idle" ? undefined : "#1F2933",
-                boxShadow: editing || tap === "message" ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
-                transition: "box-shadow 180ms ease",
-              }}
+          <div className="pt-1">
+            <div
+              className="-mx-2 flex min-h-[56px] items-center gap-2 px-2 py-[13px]"
+              style={{ background: hi === i ? "#F0F9F8" : "rgba(240,249,248,0)", transition: "background-color 220ms ease" }}
             >
-              <Rewrite stage={edit} before={MAIL_BEFORE} after={MAIL_AFTER} typed={typed} />
-            </p>
-            <p>Once a year I ask every client the same short questions.</p>
-            <p>Rachel</p>
+              <span className="mt-[7px] h-2 w-2 flex-shrink-0 self-start rounded-full bg-[#8CCBC5]" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[14px] font-medium text-[#1F2933]">{c.title}</span>
+                <span className="mt-0.5 block truncate text-[12.5px] text-[#9CA3AF]">{c.line}</span>
+              </span>
+              <span className="flex-shrink-0 text-right text-[12.5px]">
+                <span className="block text-[#6B7280]">{i === 2 && sooner && saved ? FIRST_SOONER : c.first}</span>
+                <span className="block text-[#9CA3AF]">then every year</span>
+              </span>
+            </div>
           </div>
         </div>
-        <div className={section}>
-          <p className="text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]">Preferences</p>
-          <div className="mt-1 flex items-center justify-between gap-3 border-b border-[#E5E7EB] py-2.5">
-            <span className="text-[14px] text-[#1F2933]">Ask me before each one goes out</span>
+      ))}
+    </div>
+  );
+  const head = (
+    <>
+      <h3 className="text-[24px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.25, fontFamily: FIGTREE }}>Staying in touch</h3>
+      <p className="mt-1.5 text-[14px] text-[#6B7280]">Yearly reviews, check-ins and surveys after a plan is signed.</p>
+    </>
+  );
+  return (
+    <div className="relative flex h-full w-full overflow-hidden bg-[#F0F2F5] text-left" style={{ fontFamily: FIGTREE }}>
+      {!compact && <ProSidebar active="settings" />}
+      <div className="flex min-w-0 flex-1 flex-col">
+        {!compact && <ProTopBar />}
+        {compact ? (
+          <div className="px-4 pt-6">
+            {head}
+            <div className="mt-6">{board}</div>
+          </div>
+        ) : (
+          <div className="flex gap-10 px-16 py-12">
+            <nav className="flex w-[200px] flex-shrink-0 flex-col gap-5">
+              {SETTINGS_NAV.map((g) => (
+                <div key={g.group}>
+                  <p className="mb-1 truncate px-3 text-[12px] font-semibold text-[#1F2933]">{g.group}</p>
+                  {g.items.map((t) => (
+                    <p key={t} className={`px-3 py-1.5 text-[13px] ${t === "Staying in touch" ? "font-semibold text-[#309E96]" : "text-[#6B7280]"}`}>{t}</p>
+                  ))}
+                </div>
+              ))}
+            </nav>
+            <div className="min-w-0 max-w-[860px] flex-1">
+              {head}
+              <div className="mt-8">{board}</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* The Client check-in's drawer, over a light dim */}
+      <div className={`absolute inset-x-0 bottom-0 bg-[#1F2933] ${compact ? "top-0" : "top-16"}`} style={{ opacity: drawer ? 0.2 : 0, transition: "opacity 240ms ease" }} />
+      <div
+        className={`absolute bottom-0 right-0 border-l border-[#E5E7EB] bg-white ${compact ? "top-0 w-full" : "top-16 w-[480px]"}`}
+        style={{ boxShadow: drawer ? "0 0 48px rgba(16,24,40,0.16)" : "none", transform: drawer ? "translateX(0)" : "translateX(100%)", transition: "transform 320ms var(--ease-out), box-shadow 320ms ease" }}
+      >
+        <div className="flex items-center justify-between border-b border-[#EEF0F2] px-[21px] py-[13px]">
+          <span className="text-[17px] font-semibold text-[#1F2933]">Client check-in</span>
+          <span className="flex items-center gap-2">
+            <span className="rounded p-1.5 text-[#9CA3AF]"><WIcon name="more" className="h-4 w-4" /></span>
+            <span
+              className="inline-flex h-[34px] items-center rounded-md px-[13px] text-[13.5px] font-semibold"
+              style={{ background: dirty ? "#309E96" : "#F3F4F6", color: dirty ? "#FFFFFF" : "#9CA3AF", ...tapStyle(tap === "save"), transition: "background-color 200ms ease, color 200ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}
+            >
+              Save
+            </span>
+          </span>
+        </div>
+        <PanelSection title="The email" summary="Checking in: has anything changed?" />
+        <PanelSection title="Call after the check-in" summary="They book" />
+        <PanelSection title="Preferences" open>
+          <PrefRow label="Ask me before each one goes out">
             <span className="relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full" style={{ background: ask ? "#309E96" : "#D1D5DB", ...tapStyle(tap === "ask"), transition: "background-color 200ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}>
               <span className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow" style={{ transform: `translateX(${ask ? 18 : 3}px)`, transition: "transform 200ms var(--ease-out)" }} />
             </span>
-          </div>
-          <div className="flex items-center justify-between gap-3 pt-2.5">
-            <span className="text-[14px] text-[#1F2933]">How often</span>
-            <span className="inline-flex items-center gap-1 rounded px-1 text-[14px] font-medium text-[#1F2933]" style={tapStyle(tap === "often")}>
-              {often ? "Once a year" : "Every two years"}
+          </PrefRow>
+          <PrefRow label="First one">
+            <span className={`${menu} rounded-sm`} style={tapStyle(tap === "first")}>
+              {sooner ? FIRST_SOONER : "After 1 year"}
               <WIcon name="chevronDown" className="h-3.5 w-3.5 text-[#9CA3AF]" />
             </span>
-          </div>
-        </div>
+          </PrefRow>
+          <PrefRow label="How often" last>
+            <span className={menu}>
+              Once a year
+              <WIcon name="chevronDown" className="h-3.5 w-3.5 text-[#9CA3AF]" />
+            </span>
+          </PrefRow>
+        </PanelSection>
       </div>
     </div>
   );
@@ -590,7 +660,9 @@ const TheirTeam = ({ on, booked, refs, compact }: { on: boolean; booked: boolean
   </div>
 );
 
-const tabFor = (b: Beat) => (b === "ahead" ? "Staying in touch" : b === "team" ? "Team" : "Estate Plan");
+/* Chapter 3 happens in Settings, over the client's record: their Estate Plan
+   stays open underneath, so nothing changes behind the cross-fade */
+const tabFor = (b: Beat) => (b === "team" ? "Team" : "Estate Plan");
 
 type Props = {
   chapter: number;
@@ -639,7 +711,10 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const [sent, setSent] = useState(false);
   const [stepIn, setStepIn] = useState(false);
   const [ask, setAsk] = useState(false);
-  const [often, setOften] = useState(false);
+  const [sooner, setSooner] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [rowHi, setRowHi] = useState(-1);
   const [found, setFound] = useState(0);
   const [looking, setLooking] = useState(0);
   const [address, setAddress] = useState(false);
@@ -668,18 +743,18 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     if (row && tab) row.scrollTo({ left: Math.max(0, tab.offsetLeft - 16), behavior: "smooth" });
   }, [openTab]);
 
-  /* How far to scroll the summary to bring the wishes and their Edit into view */
-  const wishesScroll = () => {
+  /* How far to scroll the summary to bring the powers and their Edit into view */
+  const powersScroll = () => {
     const win = cardsRef.current;
-    const wishes = win?.querySelector("[data-wishes]");
-    const action = win?.querySelector("[data-wish-action]");
+    const powers = win?.querySelector("[data-powers]");
+    const action = win?.querySelector("[data-powers-action]");
     const r0 = rootRef.current;
-    if (!win || !wishes || !action || !r0) return 0;
+    if (!win || !powers || !action || !r0) return 0;
     const k = r0.getBoundingClientRect().width / (compact ? ROOT_COMPACT : ROOT_WIDE).w;
     const box = win.getBoundingClientRect();
-    const toTop = (wishes.getBoundingClientRect().top - box.top) / k - 12;
+    const toTop = (powers.getBoundingClientRect().top - box.top) / k - 12;
     const toEnd = (action.getBoundingClientRect().bottom - box.bottom) / k + 16;
-    return Math.max(0, toTop, toEnd);
+    return Math.max(0, Math.min(toTop, toEnd));
   };
 
   useEffect(() => {
@@ -695,13 +770,16 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
       setEdit(chapter === 1 || chapter === 2 ? "done" : "idle");
       setTyped(0);
       setSent(chapter === 1 || chapter === 2);
-      setStepIn(chapter === 1);
+      setStepIn(false);
+      /* At rest, chapter 3 is the client check-in's drawer, changed and saved */
       setAsk(chapter === 2);
-      setOften(chapter === 2);
+      setSooner(chapter === 2);
+      setSaved(chapter === 2);
+      setDrawer(chapter === 2);
+      setRowHi(chapter === 2 ? 2 : -1);
       setSummaryScroll(0);
       setBeat((["docs", "summary", "ahead", "team"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
-      if (chapter === 1) window.setTimeout(() => setSummaryScroll(wishesScroll()), 80);
       return;
     }
     if (!inView) return;
@@ -836,7 +914,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         setBeat("docs");
         await wait(1150);
       },
-      /* 2. Open the step-in card, reword a health care wish, approve */
+      /* 2. Open the step-in card, put one power in plain words, close it, approve */
       async () => {
         reset();
         setEdit("idle");
@@ -849,47 +927,53 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         await wait(800);
         await tapOn("stepin", () => setStepIn(true));
         await wait(420);
-        setSummaryScroll(wishesScroll());
+        setSummaryScroll(powersScroll());
         await wait(1100);
         await tapOn("edit", () => setEdit("select"));
         await wait(420);
         setEdit("typing");
-        for (let n = 1; n <= WISH_AFTER.length; n++) {
+        for (let n = 1; n <= POWER_AFTER.length; n++) {
           setTyped(n);
           await wait(22);
         }
         await wait(260);
         await tapOn("done", () => setEdit("done"));
         await wait(620);
+        /* Back up, and the card closes: the summary with every card shut */
+        setSummaryScroll(0);
+        await wait(760);
+        await tapOn("stepin", () => setStepIn(false));
+        await wait(760);
         await tapOn("approve", () => setSent(true));
-        await wait(1400);
+        await wait(2200);
       },
-      /* 3. Make the check-in your own: its words, then how it runs */
+      /* 3. The attorney's check-in settings: down the three lists, then the
+         client check-in's preferences, saved */
       async () => {
         reset();
-        setEdit("idle");
-        setTyped(0);
-        setSent(false);
         setAsk(false);
-        setOften(false);
+        setSooner(false);
+        setSaved(false);
+        setDrawer(false);
+        setRowHi(-1);
         setPlace("hidden");
         setBeat("ahead");
         await wait(800);
-        await tapOn("message", () => setEdit("select"));
-        await wait(420);
-        setEdit("typing");
-        for (let n = 1; n <= MAIL_AFTER.length; n++) {
-          setTyped(n);
-          await wait(22);
+        for (const i of [0, 1, 2]) {
+          setRowHi(i);
+          await wait(380);
         }
-        await wait(260);
-        setEdit("done");
-        await wait(520);
+        setDrawer(true);
+        await wait(700);
         await tapOn("ask", () => setAsk(true));
+        await wait(520);
+        await tapOn("first", () => setSooner(true));
         await wait(620);
-        await tapOn("often", () => setOften(true));
-        await wait(620);
-        await tapOn("save", () => setSent(true));
+        await tapOn("save", () => setSaved(true));
+        await wait(420);
+        setDrawer(false);
+        await wait(500);
+        setRowHi(-1);
         await wait(1400);
       },
       /* 4. They reach the people in the plan, and one books a call */
@@ -1043,14 +1127,14 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                   </div>
                   <div className="mt-6 min-h-0 flex-1">
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
-                    {beat === "summary" && (
+                    {(beat === "summary" || beat === "ahead") && (
                       <Appear key="summary" className="flex h-full flex-col">
                         <SubTabs
                           active="Summary"
                           right={
                             <span className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white" style={tapStyle(tap === "approve")}>
                               {sent && <CheckIcon className="h-3.5 w-3.5" />}
-                              {sent ? "Sent to Daniel" : "Approve"}
+                              {sent ? "Approved and sent" : "Approve"}
                             </span>
                           }
                         />
@@ -1059,6 +1143,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                             <SummaryCards
                               flush
                               familyOpen={false}
+                              leaveOpen={false}
+                              protectsOpen={false}
                               stepInOpen={stepIn}
                               stepInBody={<StepInBody edit={edit} typed={typed} tap={tap} />}
                               stepInStyle={{
@@ -1070,7 +1156,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                         </div>
                       </Appear>
                     )}
-                    {beat === "ahead" && <Appear key="ahead"><CheckInEmail edit={edit} typed={typed} ask={ask} often={often} saved={sent} tap={tap} compact={compact} /></Appear>}
                     {beat === "team" && <Appear key="team"><TheirTeam on={filed} booked={booked} refs={teamRefs} compact={compact} /></Appear>}
                   </div>
                 </div>
@@ -1093,6 +1178,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                   <span className="block text-[12.5px] text-[#6B7280]">From a check-in · Tuesday, Feb 23</span>
                 </span>
               </div>
+            </div>
+
+            {/* Chapter 3: the attorney's check-in settings, over everything */}
+            <div className="pointer-events-none absolute inset-0 z-30" style={{ opacity: beat === "ahead" ? 1 : 0, transition: "opacity 440ms ease" }}>
+              <StayingInTouch hi={rowHi} drawer={drawer} ask={ask} sooner={sooner} saved={saved} tap={tap} compact={compact} />
             </div>
 
             {/* Paper */}

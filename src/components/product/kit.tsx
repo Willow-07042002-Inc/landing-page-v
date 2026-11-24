@@ -62,7 +62,7 @@ export const ProBellIcon = ({ className }: { className?: string }) => (
 );
 
 /* sidebar.tsx: the W mark, then Dashboard and Clients (Signings is hidden today) */
-export const ProSidebar = ({ active }: { active: "dashboard" | "clients" }) => (
+export const ProSidebar = ({ active }: { active: "dashboard" | "clients" | "settings" }) => (
   <div className="relative z-30 flex w-[68px] flex-shrink-0 flex-col border-r border-[#E5E7EB] bg-white">
     <div className="flex h-16 items-center px-[14px]">
       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 20, lineHeight: 1, paddingTop: 2 }}>

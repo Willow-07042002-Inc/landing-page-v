@@ -112,6 +112,9 @@ export type SummaryLive = {
   remainingAction?: React.ReactNode;
   /** You & Your Family starts open; the film closes it to reach the next card */
   familyOpen?: boolean;
+  /** What You'll Leave Behind and How Your Plan Protects You start open; the film can close them */
+  leaveOpen?: boolean;
+  protectsOpen?: boolean;
   stepInOpen?: boolean;
   stepInBody?: React.ReactNode;
   stepInStyle?: React.CSSProperties;
@@ -252,8 +255,9 @@ const ShareRow = ({ name, percent }: { name: string; percent: number }) => (
     </div>
   </div>
 );
-/* RoleChainView: the numbered line of succession for one office */
-const RoleChain = ({ role, steps }: { role: string; steps: string[] }) => (
+/* RoleChainView: the numbered line of succession for one office. The caption
+   names the person above by first name (stepCaption in scenario-blocks.tsx) */
+export const RoleChain = ({ role, steps }: { role: string; steps: string[] }) => (
   <div className="flex flex-wrap gap-x-14 gap-y-7">
     <div style={{ minWidth: 230, flex: "1 1 230px", maxWidth: "100%" }}>
       <UpperLabel>{role}</UpperLabel>
@@ -274,7 +278,7 @@ const RoleChain = ({ role, steps }: { role: string; steps: string[] }) => (
               <div className={last ? "" : "pb-4"} style={{ paddingTop: 1 }}>
                 <div className="text-[#1F2933]" style={{ fontSize: 15, fontWeight: 500 }}>{name}</div>
                 <div className="mt-0.5 text-[#9CA3AF]" style={{ fontSize: 12.5 }}>
-                  {i === 0 ? "First choice" : `Second in line, steps in if ${steps[i - 1]} can’t serve`}
+                  {i === 0 ? "First choice" : `Second in line, steps in if ${steps[i - 1].split(" ")[0]} can’t serve`}
                 </div>
               </div>
             </div>
@@ -302,10 +306,12 @@ export const SummaryCards = ({
   remainingNote,
   remainingAction,
   familyOpen = true,
+  leaveOpen = true,
+  protectsOpen = true,
   stepInOpen = false,
   stepInBody,
   stepInStyle,
-}: { flush?: boolean } & Pick<SummaryLive, "remainingNote" | "remainingAction" | "familyOpen" | "stepInOpen" | "stepInBody" | "stepInStyle">) => (
+}: { flush?: boolean } & Pick<SummaryLive, "remainingNote" | "remainingAction" | "familyOpen" | "leaveOpen" | "protectsOpen" | "stepInOpen" | "stepInBody" | "stepInStyle">) => (
   <div className={flush ? "" : "mx-auto max-w-[900px] px-4 pb-16 pt-6"}>
     <div className="space-y-1.5 rounded-2xl bg-[#F3F4F6]" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
       {/* client-firm-cell.tsx → FromYourFirmCard: the firm's building (no logo
@@ -332,7 +338,7 @@ export const SummaryCards = ({
         </SummaryCard>
       </div>
 
-      <SummaryCard icon={<CardPicture src="/mock/tree-icon.png" />} title="What You'll Leave Behind" subtitle="How your estate is managed and distributed" open>
+      <SummaryCard icon={<CardPicture src="/mock/tree-icon.png" />} title="What You'll Leave Behind" subtitle="How your estate is managed and distributed" open={leaveOpen}>
         {/* The will's two scenarios, who is still around, and the search */}
         <div className="mb-7">
           <div className="mb-4 inline-flex flex-wrap items-center gap-5 border-b border-[#E5E7EB] pb-2.5">
@@ -379,7 +385,7 @@ export const SummaryCards = ({
         </SubBlock>
       </SummaryCard>
 
-      <SummaryCard icon={<CardPicture src="/mock/shield-icon.png" />} title="How Your Plan Protects You" subtitle="Safeguards built into your documents" open>
+      <SummaryCard icon={<CardPicture src="/mock/shield-icon.png" />} title="How Your Plan Protects You" subtitle="Safeguards built into your documents" open={protectsOpen}>
         <div className="divide-y divide-[#EEF0F2]">
           {PROTECTIONS.map((p) => (
             <div key={p.title} className="group flex w-full items-start justify-between gap-3 py-3 text-left">
