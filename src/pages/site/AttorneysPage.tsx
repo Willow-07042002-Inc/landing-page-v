@@ -14,10 +14,10 @@ import WhatYouDeliver from "@/components/site/WhatYouDeliver";
 const Belief = () => (
   <section className="bg-[#F8FAFC] pb-16 md:pb-24">
     <div className={`${WRAP} max-w-5xl`}>
-      <blockquote className="border-y border-gray-200 py-12 text-center md:py-16">
-        <p className="font-heading text-[1.5rem] font-light text-[#222222] sm:text-[1.875rem] md:text-[2.375rem]" style={{ lineHeight: 1.35, textWrap: "balance" }}>
-          At Willow, we believe you should build a practice you can{" "}
-          <em className="whitespace-nowrap text-[#138F8B]">truly sell</em> when you&rsquo;re ready to retire, to the next attorney in line, rather than close it down because the relationships aren&rsquo;t there.
+      <blockquote className="border-y border-gray-200 py-10 text-center md:py-12">
+        <p className="mx-auto max-w-[54rem] text-[1.0625rem] text-[#222222] sm:text-[1.1875rem] md:text-[1.375rem]" style={{ lineHeight: 1.5, textWrap: "balance" }}>
+          At Willow, our goal is to ensure every attorney can{" "}
+          <em className="whitespace-nowrap font-medium not-italic text-[#138F8B]">sell their practice</em> to the next attorney in line when they&rsquo;re ready to retire, rather than close it down because their relationships have faded over time.
         </p>
       </blockquote>
     </div>
