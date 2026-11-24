@@ -24,10 +24,10 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
    3. The yearly note to the executors and guardians a plan names
       (DEFAULTS.agent_checkin), a line typed onto it offering them a plan of
       their own, and saved.
-   4. What reaches the attorney when Maria, Daniel's executor, books a
-      meeting about his plan (a firm that lets them book): the product's
-      notification, opened the way the hero's check-in card opens, to the
-      request's two parts, her note and the meeting.
+   4. Maria, Daniel's executor, asks for access to his plan, and the firm
+      meets first: the request opens (the way the hero's check-in card
+      opens) to where it stands, the meeting she booked, her note, and who's
+      invited, each with how they're related to Daniel and their role.
    Each chapter is its own sequence. The film plays them in order from where
    it's opened and stops on the last frame. People who prefer reduced motion
    see each chapter at rest. */
@@ -55,18 +55,27 @@ const PAST = [
 /* Chapter 3: what the attorney types onto the advisors' check-in */
 const TEAM_TYPED = " And if you’d ever like a plan of your own, I’d be glad to help.";
 
-/* Chapter 4: Maria's request. The title is the product's notification
-   (notifications/registry.ts access_meeting_booked); "Note from Maria" and
-   "Meeting" are the request popup's own labels (reminders-bell.tsx) */
+/* Chapter 4: Maria's request. "You asked to meet first..." is the request
+   popup's own line, and "Note from Maria" and "Meeting" its labels
+   (reminders-bell.tsx). Who's invited follows the firm's access request
+   setting "All fiduciaries": the person who asked, and the client's other
+   executors, trustees and agents (access-meetings.ts). How each is related
+   to Daniel is the client's family as the product holds it
+   (attorney-client-panel.tsx) */
 const MARIA_NOTE = "Daniel passed away last week. I’d like to go over his plan with you, and what I need to do as his executor.";
-const REQUEST_W = { wide: 620, compact: 392 };
+const INVITED = [
+  { initials: "MR", name: "Maria Rosen", about: "Wife · Executor", asked: true },
+  { initials: "ER", name: "Emma Rosen", about: "Daughter · Backup executor", asked: false },
+  { initials: "LR", name: "Leo Rosen", about: "Son · Backup trustee", asked: false },
+];
+const REQUEST_W = { wide: 760, compact: 392 };
 
 /* The waits in each chapter's script, so its length is known up front */
 const TAP = 190;
 const C1 = { read: 2000, sheet: 1700, hold: 2300 };
 const C2 = { rest: 900, carry: 950, over: 300, loading: 900, preview: 1700, hold: 2200 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
-const C4 = { read: 2200, hold: 4200 };
+const C4 = { read: 2200, hold: 5600 };
 
 export const KEEP_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
@@ -340,8 +349,8 @@ const TeamCheckIn = ({ edit, typed, saved, tap, compact }: { edit: Edit; typed: 
 };
 
 /* 4. The executor's request, in the hero's notification card: its title
-   line, then "See more" opens it to her note and the meeting. Each part
-   arrives just after the card has made room */
+   line, then "See more" opens it. Each part arrives just after the card has
+   made room, the people last, one by one */
 const Label = ({ children }: { children: React.ReactNode }) => (
   <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9CA3AF]">{children}</p>
 );
@@ -350,25 +359,16 @@ const Reveal = ({ open, i, children }: { open: boolean; i: number; children: Rea
     style={{
       opacity: open ? 1 : 0,
       transform: open ? "translateY(0)" : "translateY(8px)",
-      transition: open ? `opacity 320ms ease ${220 + i * 90}ms, transform 420ms var(--ease-out) ${220 + i * 90}ms` : "none",
+      transition: open ? `opacity 320ms ease ${220 + i * 110}ms, transform 420ms var(--ease-out) ${220 + i * 110}ms` : "none",
     }}
   >
     {children}
   </div>
 );
-const MariaNote = ({ compact }: { compact: boolean }) => (
-  <div>
-    <Label>Note from Maria</Label>
-    <div className="mt-3 rounded-xl bg-[#E6F5F4] px-4 py-3.5">
-      <p className="text-[#0C7370]" style={{ fontSize: compact ? 13 : 13.5 }}>Maria Rosen, Daniel’s executor</p>
-      <p className="mt-1.5 font-medium text-[#1F2933]" style={{ fontSize: compact ? 15 : 16.5, lineHeight: 1.45 }}>&ldquo;{MARIA_NOTE}&rdquo;</p>
-    </div>
-  </div>
-);
-const MariaMeeting = ({ compact }: { compact: boolean }) => (
+const RequestMeeting = ({ compact }: { compact: boolean }) => (
   <div>
     <Label>Meeting</Label>
-    <div className="mt-3 flex items-center gap-3">
+    <div className={`${compact ? "mt-2" : "mt-2.5"} flex items-center gap-3`}>
       <CalendarCheckIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
       <div className="min-w-0 flex-1">
         <p className="font-medium text-[#1F2933]" style={{ fontSize: compact ? 14.5 : 15.5 }}>Thursday, December 3</p>
@@ -381,14 +381,48 @@ const MariaMeeting = ({ compact }: { compact: boolean }) => (
     </div>
   </div>
 );
+const RequestNote = ({ compact }: { compact: boolean }) => (
+  <div>
+    <Label>Note from Maria</Label>
+    <p className={`${compact ? "mt-2" : "mt-2.5"} rounded-xl bg-[#E6F5F4] px-4 py-3 font-medium text-[#1F2933]`} style={{ fontSize: compact ? 14.5 : 15.5, lineHeight: 1.45 }}>
+      &ldquo;{MARIA_NOTE}&rdquo;
+    </p>
+  </div>
+);
+const RequestInvited = ({ open, compact, from }: { open: boolean; compact: boolean; from: number }) => (
+  <div>
+    <Label>Invited</Label>
+    <div className={compact ? "mt-2 space-y-2" : "mt-2.5 space-y-3"}>
+      {INVITED.map((p, i) => (
+        <Reveal key={p.name} open={open} i={from + i}>
+          <div className="flex items-center gap-3">
+            <span className={`flex flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370] ${compact ? "h-7 w-7" : "h-8 w-8"}`}>{p.initials}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-medium text-[#1F2933]" style={{ fontSize: compact ? 14 : 14.5 }}>{p.name}</span>
+              <span className="block text-[#6B7280]" style={{ fontSize: compact ? 12.5 : 13 }}>{p.about}</span>
+            </span>
+            {p.asked ? (
+              <span className="flex-shrink-0 text-[12.5px] text-[#9CA3AF]">Asked for access</span>
+            ) : (
+              <span className="flex flex-shrink-0 items-center gap-1 text-[13px] font-medium text-[#128F8B]">
+                <CheckIcon className="h-3.5 w-3.5" />
+                Invited
+              </span>
+            )}
+          </div>
+        </Reveal>
+      ))}
+    </div>
+  </div>
+);
 const AccessRequest = ({ open, tap, compact }: { open: boolean; tap: Tap; compact: boolean }) => (
   <div className="overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
     <div className={`flex items-center gap-3.5 ${compact ? "px-5 py-4" : "px-7 py-5"}`}>
       <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
       <div className="min-w-0 flex-1">
-        <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: compact ? 15.5 : 17 }}>Maria Rosen booked a meeting about Daniel’s plan</p>
+        <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: compact ? 15.5 : 17 }}>Maria Rosen requested access to Daniel’s plan</p>
         <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: compact ? 13.5 : 14 }}>
-          <span className="whitespace-nowrap">Daniel has passed away ·</span> <span className="whitespace-nowrap">Thursday, Dec 3</span>
+          {compact ? "Daniel has passed away" : "Daniel has passed away · Meeting booked for Dec 3"}
         </p>
       </div>
       <span className="flex flex-shrink-0 items-center gap-1 rounded px-1 font-medium text-[#0C7370]" style={{ fontSize: compact ? 14 : 14.5, ...tapStyle(tap === "more") }}>
@@ -398,9 +432,29 @@ const AccessRequest = ({ open, tap, compact }: { open: boolean; tap: Tap; compac
     </div>
     <div style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 560ms var(--ease-in-out)" }}>
       <div className="min-h-0 overflow-hidden">
-        <div className={`space-y-6 border-t border-[#EEF0F2] ${compact ? "px-5 py-5" : "px-7 py-6"}`}>
-          <Reveal open={open} i={0}><MariaNote compact={compact} /></Reveal>
-          <Reveal open={open} i={1}><MariaMeeting compact={compact} /></Reveal>
+        <div className="border-t border-[#EEF0F2]">
+          <Reveal open={open} i={0}>
+            <p className={`border-b border-[#EEF0F2] bg-[#F8FAFC] text-[#4B5563] ${compact ? "px-5 py-2.5" : "px-7 py-3.5"}`} style={{ fontSize: compact ? 13.5 : 14.5, textWrap: "balance" } as React.CSSProperties}>
+              You asked to meet first. Grant access once you’ve met Maria.
+            </p>
+          </Reveal>
+          {compact ? (
+            <div className="space-y-4 px-5 py-4">
+              <Reveal open={open} i={1}><RequestMeeting compact /></Reveal>
+              <Reveal open={open} i={2}><RequestNote compact /></Reveal>
+              <RequestInvited open={open} compact from={3} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-[1.1fr_1fr]">
+              <div className="space-y-6 border-r border-[#EEF0F2] px-7 py-6">
+                <Reveal open={open} i={1}><RequestMeeting compact={false} /></Reveal>
+                <Reveal open={open} i={2}><RequestNote compact={false} /></Reveal>
+              </div>
+              <div className="px-7 py-6">
+                <RequestInvited open={open} compact={false} from={3} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -542,8 +596,8 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
         await tapOn("save", () => setSaved(true));
         await wait(C3.hold);
       },
-      /* 4. The executor's request arrives; it opens to her note and the
-         meeting she booked */
+      /* 4. The executor's request arrives; it opens to the meeting she
+         booked, her note, and everyone invited */
       async () => {
         await wait(C4.read);
         await tapOn("more", () => setRequest(true));
@@ -580,7 +634,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="Willow checks in with clients every year and previews the questions they're asked, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when a client passes, shows the executor's request with her note and the meeting she booked with the attorney."
+      aria-label="Willow checks in with clients every year and previews the questions they're asked, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when a client passes and the executor asks for access, shows the meeting she booked first, her note, and the family invited with her."
     >
       <Print size={size}>
         <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: size.w, height: size.h }}>
@@ -594,7 +648,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
             <TeamCheckIn edit={teamEdit} typed={teamTyped} saved={saved} tap={tap} compact={compact} />
           </Piece>
           {/* 4. The request, placed so it sits in the middle once opened */}
-          <Rise on={shown === 3} z={10} style={{ left: 0, right: 0, top: compact ? 122 : 160 }}>
+          <Rise on={shown === 3} z={10} style={{ left: 0, right: 0, top: compact ? 40 : 141 }}>
             <div className="mx-auto" style={{ width: compact ? REQUEST_W.compact : REQUEST_W.wide }}>
               <AccessRequest open={request} tap={tap} compact={compact} />
             </div>
