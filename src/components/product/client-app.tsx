@@ -156,6 +156,7 @@ const CaCardShell = ({
   title,
   subtitle,
   open = false,
+  compact = false,
   children,
 }: {
   iconSrc?: string;
@@ -163,11 +164,13 @@ const CaCardShell = ({
   title: string;
   subtitle: string;
   open?: boolean;
+  /** Below sm the cards pad 24px (p-6 sm:p-8) */
+  compact?: boolean;
   children?: React.ReactNode;
 }) => (
   <div className="bg-white">
     <div className="flex items-center transition-colors hover:bg-[#F4F5F6]">
-      <span className="flex flex-1 items-center gap-4 p-8 text-left">
+      <span className={`flex flex-1 items-center gap-4 text-left ${compact ? "p-6" : "p-8"}`}>
         {iconSrc ? (
           <span className="flex h-14 w-14 flex-shrink-0 items-center justify-center">
             <img src={iconSrc} alt="" width={56} height={56} className="object-contain" style={{ height: "auto", maxWidth: "100%" }} />
@@ -182,7 +185,7 @@ const CaCardShell = ({
         <CaChevronDownIcon className={`h-5 w-5 flex-shrink-0 text-[#6B7280] transition-transform ${open ? "rotate-180" : ""}`} />
       </span>
     </div>
-    {open && children && <div className="px-8 pb-8">{children}</div>}
+    {open && children && <div className={compact ? "px-6 pb-6" : "px-8 pb-8"}>{children}</div>}
   </div>
 );
 
@@ -299,6 +302,137 @@ export const ClientEstatePlanTodayScreen = () => (
     <CaEstatePlanPage />
   </ClientFrame>
 );
+
+/* ---- A firm's post on the client's dashboard ------------------------------
+   Settings > Dashboard content posts a link to every active client's "From
+   your firm" card (posts.ts postToDashboards). Open, the card shows its three
+   tabs on Resources (firm-panel.tsx 362-366), where posts list newest first
+   (FirmNewsList, firm-panel.tsx 59-97): the newspaper eyebrow and date, the
+   headline, the blurb, "Read the article". With nothing to do, the card's
+   line reads "Your attorney, actions and firm news" (firmPanelSubtitle).
+   `fresh` comes in at the top when `freshOn`. `compact`: a phone-width page,
+   where the cards pad 24px and the header keeps only the logo. */
+export type CaArticle = { date: string; title: string; body: string };
+
+const CaNewspaperIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
+    <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+    <path d="M18 14h-8" />
+    <path d="M15 18h-5" />
+    <path d="M10 6h8v4h-8V6Z" />
+  </svg>
+);
+const CaArrowUpRightIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
+    <path d="M7 7h10v10" />
+    <path d="M7 17 17 7" />
+  </svg>
+);
+
+const CaArticleItem = ({ a }: { a: CaArticle }) => (
+  <>
+    <div className="mb-1.5 flex items-center gap-1.5 text-[#9CA3AF]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+      <CaNewspaperIcon className="h-3.5 w-3.5 text-[#3AB2AB]" />
+      Article · {a.date}
+    </div>
+    <h3 className="text-[#1F2933]" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif", fontSize: 16, fontWeight: 600, lineHeight: 1.4 }}>{a.title}</h3>
+    <p className="mt-1 text-[#4B5563]" style={{ fontSize: 14, lineHeight: 1.6 }}>{a.body}</p>
+    <span className="mt-3 inline-flex items-center gap-1 text-[#128F8B]" style={{ fontSize: 14, fontWeight: 600 }}>
+      Read the article
+      <CaArrowUpRightIcon className="h-4 w-4" />
+    </span>
+  </>
+);
+
+export const ClientFirmNewsScreen = ({
+  person = DANIEL,
+  open,
+  articles,
+  fresh,
+  freshOn,
+  height,
+  compact = false,
+  firmStyle,
+}: {
+  person?: { name: string; email: string };
+  open: boolean;
+  articles: CaArticle[];
+  fresh?: CaArticle;
+  freshOn?: boolean;
+  height: number;
+  compact?: boolean;
+  /** On the "From your firm" card, e.g. a press */
+  firmStyle?: React.CSSProperties;
+}) => {
+  const page = (
+    <>
+      <div className={`border-b border-[#F3F4F6] bg-white text-center ${compact ? "px-5 pb-7 pt-8" : "px-6 pb-10 pt-12"}`}>
+        <div className="mx-auto max-w-[700px]">
+          <div className="mb-3 text-[#1F2933]" style={{ fontFamily: "Merriweather, Georgia, serif", fontSize: compact ? 28 : 42, fontWeight: 600, lineHeight: 1.5 }}>
+            Your Plan&apos;s Playbook
+          </div>
+          <p className="mx-auto max-w-[540px] text-[#6B7280]" style={{ fontFamily: "Inter, system-ui, sans-serif", fontSize: compact ? 15 : 17, lineHeight: "1.6" }}>
+            We&apos;ve made it simple for you<br /> to understand everything.
+          </p>
+        </div>
+      </div>
+      <div className={`mx-auto max-w-[900px] pb-16 ${compact ? "px-3 pt-4" : "px-4 pt-6"}`}>
+        <div className="space-y-1.5 rounded-2xl bg-[#F3F4F6]" style={{ boxShadow: CA_STACK_SHADOW }}>
+          <div className="overflow-hidden rounded-t-2xl" style={firmStyle}>
+            <CaCardShell
+              iconNode={<CaBuildingIcon className="h-11 w-11 text-[#3AB2AB]" />}
+              title="From your firm"
+              subtitle="Your attorney, actions and firm news"
+              open={open}
+              compact={compact}
+            >
+              <div data-testid="firm-panel">
+                <div role="tablist" className="mb-5 inline-flex flex-wrap items-center gap-5 border-b border-[#E5E7EB] pb-2.5">
+                  <span className="text-[#6B7280]" style={{ fontSize: "13.5px", fontWeight: 500 }}>Your team</span>
+                  <span className="text-[#6B7280]" style={{ fontSize: "13.5px", fontWeight: 500 }}>Recommended actions</span>
+                  <span className="text-[#128F8B]" style={{ fontSize: "13.5px", fontWeight: 600 }}>Resources</span>
+                </div>
+                {fresh && (
+                  <div style={{ display: "grid", gridTemplateRows: freshOn ? "1fr" : "0fr", opacity: freshOn ? 1 : 0, transition: "grid-template-rows 520ms cubic-bezier(0.77, 0, 0.175, 1), opacity 360ms ease 160ms" }}>
+                    <div className="min-h-0 overflow-hidden">
+                      <div data-fresh className="mb-5 border-b border-[#F0F1F3] pb-5">
+                        <CaArticleItem a={fresh} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <ul>
+                  {articles.map((a) => (
+                    <li key={a.title} className="border-b border-[#F0F1F3] py-5 first:pt-0 last:border-0 last:pb-0">
+                      <CaArticleItem a={a} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CaCardShell>
+          </div>
+          <CaCardShell iconSrc="/mock/family-icon.png" title="You & Your Family" subtitle="The people at the center of your plan" compact={compact} />
+          <CaCardShell iconSrc="/mock/map-icon.png" title="Your Plan Right Now" subtitle="What's already in place while you're alive" compact={compact} />
+        </div>
+      </div>
+    </>
+  );
+  if (!compact) {
+    return (
+      <ClientFrame active="estate-plan" person={person} height={height}>
+        {page}
+      </ClientFrame>
+    );
+  }
+  return (
+    <div className="relative w-full overflow-hidden bg-[#FAFBFC] text-left text-[#1F2933]" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif", height }}>
+      <header className="flex h-14 items-center justify-center border-b border-[#E5E7EB] bg-white" style={{ boxShadow: CA_SHADOW_SM }}>
+        <img src="/logo.png" alt="Willow" width={84} height={42} style={{ height: "auto", maxWidth: "100%" }} />
+      </header>
+      {page}
+    </div>
+  );
+};
 
 /* ---- If You Need Someone to Step In (open) -------------------------------
    The card is rebuilt live from the plan's POA documents

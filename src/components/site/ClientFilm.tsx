@@ -4,6 +4,7 @@ import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel
 import { RoleChain, SummaryCards, SummaryEditToggle } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
 import { CheckIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/product/willow-icons";
+import { ClientFirmNewsScreen, type CaArticle } from "@/components/product/client-app";
 
 /* One client's life on Willow as one film, on the product's real screens:
    1. the signed plan is dropped in, read and filed; names come from the
@@ -14,10 +15,14 @@ import { CheckIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/p
       puts one of the power of attorney's powers in plain words, closes it and
       approves the summary (in the product that editing happens on the approval
       page, scenario-summary-approval.tsx)
-   3. the attorney's Settings > Staying in touch: down the three check-in lists,
-      then the client check-in's preferences (maintenance-tab.tsx,
-      touchpoint-panel.tsx)
-   4. the check-ins reach the people in the plan, and one books a call.
+   3. the attorney's Settings > Staying in touch: the client check-in's email,
+      one word changed and saved (maintenance-tab.tsx, touchpoint-panel.tsx);
+      then the check-ins as the client, an advisor and a backup executor get
+      them (lib/journey/touch-email.ts, email-layout.ts), and the executor
+      books a meeting (the bell's team_booked line)
+   4. Settings > Dashboard content: a link to the firm's article becomes a post
+      on every client's dashboard (dashboard-content.tsx, posts.ts), and it
+      appears in Daniel's "From your firm", under Resources (firm-panel.tsx).
    Each chapter is its own sequence, with its own start and end. The film plays
    them in order once from where it's opened and stops on the last frame.
    People who prefer reduced motion see each chapter at rest. */
@@ -72,18 +77,7 @@ const ACCOUNTS = [
   { n: 2, first: "Maria", email: "maria.rosen@example.com", phone: "+1 212-555-0172" },
 ];
 
-const PEOPLE = [
-  { name: "Maria Rosen", initials: "MR", role: "Executor" },
-  { name: "Emma Rosen", initials: "ER", role: "Backup executor" },
-  { name: "Leo Rosen", initials: "LR", role: "Backup trustee" },
-  { name: "Howard Kim", initials: "HK", role: "Financial advisor" },
-  { name: "Lisa Moreno", initials: "LM", role: "Accountant" },
-];
-
-const SHEETS: Record<"docs" | "team", SheetData[]> = {
-  docs: DOCS,
-  team: PEOPLE.map((p) => ({ head: "Checking in", of: `To ${p.name}`, tag: "Check-in" })),
-};
+const SHEETS: Record<"docs", SheetData[]> = { docs: DOCS };
 const FAN = [-8, -5, -2, 2, 5, 8];
 
 /* The power of attorney's powers, as the step-in card lists them
@@ -122,11 +116,53 @@ const CHECKINS = [
   { section: "Professional check-ins", title: "Financial advisor and accountant", line: "Email · “Checking in from [firm] on behalf of [client]”", first: "After 1 year" },
   { section: "Client check-ins", title: "The client", line: "Survey · 6 questions", first: "After 1 year" },
 ];
-/* What the attorney changes on the client check-in: the first one comes sooner */
-const FIRST_SOONER = "After 6 months";
+/* The client check-in's opening line (DEFAULTS in touchpoints.ts); the
+   attorney makes "a while" into "a year", and the sent email says so */
+const MAIL_KEEP = "It’s been ";
+const MAIL_BEFORE = "a while";
+const MAIL_AFTER = "a year";
+const MAIL_REST = " since we finished your estate plan, and I wanted to check in.";
+
+/* The check-ins as they land (renderTouchEmail on the defaults, filled in).
+   Back to front: the client, his financial advisor, his backup executor */
+const MAILS = [
+  {
+    to: "Daniel Rosen",
+    subject: "Checking in: has anything changed?",
+    body: ["Hi Daniel,", `${MAIL_KEEP}${MAIL_AFTER}${MAIL_REST}`, "Once a year I ask every client the same short questions; it’s how we make sure your plan still says what you want it to."],
+    button: "Let us know what’s changed",
+  },
+  {
+    to: "Howard Kim",
+    subject: "Checking in from Alvarez Family Law on behalf of Daniel Rosen",
+    body: ["Hi Howard,", "I’m Rachel Alvarez, Daniel Rosen’s estate planning attorney. You’re listed as their financial advisor, so I wanted to make sure we’re in touch."],
+    button: "Book a meeting",
+  },
+  {
+    to: "Emma Rosen",
+    subject: "Checking in on Daniel Rosen’s estate plan",
+    body: ["Hi Emma,", "I’m Rachel Alvarez, Daniel Rosen’s estate planning attorney. Daniel has named you as backup executor in their plan, and there’s nothing you need to do today.", "If you’d like to understand what the role involves, I’m happy to walk you through it."],
+    button: "Book a meeting",
+  },
+];
+
+/* Chapter 4: a post from Settings > Dashboard content (the headline is the
+   page's own placeholder; yourfirm.com is its placeholder link) */
+const NEWS_URL = "https://yourfirm.com/blog/the-new-estate-tax-threshold";
+const NEWS: CaArticle = {
+  date: "November 24, 2026",
+  title: "What the new estate tax threshold means",
+  body: "How it affects your plan, and whether you need to do anything.",
+};
+const NEWS_OLDER: CaArticle = {
+  date: "October 20, 2026",
+  title: "How often you should update your estate plan",
+  body: "Life changes, and your plan should too. Here’s when it’s worth a second look.",
+};
+const DANIEL_EXAMPLE = { name: "Daniel Rosen", email: "daniel.rosen@example.com" };
 
 /** How long each chapter runs at normal speed */
-export const FILM_MS = [12460, 8290 + POWER_AFTER.length * 22, 6670, 4380];
+export const FILM_MS = [12460, 8290 + POWER_AFTER.length * 22, 9130, 8370];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -135,10 +171,12 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
   transition: "transform 180ms var(--ease-out), box-shadow 340ms ease",
 });
 
-type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "ahead" | "team";
+type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "ahead" | "mail" | "posts" | "dash";
+/* The full-screen views after chapter 2, bottom to top */
+const LAYERS: Beat[] = ["ahead", "mail", "posts", "dash"];
 type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "ask" | "first" | "save" | null;
+type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "message" | "save" | "book" | "read" | "post" | "firm" | null;
 type EditStage = "idle" | "select" | "typing" | "done";
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
@@ -431,7 +469,7 @@ const TheirDocuments = () => (
 
 /* Text being rewritten: selected, then typed over, then settled. `keep` is
    the start of the line, left as it is */
-const Rewrite = ({ stage, before, after, typed, keep = "" }: { stage: EditStage; before: string; after: string; typed: number; keep?: string }) => (
+const Rewrite = ({ stage, before, after, typed, keep = "", rest = "" }: { stage: EditStage; before: string; after: string; typed: number; keep?: string; rest?: string }) => (
   <>
     {keep}
     {stage === "idle" && before}
@@ -443,6 +481,7 @@ const Rewrite = ({ stage, before, after, typed, keep = "" }: { stage: EditStage;
       </>
     )}
     {stage === "done" && after}
+    {rest}
   </>
 );
 
@@ -498,18 +537,51 @@ const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap:
   );
 };
 
-/* Chapter 3: the attorney's Settings > Staying in touch (settings/page.tsx
-   ?tab=maintenance). The three check-in lists (maintenance-tab.tsx,
-   journey-column.tsx, board-card.tsx), and the Client check-in's drawer
-   (touchpoint-panel.tsx, panel-kit.tsx) with its Preferences open. On phones
-   the settings nav is hidden, as it is below lg in the product */
-const PrefRow = ({ label, children, last }: { label: string; children: React.ReactNode; last?: boolean }) => (
-  <div className={`flex items-center justify-between gap-3 py-2 ${last ? "" : "border-b border-[#E5E7EB]"}`}>
-    <span className="text-[13.5px] text-[#1F2933]">{label}</span>
-    {children}
-  </div>
-);
+/* Chapters 3 and 4 open the attorney's Settings (settings/page.tsx): the
+   sidebar and top bar, the settings nav (settings-home.tsx, lg and up, so not
+   on phones), the page title and line, then the page */
+const SettingsShell = ({ page, title, line, compact, children, over }: { page: string; title: string; line: string; compact: boolean; children: React.ReactNode; over?: React.ReactNode }) => {
+  const head = (
+    <>
+      <h3 className="text-[24px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.25, fontFamily: FIGTREE }}>{title}</h3>
+      <p className="mt-1.5 text-[14px] text-[#6B7280]">{line}</p>
+    </>
+  );
+  return (
+    <div className="relative flex h-full w-full overflow-hidden bg-[#F0F2F5] text-left" style={{ fontFamily: FIGTREE }}>
+      {!compact && <ProSidebar active="settings" />}
+      <div className="flex min-w-0 flex-1 flex-col">
+        {!compact && <ProTopBar />}
+        {compact ? (
+          <div className="px-4 pt-6">
+            {head}
+            <div className="mt-6">{children}</div>
+          </div>
+        ) : (
+          <div className="flex gap-10 px-16 py-10">
+            <nav className="flex w-[200px] flex-shrink-0 flex-col gap-5">
+              {SETTINGS_NAV.map((g) => (
+                <div key={g.group}>
+                  <p className="mb-1 truncate px-3 text-[12px] font-semibold text-[#1F2933]">{g.group}</p>
+                  {g.items.map((t) => (
+                    <p key={t} className={`px-3 py-1.5 text-[13px] ${t === page ? "font-semibold text-[#309E96]" : "text-[#6B7280]"}`}>{t}</p>
+                  ))}
+                </div>
+              ))}
+            </nav>
+            <div className="min-w-0 max-w-[860px] flex-1">
+              {head}
+              <div className="mt-8">{children}</div>
+            </div>
+          </div>
+        )}
+      </div>
+      {over}
+    </div>
+  );
+};
 
+/* panel-kit.tsx: a drawer section, its title, a grey summary while folded */
 const PanelSection = ({ title, summary, open, children }: { title: string; summary?: string; open?: boolean; children?: React.ReactNode }) => (
   <div className="border-b border-[#EEF0F2]">
     <div className="flex items-center gap-3 px-[21px] py-[13px]">
@@ -521,9 +593,18 @@ const PanelSection = ({ title, summary, open, children }: { title: string; summa
   </div>
 );
 
-const StayingInTouch = ({ hi, drawer, ask, sooner, saved, tap, compact }: { hi: number; drawer: boolean; ask: boolean; sooner: boolean; saved: boolean; tap: Tap; compact: boolean }) => {
-  const dirty = (ask || sooner) && !saved;
-  const menu = "inline-flex items-center gap-1 border-b border-[#E5E7EB] text-[13.5px] font-medium text-[#1F2933]";
+/* A fill-in as the composer shows it: a quiet pill in place of the name */
+const FillIn = ({ children }: { children: React.ReactNode }) => (
+  <span className="mx-px inline-flex items-center rounded-md bg-[#E6F5F4] px-1.5 text-[13px] font-medium leading-[22px] text-[#0F7673]">{children}</span>
+);
+
+/* Chapter 3, first half: Settings > Staying in touch. The three lists
+   (maintenance-tab.tsx, journey-column.tsx, board-card.tsx), then the Client
+   check-in's drawer (touchpoint-panel.tsx) open on The email: the subject,
+   the message with its fill-ins, and the survey it asks */
+const StayingInTouch = ({ hi, drawer, edit, typed, saved, tap, compact }: { hi: number; drawer: boolean; edit: EditStage; typed: number; saved: boolean; tap: Tap; compact: boolean }) => {
+  const editing = edit === "select" || edit === "typing";
+  const dirty = edit !== "idle" && !saved;
   const board = (
     <div className="flex w-full min-w-0 flex-col gap-1.5 overflow-hidden rounded-2xl bg-[#F3F4F6]">
       {CHECKINS.map((c, i) => (
@@ -533,17 +614,14 @@ const StayingInTouch = ({ hi, drawer, ask, sooner, saved, tap, compact }: { hi: 
             <WIcon name="more" className="h-4 w-4 text-[#9CA3AF]" />
           </div>
           <div className="pt-1">
-            <div
-              className="-mx-2 flex min-h-[56px] items-center gap-2 px-2 py-[13px]"
-              style={{ background: hi === i ? "#F0F9F8" : "rgba(240,249,248,0)", transition: "background-color 220ms ease" }}
-            >
+            <div className="-mx-2 flex min-h-[56px] items-center gap-2 px-2 py-[13px]" style={{ background: hi === i ? "#F0F9F8" : "rgba(240,249,248,0)", transition: "background-color 220ms ease" }}>
               <span className="mt-[7px] h-2 w-2 flex-shrink-0 self-start rounded-full bg-[#8CCBC5]" />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[14px] font-medium text-[#1F2933]">{c.title}</span>
                 <span className="mt-0.5 block truncate text-[12.5px] text-[#9CA3AF]">{c.line}</span>
               </span>
               <span className="flex-shrink-0 text-right text-[12.5px]">
-                <span className="block text-[#6B7280]">{i === 2 && sooner && saved ? FIRST_SOONER : c.first}</span>
+                <span className="block text-[#6B7280]">{c.first}</span>
                 <span className="block text-[#9CA3AF]">then every year</span>
               </span>
             </div>
@@ -552,43 +630,9 @@ const StayingInTouch = ({ hi, drawer, ask, sooner, saved, tap, compact }: { hi: 
       ))}
     </div>
   );
-  const head = (
+  const label = "mb-1 text-[12px] font-medium text-[#6B7280]";
+  const drawerEl = (
     <>
-      <h3 className="text-[24px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.25, fontFamily: FIGTREE }}>Staying in touch</h3>
-      <p className="mt-1.5 text-[14px] text-[#6B7280]">Yearly reviews, check-ins and surveys after a plan is signed.</p>
-    </>
-  );
-  return (
-    <div className="relative flex h-full w-full overflow-hidden bg-[#F0F2F5] text-left" style={{ fontFamily: FIGTREE }}>
-      {!compact && <ProSidebar active="settings" />}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {!compact && <ProTopBar />}
-        {compact ? (
-          <div className="px-4 pt-6">
-            {head}
-            <div className="mt-6">{board}</div>
-          </div>
-        ) : (
-          <div className="flex gap-10 px-16 py-12">
-            <nav className="flex w-[200px] flex-shrink-0 flex-col gap-5">
-              {SETTINGS_NAV.map((g) => (
-                <div key={g.group}>
-                  <p className="mb-1 truncate px-3 text-[12px] font-semibold text-[#1F2933]">{g.group}</p>
-                  {g.items.map((t) => (
-                    <p key={t} className={`px-3 py-1.5 text-[13px] ${t === "Staying in touch" ? "font-semibold text-[#309E96]" : "text-[#6B7280]"}`}>{t}</p>
-                  ))}
-                </div>
-              ))}
-            </nav>
-            <div className="min-w-0 max-w-[860px] flex-1">
-              {head}
-              <div className="mt-8">{board}</div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* The Client check-in's drawer, over a light dim */}
       <div className={`absolute inset-x-0 bottom-0 bg-[#1F2933] ${compact ? "top-0" : "top-16"}`} style={{ opacity: drawer ? 0.2 : 0, transition: "opacity 240ms ease" }} />
       <div
         className={`absolute bottom-0 right-0 border-l border-[#E5E7EB] bg-white ${compact ? "top-0 w-full" : "top-16 w-[480px]"}`}
@@ -606,79 +650,178 @@ const StayingInTouch = ({ hi, drawer, ask, sooner, saved, tap, compact }: { hi: 
             </span>
           </span>
         </div>
-        <PanelSection title="The email" summary="Checking in: has anything changed?" />
-        <PanelSection title="Call after the check-in" summary="They book" />
-        <PanelSection title="Preferences" open>
-          <PrefRow label="Ask me before each one goes out">
-            <span className="relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full" style={{ background: ask ? "#309E96" : "#D1D5DB", ...tapStyle(tap === "ask"), transition: "background-color 200ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}>
-              <span className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow" style={{ transform: `translateX(${ask ? 18 : 3}px)`, transition: "transform 200ms var(--ease-out)" }} />
-            </span>
-          </PrefRow>
-          <PrefRow label="First one">
-            <span className={`${menu} rounded-sm`} style={tapStyle(tap === "first")}>
-              {sooner ? FIRST_SOONER : "After 1 year"}
-              <WIcon name="chevronDown" className="h-3.5 w-3.5 text-[#9CA3AF]" />
-            </span>
-          </PrefRow>
-          <PrefRow label="How often" last>
-            <span className={menu}>
-              Once a year
-              <WIcon name="chevronDown" className="h-3.5 w-3.5 text-[#9CA3AF]" />
-            </span>
-          </PrefRow>
+        <PanelSection title="The email" open>
+          <p className={label}>Subject</p>
+          <p className="truncate border-b border-[#E5E7EB] pb-2 text-[15px] text-[#1F2933]">Checking in: has anything changed?</p>
+          <p className={`${label} mt-5`}>Message</p>
+          <div className="flex items-center gap-3 border-b border-[#E5E7EB] pb-1.5 text-[12.5px] text-[#6B7280]">
+            <span className="font-bold">B</span>
+            <span className="italic">I</span>
+            <span className="h-3.5 w-px bg-[#E5E7EB]" />
+            <span>Fill-ins</span>
+            <span>Links</span>
+            <span>Files</span>
+            <span>Signature</span>
+          </div>
+          <div className="mt-3 space-y-3 text-[15px] leading-6 text-[#1F2933]">
+            <p>Hi <FillIn>Client’s first name</FillIn>,</p>
+            <p
+              className="rounded-[3px]"
+              style={{ boxShadow: editing || tap === "message" ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)", transition: "box-shadow 180ms ease" }}
+            >
+              <Rewrite stage={edit} keep={MAIL_KEEP} before={MAIL_BEFORE} after={MAIL_AFTER} rest={MAIL_REST} typed={typed} />
+            </p>
+            <p>Once a year I ask every client the same short questions; it’s how we make sure your plan still says what you want it to.</p>
+            <p>
+              <FillIn>Your first name</FillIn>
+              <br />
+              <FillIn>Your firm</FillIn>
+            </p>
+          </div>
+          <p className="mt-4 text-[12.5px] text-[#6B7280]">
+            Asks your Check-in survey · 6 questions <span className="font-medium text-[#309E96]">Edit in Surveys</span>
+          </p>
         </PanelSection>
+        <PanelSection title="Call after the check-in" summary="They book" />
+        <PanelSection title="Preferences" summary="After 1 year · Once a year" />
       </div>
-    </div>
+    </>
+  );
+  return (
+    <SettingsShell page="Staying in touch" title="Staying in touch" line="Yearly reviews, check-ins and surveys after a plan is signed." compact={compact} over={drawerEl}>
+      {board}
+    </SettingsShell>
   );
 };
 
-/* Chapter 4: the check-ins reach the people in the plan */
-const TheirTeam = ({ on, booked, refs, compact }: { on: boolean; booked: boolean; refs: React.MutableRefObject<(HTMLSpanElement | null)[]>; compact: boolean }) => (
-  <div className={`rounded-2xl bg-white ${compact ? "p-5" : "px-8 py-6"}`}>
-    {[
-      { label: "Estate team", from: 0, to: 3 },
-      { label: "Professional", from: 3, to: 5 },
-    ].map((g, gi) => (
-      <div key={g.label} className={gi > 0 ? "mt-4" : ""}>
-        <p className="text-[12px] font-medium uppercase tracking-wide text-[#9CA3AF]">{g.label}</p>
-        <div className="mt-1">
-          {PEOPLE.slice(g.from, g.to).map((p, j) => {
-            const n = g.from + j;
-            const isBooked = booked && p.name === "Emma Rosen";
-            return (
-              <div key={p.name} className="flex items-center gap-3 border-b border-[#F0F1F3] py-2.5 last:border-0">
-                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F0F9F9] text-[12px] font-semibold text-[#309E96] ring-1 ring-black/5">{p.initials}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] font-semibold text-[#1F2933]">{p.name}</span>
-                  <span className="block truncate text-[12.5px] text-[#6B7280]">{p.role}</span>
-                </span>
-                <span ref={(el) => { refs.current[n] = el; }} className="flex-shrink-0">
-                  <Fade on={on} delay={n * 70 + 480}>
-                    {isBooked ? (
-                      <span className="flex items-center gap-1 text-[12.5px] font-semibold text-[#309E96]">
-                        <CheckIcon className="h-3.5 w-3.5" />
-                        Booked Feb 23
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1 text-[12.5px] text-[#6B7280]">
-                        <CheckIcon className="h-3.5 w-3.5 text-[#309E96]" />
-                        Check-in sent
-                      </span>
-                    )}
-                  </Fade>
-                </span>
-              </div>
-            );
-          })}
+/* Chapter 3, second half: the check-ins as they land (touch-email.ts on
+   email-layout.ts): the envelope, then the email on its grey page, a white
+   card with the logo (Willow's while the firm has none), the words, the
+   button in the firm's colour, the signature, and the footer. Each lands a
+   little lower, the backup executor's in front; she books */
+const CheckInsLand = ({ shown, tap, compact }: { shown: number; tap: Tap; compact: boolean }) => (
+  <div className="relative h-full w-full overflow-hidden bg-[#E9ECEF] text-left" style={{ fontFamily: "Arial, 'Segoe UI', sans-serif" }}>
+    {MAILS.map((m, i) => {
+      const on = shown > i;
+      const pos = compact ? { left: 16, right: 16, top: 16 + i * 58 } : { left: 150 + i * 150, width: 560, top: 40 + i * 92 };
+      const front = i === MAILS.length - 1;
+      return (
+        <div
+          key={m.to}
+          data-mail={m.to}
+          className="absolute overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white"
+          style={{ ...pos, boxShadow: "0 18px 44px rgba(16,24,40,0.16), 0 2px 6px rgba(16,24,40,0.06)", opacity: on ? 1 : 0, transform: on ? "translateY(0) scale(1)" : "translateY(18px) scale(0.98)", transition: "opacity 300ms ease, transform 460ms var(--ease-out)" }}
+        >
+          <div className="border-b border-[#EEF0F2] px-5 py-3 text-[12.5px] leading-5 text-[#6B7280]" style={{ fontFamily: FIGTREE }}>
+            <p><span className="text-[#9CA3AF]">From</span> Alvarez Family Law</p>
+            <p><span className="text-[#9CA3AF]">To</span> {m.to}</p>
+            <p className="mt-1 truncate text-[14.5px] font-semibold text-[#1F2933]">{m.subject}</p>
+          </div>
+          <div className={`bg-[#F9FAFB] ${compact ? "px-4 py-4" : "px-7 py-6"}`}>
+            <div className={`rounded-2xl border border-[#E5E7EB] bg-white ${compact ? "p-5" : "p-8"}`}>
+              <img src="/logo.png" alt="" className="mb-5" style={{ height: compact ? 22 : 26, width: "auto" }} />
+              {m.body.map((p) => (
+                <p key={p} className="mb-3.5 text-[#374151]" style={{ fontSize: compact ? 14 : 15, lineHeight: 1.6 }}>{p}</p>
+              ))}
+              <span
+                className="mt-1 inline-block rounded-md bg-[#309E96] font-semibold text-white"
+                style={{ padding: compact ? "10px 18px" : "12px 24px", fontSize: compact ? 14 : 15, ...(front ? tapStyle(tap === "book") : {}) }}
+              >
+                {m.button}
+              </span>
+              <p className="mt-5 text-[#374151]" style={{ fontSize: compact ? 14 : 15, lineHeight: 1.6 }}>
+                Rachel
+                <br />
+                Alvarez Family Law
+              </p>
+            </div>
+            <p className="mt-3 text-center text-[11px] text-[#C4C9D0]">Alvarez Family Law · Sent through Willow</p>
+          </div>
         </div>
-      </div>
-    ))}
+      );
+    })}
   </div>
 );
 
-/* Chapter 3 happens in Settings, over the client's record: their Estate Plan
-   stays open underneath, so nothing changes behind the cross-fade */
-const tabFor = (b: Beat) => (b === "team" ? "Team" : "Estate Plan");
+/* Chapter 4, first half: Settings > Dashboard content (dashboard-content.tsx).
+   Paste a link, "Read link" reads its headline and blurb, the draft opens
+   with the kind, "Post to dashboards" sends it to every active client's
+   dashboard, and it tops the Posted list. step: 0 empty, 1 pasted,
+   2 reading, 3 the draft, 4 posted */
+const DashboardContent = ({ step, tap, compact }: { step: number; tap: Tap; compact: boolean }) => {
+  const field = "text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]";
+  const line = "border-b border-[#E5E7EB] py-2.5 text-[15px] text-[#1F2933]";
+  const quiet = "text-[13px] font-medium text-[#128F8B]";
+  const posted = step >= 4;
+  return (
+    <SettingsShell page="Dashboard content" title="Dashboard content" line="Articles and updates your clients see on their dashboard." compact={compact}>
+      <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
+        <div className={compact ? "bg-white p-6" : "bg-white p-8"}>
+          <p className={field}>Posts</p>
+          <p className="mt-1 text-[12px] text-[#9CA3AF]">Paste a link to something your firm published.</p>
+          {step === 3 ? (
+            <div className="mt-5 flex flex-col gap-5">
+              <Appear>
+                <p className="truncate text-[12.5px] text-[#9CA3AF]">{NEWS_URL}</p>
+                <div className="mt-5">
+                  <p className={field}>Headline</p>
+                  <p className={line}>{NEWS.title}</p>
+                </div>
+                <div className="mt-5">
+                  <p className={field}>Description</p>
+                  <p className={`${line} leading-6`}>{NEWS.body}</p>
+                </div>
+                <div className="mt-5">
+                  <p className={field}>Kind</p>
+                  <p className={`${line} flex items-center justify-between`}>
+                    Tax updates
+                    <WIcon name="chevronDown" className="h-4 w-4 text-[#9CA3AF]" />
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center gap-4">
+                  <span className="rounded-lg bg-[#128F8B] px-4 py-2 text-[14px] font-medium text-white" style={tapStyle(tap === "post")}>Post to dashboards</span>
+                  <span className={quiet}>Cancel</span>
+                </div>
+              </Appear>
+            </div>
+          ) : (
+            <>
+              <div className="mt-5 flex items-end gap-4">
+                <p className={`min-w-0 flex-1 truncate border-b border-[#E5E7EB] py-2.5 text-[15px] ${step === 1 || step === 2 ? "text-[#1F2933]" : "text-[#9CA3AF]"}`}>
+                  {step === 1 || step === 2 ? NEWS_URL : "https://yourfirm.com/blog/…"}
+                </p>
+                <span className={`${quiet} flex-shrink-0 rounded pb-2.5`} style={tapStyle(tap === "read")}>{step === 2 ? "Reading…" : "Read link"}</span>
+              </div>
+              {posted && <Appear><p className="mt-4 text-[13px] text-[#6B7280]">Posted to 48 clients’ dashboards.</p></Appear>}
+            </>
+          )}
+          <div className="mt-6 border-t border-[#F0F1F3] pt-5">
+            <p className={field}>Posted</p>
+            <div className="mt-1">
+              <div style={{ display: "grid", gridTemplateRows: posted ? "1fr" : "0fr", opacity: posted ? 1 : 0, transition: "grid-template-rows 460ms cubic-bezier(0.77, 0, 0.175, 1), opacity 300ms ease 140ms" }}>
+                <div className="min-h-0 overflow-hidden">
+                  <PostedRow a={NEWS} />
+                </div>
+              </div>
+              <PostedRow a={NEWS_OLDER} last />
+            </div>
+          </div>
+        </div>
+      </div>
+    </SettingsShell>
+  );
+};
+
+const PostedRow = ({ a, last }: { a: CaArticle; last?: boolean }) => (
+  <div className={`flex items-start gap-3 py-3 ${last ? "" : "border-b border-[#F0F1F3]"}`}>
+    <span className="min-w-0 flex-1">
+      <span className="block truncate text-[14px] font-medium text-[#1F2933]">{a.title}</span>
+      <span className="mt-0.5 block truncate text-[12.5px] text-[#9CA3AF]">{a.body}</span>
+      <span className="mt-1.5 block text-[12.5px] text-[#9CA3AF]">{a.date}</span>
+    </span>
+    <WIcon name="more" className="mt-1 h-4 w-4 flex-shrink-0 text-[#9CA3AF]" />
+  </div>
+);
 
 type Props = {
   chapter: number;
@@ -710,7 +853,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
   const continueRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const teamRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const doneKey = useRef("");
   /* The chapters that have started playing, and the last click we've seen */
   const played = useRef(new Set<number>());
@@ -725,18 +867,21 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
   const [scan, setScan] = useState(-1);
   const [fanY, setFanY] = useState(0);
   const [targets, setTargets] = useState<Point[]>([]);
-  const [filed, setFiled] = useState(false);
   const [booked, setBooked] = useState(false);
   const [tap, setTap] = useState<Tap>(null);
   const [edit, setEdit] = useState<EditStage>("idle");
   const [typed, setTyped] = useState(0);
   const [sent, setSent] = useState(false);
   const [stepIn, setStepIn] = useState(false);
-  const [ask, setAsk] = useState(false);
-  const [sooner, setSooner] = useState(false);
   const [saved, setSaved] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [rowHi, setRowHi] = useState(-1);
+  const [mailEdit, setMailEdit] = useState<EditStage>("idle");
+  const [mailTyped, setMailTyped] = useState(0);
+  const [mailShown, setMailShown] = useState(0);
+  const [newsStep, setNewsStep] = useState(0);
+  const [dashOpen, setDashOpen] = useState(false);
+  const [freshOn, setFreshOn] = useState(false);
   const [found, setFound] = useState(0);
   const [looking, setLooking] = useState(0);
   const [address, setAddress] = useState(false);
@@ -758,7 +903,9 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
   }, []);
 
   /* The tab row scrolls on phones: keep the open tab in sight */
-  const openTab = tabFor(beat);
+  /* Chapters 3 and 4 play in full-screen views over the client's record, so
+     the record keeps its Estate Plan tab open underneath */
+  const openTab = "Estate Plan";
   useEffect(() => {
     const row = tabsRef.current;
     const tab = row?.querySelector<HTMLElement>(`[data-tab="${openTab}"]`);
@@ -784,7 +931,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
 
     /* A chapter already seen, opened again from the list, goes straight to its
        last frame and stays there. People who prefer reduced motion get every
-       chapter that way, with chapter 3's drawer left open to show the change */
+       chapter that way */
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || (clicked && !rewatch && played.current.has(chapter))) {
       doneKey.current = key;
@@ -792,19 +939,22 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
       setScan(-1);
       setTargets([]);
       setTap(null);
-      setFiled(true);
-      setBooked(chapter === 3);
-      setEdit(chapter === 1 || chapter === 2 ? "done" : "idle");
+      setBooked(chapter === 2);
+      setEdit(chapter >= 1 ? "done" : "idle");
       setTyped(0);
-      setSent(chapter === 1 || chapter === 2);
+      setSent(chapter >= 1);
       setStepIn(false);
-      setAsk(chapter === 2);
-      setSooner(chapter === 2);
-      setSaved(chapter === 2);
-      setDrawer(chapter === 2 && reduced);
-      setRowHi(chapter === 2 && reduced ? 2 : -1);
+      setMailEdit(chapter >= 2 ? "done" : "idle");
+      setMailTyped(0);
+      setSaved(chapter >= 2);
+      setDrawer(false);
+      setRowHi(-1);
+      setMailShown(chapter >= 2 ? MAILS.length : 0);
+      setNewsStep(chapter === 3 ? 4 : 0);
+      setDashOpen(chapter === 3);
+      setFreshOn(chapter === 3);
       setSummaryScroll(0);
-      setBeat((["docs", "summary", "ahead", "team"] as Beat[])[chapter]);
+      setBeat((["docs", "summary", "mail", "dash"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
       return;
     }
@@ -850,7 +1000,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
     const reset = () => {
       setScan(-1);
       setTargets([]);
-      setFiled(false);
       setBooked(false);
       setFound(0);
       setLooking(0);
@@ -864,14 +1013,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
         await wait(each);
       }
       setScan(n);
-    };
-    const fanOut = async (set: keyof typeof SHEETS, y: number) => {
-      setSheetSet(set);
-      setFanY(y);
-      setPlace("gather");
-      await wait(60);
-      setPlace("fan");
-      await wait(620);
     };
     const tapOn = async (name: Exclude<Tap, null>, after: () => void) => {
       setTap(name);
@@ -974,51 +1115,70 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
         await tapOn("approve", () => setSent(true));
         await wait(2200);
       },
-      /* 3. The attorney's check-in settings: down the three lists, then the
-         client check-in's preferences, saved */
+      /* 3. The client check-in's email in Settings, one word changed and saved;
+         then the check-ins land, and the backup executor books a meeting */
       async () => {
         reset();
-        setAsk(false);
-        setSooner(false);
+        setMailEdit("idle");
+        setMailTyped(0);
         setSaved(false);
         setDrawer(false);
         setRowHi(-1);
+        setMailShown(0);
         setPlace("hidden");
         setBeat("ahead");
-        await wait(800);
-        for (const i of [0, 1, 2]) {
-          setRowHi(i);
-          await wait(380);
-        }
-        setDrawer(true);
         await wait(700);
-        await tapOn("ask", () => setAsk(true));
-        await wait(520);
-        await tapOn("first", () => setSooner(true));
-        await wait(620);
+        setRowHi(2);
+        await wait(350);
+        setDrawer(true);
+        await wait(900);
+        await tapOn("message", () => setMailEdit("select"));
+        await wait(380);
+        setMailEdit("typing");
+        for (let n = 1; n <= MAIL_AFTER.length; n++) {
+          setMailTyped(n);
+          await wait(45);
+        }
+        await wait(220);
+        setMailEdit("done");
+        await wait(380);
         await tapOn("save", () => setSaved(true));
-        await wait(420);
-        setDrawer(false);
-        await wait(500);
-        setRowHi(-1);
-        await wait(1400);
+        await wait(520);
+        setBeat("mail");
+        await wait(600);
+        for (let n = 1; n <= MAILS.length; n++) {
+          setMailShown(n);
+          await wait(n < MAILS.length ? 520 : 900);
+        }
+        await tapOn("book", () => undefined);
+        await wait(300);
+        setBooked(true);
+        await wait(2000);
       },
-      /* 4. They reach the people in the plan, and one books a call */
+      /* 4. A link to the firm's article, posted to every client's dashboard;
+         it shows up in Daniel's "From your firm" */
       async () => {
         reset();
+        setNewsStep(0);
+        setDashOpen(false);
+        setFreshOn(false);
         setPlace("hidden");
-        setBeat("team");
-        await wait(400);
-        await fanOut("team", R.h - sh / 2 - 22);
-        await readSheets(PEOPLE.length, 120);
-        await wait(150);
-        setTargets(teamRefs.current.map((el) => { const b = box(el); return { x: b.x, y: b.y }; }));
-        setFiled(true);
-        setPlace("file");
-        await wait(1150);
-        setPlace("hidden");
-        setBooked(true);
-        await wait(1400);
+        setBeat("posts");
+        await wait(800);
+        setNewsStep(1);
+        await wait(500);
+        await tapOn("read", () => setNewsStep(2));
+        await wait(650);
+        setNewsStep(3);
+        await wait(1300);
+        await tapOn("post", () => setNewsStep(4));
+        await wait(1300);
+        setBeat("dash");
+        await wait(800);
+        await tapOn("firm", () => setDashOpen(true));
+        await wait(450);
+        setFreshOn(true);
+        await wait(2000);
       },
     ];
 
@@ -1040,6 +1200,13 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
   const sorted = !(beat === "empty" || beat === "carry" || beat === "reading"); // stays on through the fade out
   const panelPad = compact ? "px-4 py-6" : "px-16 py-10";
   const list = SHEETS[sheetSet];
+  /* The full-screen view showing, if any; a later one fades in over an earlier
+     one, which leaves once covered; going back, the later one fades away */
+  const layer = LAYERS.indexOf(beat);
+  const layerStyle = (i: number): React.CSSProperties => ({
+    opacity: layer === i ? 1 : 0,
+    transition: layer === i || i > layer ? "opacity 440ms ease" : "opacity 0ms linear 460ms",
+  });
 
   const sheetAt = (i: number) => {
     const n = list.length;
@@ -1154,7 +1321,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
                   </div>
                   <div className="mt-6 min-h-0 flex-1">
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
-                    {(beat === "summary" || beat === "ahead") && (
+                    {(beat === "summary" || LAYERS.includes(beat)) && (
                       <Appear key="summary" className="flex h-full flex-col">
                         <SubTabs
                           active="Summary"
@@ -1183,33 +1350,55 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
                         </div>
                       </Appear>
                     )}
-                    {beat === "team" && <Appear key="team"><TheirTeam on={filed} booked={booked} refs={teamRefs} compact={compact} /></Appear>}
                   </div>
                 </div>
               </div>
 
-              {/* Someone from the plan books a call */}
-              <div
-                className="absolute z-10 flex items-center gap-3 rounded-xl bg-white px-4 py-3"
-                style={{
-                  ...(compact ? { left: 16, right: 16, bottom: 20 } : { right: 16, top: 16, width: 340 }),
-                  boxShadow: "0 12px 32px rgba(16,24,40,0.18), 0 2px 6px rgba(16,24,40,0.08)",
-                  opacity: booked && beat === "team" ? 1 : 0,
-                  transform: booked && beat === "team" ? "translateY(0)" : "translateY(-10px)",
-                  transition: "opacity 240ms ease, transform 360ms var(--ease-out)",
-                }}
-              >
-                <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
-                <span className="min-w-0">
-                  <span className="block text-[14px] font-semibold text-[#1F2933]">Emma Rosen booked a call</span>
-                  <span className="block text-[12.5px] text-[#6B7280]">From a check-in · Tuesday, Feb 23</span>
-                </span>
-              </div>
             </div>
 
-            {/* Chapter 3: the attorney's check-in settings, over everything */}
-            <div className="pointer-events-none absolute inset-0 z-30" style={{ opacity: beat === "ahead" ? 1 : 0, transition: "opacity 440ms ease" }}>
-              <StayingInTouch hi={rowHi} drawer={drawer} ask={ask} sooner={sooner} saved={saved} tap={tap} compact={compact} />
+            {/* Chapters 3 and 4: full-screen views over the client's record. The
+                next one fades in on top, and the one under it goes once it's
+                covered, so nothing shows through between them */}
+            <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(0)}>
+              <StayingInTouch hi={rowHi} drawer={drawer} edit={mailEdit} typed={mailTyped} saved={saved} tap={tap} compact={compact} />
+            </div>
+            <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(1)}>
+              <CheckInsLand shown={mailShown} tap={tap} compact={compact} />
+            </div>
+            <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(2)}>
+              <DashboardContent step={newsStep} tap={tap} compact={compact} />
+            </div>
+            <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(3)}>
+              <ClientFirmNewsScreen
+                person={DANIEL_EXAMPLE}
+                open={dashOpen}
+                articles={[NEWS_OLDER]}
+                fresh={NEWS}
+                freshOn={freshOn}
+                height={root.h}
+                compact={compact}
+                firmStyle={{ boxShadow: tap === "firm" ? "inset 0 0 0 2px rgba(48,158,150,0.55)" : "inset 0 0 0 0 rgba(48,158,150,0)", transition: "box-shadow 240ms ease" }}
+              />
+            </div>
+
+            {/* The backup executor books from her check-in: the bell's
+                team_booked line (notifications/registry.ts) */}
+            <div
+              className="pointer-events-none absolute z-50 flex items-center gap-3 rounded-xl bg-white px-4 py-3"
+              style={{
+                ...(compact ? { left: 16, right: 16, bottom: 20 } : { right: 20, top: 20, width: 360 }),
+                fontFamily: FIGTREE,
+                boxShadow: "0 12px 32px rgba(16,24,40,0.18), 0 2px 6px rgba(16,24,40,0.08)",
+                opacity: booked && beat === "mail" ? 1 : 0,
+                transform: booked && beat === "mail" ? "translateY(0)" : "translateY(-10px)",
+                transition: "opacity 240ms ease, transform 360ms var(--ease-out)",
+              }}
+            >
+              <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
+              <span className="min-w-0">
+                <span className="block text-[14px] font-semibold text-[#1F2933]">Emma Rosen booked an Agent meeting</span>
+                <span className="block text-[12.5px] text-[#6B7280]">Daniel’s backup executor · Tue, Feb 23 · 2:00 PM</span>
+              </span>
             </div>
 
             {/* Paper */}

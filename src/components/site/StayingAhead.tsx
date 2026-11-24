@@ -24,15 +24,14 @@ export const CHAPTERS: { id: string; also?: string[]; title: string; body: strin
   },
   {
     id: "check-ins",
-    also: ["booking"],
+    also: ["booking", "their-people", "when-it-matters"],
     title: "Check in every year",
-    body: "Put every check-in in your own words and choose how often it goes out. Let them send on schedule, or review each one first.",
+    body: "Write each check-in once, in your own words. Willow sends it every year to your client and to the executors and advisors in their plan, who can book time with you.",
   },
   {
-    id: "their-people",
-    also: ["when-it-matters"],
-    title: "Reach their team",
-    body: "Down the line, the people in the plan hear from you too. Executors, trustees and advisors get check-ins and can book time with you.",
+    id: "firm-updates",
+    title: "Share your firm’s updates",
+    body: "Paste a link to anything your firm publishes, and it appears on every client’s dashboard, so you stay in view between check-ins.",
   },
 ];
 
