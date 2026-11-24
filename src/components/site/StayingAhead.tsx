@@ -26,7 +26,7 @@ export const CHAPTERS: { id: string; also?: string[]; title: string; body: strin
     id: "check-ins",
     also: ["booking"],
     title: "Check in every year",
-    body: "Check-ins are lined up year after year for the client, their agents and their professionals. Let them send on schedule, or review each one first.",
+    body: "Put every check-in in your own words and choose how often it goes out. Let them send on schedule, or review each one first.",
   },
   {
     id: "their-people",

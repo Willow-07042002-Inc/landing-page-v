@@ -1,24 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
-import { SummaryCards, SummaryEditToggle, SummaryReviewScreenCropped } from "@/components/product/attorney-review";
+import { SummaryCards, SummaryEditToggle } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
-import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CheckIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* One client's life on Willow as one film, on the product's real screens:
    1. the signed plan is dropped in, read and filed; names come from the
       documents, emails and phones from Outlook (add-client/setup-wizard.tsx,
       api/clients/find-contact). The film creates the account by itself; in the
       product the attorney confirms it
-   2. the summary in the Estate Plan tab, then the real approval page, where the
-      attorney rewords one line and approves it (scenario-summary-approval.tsx)
-   3. the check-ins ahead, year after year (client-detail/staying-in-touch.tsx)
+   2. the summary in the Estate Plan tab: the attorney opens the step-in card,
+      rewords one health care wish and approves it (in the product that editing
+      happens on the approval page, scenario-summary-approval.tsx)
+   3. the client check-in's email and preferences (settings/touchpoint-panel.tsx)
    4. the check-ins reach the people in the plan, and one books a call.
-   Every chapter uses the same move: paper fans out, is read, and files itself
-   into the product. The film plays once from where it's opened and stops on
-   the last frame. People who prefer reduced motion see each chapter at rest.
-   The list of coming check-ins in chapter 3 is staged: the product shows the
-   next date for each kind of check-in. */
+   Each chapter is its own sequence, with its own start and end. The film plays
+   them in order once from where it's opened and stops on the last frame.
+   People who prefer reduced motion see each chapter at rest. */
 
 const ROOT_WIDE = { w: 1140, h: 855 }; // a laptop-width window, so the panel reads beside the chapter list
 const ROOT_COMPACT = { w: 420, h: 720 };
@@ -45,8 +44,6 @@ const FilmFrame = ({ compact, size, children }: { compact: boolean; size: { w: n
 };
 
 export const FILM_CHAPTERS = 4;
-/** How long each chapter runs at normal speed */
-export const FILM_MS = [12460, 8800, 4160, 4380];
 /** Optional: lets the dev review page (/dev/film) pause and slow the film */
 export type FilmClock = { rate: number; paused: boolean };
 
@@ -54,9 +51,9 @@ type SheetData = { head: string; of: string; tag: string };
 
 const DOCS = [
   { file: "Last Will of Daniel Rosen.pdf", kind: "Last Will & Testament", tag: "Last Will", head: "Last Will and Testament", of: "of Daniel Rosen" },
-  { file: "Power of Attorney, Daniel.pdf", kind: "Power of Attorney", tag: "Power of Attorney", head: "Power of Attorney", of: "of Daniel Rosen" },
+  { file: "Health Care Proxy, Daniel.pdf", kind: "Health Care Proxy", tag: "Health Care Proxy", head: "Health Care Proxy", of: "of Daniel Rosen" },
   { file: "Last Will of Maria Rosen.pdf", kind: "Last Will & Testament", tag: "Last Will", head: "Last Will and Testament", of: "of Maria Rosen" },
-  { file: "Power of Attorney, Maria.pdf", kind: "Power of Attorney", tag: "Power of Attorney", head: "Power of Attorney", of: "of Maria Rosen" },
+  { file: "Health Care Proxy, Maria.pdf", kind: "Health Care Proxy", tag: "Health Care Proxy", head: "Health Care Proxy", of: "of Maria Rosen" },
   { file: "Rosen Revocable Trust.pdf", kind: "Revocable Living Trust", tag: "Living Trust", head: "Revocable Trust Agreement", of: "The Rosen Family Trust" },
   { file: "Deed to the Rosen Trust.pdf", kind: "Deed", tag: "Deed", head: "Trust Transfer Deed", of: "to The Rosen Family Trust" },
 ];
@@ -72,14 +69,6 @@ const ACCOUNTS = [
   { n: 2, first: "Maria", email: "maria.rosen@example.com", phone: "+1 212-555-0172" },
 ];
 
-const CHECK_KINDS = [
-  { title: "Professional check-in", to: "To Howard and Lisa", date: "March 9" },
-  { title: "Client check-in", to: "To Daniel and Maria", date: "July 14" },
-  { title: "Agent check-in", to: "To Maria, Emma and Leo", date: "August 12" },
-];
-const YEARS = [2027, 2028];
-const CHECKS = YEARS.flatMap((year) => CHECK_KINDS.map((k) => ({ ...k, year })));
-
 const PEOPLE = [
   { name: "Maria Rosen", initials: "MR", role: "Executor" },
   { name: "Emma Rosen", initials: "ER", role: "Backup executor" },
@@ -88,16 +77,28 @@ const PEOPLE = [
   { name: "Lisa Moreno", initials: "LM", role: "Accountant" },
 ];
 
-const SHEETS: Record<"docs" | "checks" | "team", SheetData[]> = {
+const SHEETS: Record<"docs" | "team", SheetData[]> = {
   docs: DOCS,
-  checks: CHECKS.map((c) => ({ head: "Checking in", of: c.to, tag: `${c.date}, ${c.year}` })),
   team: PEOPLE.map((p) => ({ head: "Checking in", of: `To ${p.name}`, tag: "Check-in" })),
 };
 const FAN = [-8, -5, -2, 2, 5, 8];
 
-/* The one line the attorney rewords on the approval page */
-const NOTE_BEFORE = "Once debts and taxes are settled, here’s what happens to your estate.";
-const NOTE_AFTER = "Once your debts and taxes are paid, everything you leave goes to Maria.";
+/* The health care wish the attorney rewords in chapter 2 */
+const WISH_BEFORE = "In a hospital or care facility, as your doctors advise.";
+const WISH_AFTER = "At home for as long as it’s safe, with hospice care if needed.";
+const WISHES = [
+  { label: "Life support", text: "Your agent decides, based on what you’ve told them." },
+  { label: "Pain relief", text: "Keep you comfortable even if it may shorten your life." },
+  { label: "Where you want care", text: null },
+  { label: "Organ donation", text: "You wish to donate any organs that could help someone." },
+];
+
+/* The line of the check-in the attorney makes their own in chapter 3 */
+const MAIL_BEFORE = "It’s been a while since we finished your estate plan, and I wanted to check in.";
+const MAIL_AFTER = "I hope you and Maria are doing well. It’s time for our yearly check-in.";
+
+/** How long each chapter runs at normal speed */
+export const FILM_MS = [12460, 5780 + WISH_AFTER.length * 22, 5400 + MAIL_AFTER.length * 22, 4380];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -106,10 +107,10 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
   transition: "transform 180ms var(--ease-out), box-shadow 340ms ease",
 });
 
-type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "review" | "ahead" | "team";
+type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "ahead" | "team";
 type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "summary" | "approve" | "edit" | "final" | null;
+type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "message" | "ask" | "often" | "save" | null;
 type EditStage = "idle" | "select" | "typing" | "done";
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
@@ -354,7 +355,7 @@ const Sheet = ({ d, scanning, scanned }: { d: SheetData; scanning: boolean; scan
   </div>
 );
 
-const SubTabs = ({ active, pulse = false, right }: { active: "Documents" | "Summary"; pulse?: boolean; right?: React.ReactNode }) => (
+const SubTabs = ({ active, right }: { active: "Documents" | "Summary"; right?: React.ReactNode }) => (
   <div className="mb-6 flex flex-shrink-0 items-center justify-between gap-3 border-b border-[#E5E7EB] pb-px">
     <div className="flex">
       {(["Documents", "Summary"] as const).map((t) => (
@@ -362,7 +363,6 @@ const SubTabs = ({ active, pulse = false, right }: { active: "Documents" | "Summ
           key={t}
           data-sub={t}
           className={`whitespace-nowrap rounded-t-md border-b-2 px-4 py-3 text-[13px] font-medium ${t === active ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}
-          style={t === "Summary" ? { ...tapStyle(pulse), background: pulse ? "rgba(48,158,150,0.10)" : "transparent" } : undefined}
         >
           {t}
         </span>
@@ -372,15 +372,15 @@ const SubTabs = ({ active, pulse = false, right }: { active: "Documents" | "Summ
   </div>
 );
 
-const TheirDocuments = ({ pulse }: { pulse: boolean }) => (
+const TheirDocuments = () => (
   <>
-    <SubTabs active="Documents" pulse={pulse} />
+    <SubTabs active="Documents" />
     <div className="space-y-6">
       <div>
         <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
         <FloatStack>
           <ProDocRow label="Last Will & Testament" />
-          <ProDocRow label="Power of Attorney" />
+          <ProDocRow label="Health Care Proxy" />
         </FloatStack>
       </div>
       <div>
@@ -401,40 +401,150 @@ const TheirDocuments = ({ pulse }: { pulse: boolean }) => (
   </>
 );
 
-/* Chapter 3: what's coming, year by year, in the look of the filed documents */
-const ChecksAhead = ({ on, refs, compact }: { on: boolean; refs: React.MutableRefObject<(HTMLSpanElement | null)[]>; compact: boolean }) => (
-  <div className={`rounded-2xl bg-white ${compact ? "p-5" : "px-8 py-6"}`}>
-    {YEARS.map((year, y) => (
-      <div key={year} className={y > 0 ? "mt-4" : ""}>
-        <Fade on={on} delay={y * 210 + 340}>
-          <p className="text-[12px] font-medium uppercase tracking-wide text-[#9CA3AF]">{year}</p>
-        </Fade>
-        <div className="mt-1">
-          {CHECK_KINDS.map((k, i) => {
-            const n = y * CHECK_KINDS.length + i;
-            return (
-              <Fade key={k.title} on={on} delay={n * 70 + 440}>
-                <div className="flex items-start gap-3 py-2">
-                  <span ref={(el) => { refs.current[n] = el; }} className="mt-0.5 flex-shrink-0">
-                    <CheckInIcon className="block h-5 w-5 text-[#309E96]" />
+/* Text being rewritten: selected, then typed over, then settled */
+const Rewrite = ({ stage, before, after, typed }: { stage: EditStage; before: string; after: string; typed: number }) => (
+  <>
+    {stage === "idle" && before}
+    {stage === "select" && <span className="bg-[#CDEBE8]">{before}</span>}
+    {stage === "typing" && (
+      <>
+        {after.slice(0, typed)}
+        <span className="ml-px inline-block h-[14px] w-px translate-y-[2px] bg-[#1F2933]" />
+      </>
+    )}
+    {stage === "done" && after}
+  </>
+);
+
+/* Chapter 2: the step-in card, as its health care proxy reads (scenario-blocks.tsx) */
+const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap: Tap }) => {
+  const editing = edit === "select" || edit === "typing";
+  return (
+    <Appear>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Health Care Proxy</p>
+      <div className="mt-3 space-y-3">
+        {[
+          { n: 1, name: "Maria Rosen", note: "First choice" },
+          { n: 2, name: "Leo Rosen", note: "Second in line if Maria can’t serve" },
+        ].map((p) => (
+          <div key={p.n} className="flex gap-3">
+            <span className={`flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${p.n === 1 ? "bg-[#128F8B] text-white" : "border border-[#CBD2D9] bg-white text-[#6B7280]"}`}>{p.n}</span>
+            <div>
+              <p className="text-[15px] font-medium text-[#1F2933]">{p.name}</p>
+              <p className="mt-0.5 text-[12.5px] text-[#9CA3AF]">{p.note}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div data-wishes className="mt-7">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Your wishes</p>
+        <div className="mt-2 overflow-hidden rounded-xl" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+          <div className="flex bg-[#128F8B] text-[13px] font-semibold text-white">
+            <div className="w-[34%] flex-shrink-0 px-4 py-2.5">Wish</div>
+            <div className="min-w-0 flex-1 px-4 py-2.5">What your document says</div>
+          </div>
+          {WISHES.map((w, i) => (
+            <div key={w.label} className={`flex items-start border-b border-[#E5E7EB] last:border-b-0 ${i % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]"}`}>
+              <div className="w-[34%] flex-shrink-0 px-4 py-3 text-[14px] font-medium text-[#1F2933]">{w.label}</div>
+              <div className="min-w-0 flex-1 px-4 py-3 text-[14px] leading-[1.5] text-[#6B7280]">
+                {w.text ?? (
+                  <span
+                    className="block rounded-[3px]"
+                    style={{
+                      color: edit === "idle" ? undefined : "#1F2933",
+                      boxShadow: editing ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
+                      transition: "box-shadow 180ms ease",
+                    }}
+                  >
+                    <Rewrite stage={edit} before={WISH_BEFORE} after={WISH_AFTER} typed={typed} />
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-medium text-[#1F2933]">{k.title}</p>
-                    <span className="inline-block border-b border-dashed border-[#D1D5DB] py-0.5 text-[13px] text-[#374151]">{k.to}</span>
-                  </div>
-                  <span className="mt-0.5 flex-shrink-0 text-[13px] text-[#6B7280]">{k.date}</span>
-                </div>
-              </Fade>
-            );
-          })}
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-    <Fade on={on} delay={900}>
-      <p className="mt-3 border-t border-[#F0F1F3] pt-3 text-[13px] font-medium text-[#309E96]">And every year after that</p>
-    </Fade>
-  </div>
-);
+      <div data-wish-action className="mt-4 flex justify-end">
+        {editing ? (
+          <span className="inline-flex items-center gap-1 rounded text-[#309E96]" style={{ fontSize: 12, fontWeight: 600, ...tapStyle(tap === "done") }}>
+            <CheckIcon className="h-3.5 w-3.5" />
+            Done
+          </span>
+        ) : (
+          <span className="rounded" style={tapStyle(tap === "edit")}><SummaryEditToggle /></span>
+        )}
+      </div>
+    </Appear>
+  );
+};
+
+/* Chapter 3: the client check-in's card (settings/touchpoint-panel.tsx) */
+const CheckInEmail = ({ edit, typed, ask, often, saved, tap, compact }: { edit: EditStage; typed: number; ask: boolean; often: boolean; saved: boolean; tap: Tap; compact: boolean }) => {
+  const section = compact ? "bg-white px-4 py-3.5" : "bg-white px-6 py-5";
+  const editing = edit === "select" || edit === "typing";
+  const label = "mb-1 text-[12px] font-medium text-[#6B7280]";
+  return (
+    <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
+      <div className="flex flex-col gap-1.5">
+        <div className={`flex items-center justify-between gap-3 ${compact ? "bg-white px-4 py-3" : "bg-white px-6 py-4"}`}>
+          <span>
+            <span className="block text-[15px] font-semibold leading-snug text-[#1F2933]">Client check-in</span>
+            <span className="block text-[12.5px] text-[#9CA3AF]">To Daniel and Maria</span>
+          </span>
+          <span className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white" style={tapStyle(tap === "save")}>
+            {saved && <CheckIcon className="h-3.5 w-3.5" />}
+            {saved ? "Saved" : "Save"}
+          </span>
+        </div>
+        <div className={section}>
+          <p className={label}>Subject</p>
+          <p className="truncate border-b border-[#E5E7EB] pb-2 text-[14.5px] text-[#1F2933]">Checking in: has anything changed?</p>
+          <p className={`${label} mt-3`}>Message</p>
+          <div className="flex items-center gap-3 border-b border-[#E5E7EB] pb-1.5 text-[12.5px] text-[#6B7280]">
+            <span className="font-bold">B</span>
+            <span className="italic">I</span>
+            <span className="h-3.5 w-px bg-[#E5E7EB]" />
+            <span>Fill-ins</span>
+            <span>Links</span>
+            <span>Files</span>
+            {!compact && <span>Signature</span>}
+          </div>
+          <div className="mt-2.5 space-y-2 text-[14px] leading-[1.5] text-[#374151]">
+            <p>Hi Daniel,</p>
+            <p
+              className="rounded-[3px]"
+              style={{
+                color: edit === "idle" ? undefined : "#1F2933",
+                boxShadow: editing || tap === "message" ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
+                transition: "box-shadow 180ms ease",
+              }}
+            >
+              <Rewrite stage={edit} before={MAIL_BEFORE} after={MAIL_AFTER} typed={typed} />
+            </p>
+            <p>Once a year I ask every client the same short questions.</p>
+            <p>Rachel</p>
+          </div>
+        </div>
+        <div className={section}>
+          <p className="text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]">Preferences</p>
+          <div className="mt-1 flex items-center justify-between gap-3 border-b border-[#E5E7EB] py-2.5">
+            <span className="text-[14px] text-[#1F2933]">Ask me before each one goes out</span>
+            <span className="relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full" style={{ background: ask ? "#309E96" : "#D1D5DB", ...tapStyle(tap === "ask"), transition: "background-color 200ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}>
+              <span className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow" style={{ transform: `translateX(${ask ? 18 : 3}px)`, transition: "transform 200ms var(--ease-out)" }} />
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-3 pt-2.5">
+            <span className="text-[14px] text-[#1F2933]">How often</span>
+            <span className="inline-flex items-center gap-1 rounded px-1 text-[14px] font-medium text-[#1F2933]" style={tapStyle(tap === "often")}>
+              {often ? "Once a year" : "Every two years"}
+              <WIcon name="chevronDown" className="h-3.5 w-3.5 text-[#9CA3AF]" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /* Chapter 4: the check-ins reach the people in the plan */
 const TheirTeam = ({ on, booked, refs, compact }: { on: boolean; booked: boolean; refs: React.MutableRefObject<(HTMLSpanElement | null)[]>; compact: boolean }) => (
@@ -506,11 +616,9 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const reviewRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const checkRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const doneKey = useRef("");
   const callbacks = useRef({ onChapter, onStart });
@@ -529,7 +637,9 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const [edit, setEdit] = useState<EditStage>("idle");
   const [typed, setTyped] = useState(0);
   const [sent, setSent] = useState(false);
-  const [reviewScroll, setReviewScroll] = useState(0);
+  const [stepIn, setStepIn] = useState(false);
+  const [ask, setAsk] = useState(false);
+  const [often, setOften] = useState(false);
   const [found, setFound] = useState(0);
   const [looking, setLooking] = useState(0);
   const [address, setAddress] = useState(false);
@@ -558,6 +668,20 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     if (row && tab) row.scrollTo({ left: Math.max(0, tab.offsetLeft - 16), behavior: "smooth" });
   }, [openTab]);
 
+  /* How far to scroll the summary to bring the wishes and their Edit into view */
+  const wishesScroll = () => {
+    const win = cardsRef.current;
+    const wishes = win?.querySelector("[data-wishes]");
+    const action = win?.querySelector("[data-wish-action]");
+    const r0 = rootRef.current;
+    if (!win || !wishes || !action || !r0) return 0;
+    const k = r0.getBoundingClientRect().width / (compact ? ROOT_COMPACT : ROOT_WIDE).w;
+    const box = win.getBoundingClientRect();
+    const toTop = (wishes.getBoundingClientRect().top - box.top) / k - 12;
+    const toEnd = (action.getBoundingClientRect().bottom - box.bottom) / k + 16;
+    return Math.max(0, toTop, toEnd);
+  };
+
   useEffect(() => {
     const key = `${chapter}:${replay}:${compact}`;
     if (doneKey.current === key) return;
@@ -568,12 +692,16 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
       setScan(-1);
       setFiled(true);
       setBooked(chapter === 3);
-      setEdit(chapter === 1 ? "done" : "idle");
-      setTyped(NOTE_AFTER.length);
-      setSent(chapter === 1);
+      setEdit(chapter === 1 || chapter === 2 ? "done" : "idle");
+      setTyped(0);
+      setSent(chapter === 1 || chapter === 2);
+      setStepIn(chapter === 1);
+      setAsk(chapter === 2);
+      setOften(chapter === 2);
       setSummaryScroll(0);
-      setBeat((["docs", "review", "ahead", "team"] as Beat[])[chapter]);
+      setBeat((["docs", "summary", "ahead", "team"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
+      if (chapter === 1) window.setTimeout(() => setSummaryScroll(wishesScroll()), 80);
       return;
     }
     if (!inView) return;
@@ -708,58 +836,61 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         setBeat("docs");
         await wait(1150);
       },
-      /* 2. The summary, then one line reworded on the approval page */
+      /* 2. Open the step-in card, reword a health care wish, approve */
       async () => {
         reset();
         setEdit("idle");
         setTyped(0);
         setSent(false);
+        setStepIn(false);
         setSummaryScroll(0);
-        setReviewScroll(0);
         setPlace("hidden");
-        setBeat("docs");
-        await wait(620);
-        await tapOn("summary", () => setBeat("summary"));
-        await wait(360);
-        const win = box(cardsRef.current);
-        const heading = [...(cardsRef.current?.querySelectorAll("div") ?? [])].find((e) => e.textContent?.trim() === "What You'll Leave Behind");
-        setSummaryScroll(Math.max(0, box(heading).top - win.top - 34));
-        await wait(1800);
-        await tapOn("approve", () => setBeat("review"));
-        if (compact) {
-          const line = box(reviewRef.current?.querySelector("[data-note]"));
-          const top = box(reviewRef.current?.querySelector("[data-review-cards]"));
-          setReviewScroll(Math.max(0, line.top - top.top - 120));
-        }
-        await wait(1000);
+        setBeat("summary");
+        await wait(800);
+        await tapOn("stepin", () => setStepIn(true));
+        await wait(420);
+        setSummaryScroll(wishesScroll());
+        await wait(1100);
         await tapOn("edit", () => setEdit("select"));
         await wait(420);
         setEdit("typing");
-        for (let n = 1; n <= NOTE_AFTER.length; n++) {
+        for (let n = 1; n <= WISH_AFTER.length; n++) {
+          setTyped(n);
+          await wait(22);
+        }
+        await wait(260);
+        await tapOn("done", () => setEdit("done"));
+        await wait(620);
+        await tapOn("approve", () => setSent(true));
+        await wait(1400);
+      },
+      /* 3. Make the check-in your own: its words, then how it runs */
+      async () => {
+        reset();
+        setEdit("idle");
+        setTyped(0);
+        setSent(false);
+        setAsk(false);
+        setOften(false);
+        setPlace("hidden");
+        setBeat("ahead");
+        await wait(800);
+        await tapOn("message", () => setEdit("select"));
+        await wait(420);
+        setEdit("typing");
+        for (let n = 1; n <= MAIL_AFTER.length; n++) {
           setTyped(n);
           await wait(22);
         }
         await wait(260);
         setEdit("done");
+        await wait(520);
+        await tapOn("ask", () => setAsk(true));
         await wait(620);
-        await tapOn("final", () => setSent(true));
+        await tapOn("often", () => setOften(true));
+        await wait(620);
+        await tapOn("save", () => setSent(true));
         await wait(1400);
-      },
-      /* 3. The check-ins ahead, year after year */
-      async () => {
-        reset();
-        setPlace("hidden");
-        setBeat("ahead");
-        await wait(60);
-        await fanOut("checks", compact ? R.h - sh / 2 - 24 : 500);
-        await readSheets(CHECKS.length, 170);
-        await wait(200);
-        setTargets(checkRefs.current.map((el) => { const b = box(el); return { x: b.x, y: b.y }; }));
-        setFiled(true);
-        setPlace("file");
-        await wait(1300);
-        setPlace("hidden");
-        await wait(900);
       },
       /* 4. They reach the people in the plan, and one books a call */
       async () => {
@@ -818,39 +949,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     const d = i * 70;
     return { x: to.x, y: to.y, r: 0, s: 0.16, o: 0, t: `transform 620ms var(--ease-in-out) ${d}ms, opacity 140ms ease ${d + 500}ms` };
   };
-
-  const approveLabel = sent ? "Sent to Daniel" : "Approve Summary";
-  const editing = edit === "select" || edit === "typing";
-  const remainingNote = (
-    <span
-      data-note
-      className="block rounded-[3px]"
-      style={{
-        color: edit === "idle" ? undefined : "#1F2933",
-        boxShadow: editing ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
-        transition: "box-shadow 180ms ease",
-      }}
-    >
-      {edit === "idle" && NOTE_BEFORE}
-      {edit === "select" && <span className="bg-[#CDEBE8]">{NOTE_BEFORE}</span>}
-      {edit === "typing" && (
-        <>
-          {NOTE_AFTER.slice(0, typed)}
-          <span className="ml-px inline-block h-[14px] w-px translate-y-[2px] bg-[#1F2933]" />
-        </>
-      )}
-      {edit === "done" && NOTE_AFTER}
-    </span>
-  );
-  const remainingAction =
-    edit === "idle" ? (
-      <span className="rounded" style={tapStyle(tap === "edit")}><SummaryEditToggle /></span>
-    ) : (
-      <span className="inline-flex items-center gap-1 text-[#309E96]" style={{ fontSize: 12, fontWeight: 600 }}>
-        {edit === "done" && <CheckIcon className="h-3.5 w-3.5" />}
-        {edit === "done" ? "Edited" : "Editing"}
-      </span>
-    );
 
   return (
     <div
@@ -944,25 +1042,35 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                     </div>
                   </div>
                   <div className="mt-6 min-h-0 flex-1">
-                    {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments pulse={tap === "summary"} /></Appear>}
-                    {(beat === "summary" || beat === "review") && (
+                    {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
+                    {beat === "summary" && (
                       <Appear key="summary" className="flex h-full flex-col">
                         <SubTabs
                           active="Summary"
                           right={
-                            <span className="inline-flex h-9 flex-shrink-0 items-center rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white" style={tapStyle(tap === "approve")}>
-                              Approve
+                            <span className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white" style={tapStyle(tap === "approve")}>
+                              {sent && <CheckIcon className="h-3.5 w-3.5" />}
+                              {sent ? "Sent to Daniel" : "Approve"}
                             </span>
                           }
                         />
                         <div ref={cardsRef} className="min-h-0 flex-1 overflow-hidden rounded-t-2xl">
-                          <div style={{ transform: `translateY(${-summaryScroll}px)`, transition: "transform 1700ms var(--ease-in-out)" }}>
-                            <SummaryCards flush />
+                          <div style={{ transform: `translateY(${-summaryScroll}px)`, transition: "transform 900ms var(--ease-in-out)" }}>
+                            <SummaryCards
+                              flush
+                              familyOpen={false}
+                              stepInOpen={stepIn}
+                              stepInBody={<StepInBody edit={edit} typed={typed} tap={tap} />}
+                              stepInStyle={{
+                                boxShadow: tap === "stepin" ? "inset 0 0 0 2px rgba(48,158,150,0.55)" : "inset 0 0 0 0 rgba(48,158,150,0)",
+                                transition: "box-shadow 240ms ease",
+                              }}
+                            />
                           </div>
                         </div>
                       </Appear>
                     )}
-                    {beat === "ahead" && <Appear key="ahead"><ChecksAhead on={filed} refs={checkRefs} compact={compact} /></Appear>}
+                    {beat === "ahead" && <Appear key="ahead"><CheckInEmail edit={edit} typed={typed} ask={ask} often={often} saved={sent} tap={tap} compact={compact} /></Appear>}
                     {beat === "team" && <Appear key="team"><TheirTeam on={filed} booked={booked} refs={teamRefs} compact={compact} /></Appear>}
                   </div>
                 </div>
@@ -985,33 +1093,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                   <span className="block text-[12.5px] text-[#6B7280]">From a check-in · Tuesday, Feb 23</span>
                 </span>
               </div>
-            </div>
-
-            {/* The approval page */}
-            <div ref={reviewRef} className="pointer-events-none absolute inset-0 z-30" style={{ opacity: beat === "review" ? 1 : 0, transition: "opacity 360ms ease" }}>
-              {compact ? (
-                <div className="flex h-full flex-col overflow-hidden bg-[#F0F2F5] px-4 pt-5 text-left" style={{ fontFamily: FIGTREE }}>
-                  <h3 className="text-[20px] font-semibold leading-snug text-[#1F2933]" style={{ fontFamily: FIGTREE }}>Review Daniel&apos;s estate plan summary</h3>
-                  <p className="mt-1 text-[13.5px] leading-normal text-[#6B7280]">Once you approve, the summary will appear on Daniel&apos;s account.</p>
-                  <span className="mt-3 flex h-10 flex-shrink-0 items-center justify-center gap-2 rounded-full bg-[#128F8B] text-[14px] font-medium text-white" style={tapStyle(tap === "final")}>
-                    <CheckIcon className="h-4 w-4" />
-                    {approveLabel}
-                  </span>
-                  <div data-review-cards className="mt-3 min-h-0 flex-1 overflow-hidden rounded-t-2xl">
-                    <div style={{ transform: `translateY(${-reviewScroll}px)` }}>
-                      <SummaryCards flush remainingNote={remainingNote} remainingAction={remainingAction} />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <SummaryReviewScreenCropped
-                  edited={edit === "done"}
-                  approveLabel={approveLabel}
-                  approveStyle={tapStyle(tap === "final")}
-                  remainingNote={remainingNote}
-                  remainingAction={remainingAction}
-                />
-              )}
             </div>
 
             {/* Paper */}

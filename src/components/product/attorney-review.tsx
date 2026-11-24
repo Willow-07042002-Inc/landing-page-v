@@ -110,6 +110,11 @@ export type SummaryLive = {
   approveStyle?: React.CSSProperties;
   remainingNote?: React.ReactNode;
   remainingAction?: React.ReactNode;
+  /** You & Your Family starts open; the film closes it to reach the next card */
+  familyOpen?: boolean;
+  stepInOpen?: boolean;
+  stepInBody?: React.ReactNode;
+  stepInStyle?: React.CSSProperties;
 };
 
 const SummaryHead = ({ edited = false, approveLabel = "Approve Summary", approveStyle }: SummaryLive) => (
@@ -292,7 +297,15 @@ const PROTECTIONS = [
    plan, at rest: From your firm, You & Your Family (open), If You Need
    Someone to Step In, What You'll Leave Behind (open), How Your Plan
    Protects You (open), Your Documents. */
-export const SummaryCards = ({ flush = false, remainingNote, remainingAction }: { flush?: boolean } & Pick<SummaryLive, "remainingNote" | "remainingAction">) => (
+export const SummaryCards = ({
+  flush = false,
+  remainingNote,
+  remainingAction,
+  familyOpen = true,
+  stepInOpen = false,
+  stepInBody,
+  stepInStyle,
+}: { flush?: boolean } & Pick<SummaryLive, "remainingNote" | "remainingAction" | "familyOpen" | "stepInOpen" | "stepInBody" | "stepInStyle">) => (
   <div className={flush ? "" : "mx-auto max-w-[900px] px-4 pb-16 pt-6"}>
     <div className="space-y-1.5 rounded-2xl bg-[#F3F4F6]" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
       {/* client-firm-cell.tsx → FromYourFirmCard: the firm's building (no logo
@@ -301,7 +314,7 @@ export const SummaryCards = ({ flush = false, remainingNote, remainingAction }: 
         <SummaryCard icon={<Icon name="building" className="h-11 w-11 text-[#3AB2AB]" />} title="From your firm" subtitle="Your attorney · 2 things to do" />
       </div>
 
-      <SummaryCard icon={<CardPicture src="/mock/family-icon.png" />} title="You & Your Family" subtitle="The people at the center of your plan" open action={<EditToggle />}>
+      <SummaryCard icon={<CardPicture src="/mock/family-icon.png" />} title="You & Your Family" subtitle="The people at the center of your plan" open={familyOpen} action={<EditToggle />}>
         <UpperLabel>A Bit About You</UpperLabel>
         <MemberCell name="Daniel Rosen" meta="New York, NY" />
         <Hr />
@@ -313,7 +326,11 @@ export const SummaryCards = ({ flush = false, remainingNote, remainingAction }: 
         </div>
       </SummaryCard>
 
-      <SummaryCard icon={<CardPicture src="/mock/shield-icon.png" />} title="If You Need Someone to Step In" subtitle="What happens if you can't make decisions for yourself" />
+      <div data-step-in style={stepInStyle}>
+        <SummaryCard icon={<CardPicture src="/mock/shield-icon.png" />} title="If You Need Someone to Step In" subtitle="What happens if you can't make decisions for yourself" open={stepInOpen}>
+          {stepInBody}
+        </SummaryCard>
+      </div>
 
       <SummaryCard icon={<CardPicture src="/mock/tree-icon.png" />} title="What You'll Leave Behind" subtitle="How your estate is managed and distributed" open>
         {/* The will's two scenarios, who is still around, and the search */}
