@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
-import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
+import { ScaledScreen, WIcon } from "@/components/product/kit";
+import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
 import { OutlookLogo } from "@/components/product/attorney-booking";
 import { CalendarCheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 
@@ -335,34 +335,40 @@ const Sheet = ({ d, scanning, scanned }: { d: SheetData; scanning: boolean; scan
   </div>
 );
 
-/* The Estate Plan tab's documents. The film leaves out the tab's own
-   Documents / Summary row (Aaron, Nov 24: less clunky) */
+/* Daniel's record at the end of chapter 1, pared back (Aaron, Nov 24: more
+   minimal): his name, then what was filed under each person, plain rows on
+   one white card per group. The product's record also has its tab row, a
+   menu on each document and the Documents / Summary row; the film leaves
+   them out */
+const FILED = [
+  { label: "Daniel’s documents", docs: [{ name: "Last Will & Testament" }, { name: "Power of Attorney" }] },
+  {
+    label: "Joint with Maria",
+    docs: [
+      { name: "Revocable Living Trust", detail: "Joint trust" },
+      { name: "Deed", detail: "Trust transfer deed", nested: true },
+    ],
+  },
+];
 const TheirDocuments = () => (
-  <>
-    <div className="space-y-6">
-      <div>
-        <ProDocSectionLabel label="Daniel's documents" />
-        <FloatStack>
-          <ProDocRow roomy label="Last Will & Testament" />
-          <ProDocRow roomy label="Power of Attorney" />
-        </FloatStack>
-      </div>
-      <div>
-        <ProDocSectionLabel label="Joint with Maria" />
-        <FloatStack>
-          <div>
-            <ProDocRow roomy label="Revocable Living Trust" detail="Joint trust (married couple)" />
-            <div className="px-8 pb-5">
-              <div className="border-t border-[#E5E7EB]" />
-              <div className="pl-10 pt-3">
-                <ProDocRow roomy nested label="Deed" detail="Trust transfer deed" />
+  <div className="space-y-5">
+    {FILED.map((g) => (
+      <div key={g.label}>
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">{g.label}</p>
+        <div className="overflow-hidden rounded-xl bg-white" style={{ boxShadow: "0 1px 2px rgba(11,18,32,0.04)" }}>
+          {g.docs.map((d, i) => (
+            <div key={d.name} className={`flex items-center gap-3 py-3.5 pr-4 ${"nested" in d && d.nested ? "pl-10" : "pl-4"} ${i ? "border-t border-[#F0F2F4]" : ""}`}>
+              <WIcon name="document" className="h-[18px] w-[18px] flex-shrink-0 text-[#309E96]" />
+              <div className="min-w-0">
+                <p className="text-[14.5px] font-medium text-[#1F2933]">{d.name}</p>
+                {"detail" in d && d.detail && <p className="mt-0.5 text-[12.5px] text-[#9CA3AF]">{d.detail}</p>}
               </div>
             </div>
-          </div>
-        </FloatStack>
+          ))}
+        </div>
       </div>
-    </div>
-  </>
+    ))}
+  </div>
 );
 
 /* Chapter 2: Willow writing the summary (Aaron, Nov 24). First the will on
@@ -841,7 +847,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLDivElement>(null);
-  const tabsRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const doneKey = useRef("");
   /* The chapters that have started playing, and the last click we've seen */
@@ -890,18 +895,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
     io.observe(frame);
     return () => io.disconnect();
   }, []);
-
-  /* The tab row scrolls in the narrow layout: keep the open tab in sight,
-     moving only as far as it takes, so no tab is left cut in half */
-  const openTab = "Estate Plan";
-  useEffect(() => {
-    const row = tabsRef.current;
-    const tab = row?.querySelector<HTMLElement>(`[data-tab="${openTab}"]`);
-    if (!row || !tab) return;
-    const over = tab.offsetLeft + tab.offsetWidth - row.clientWidth;
-    row.scrollTo({ left: over > 0 ? over + 16 : 0, behavior: "smooth" });
-  }, [openTab]);
-
 
   useEffect(() => {
     const key = `${chapter}:${replay}:${compact}:${hold}`;
@@ -1235,36 +1228,11 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
               {/* The client */}
               <div className="absolute inset-0" style={{ opacity: inRecord ? 1 : 0, transition: "opacity 440ms ease" }}>
                 <div className={`relative flex h-full flex-col ${compact ? "px-4 pt-6" : "px-16 pt-10"}`}>
-                  <div className={`${compact ? "mb-4" : "mb-6"} flex flex-shrink-0 items-start justify-between gap-3`}>
-                    <div>
-                      <h3 className="text-[26px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>Daniel Rosen</h3>
-                      <p className="mt-1 text-[15px] text-[#6B7280]">
-                        Joint account: <span className="font-medium text-[#309E96]">Maria Rosen</span>
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="rounded p-1.5 text-[#9CA3AF]"><WIcon name="more" className="h-5 w-5" /></span>
-                    </div>
+                  <div className="flex-shrink-0">
+                    <h3 className="text-[24px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>Daniel Rosen</h3>
+                    <p className="mt-1 text-[14px] text-[#9CA3AF]">Joint account with Maria Rosen</p>
                   </div>
-                  <div ref={tabsRef} className="flex-shrink-0 overflow-hidden border-b border-[#E5E7EB]">
-                    <div className="relative flex">
-                      {CLIENT_PANEL_TABS.map((t) => (
-                        <span
-                          key={t}
-                          data-tab={t}
-                          className="whitespace-nowrap rounded-t-md border-b-2 px-4 py-3 text-[13px] font-medium"
-                          style={{
-                            borderColor: t === openTab ? "#309E96" : "transparent",
-                            color: t === openTab ? "#309E96" : "#6B7280",
-                            transition: "color 200ms ease, border-color 200ms ease",
-                          }}
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className={`${compact ? "mt-4" : "mt-6"} min-h-0 flex-1`}>
+                  <div className={`${compact ? "mt-6" : "mt-8"} min-h-0 flex-1`}>
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
                   </div>
                 </div>
