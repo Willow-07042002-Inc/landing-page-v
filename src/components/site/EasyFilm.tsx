@@ -88,7 +88,7 @@ const ACCOUNTS = [
 const FAN = [-8, -5, -2, 2, 5, 8];
 
 /** How long each chapter runs at normal speed */
-export const EASY_MS = [12910, 9100, 6390];
+export const EASY_MS = [12910, 7900, 6390];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -347,7 +347,7 @@ const TheirDocuments = () => (
   <>
     <div className="space-y-6">
       <div>
-        <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
+        <ProDocSectionLabel label="Daniel's documents" />
         <FloatStack>
           <ProDocRow roomy label="Last Will & Testament" />
           <ProDocRow roomy label="Power of Attorney" />
@@ -385,15 +385,15 @@ const SERIF = "Georgia, 'Times New Roman', serif";
 /* The will's words for each gift, how long the marker takes over them, and
    what the summary makes of them */
 const WILL_GIFTS = [
-  { text: "I give my home at 85 Grove Street, New York, New York, to my wife, MARIA ROSEN.", ms: 650 },
-  { text: "I give my cottage in Southampton, New York, to my daughter, EMMA ROSEN.", ms: 650 },
-  { text: "I give my 1850 sloop to my brother, JACOB ROSEN.", ms: 550 },
+  { text: "I give my home at 85 Grove Street, New York, New York, to my wife, MARIA ROSEN.", ms: 380 },
+  { text: "I give my cottage in Southampton, New York, to my daughter, EMMA ROSEN.", ms: 380 },
+  { text: "I give my 1976 sloop to my brother, JACOB ROSEN.", ms: 300 },
 ];
-const WILL_REST = { text: "I give all the rest, residue and remainder of my estate in equal shares to my children, EMMA ROSEN and LEO ROSEN.", ms: 800 };
+const WILL_REST = { text: "I give all the rest, residue and remainder of my estate in equal shares to my children, EMMA ROSEN and LEO ROSEN.", ms: 480 };
 const SUMMARY_GIFTS = [
   { to: "Maria Rosen", rel: "Your spouse", item: "Your home on Grove Street" },
   { to: "Emma Rosen", rel: "Your child", item: "Your cottage in Southampton" },
-  { to: "Jacob Rosen", rel: "Your brother", item: "Your 1850 sloop" },
+  { to: "Jacob Rosen", rel: "Your brother", item: "Your 1976 sloop" },
 ];
 const SUMMARY_REST = [
   { name: "Emma Rosen", percent: 50 },
@@ -473,22 +473,36 @@ const WillPaper = ({ size, show, hl, still }: { size: { w: number; h: number }; 
   );
 };
 
-/* ShareRow, its bar filling as it's written */
+/* ShareRow, written: its bar grows out to the share while the number
+   counts up beside it, both from one clock so they arrive together */
+const SHARE_MS = 1100;
 const ShareBar = ({ name, percent, still }: { name: string; percent: number; still: boolean }) => {
-  const [on, setOn] = useState(still);
+  const [value, setValue] = useState(still ? percent : 0);
   useEffect(() => {
-    if (still) return setOn(true);
-    const t = window.setTimeout(() => setOn(true), 80);
-    return () => window.clearTimeout(t);
-  }, [still]);
+    if (still) return setValue(percent);
+    let raf = 0;
+    const delay = window.setTimeout(() => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / SHARE_MS);
+        setValue(percent * (1 - Math.pow(1 - t, 3)));
+        if (t < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }, 180);
+    return () => {
+      window.clearTimeout(delay);
+      cancelAnimationFrame(raf);
+    };
+  }, [percent, still]);
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <span className="text-[14px] font-medium text-[#1F2933]">{name}</span>
-        <span className="text-[14px] font-semibold text-[#128F8B]">{percent}%</span>
+        <span className="text-[14px] font-semibold tabular-nums text-[#128F8B]">{Math.round(value)}%</span>
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-[#E5E7EB]">
-        <div className="h-full rounded-full bg-[#128F8B]" style={{ width: on ? `${percent}%` : "0%", transition: still ? "none" : "width 800ms var(--ease-out)" }} />
+        <div className="h-full rounded-full bg-[#128F8B]" style={{ width: `${value}%` }} />
       </div>
     </div>
   );
@@ -936,15 +950,15 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setPlace("hidden");
         setBeat("explain");
         setPaper(true);
-        await wait(500);
+        await wait(350);
         setHl(1);
-        await wait(750);
+        await wait(450);
         setHl(2);
-        await wait(750);
+        await wait(450);
         setHl(3);
-        await wait(600);
+        await wait(400);
         setHl(4);
-        await wait(1100);
+        await wait(750);
         setPaper(false);
         await wait(800);
         setWritten(1);
@@ -955,9 +969,10 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setPun(1);
         await wait(700);
         setWritten(4);
-        await wait(700);
+        /* The mark goes once the shares have counted up */
+        await wait(1300);
         setReady(true);
-        await wait(1800);
+        await wait(1400);
       },
       /* 3. The reaching out: from the approved summary to Daniel's Staying in
          touch tab, his check-ins each with a date, then Emma's booking */
