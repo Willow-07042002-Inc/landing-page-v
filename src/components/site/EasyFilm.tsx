@@ -15,7 +15,7 @@ import { CloseIcon, ViewIcon } from "@/components/product/willow-icons";
       confirms it
    2. the summary being written (Aaron, Nov 24): the will on its own, a page
       of paper with its gifts marked as Willow reads them, fading to the
-      summary alone writing itself: who gets the home, the cottage, the boat
+      summary alone writing itself: who gets the home, the cottage, the sloop
       and the rest. In the product the summary is
       written before the attorney opens it, behind the same working mark
       (summary-generating.tsx); the film shows the reading that goes into it
@@ -88,7 +88,7 @@ const ACCOUNTS = [
 const FAN = [-8, -5, -2, 2, 5, 8];
 
 /** How long each chapter runs at normal speed */
-export const EASY_MS = [12910, 8700, 6390];
+export const EASY_MS = [12910, 9100, 6390];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -373,13 +373,13 @@ const TheirDocuments = () => (
 
 /* Chapter 2: Willow writing the summary (Aaron, Nov 24). First the will on
    its own, a page of paper on the print, each gift marked as Willow reads
-   it: the home to Maria, the cottage to Emma, the boat to Leo, the rest to
-   Emma and Leo in equal shares. The page fades to the summary alone (no
-   record around it, nothing to approve), What You'll Leave Behind writing
-   itself line by line: Gifts & Bequests as GiftTable draws it (Recipient,
-   The Gift), then The Remaining Estate's share bars, with the product's
-   working mark breathing beneath (working-mark.tsx: the W and its legal
-   puns) until it's done */
+   it: the home to Maria, the cottage to Emma, the sloop to Daniel's
+   brother Jacob, the rest to Emma and Leo in equal shares. The page fades
+   to the summary alone (no record around it, nothing to approve), What
+   You'll Leave Behind writing itself line by line: Gifts & Bequests as
+   GiftTable draws it (Recipient, The Gift), then The Remaining Estate's
+   share bars, with the product's working mark breathing beneath
+   (working-mark.tsx: the W and its legal puns) until the last line is in */
 const PUNS = ["Reading the fine print…", "Hereinafter referred to as “loading”…", "Taking it under advisement…"];
 const SERIF = "Georgia, 'Times New Roman', serif";
 /* The will's words for each gift, how long the marker takes over them, and
@@ -387,13 +387,13 @@ const SERIF = "Georgia, 'Times New Roman', serif";
 const WILL_GIFTS = [
   { text: "I give my home at 85 Grove Street, New York, New York, to my wife, MARIA ROSEN.", ms: 650 },
   { text: "I give my cottage in Southampton, New York, to my daughter, EMMA ROSEN.", ms: 650 },
-  { text: "I give my boat to my son, LEO ROSEN.", ms: 450 },
+  { text: "I give my 1850 sloop to my brother, JACOB ROSEN.", ms: 550 },
 ];
 const WILL_REST = { text: "I give all the rest, residue and remainder of my estate in equal shares to my children, EMMA ROSEN and LEO ROSEN.", ms: 800 };
 const SUMMARY_GIFTS = [
   { to: "Maria Rosen", rel: "Your spouse", item: "Your home on Grove Street" },
   { to: "Emma Rosen", rel: "Your child", item: "Your cottage in Southampton" },
-  { to: "Leo Rosen", rel: "Your child", item: "Your boat" },
+  { to: "Jacob Rosen", rel: "Your brother", item: "Your 1850 sloop" },
 ];
 const SUMMARY_REST = [
   { name: "Emma Rosen", percent: 50 },
@@ -506,13 +506,32 @@ const WorkingRow = ({ pun }: { pun: number }) => (
   </div>
 );
 
-/* A line of the summary arriving: in from just below */
-const Written = ({ still, children }: { still: boolean; children: React.ReactNode }) => (
-  <div style={{ animation: still ? undefined : "film-written 360ms var(--ease-out)" }}>
-    <style>{"@keyframes film-written { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }"}</style>
-    {children}
-  </div>
-);
+/* A line of the summary arriving (or, with show off, leaving): the space
+   for it opens smoothly, so nothing below jumps, while the words rise a
+   little, fade in and come into focus (Aaron, Nov 24: sleeker) */
+const Reveal = ({ show = true, still, children }: { show?: boolean; still: boolean; children: React.ReactNode }) => {
+  const [on, setOn] = useState(still && show);
+  useEffect(() => {
+    if (still) return setOn(show);
+    const t = window.setTimeout(() => setOn(show), 30);
+    return () => window.clearTimeout(t);
+  }, [show, still]);
+  const move = still ? "none" : on
+    ? "grid-template-rows 560ms var(--ease-in-out)"
+    : "grid-template-rows 420ms var(--ease-in-out) 120ms";
+  const look = still ? "none" : on
+    ? "opacity 520ms ease 140ms, transform 640ms var(--ease-out) 140ms, filter 520ms ease 140ms"
+    : "opacity 220ms ease, transform 260ms ease, filter 220ms ease";
+  return (
+    <div style={{ display: "grid", gridTemplateRows: on ? "1fr" : "0fr", transition: move }}>
+      <div className="min-h-0 overflow-hidden">
+        <div style={{ opacity: on ? 1 : 0, transform: on ? "translateY(0)" : "translateY(8px)", filter: on ? "blur(0px)" : "blur(3px)", transition: look }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /* What You'll Leave Behind, open, writing itself. written: 1-3 the gifts
    one by one, 4 the remaining estate */
@@ -531,16 +550,16 @@ const SummaryLive = ({ written, pun, ready, still }: { written: number; pun: num
       </div>
       <div className="px-4 pb-4">
         {written >= 1 && (
-          <Written still={still}>
+          <Reveal still={still}>
             <p className="mb-2.5 text-[14px] font-semibold text-[#1F2933]">Gifts &amp; Bequests</p>
             <div className={`${cols} border-b border-[#E5E7EB] pb-2`}>
               <span className={label}>Recipient</span>
               <span className={label}>The Gift</span>
             </div>
-          </Written>
+          </Reveal>
         )}
         {SUMMARY_GIFTS.slice(0, Math.min(written, SUMMARY_GIFTS.length)).map((g) => (
-          <Written key={g.to + g.item} still={still}>
+          <Reveal key={g.to + g.item} still={still}>
             <div className={`${cols} border-b border-[#F0F2F4] py-2`}>
               <div className="min-w-0">
                 <div className="text-[14px] font-semibold text-[#1F2933]">{g.to}</div>
@@ -548,19 +567,22 @@ const SummaryLive = ({ written, pun, ready, still }: { written: number; pun: num
               </div>
               <div className="min-w-0 text-[14px] leading-[1.5] text-[#4B5563]">{g.item}</div>
             </div>
-          </Written>
+          </Reveal>
         ))}
         {written >= 4 && (
-          <Written still={still}>
+          <Reveal still={still}>
             <p className="mb-2.5 mt-4 text-[14px] font-semibold text-[#1F2933]">The Remaining Estate</p>
             <div className="space-y-3">
               {SUMMARY_REST.map((r) => (
                 <ShareBar key={r.name} name={r.name} percent={r.percent} still={still} />
               ))}
             </div>
-          </Written>
+          </Reveal>
         )}
-        {!ready && <WorkingRow pun={pun} />}
+        {/* The working mark stays until the last line is in, then folds away */}
+        <Reveal show={!ready} still={still}>
+          <WorkingRow pun={pun} />
+        </Reveal>
       </div>
     </div>
   );
@@ -633,7 +655,7 @@ const FILM_LABEL =
   "An attorney drops a client's signed estate plan into Willow, which reads it and files each document under the right person. Willow then reads the will and writes a plain-English summary of who gets what, and schedules every check-in, so the executor books a meeting without the attorney reaching out.";
 const TILE_LABELS = [
   "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person, and fills in the clients' names, emails, phones and address before opening the client's record.",
-  "A page of Daniel's will, each gift marked as Willow reads it, fades to the summary Willow writes from it: his home to Maria, the cottage to Emma, the boat to Leo, and the rest of the estate to Emma and Leo in equal shares.",
+  "A page of Daniel's will, each gift marked as Willow reads it, fades to the summary Willow writes from it: his home to Maria, the cottage to Emma, the sloop to his brother Jacob, and the rest of the estate to Emma and Leo in equal shares.",
   "The client's Staying in touch tab: each kind of check-in with its next date, and the executor booking a meeting from one.",
 ];
 
@@ -926,16 +948,16 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setPaper(false);
         await wait(800);
         setWritten(1);
-        await wait(500);
+        await wait(650);
         setWritten(2);
-        await wait(500);
+        await wait(650);
         setWritten(3);
         setPun(1);
-        await wait(600);
+        await wait(700);
         setWritten(4);
-        await wait(1000);
+        await wait(700);
         setReady(true);
-        await wait(1600);
+        await wait(1800);
       },
       /* 3. The reaching out: from the approved summary to Daniel's Staying in
          touch tab, his check-ins each with a date, then Emma's booking */
