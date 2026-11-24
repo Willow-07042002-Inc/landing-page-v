@@ -281,8 +281,8 @@ const PROTECTIONS = [
    plan, at rest: From your firm, You & Your Family (open), If You Need
    Someone to Step In, What You'll Leave Behind (open), How Your Plan
    Protects You (open), Your Documents. */
-const SummaryCards = () => (
-  <div className="mx-auto max-w-[900px] px-4 pb-16 pt-6">
+export const SummaryCards = ({ flush = false }: { flush?: boolean }) => (
+  <div className={flush ? "" : "mx-auto max-w-[900px] px-4 pb-16 pt-6"}>
     <div className="space-y-1.5 rounded-2xl bg-[#F3F4F6]" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
       {/* client-firm-cell.tsx → FromYourFirmCard: the firm's building (no logo
           uploaded), and the client's to-do count from firm-panel.tsx */}

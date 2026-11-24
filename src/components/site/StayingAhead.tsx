@@ -8,7 +8,7 @@ import ClientFilm from "@/components/site/ClientFilm";
    and any chapter can be opened to watch from there. Every chapter has an
    anchor, so the deeper pages parked in src/content/pages.tsx land on theirs. */
 
-const CHAPTERS: { id: string; also?: string[]; title: string; body: string }[] = [
+export const CHAPTERS: { id: string; also?: string[]; title: string; body: string }[] = [
   {
     id: "set-up",
     also: ["signed-plan", "dashboard"],

@@ -113,13 +113,13 @@ export const AttorneyClientsScreen = ({
             </div>
             <div className="mt-6">
               <FloatStack>
-                <ProCoupleView a={{ name: "Daniel Rosen", email: "daniel.rosen@gmail.com" }} b={{ name: "Maria Rosen", email: "maria.rosen@gmail.com" }} />
-                <ProClientRowView c={{ name: "Elena Ruiz", email: "elena.ruiz@gmail.com", pill: "Summary awaiting approval" }} />
-                <ProClientRowView c={{ name: "Marcus Webb", email: "marcus.webb@outlook.com" }} />
-                <ProCoupleView a={{ name: "Sam Whitfield", email: "sam.whitfield@gmail.com" }} b={{ name: "Olivia Grant", email: "olivia.grant@gmail.com" }} />
-                <ProClientRowView c={{ name: "Priya Anand", email: "priya.anand@outlook.com" }} />
-                <ProClientRowView c={{ name: "Jordan Lee", email: "jordan.lee@gmail.com", pill: "Pending invite" }} />
-                <ProClientRowView c={{ name: "Grace Liu", email: "grace.liu@yahoo.com" }} />
+                <ProCoupleView a={{ name: "Daniel Rosen", email: "daniel.rosen@example.com" }} b={{ name: "Maria Rosen", email: "maria.rosen@example.com" }} />
+                <ProClientRowView c={{ name: "Elena Ruiz", email: "elena.ruiz@example.com", pill: "Summary awaiting approval" }} />
+                <ProClientRowView c={{ name: "Marcus Webb", email: "marcus.webb@example.com" }} />
+                <ProCoupleView a={{ name: "Sam Whitfield", email: "sam.whitfield@example.com" }} b={{ name: "Olivia Grant", email: "olivia.grant@example.com" }} />
+                <ProClientRowView c={{ name: "Priya Anand", email: "priya.anand@example.com" }} />
+                <ProClientRowView c={{ name: "Jordan Lee", email: "jordan.lee@example.com", pill: "Pending invite" }} />
+                <ProClientRowView c={{ name: "Grace Liu", email: "grace.liu@example.com" }} />
               </FloatStack>
             </div>
           </div>

@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ForClientsPage from "./pages/ForClientsPage";
 const DevScreens = React.lazy(() => import("./pages/DevScreens"));
+const FilmReview = React.lazy(() => import("./pages/FilmReview"));
 import NewsPage from "./pages/NewsPage";
 import RegulatoryLibraryPage from "./pages/RegulatoryLibraryPage";
 import StateDetailPage from "./pages/StateDetailPage";
@@ -56,6 +57,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/for-clients" element={<ForClientsPage />} />
+          {import.meta.env.DEV && (
+            <Route path="/dev/film" element={<React.Suspense fallback={null}><FilmReview /></React.Suspense>} />
+          )}
           {import.meta.env.DEV && (
             <Route path="/dev/screens" element={<React.Suspense fallback={null}><DevScreens /></React.Suspense>} />
           )}

@@ -2,13 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { PrintFrame } from "@/components/site/blocks";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
-import { EstatePlanSummaryApprovedPanel, EstatePlanSummaryPanel, ProSummaryAwaitingPill } from "@/components/product/attorney-client-panel";
-import { SummaryReviewScreenCropped } from "@/components/product/attorney-review";
-import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/product/willow-icons";
+import { ProSummaryAwaitingPill } from "@/components/product/attorney-client-panel";
+import { SummaryCards } from "@/components/product/attorney-review";
+import { OutlookLogo } from "@/components/product/attorney-booking";
+import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, SpinnerIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* One client's life on Willow as one film, on the product's real screens:
-   1. the signed plan is dropped in, read and filed (add-client/setup-wizard.tsx)
-   2. Willow writes the summary and the attorney approves it (estate-plans-tab.tsx)
+   1. the signed plan is dropped in, read and filed; names come from the
+      documents, emails and phones from Outlook (add-client/setup-wizard.tsx,
+      api/clients/find-contact). The film creates the account by itself; in the
+      product the attorney confirms it
+   2. Willow writes the summary, shown in the Estate Plan tab, and the attorney
+      approves it (estate-plans-tab.tsx; the product opens it on its own page)
    3. the check-ins ahead, year after year (client-detail/staying-in-touch.tsx)
    4. the check-ins reach the people in the plan, and one books a call.
    Every chapter uses the same move: paper fans out, is read, and files itself
@@ -22,6 +27,10 @@ const ROOT_COMPACT = { w: 420, h: 720 };
 const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
 
 export const FILM_CHAPTERS = 4;
+/** How long each chapter runs at normal speed */
+export const FILM_MS = [9010, 7500, 4160, 4380];
+/** Optional: lets the dev review page (/dev/film) pause and slow the film */
+export type FilmClock = { rate: number; paused: boolean };
 
 type SheetData = { head: string; of: string; tag: string };
 
@@ -37,6 +46,12 @@ const GROUPS: { label: string; rows: { doc: number; under?: number }[] }[] = [
   { label: "Daniel Rosen", rows: [{ doc: 0 }, { doc: 1 }] },
   { label: "Maria Rosen", rows: [{ doc: 2 }, { doc: 3 }] },
   { label: "Daniel Rosen and Maria Rosen", rows: [{ doc: 4, under: 5 }] },
+];
+
+/* Example people: example.com and 555-01xx numbers are reserved and reach nobody */
+const ACCOUNTS = [
+  { n: 1, first: "Daniel", email: "daniel.rosen@example.com", phone: "+1 212-555-0148" },
+  { n: 2, first: "Maria", email: "maria.rosen@example.com", phone: "+1 212-555-0172" },
 ];
 
 const CHECK_KINDS = [
@@ -62,7 +77,7 @@ const SHEETS: Record<"docs" | "checks" | "team", SheetData[]> = {
 };
 const FAN = [-8, -5, -2, 2, 5, 8];
 
-type Beat = "empty" | "carry" | "reading" | "filed" | "docs" | "drafting" | "ready" | "review" | "approved" | "ahead" | "team";
+type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "drafting" | "summary" | "ahead" | "team";
 type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
 type Cursor = Point & { shown: boolean; down: boolean };
@@ -85,13 +100,13 @@ const Fade = ({ on, delay = 0, children }: { on: boolean; delay?: number; childr
   <div style={{ opacity: on ? 1 : 0, transition: on ? `opacity 240ms ease ${delay}ms` : "none" }}>{children}</div>
 );
 
-const Appear = ({ children }: { children: React.ReactNode }) => {
+const Appear = ({ className, children }: { className?: string; children: React.ReactNode }) => {
   const [on, setOn] = useState(false);
   useEffect(() => {
     const t = window.setTimeout(() => setOn(true), 16);
     return () => window.clearTimeout(t);
   }, []);
-  return <div style={{ opacity: on ? 1 : 0, transition: "opacity 240ms ease" }}>{children}</div>;
+  return <div className={className} style={{ opacity: on ? 1 : 0, transition: "opacity 240ms ease" }}>{children}</div>;
 };
 
 const Title = ({ startOver }: { startOver: boolean }) => (
@@ -105,16 +120,96 @@ const Title = ({ startOver }: { startOver: boolean }) => (
   </div>
 );
 
-const Progress = () => (
+const Progress = ({ step = 1 }: { step?: 1 | 2 }) => (
   <div className="mb-6 mt-3">
     <p className="mb-2 text-[15px] font-semibold text-[#309E96]">
-      1 of 2<span className="font-medium text-[#9CA3AF]"> · Their documents</span>
+      {step} of 2<span className="font-medium text-[#9CA3AF]"> · {step === 1 ? "Their documents" : "Create their accounts"}</span>
     </p>
     <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F2]">
-      <div className="h-full w-1/2 rounded-full bg-[#309E96]" />
+      <div className="h-full rounded-full bg-[#309E96]" style={{ width: step === 1 ? "50%" : "100%" }} />
     </div>
   </div>
 );
+
+/* Step 2 of the real form, filling itself in: the names from the documents,
+   each email and phone from the attorney's Outlook */
+const TheirAccounts = ({ found, creating, compact }: { found: number; creating: boolean; compact: boolean }) => {
+  const field = `min-w-0 truncate border-b border-[#E5E7EB] py-2.5 leading-[22px] text-[#1F2933] ${compact ? "text-[14px]" : "text-[15px]"}`;
+  const section = compact ? "bg-white p-5" : "bg-white p-6";
+  const Note = ({ on }: { on: boolean }) => (
+    <span className="flex flex-shrink-0 items-center gap-1 text-[12px] text-[#9CA3AF]" style={{ opacity: on ? 1 : 0, transition: "opacity 240ms ease" }}>
+      <OutlookLogo className="h-3.5 w-3.5" />
+      Found in Outlook
+    </span>
+  );
+  return (
+    <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
+      <div className="flex flex-col gap-1.5">
+        {ACCOUNTS.map((p) => {
+          const on = found >= p.n;
+          const email = (
+            <div className={field}>
+              {on ? <Appear key="found">{p.email}</Appear> : <span className="text-[#9CA3AF]">Looking for {p.first}&apos;s email&hellip;</span>}
+            </div>
+          );
+          const phone = (
+            <div className={field}>
+              {on ? <Appear key="found">{p.phone}</Appear> : <span className="text-[#9CA3AF]">Phone</span>}
+            </div>
+          );
+          return (
+            <div key={p.n} className={section}>
+              <div className="mb-2 flex items-baseline justify-between gap-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">Client {p.n}</p>
+                {p.n === 1 && <p className="text-[11.5px] text-[#9CA3AF]">* Required</p>}
+              </div>
+              {compact ? (
+                <div className="flex flex-col gap-1">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className={field}>{p.first}</div>
+                    <div className={field}>Rosen</div>
+                  </div>
+                  <div className="relative">
+                    {email}
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 bg-white pl-2"><Note on={on} /></span>
+                  </div>
+                  {phone}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                  <div className={field}>{p.first}</div>
+                  <div className={field}>Rosen</div>
+                  <div>
+                    {email}
+                    <div className="mt-1"><Note on={on} /></div>
+                  </div>
+                  {phone}
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {!compact && (
+          <div className={`${section} flex items-baseline justify-between gap-4`}>
+            <p className="text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">
+              Their home address <span className="font-normal normal-case tracking-normal">(from their documents)</span>
+            </p>
+            <p className="text-[15px] text-[#1F2933]">85 Grove Street, New York</p>
+          </div>
+        )}
+        <div className={compact ? "bg-white p-4" : "bg-white px-6 py-4"}>
+          <div
+            className="flex h-11 w-full items-center justify-center gap-1.5 rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white"
+            style={{ opacity: found >= ACCOUNTS.length ? 1 : 0.5, transition: "opacity 200ms ease" }}
+          >
+            {creating && <SpinnerIcon className="h-4 w-4 animate-spin" />}
+            {creating ? "Creating their accounts…" : "Add the couple"}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const DropLine = ({ active }: { active?: boolean }) => (
   <div className="border-b py-3" style={{ borderColor: active ? "#309E96" : "#E5E7EB", transition: "border-color 160ms ease" }}>
@@ -216,7 +311,7 @@ const SubTabs = ({ active }: { active: "Documents" | "Summary" }) => (
   <div className="mb-6 border-b border-[#E5E7EB]">
     <div className="flex">
       {(["Documents", "Summary"] as const).map((t) => (
-        <span key={t} className={`whitespace-nowrap border-b-2 px-4 py-3 text-[13px] font-medium ${t === active ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}>
+        <span key={t} data-sub={t} className={`whitespace-nowrap border-b-2 px-4 py-3 text-[13px] font-medium ${t === active ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}>
           {t}
         </span>
       ))}
@@ -341,9 +436,10 @@ type Props = {
   onChapter: (next: number) => void;
   /** A chapter has started and will take this many milliseconds (0: at rest) */
   onStart: (ms: number) => void;
+  clock?: FilmClock;
 };
 
-const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
+const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const compact = useCompact();
   const root = compact ? ROOT_COMPACT : ROOT_WIDE;
   const stage = compact ? ROOT_COMPACT : PANEL_WIDE;
@@ -356,9 +452,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
-  const summaryRef = useRef<HTMLDivElement>(null);
-  const draftRef = useRef<HTMLDivElement>(null);
-  const reviewRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const approveRef = useRef<HTMLSpanElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const checkRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -376,6 +471,10 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
   const [targets, setTargets] = useState<Point[]>([]);
   const [filed, setFiled] = useState(false);
   const [booked, setBooked] = useState(false);
+  const [approved, setApproved] = useState(false);
+  const [found, setFound] = useState(0);
+  const [creating, setCreating] = useState(false);
+  const [summaryScroll, setSummaryScroll] = useState(0);
   const [cardH, setCardH] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
   const [scrollA, setScrollA] = useState(0);
@@ -411,8 +510,10 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
       setScan(-1);
       setFiled(true);
       setBooked(chapter === 3);
+      setApproved(chapter === 1);
+      setSummaryScroll(0);
       setCursor((c) => ({ ...c, shown: false }));
-      setBeat((["docs", "approved", "ahead", "team"] as Beat[])[chapter]);
+      setBeat((["docs", "summary", "ahead", "team"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
       return;
     }
@@ -425,7 +526,26 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
     let live = true;
     const wait = (ms: number) =>
       new Promise<void>((resolve, reject) => {
-        window.setTimeout(() => (live ? resolve() : reject(new Error("stopped"))), ms);
+        if (!clock) {
+          window.setTimeout(() => (live ? resolve() : reject(new Error("stopped"))), ms);
+          return;
+        }
+        let left = ms;
+        let last = performance.now();
+        const id = window.setInterval(() => {
+          if (!live) {
+            window.clearInterval(id);
+            reject(new Error("stopped"));
+            return;
+          }
+          const now = performance.now();
+          if (!clock.paused) left -= (now - last) * clock.rate;
+          last = now;
+          if (left <= 0) {
+            window.clearInterval(id);
+            resolve();
+          }
+        }, 16);
       });
     const box = (el: Element | null | undefined) => {
       const r0 = rootRef.current;
@@ -440,6 +560,10 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
       setTargets([]);
       setFiled(false);
       setBooked(false);
+      setApproved(false);
+      setFound(0);
+      setCreating(false);
+      setSummaryScroll(0);
       setPressed(false);
       setCursor((c) => ({ ...c, shown: false, down: false }));
     };
@@ -507,37 +631,38 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
         setScrollA(toScroll);
         setBeat("filed");
         setPlace("file");
-        await wait(1700);
+        await wait(1500);
         setPlace("hidden");
+
+        /* The account fills itself in from the documents and Outlook */
+        setBeat("accounts");
+        await wait(760);
+        setFound(1);
+        await wait(520);
+        setFound(2);
+        await wait(720);
+        setCreating(true);
+        await wait(920);
         setBeat("docs");
         await wait(1150);
       },
-      /* 2. Willow writes the summary and the attorney approves it */
+      /* 2. Rachel opens Summary: Willow writes it, there in the Estate Plan tab */
       async () => {
         reset();
         setPlace("hidden");
-        setBeat("drafting");
-        await wait(40);
-        await fanOut("docs", box(draftRef.current).bottom + 20 + sh / 2);
-        await readSheets(DOCS.length, 130);
-        await wait(200);
-        setBeat("ready");
-        await wait(60);
-        const b = box(summaryRef.current);
-        setTargets(DOCS.map(() => ({ x: b.x, y: b.y })));
-        setPlace("file");
-        await wait(1150);
-        setPlace("hidden");
-        if (compact) {
-          const go = [...(summaryRef.current?.querySelectorAll("span") ?? [])].find((e) => e.textContent?.trim() === "Review and approve");
-          await clickOn(go, () => setBeat("approved"));
-        } else {
-          setBeat("review");
-          await wait(1500);
-          const go = [...(reviewRef.current?.querySelectorAll("button, a, span, div") ?? [])].find((e) => e.textContent?.trim() === "Approve Summary");
-          await clickOn(go, () => setBeat("approved"));
-        }
-        await wait(1200);
+        setBeat("docs");
+        await wait(120);
+        await clickOn(rootRef.current?.querySelector('[data-sub="Summary"]'), () => setBeat("drafting"));
+        setCursor((c) => ({ ...c, shown: false }));
+        await wait(1500);
+        setBeat("summary");
+        await wait(620);
+        const win = box(cardsRef.current);
+        const heading = [...(cardsRef.current?.querySelectorAll("div") ?? [])].find((e) => e.textContent?.trim() === "What You'll Leave Behind");
+        setSummaryScroll(Math.max(0, box(heading).top - win.top - 34));
+        await wait(2100);
+        await clickOn(approveRef.current, () => setApproved(true));
+        await wait(1000);
         setCursor((c) => ({ ...c, shown: false }));
       },
       /* 3. The check-ins ahead, year after year */
@@ -575,8 +700,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
       },
     ];
 
-    const MS = [6490, compact ? 5150 : 6650, 4160, 4380];
-    callbacks.current.onStart(MS[chapter]);
+    callbacks.current.onStart(FILM_MS[chapter]);
     chapters[chapter]()
       .then(() => {
         if (!live) return;
@@ -587,9 +711,10 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
     return () => {
       live = false;
     };
-  }, [chapter, replay, inView, compact]);
+  }, [chapter, replay, inView, compact, clock]);
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
+  const inRecord = !uploading && beat !== "accounts";
   const reading = beat === "reading";
   const panelPad = compact ? "px-4 py-6" : "px-16 py-10";
   const list = SHEETS[sheetSet];
@@ -660,10 +785,19 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
                 </div>
               </div>
 
-              {/* The client */}
-              <div className="absolute inset-x-0 top-0" style={{ opacity: uploading ? 0 : 1, transition: "opacity 280ms ease" }}>
+              {/* 2 of 2 · Create their accounts */}
+              <div className="absolute inset-x-0 top-0" style={{ opacity: beat === "accounts" ? 1 : 0, transition: "opacity 260ms ease" }}>
                 <div className={panelPad}>
-                  <div className="mb-6 flex items-start justify-between gap-3">
+                  <Title startOver />
+                  <Progress step={2} />
+                  <TheirAccounts found={found} creating={creating} compact={compact} />
+                </div>
+              </div>
+
+              {/* The client */}
+              <div className="absolute inset-0" style={{ opacity: inRecord ? 1 : 0, transition: "opacity 280ms ease" }}>
+                <div className={`flex h-full flex-col ${compact ? "px-4 pt-6" : "px-16 pt-10"}`}>
+                  <div className="mb-6 flex flex-shrink-0 items-start justify-between gap-3">
                     <div>
                       <h3 className="text-[26px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>Daniel Rosen</h3>
                       <p className="mt-1 text-[15px] text-[#6B7280]">
@@ -671,11 +805,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      {!compact && (beat === "ready" || beat === "review") && <ProSummaryAwaitingPill />}
+                      {!compact && beat === "summary" && !approved && <ProSummaryAwaitingPill />}
                       <span className="rounded p-1.5 text-[#9CA3AF]"><WIcon name="more" className="h-5 w-5" /></span>
                     </div>
                   </div>
-                  <div ref={tabsRef} className="overflow-hidden border-b border-[#E5E7EB]">
+                  <div ref={tabsRef} className="flex-shrink-0 overflow-hidden border-b border-[#E5E7EB]">
                     <div className="relative flex">
                       {CLIENT_PANEL_TABS.map((t) => (
                         <span
@@ -689,24 +823,52 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
                       ))}
                     </div>
                   </div>
-                  <div className="mt-6">
-                    {(beat === "docs" || uploading) && <Appear key="docs"><TheirDocuments /></Appear>}
+                  <div className="mt-6 min-h-0 flex-1">
+                    {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
                     {beat === "drafting" && (
                       <Appear key="drafting">
                         <SubTabs active="Summary" />
-                        <div ref={draftRef} className="rounded-2xl border border-[#E5E7EB] bg-white">
-                          <WorkingMark line="Writing Daniel's summary…" />
+                        <div className="rounded-2xl border border-[#E5E7EB] bg-white">
+                          <WorkingMark line="Generating Daniel's summary…" />
                         </div>
                       </Appear>
                     )}
-                    {(beat === "ready" || beat === "review") && (
-                      <Appear key="ready">
-                        <div ref={summaryRef} style={{ transform: pressed && compact ? "scale(0.99)" : undefined, transition: "transform 140ms var(--ease-out)" }}>
-                          <EstatePlanSummaryPanel />
+                    {beat === "summary" && (
+                      <Appear key="summary" className="flex h-full flex-col">
+                        <SubTabs active="Summary" />
+                        <div className="flex flex-shrink-0 items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] bg-white px-5 py-3.5">
+                          <span className="flex min-w-0 items-center gap-3">
+                            {approved ? (
+                              <CheckIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
+                            ) : (
+                              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 18, lineHeight: 1, paddingTop: 2 }}>W</span>
+                            )}
+                            <span className="min-w-0">
+                              <span className="block text-[14px] font-semibold leading-tight text-[#1F2933]">
+                                {approved ? "Daniel can see this summary" : "Daniel's summary is ready for your approval"}
+                              </span>
+                              <span className="mt-0.5 block text-[12.5px] leading-snug text-[#6B7280]">
+                                {approved ? "Approved. You can edit and re-approve it anytime." : "Review and approve it before Daniel can see it."}
+                              </span>
+                            </span>
+                          </span>
+                          {!approved && (
+                            <span
+                              ref={approveRef}
+                              className="inline-flex h-9 flex-shrink-0 items-center rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white"
+                              style={{ transform: pressed ? "scale(0.97)" : "scale(1)", transition: "transform 140ms var(--ease-out)" }}
+                            >
+                              Approve
+                            </span>
+                          )}
+                        </div>
+                        <div ref={cardsRef} className="mt-3 min-h-0 flex-1 overflow-hidden rounded-t-2xl">
+                          <div style={{ transform: `translateY(${-summaryScroll}px)`, transition: "transform 1700ms var(--ease-in-out)" }}>
+                            <SummaryCards flush />
+                          </div>
                         </div>
                       </Appear>
                     )}
-                    {beat === "approved" && <Appear key="approved"><EstatePlanSummaryApprovedPanel /></Appear>}
                     {beat === "ahead" && <Appear key="ahead"><ChecksAhead on={filed} refs={checkRefs} compact={compact} /></Appear>}
                     {beat === "team" && <Appear key="team"><TheirTeam on={filed} booked={booked} refs={teamRefs} compact={compact} /></Appear>}
                   </div>
@@ -731,17 +893,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart }: Props) => {
                 </span>
               </div>
             </div>
-
-            {/* The approval page, over the whole screen */}
-            {!compact && (
-              <div
-                ref={reviewRef}
-                className="pointer-events-none absolute inset-0 z-30"
-                style={{ opacity: beat === "review" ? 1 : 0, transition: "opacity 280ms ease" }}
-              >
-                <SummaryReviewScreenCropped />
-              </div>
-            )}
 
             {/* Paper */}
             {list.map((d, i) => {
