@@ -16,6 +16,7 @@ import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
 import { TeamPanel } from "@/components/product/attorney-client-panel";
 import CheckInStory from "@/components/site/CheckInStory";
+import PlanDropStory from "@/components/site/PlanDropStory";
 import { SummaryReviewScreenCropped, SUMMARY_REVIEW_CROP_HEIGHT } from "@/components/product/attorney-review";
 import {
   BookingPageScreen,
@@ -137,6 +138,22 @@ const YourPart = () => (
   </div>
 );
 
+/* Where the attorney's journey starts: the plan they've already signed */
+const SignedPlan = () => (
+  <section id="signed-plan" className="scroll-mt-24 bg-[#F8FAFC] py-16 md:py-24">
+    <div className={`${WRAP} grid max-w-6xl items-center gap-10 lg:grid-cols-[38.2%_1fr] lg:gap-12 lg:px-10`}>
+      <SectionHead
+        center={false}
+        eyebrow="Start with the signed plan"
+        title="Drop in their documents."
+        accent="Their account is ready."
+        lead="Willow reads every document, files it under the right person and fills in their details. You review it, and you're done."
+      />
+      <PlanDropStory />
+    </div>
+  </section>
+);
+
 const Integrations = () => (
   <section id="integrations" className="scroll-mt-24 bg-[#F8FAFC] py-16 md:py-24">
     <div className={`${WRAP} grid max-w-6xl gap-10 lg:grid-cols-[38.2%_1fr] lg:gap-16 lg:px-10`}>
@@ -181,6 +198,8 @@ const AttorneysPage = () => {
         visualAspect="1128 / 670"
         visual={<CheckInStory />}
       />
+
+      <SignedPlan />
 
       {/* One family, step by step */}
       <section className="bg-[#F8FAFC] py-16 md:py-24">
