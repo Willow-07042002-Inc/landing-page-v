@@ -65,8 +65,8 @@ const TEAM_TYPED = " And if you’d ever like a plan of your own, I’d be glad 
 const MARIA_NOTE = "Daniel passed away last week. I’d like to go over his plan with you, and what I need to do as his executor.";
 const INVITED = [
   { initials: "MR", name: "Maria Rosen", about: "Wife · Executor", asked: true },
-  { initials: "ER", name: "Emma Rosen", about: "Daughter · Backup executor", asked: false },
-  { initials: "LR", name: "Leo Rosen", about: "Son · Backup trustee", asked: false },
+  { initials: "ER", name: "Emma Rosen", about: "Daughter · Backup co-executor", asked: false },
+  { initials: "LR", name: "Leo Rosen", about: "Son · Backup co-executor", asked: false },
 ];
 const REQUEST_W = { wide: 760, compact: 392 };
 

@@ -38,7 +38,7 @@ export const KEEP_CHAPTERS: Chapter[] = [
   {
     id: "probate",
     also: ["when-it-matters", "booking"],
-    title: "Be the firm the executor calls",
+    title: "Be the firm the executors call",
     body: "Willow keeps you in touch with each executor from the day the plan is signed. When a client passes, they already know to come back to you. Their request to open the plan comes straight to your firm, and you meet them first.",
   },
 ];
