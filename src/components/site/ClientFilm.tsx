@@ -3,7 +3,8 @@ import { PrintFrame } from "@/components/site/blocks";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import { SummaryCards, SummaryEditToggle, SummaryReviewScreenCropped } from "@/components/product/attorney-review";
-import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, SpinnerIcon, ViewIcon } from "@/components/product/willow-icons";
+import { OutlookLogo } from "@/components/product/attorney-booking";
+import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* One client's life on Willow as one film, on the product's real screens:
    1. the signed plan is dropped in, read and filed; names come from the
@@ -136,6 +137,14 @@ const Progress = ({ step = 1 }: { step?: 1 | 2 }) => (
   </div>
 );
 
+/* Where Willow is looking: the source's own icon, one soft pulse per search */
+const SEARCH_PULSE = "@keyframes film-search-pulse { 0%, 100% { transform: scale(0.9); opacity: 0.55; } 50% { transform: scale(1.12); opacity: 1; } }";
+const SearchMark = ({ children }: { children: React.ReactNode }) => (
+  <span data-search-mark className="ml-px flex h-4 w-4 flex-shrink-0 items-center justify-center" style={{ animation: "film-search-pulse 720ms ease-in-out infinite" }}>
+    {children}
+  </span>
+);
+
 /* Step 2 of the real form, filling itself in: names from the documents, then
    Outlook finds Daniel, then Maria, then their address fills its blank fields */
 const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: number; looking: number; address: boolean; pulse: boolean; compact: boolean }) => {
@@ -152,7 +161,7 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
   const street =
     looking === 3 ? (
       <>
-        <SpinnerIcon className="h-3.5 w-3.5 flex-shrink-0 animate-spin text-[#309E96]" />
+        <SearchMark><WIcon name="document" className="h-4 w-4 text-[#309E96]" /></SearchMark>
         Searching documents&hellip;
       </>
     ) : (
@@ -160,6 +169,7 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
     );
   return (
     <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
+      <style>{SEARCH_PULSE}</style>
       <div className="flex flex-col gap-1.5">
         {ACCOUNTS.map((p) => {
           const on = found >= p.n;
@@ -167,7 +177,7 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
             on,
             looking === p.n ? (
               <>
-                <SpinnerIcon className="h-3.5 w-3.5 flex-shrink-0 animate-spin text-[#309E96]" />
+                <SearchMark><OutlookLogo className="h-4 w-4" /></SearchMark>
                 Searching Outlook&hellip;
               </>
             ) : (
