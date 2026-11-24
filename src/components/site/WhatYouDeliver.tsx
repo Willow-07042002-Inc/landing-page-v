@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { WRAP } from "@/components/site/blocks";
 import { LightHead } from "@/components/site/StayingAhead";
 import { FloatStack, WIcon } from "@/components/product/kit";
-import { ProClientRowView, ProCoupleView, ProDocSectionLabel } from "@/components/product/attorney-clients";
+import { ProCoupleView, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import {
   GoogleCalendarLogo,
   GoogleMeetLogo,
@@ -12,12 +12,16 @@ import {
 } from "@/components/product/attorney-booking";
 
 /* Will it fit my practice? The film above shows what Willow does; these tiles
-   answer the attorney's next question, each with a small piece of the real
-   product: bring the clients you already have (the Clients list; importing
-   contacts is being built, Nov 24, and Aaron cleared claiming it), keep
-   drafting and signing your way (the signed PDFs on a client's plan), the
-   apps it connects to, and you at the center (a check-in in the firm's name
-   and the attorney's words, with the email's real Book a meeting button). */
+   answer the attorney's next question on a grid of eight squares (four by two),
+   each with a small piece of the real product:
+     1-3  Bring the clients you already have: the text, and the Rosens as the
+          Clients list shows a couple (importing contacts is being built, Nov 24,
+          and Aaron cleared claiming it)
+     4    Draft and sign your way: the signed PDFs on a client's plan
+     5    Connect: the apps it connects to
+     6-8  Built on your preferences: the check-in panel's own switches (Ask me
+          before each one goes out, How often, the check-in questions), which
+          flip when clicked */
 
 const UI_SHADOW = "0 1px 2px rgba(16,24,40,0.05), 0 10px 24px -8px rgba(16,24,40,0.14)";
 const PRODUCT_FONT = "Figtree, Inter, sans-serif";
@@ -39,24 +43,6 @@ const TileBody = ({ children }: { children: React.ReactNode }) => (
 const Bleed = ({ height, fadeFrom, children }: { height: number; fadeFrom?: number; children: React.ReactNode }) => (
   <div aria-hidden className="overflow-hidden px-1 pt-1" style={{ height, WebkitMaskImage: fadeOut(fadeFrom), maskImage: fadeOut(fadeFrom), fontFamily: PRODUCT_FONT }}>
     {children}
-  </div>
-);
-
-const ClientRows = ({ pills }: { pills: boolean }) => (
-  <FloatStack>
-    <ProCoupleView a={{ name: "Daniel Rosen", email: "daniel.rosen@gmail.com" }} b={{ name: "Maria Rosen", email: "maria.rosen@gmail.com" }} />
-    <ProClientRowView c={{ name: "Elena Ruiz", email: "elena.ruiz@gmail.com", pill: pills ? "Summary awaiting approval" : undefined }} />
-    <ProClientRowView c={{ name: "Marcus Webb", email: "marcus.webb@outlook.com" }} />
-    <ProClientRowView c={{ name: "Jordan Lee", email: "jordan.lee@gmail.com", pill: pills ? "Pending invite" : undefined }} />
-    <ProClientRowView c={{ name: "Priya Anand", email: "priya.anand@outlook.com" }} />
-    <ProClientRowView c={{ name: "Grace Liu", email: "grace.liu@yahoo.com" }} />
-  </FloatStack>
-);
-
-const ClientList = () => (
-  <div className="mx-auto w-full max-w-[500px] text-left">
-    <div className="hidden sm:block"><ClientRows pills /></div>
-    <div className="sm:hidden"><ClientRows pills={false} /></div>
   </div>
 );
 
@@ -84,22 +70,50 @@ const SignedPlan = () => (
   </div>
 );
 
-/* A check-in as the client gets it, in the firm's name and the attorney's words */
-const InYourWords = () => (
-  <div className="w-full overflow-hidden rounded-t-2xl bg-white text-left" style={{ boxShadow: UI_SHADOW }}>
-    <div className="h-1 bg-[#309E96]" />
-    <div className="px-5 py-4">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="font-heading text-[14px] font-bold text-[#1F2933]">Alvarez Family Law</p>
-        <p className="flex-shrink-0 text-[12px] font-medium text-[#309E96]">Every July 14</p>
-      </div>
-      <p className="mt-3 text-[14px] font-semibold leading-snug text-[#1F2933]">Checking in: has anything changed?</p>
-      <div className="mt-2 space-y-2 text-[13px] leading-[1.55] text-[#4B5563]">
-        <p>Hi Daniel,</p>
-        <p>It&rsquo;s been a while since we finished your estate plan. If anything has changed, let&rsquo;s talk.</p>
-      </div>
-      <span className="mt-3 inline-flex rounded-lg bg-[#309E96] px-4 py-2 text-[13px] font-semibold text-white">Book a meeting</span>
-      <p className="mt-3 text-[14px] font-medium text-[#1F2933]">Rachel</p>
+/* Daniel and Maria as the Clients list shows a couple */
+const Couple = () => (
+  <div className="w-full max-w-[460px] text-left" style={{ fontFamily: PRODUCT_FONT }}>
+    <FloatStack>
+      <ProCoupleView a={{ name: "Daniel Rosen", email: "daniel.rosen@gmail.com" }} b={{ name: "Maria Rosen", email: "maria.rosen@gmail.com" }} />
+    </FloatStack>
+  </div>
+);
+
+/* The product's switch (settings/shared.tsx Toggle) and switch line
+   (panel-kit.tsx SwitchLine); here a visitor can flip them */
+const SwitchLine = ({ label, initial }: { label: string; initial: boolean }) => {
+  const [on, setOn] = useState(initial);
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={() => setOn(!on)}
+      className="flex w-full items-center gap-4 border-b border-[#E5E7EB] py-2.5 text-left"
+    >
+      <span className="min-w-0 flex-1 text-[14px] text-[#1F2933]">{label}</span>
+      <span className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 ${on ? "bg-[#309E96]" : "bg-[#D1D5DB]"}`}>
+        <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-200 ${on ? "translate-x-[18px]" : "translate-x-[3px]"}`} />
+      </span>
+    </button>
+  );
+};
+
+/* The check-in's settings, with the real labels: Ask me before each one goes
+   out, then the survey's questions (packages/types/surveys.ts), one of them
+   off near the top so the switches read as choices */
+const Preferences = () => (
+  <div className="w-full overflow-hidden rounded-t-2xl bg-white px-5 pt-4 text-left" style={{ boxShadow: UI_SHADOW, fontFamily: PRODUCT_FONT }}>
+    <p className="text-[15px] font-semibold text-[#1F2933]">Client check-in</p>
+    <div className="mt-1">
+      <SwitchLine label="Ask me before each one goes out" initial />
+    </div>
+    <p className="mt-3 text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">Questions to ask</p>
+    <div className="mt-1">
+      <SwitchLine label="Has your family changed?" initial />
+      <SwitchLine label="Have you changed a beneficiary on an account or policy?" initial={false} />
+      <SwitchLine label="Have you moved, or bought or sold property?" initial />
+      <SwitchLine label="Have your wishes for medical care changed?" initial />
     </div>
   </div>
 );
@@ -129,18 +143,18 @@ const WhatYouDeliver = () => (
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
       <LightHead title="Built to work with" accent="the practice you already run." />
 
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12 lg:grid-rows-[252px_252px]">
-        <article className={`${TILE} px-6 pt-6 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>
-          <TileTitle>Bring the clients you already have</TileTitle>
-          <TileBody>Import your contacts, add the plans you&rsquo;ve already signed, and see every client in one list.</TileBody>
-          <div className="mt-auto pt-5">
-            <Bleed height={385}>
-              <ClientList />
-            </Bleed>
+      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 xl:grid-cols-4 xl:grid-rows-[252px_252px]">
+        <article className={`${TILE} gap-6 p-6 sm:col-span-2 sm:flex-row sm:items-center xl:col-span-3`}>
+          <div className="sm:w-[40%] sm:flex-shrink-0 sm:self-start">
+            <TileTitle>Bring the clients you already have</TileTitle>
+            <TileBody>Import your contacts, add the plans you&rsquo;ve already signed, and see every client in one list.</TileBody>
+          </div>
+          <div aria-hidden className="flex min-w-0 flex-1 justify-center">
+            <Couple />
           </div>
         </article>
 
-        <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
+        <article className={`${TILE} px-6 pt-6`}>
           <TileTitle>Draft and sign your way</TileTitle>
           <TileBody>Keep your process. Willow starts from the signed PDF.</TileBody>
           <div className="mt-auto pt-4">
@@ -150,7 +164,7 @@ const WhatYouDeliver = () => (
           </div>
         </article>
 
-        <article id="integrations" className={`${TILE} scroll-mt-24 p-6 lg:col-span-3`}>
+        <article id="integrations" className={`${TILE} scroll-mt-24 p-6`}>
           <TileTitle>Connect</TileTitle>
           <TileBody>Your calendar, video and contacts, connected once.</TileBody>
           <ul className="mt-auto grid grid-cols-3 gap-1.5 pt-4">
@@ -163,15 +177,15 @@ const WhatYouDeliver = () => (
           </ul>
         </article>
 
-        <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row lg:col-span-6`}>
-          <div className="sm:w-[38%] sm:flex-shrink-0 sm:pb-6">
-            <TileTitle>You stay at the center</TileTitle>
-            <TileBody>Every check-in goes out in your words, under your firm&rsquo;s name, and clients book time with you.</TileBody>
+        <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row xl:col-span-3`}>
+          <div className="sm:w-[40%] sm:flex-shrink-0 sm:pb-6">
+            <TileTitle>Built on your preferences</TileTitle>
+            <TileBody>Choose the questions clients are asked, how often they hear from you, and what waits for your approval.</TileBody>
           </div>
           <div className="min-w-0 flex-1 self-end">
-            <Bleed height={228} fadeFrom={88}>
-              <InYourWords />
-            </Bleed>
+            <div className="px-1 pt-1" style={{ height: 228, overflow: "clip", WebkitMaskImage: fadeOut(84), maskImage: fadeOut(84) }}>
+              <Preferences />
+            </div>
           </div>
         </article>
       </div>
