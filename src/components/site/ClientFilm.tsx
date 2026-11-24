@@ -28,7 +28,7 @@ const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
 
 export const FILM_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
-export const FILM_MS = [9010, 7500, 4160, 4380];
+export const FILM_MS = [8910, 7500, 4160, 4380];
 /** Optional: lets the dev review page (/dev/film) pause and slow the film */
 export type FilmClock = { rate: number; paused: boolean };
 
@@ -131,13 +131,20 @@ const Progress = ({ step = 1 }: { step?: 1 | 2 }) => (
   </div>
 );
 
-/* Step 2 of the real form, filling itself in: the names from the documents,
-   each email and phone from the attorney's Outlook */
-const TheirAccounts = ({ found, creating, compact }: { found: number; creating: boolean; compact: boolean }) => {
-  const field = `min-w-0 truncate border-b border-[#E5E7EB] py-2.5 leading-[22px] text-[#1F2933] ${compact ? "text-[14px]" : "text-[15px]"}`;
-  const section = compact ? "bg-white p-5" : "bg-white p-6";
-  const Note = ({ on }: { on: boolean }) => (
-    <span className="flex flex-shrink-0 items-center gap-1 text-[12px] text-[#9CA3AF]" style={{ opacity: on ? 1 : 0, transition: "opacity 240ms ease" }}>
+/* Step 2 of the real form, filling itself in: the names and address from the
+   documents, then each email and phone from the attorney's Outlook, together */
+const TheirAccounts = ({ found, pulse, compact }: { found: boolean; pulse: boolean; compact: boolean }) => {
+  const field = `min-w-0 truncate border-b border-[#E5E7EB] leading-[22px] text-[#1F2933] ${compact ? "py-2 text-[14px]" : "py-2.5 text-[15px]"}`;
+  const section = compact ? "bg-white p-4" : "bg-white p-6";
+  const fade = "opacity 520ms ease";
+  const filled = (empty: string, value: string) => (
+    <div className={`relative ${field}`}>
+      <span className="block truncate text-[#9CA3AF]" style={{ opacity: found ? 0 : 1, transition: fade }}>{empty}</span>
+      <span className="absolute inset-x-0 truncate" style={{ top: compact ? 8 : 10, opacity: found ? 1 : 0, transition: fade }}>{value}</span>
+    </div>
+  );
+  const note = (
+    <span className="flex flex-shrink-0 items-center gap-1 text-[12px] text-[#9CA3AF]" style={{ opacity: found ? 1 : 0, transition: fade }}>
       <OutlookLogo className="h-3.5 w-3.5" />
       Found in Outlook
     </span>
@@ -146,17 +153,8 @@ const TheirAccounts = ({ found, creating, compact }: { found: number; creating: 
     <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
       <div className="flex flex-col gap-1.5">
         {ACCOUNTS.map((p) => {
-          const on = found >= p.n;
-          const email = (
-            <div className={field}>
-              {on ? <Appear key="found">{p.email}</Appear> : <span className="text-[#9CA3AF]">Looking for {p.first}&apos;s email&hellip;</span>}
-            </div>
-          );
-          const phone = (
-            <div className={field}>
-              {on ? <Appear key="found">{p.phone}</Appear> : <span className="text-[#9CA3AF]">Phone</span>}
-            </div>
-          );
+          const email = filled(`Looking for ${p.first}'s email…`, p.email);
+          const phone = filled("Phone", p.phone);
           return (
             <div key={p.n} className={section}>
               <div className="mb-2 flex items-baseline justify-between gap-3">
@@ -171,17 +169,17 @@ const TheirAccounts = ({ found, creating, compact }: { found: number; creating: 
                   </div>
                   <div className="relative">
                     {email}
-                    <span className="absolute right-0 top-1/2 -translate-y-1/2 bg-white pl-2"><Note on={on} /></span>
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 bg-white pl-2">{note}</span>
                   </div>
                   {phone}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                <div className="grid grid-cols-2 items-start gap-x-6 gap-y-2">
                   <div className={field}>{p.first}</div>
                   <div className={field}>Rosen</div>
                   <div>
                     {email}
-                    <div className="mt-1"><Note on={on} /></div>
+                    <div className="mt-1">{note}</div>
                   </div>
                   {phone}
                 </div>
@@ -189,21 +187,33 @@ const TheirAccounts = ({ found, creating, compact }: { found: number; creating: 
             </div>
           );
         })}
-        {!compact && (
-          <div className={`${section} flex items-baseline justify-between gap-4`}>
-            <p className="text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">
-              Their home address <span className="font-normal normal-case tracking-normal">(from their documents)</span>
-            </p>
-            <p className="text-[15px] text-[#1F2933]">85 Grove Street, New York</p>
-          </div>
-        )}
-        <div className={compact ? "bg-white p-4" : "bg-white px-6 py-4"}>
+        <div className={section}>
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">
+            Their home address <span className="font-normal normal-case tracking-normal">(from their documents)</span>
+          </p>
+          {compact ? (
+            <div className={field}>85 Grove Street, New York, 10014</div>
+          ) : (
+            <div className="grid grid-cols-2 gap-x-6">
+              <div className={field}>85 Grove Street</div>
+              <div className="grid grid-cols-[1fr_96px] gap-x-6">
+                <div className={field}>New York</div>
+                <div className={field}>10014</div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className={compact ? "bg-white p-3" : "bg-white px-6 py-4"}>
           <div
-            className="flex h-11 w-full items-center justify-center gap-1.5 rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white"
-            style={{ opacity: found >= ACCOUNTS.length ? 1 : 0.5, transition: "opacity 200ms ease" }}
+            className="flex h-11 w-full items-center justify-center rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white"
+            style={{
+              opacity: found ? 1 : 0.5,
+              transform: pulse ? "scale(0.97)" : "scale(1)",
+              boxShadow: pulse ? "0 0 0 6px rgba(48,158,150,0.24)" : "0 0 0 0 rgba(48,158,150,0)",
+              transition: "opacity 420ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease",
+            }}
           >
-            {creating && <SpinnerIcon className="h-4 w-4 animate-spin" />}
-            {creating ? "Creating their accounts…" : "Add the couple"}
+            Add the couple
           </div>
         </div>
       </div>
@@ -446,7 +456,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const panelCx = compact ? root.w / 2 : 1040;
   const pad = compact ? 24 : 32;
   const cardEmpty = pad * 2 + 46;
-  const sheet = compact ? { w: 112, h: 146 } : { w: 104, h: 136 };
+  const sheet = compact ? { w: 112, h: 146 } : { w: 94, h: 124 }; // six fit inside the card's padding
 
   const frameRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -472,8 +482,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const [filed, setFiled] = useState(false);
   const [booked, setBooked] = useState(false);
   const [approved, setApproved] = useState(false);
-  const [found, setFound] = useState(0);
-  const [creating, setCreating] = useState(false);
+  const [found, setFound] = useState(false);
+  const [pulse, setPulse] = useState(false);
   const [summaryScroll, setSummaryScroll] = useState(0);
   const [cardH, setCardH] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
@@ -522,7 +532,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     const R = compact ? ROOT_COMPACT : ROOT_WIDE;
     const cx = compact ? R.w / 2 : 1040;
     const space = compact ? 24 : 32;
-    const sh = compact ? 146 : 136;
+    const sh = compact ? 146 : 124;
     let live = true;
     const wait = (ms: number) =>
       new Promise<void>((resolve, reject) => {
@@ -561,8 +571,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
       setFiled(false);
       setBooked(false);
       setApproved(false);
-      setFound(0);
-      setCreating(false);
+      setFound(false);
+      setPulse(false);
       setSummaryScroll(0);
       setPressed(false);
       setCursor((c) => ({ ...c, shown: false, down: false }));
@@ -605,7 +615,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         setPlace("off");
         setCardH(space * 2 + 46);
         setScrollA(0);
-        setCursor({ x: R.w + 70, y: R.h - 30, shown: false, down: true });
         await wait(420);
         const card = box(cardRef.current);
         const drop = { x: cx, y: card.top + space + 23 };
@@ -617,15 +626,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         setFanY(card.top + space + markH + gap + sh / 2);
         setBeat("carry");
         setPlace("carry");
-        setCursor((c) => ({ ...c, shown: true, x: drop.x + 30, y: drop.y + 40 }));
         await wait(960);
-        setCursor((c) => ({ ...c, down: false }));
         setCardH(space * 2 + markH + gap + sheetsH);
         setBeat("reading");
         setPlace("fan");
-        await wait(160);
-        setCursor((c) => ({ ...c, shown: false }));
-        await wait(520);
+        await wait(680);
         await readSheets(DOCS.length, 210);
         await wait(320);
         const rows = iconRefs.current.map((el) => box(el));
@@ -641,12 +646,12 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         /* The account fills itself in from the documents and Outlook */
         setBeat("accounts");
         await wait(760);
-        setFound(1);
-        await wait(520);
-        setFound(2);
-        await wait(720);
-        setCreating(true);
-        await wait(920);
+        setFound(true);
+        await wait(1250);
+        setPulse(true);
+        await wait(190);
+        setPulse(false);
+        await wait(420);
         setBeat("docs");
         await wait(1150);
       },
@@ -768,7 +773,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
               {/* Upload their estate plan */}
               <div
                 className="absolute inset-x-0 top-0"
-                style={{ opacity: uploading ? 1 : 0, transform: `translateY(${-scrollA}px)`, transition: "opacity 240ms ease, transform 640ms var(--ease-in-out)" }}
+                style={{ opacity: uploading ? 1 : 0, transform: `translateY(${-scrollA}px)`, transition: "opacity 440ms ease, transform 640ms var(--ease-in-out)" }}
               >
                 <div className={panelPad}>
                   <Title startOver={beat !== "empty"} />
@@ -790,16 +795,16 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
               </div>
 
               {/* 2 of 2 · Create their accounts */}
-              <div className="absolute inset-x-0 top-0" style={{ opacity: beat === "accounts" ? 1 : 0, transition: "opacity 260ms ease" }}>
+              <div className="absolute inset-x-0 top-0" style={{ opacity: beat === "accounts" ? 1 : 0, transition: "opacity 440ms ease" }}>
                 <div className={panelPad}>
                   <Title startOver />
                   <Progress step={2} />
-                  <TheirAccounts found={found} creating={creating} compact={compact} />
+                  <TheirAccounts found={found} pulse={pulse} compact={compact} />
                 </div>
               </div>
 
               {/* The client */}
-              <div className="absolute inset-0" style={{ opacity: inRecord ? 1 : 0, transition: "opacity 280ms ease" }}>
+              <div className="absolute inset-0" style={{ opacity: inRecord ? 1 : 0, transition: "opacity 440ms ease" }}>
                 <div className={`flex h-full flex-col ${compact ? "px-4 pt-6" : "px-16 pt-10"}`}>
                   <div className="mb-6 flex flex-shrink-0 items-start justify-between gap-3">
                     <div>
