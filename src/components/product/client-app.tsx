@@ -329,7 +329,7 @@ const CaArrowUpRightIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const CaArticleItem = ({ a }: { a: CaArticle }) => (
+export const CaArticleItem = ({ a }: { a: CaArticle }) => (
   <>
     <div className="mb-1.5 flex items-center gap-1.5 text-[#9CA3AF]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
       <CaNewspaperIcon className="h-3.5 w-3.5 text-[#3AB2AB]" />

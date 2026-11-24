@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ProBellIcon, ScaledScreen, WIcon } from "@/components/product/kit";
 import { ProReminder } from "@/components/product/attorney-dashboard";
-import { CheckInSheet } from "@/components/product/client-app";
-import { CalendarCheckIcon, ChevronLeftIcon, SpinnerIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CaArticleItem, CheckInSheet } from "@/components/product/client-app";
+import { CalendarCheckIcon, CheckIcon, ChevronLeftIcon, ViewIcon } from "@/components/product/willow-icons";
 import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type FilmProps } from "@/components/site/film-kit";
 
 /* "A practice families keep coming back to": four chapters, each one piece of
@@ -15,8 +15,11 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
       attorney's survey preview shows, survey-preview.tsx) and steps to its
       second question.
    2. Settings > Dashboard content (dashboard-content.tsx): the firm's article
-      is dragged onto the link field, read, and posted to client dashboards.
-      The product takes a link, not a file, so the article goes in as its link.
+      is dragged onto the link field, loads, and shows as the card clients
+      get in "From your firm" (client-app.tsx CaArticleItem, firm-panel.tsx),
+      then it's posted. (The product takes the article's link and shows the
+      headline and blurb it read as fields to edit; Aaron wants the card
+      shown instead of the link, Nov 24.)
    3. The professional check-in to the client's financial advisor and
       accountant (DEFAULTS.maintenance_checkin), a sentence typed onto it and
       saved.
@@ -37,10 +40,8 @@ const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 const ARIAL = "Arial, 'Segoe UI', sans-serif";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
 
-/* Chapter 2's article (the page's own placeholder headline and link) */
-const NEWS_URL = "https://yourfirm.com/blog/the-new-estate-tax-threshold";
+/* Chapter 2's article (the page's own placeholder headline) */
 const NEWS = { title: "What the new estate tax threshold means", body: "How it affects your plan, and whether you need to do anything.", date: "November 24, 2026" };
-const NEWS_OLDER = { title: "How often you should update your estate plan", body: "Life changes, and your plan should too. Here’s when it’s worth a second look.", date: "October 20, 2026" };
 
 /* Chapter 3: what the attorney types onto the advisors' check-in */
 const TEAM_TYPED = " If anything changes on your side, I’d be glad to hear from you.";
@@ -60,7 +61,7 @@ const ACCESS_ROW = {
 /* The waits in each chapter's script, so its length is known up front */
 const TAP = 190;
 const C1 = { read: 2000, sheet: 1700, hold: 2300 };
-const C2 = { rest: 900, carry: 950, over: 300, read: 650, reading: 800, draft: 1400, hold: 2200 };
+const C2 = { rest: 900, carry: 950, over: 300, loading: 1100, preview: 1700, hold: 2200 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
 const C4 = { rest: 700, row: 1200, modal: 900, pick: 600, day: 350, slot: 450, booked: 1100, upcoming: 1300, hold: 2200 };
 
@@ -68,12 +69,12 @@ export const KEEP_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
 export const KEEP_MS = [
   C1.read + TAP + C1.sheet + TAP + C1.hold,
-  C2.rest + C2.carry + C2.over + C2.read + TAP + C2.reading + C2.draft + TAP + C2.hold,
+  C2.rest + C2.carry + C2.over + C2.loading + C2.preview + TAP + C2.hold,
   C3.read + TAP + TEAM_TYPED.length * C3.perChar + C3.after + C3.beforeSave + TAP + C3.hold,
   C4.rest + C4.row + TAP + C4.modal + TAP + C4.pick + TAP + C4.day + TAP + C4.slot + TAP + C4.booked + C4.upcoming + C4.hold,
 ];
 
-type Tap = "preview" | "next" | "read" | "post" | "message" | "save" | "book" | "pick" | "day" | "slot" | "bookit" | null;
+type Tap = "preview" | "next" | "post" | "message" | "save" | "book" | "pick" | "day" | "slot" | "bookit" | null;
 type Carry = "off" | "in" | "drop";
 type Access = "none" | "asked" | "booked" | "met";
 type Edit = "idle" | "typing" | "done";
@@ -183,81 +184,61 @@ const ClientCheckIn = ({ tap, compact }: { tap: Tap; compact: boolean }) => (
 );
 
 /* 2. Settings > Dashboard content: the link field (lit while the article is
-   over it), the draft it reads into, and the posts. step: 0 empty, 1 the
-   link in, 2 reading, 3 the draft, 4 posted */
-const PostedRow = ({ a, last }: { a: typeof NEWS; last?: boolean }) => (
-  <div className={`flex items-start gap-3 py-3 ${last ? "" : "border-b border-[#F0F1F3]"}`}>
-    <span className="min-w-0 flex-1">
-      <span className="block truncate text-[14px] font-medium text-[#1F2933]">{a.title}</span>
-      <span className="mt-0.5 block truncate text-[12.5px] text-[#9CA3AF]">{a.body}</span>
-      <span className="mt-1.5 block text-[12.5px] text-[#9CA3AF]">{a.date}</span>
-    </span>
-    <WIcon name="more" className="mt-1 h-4 w-4 flex-shrink-0 text-[#9CA3AF]" />
-  </div>
-);
+   over it), then the article loading into the card clients will see, then
+   posted. step: 0 empty, 1 loading, 2 the card, 3 posted */
 const DashboardPosts = ({ step, over, tap, compact, fieldRef }: { step: number; over: boolean; tap: Tap; compact: boolean; fieldRef: React.RefObject<HTMLDivElement> }) => {
   const field = "text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]";
-  const line = "border-b border-[#E5E7EB] py-2.5 text-[15px] text-[#1F2933]";
-  const quiet = "text-[13px] font-medium text-[#128F8B]";
-  const posted = step >= 4;
+  const bar = "rounded-full bg-[#EEF0F2]";
   return (
     <>
       <Bar title="Dashboard content" compact={compact} />
       <div className={compact ? "px-5 pt-5" : "px-7 pt-6"}>
         <p className={field}>Posts</p>
         <p className="mt-1 text-[12.5px] text-[#9CA3AF]">Paste a link to something your firm published.</p>
-        {step === 3 ? (
-          <Appear className="mt-5">
-            <p className="truncate text-[12.5px] text-[#9CA3AF]">{NEWS_URL}</p>
-            <div className="mt-4">
-              <p className={field}>Headline</p>
-              <p className={line}>{NEWS.title}</p>
-            </div>
-            <div className="mt-4">
-              <p className={field}>Description</p>
-              <p className={`${line} leading-6`}>{NEWS.body}</p>
-            </div>
-            <div className="mt-4">
-              <p className={field}>Kind</p>
-              <p className={`${line} flex items-center justify-between`}>
-                Tax updates
-                <WIcon name="chevronDown" className="h-4 w-4 text-[#9CA3AF]" />
-              </p>
-            </div>
-            <div className="mt-5 flex items-center gap-4">
-              <span className="rounded-lg bg-[#128F8B] px-4 py-2 text-[14px] font-medium text-white" style={tapStyle(tap === "post")}>Post to dashboards</span>
-              <span className={quiet}>Cancel</span>
-            </div>
-          </Appear>
-        ) : (
-          <>
-            <div
-              ref={fieldRef}
-              className="-mx-2.5 mt-4 flex items-end gap-4 rounded-lg px-2.5 pb-1"
-              style={{ background: over ? "#F0F9F8" : "rgba(240,249,248,0)", boxShadow: over ? "0 0 0 2px rgba(48,158,150,0.55)" : RING_OFF, transition: "background-color 200ms ease, box-shadow 200ms ease" }}
-            >
-              <p className={`min-w-0 flex-1 truncate border-b border-[#E5E7EB] py-2.5 text-[15px] ${step === 1 || step === 2 ? "text-[#1F2933]" : "text-[#9CA3AF]"}`}>
-                {step === 1 || step === 2 ? NEWS_URL : "https://yourfirm.com/blog/…"}
-              </p>
-              <span className={`${quiet} inline-flex flex-shrink-0 items-center gap-1.5 rounded pb-2.5`} style={tapStyle(tap === "read")}>
-                {step === 2 && <SpinnerIcon className="h-3.5 w-3.5 animate-spin" />}
-                {step === 2 ? "Reading…" : "Read link"}
-              </span>
-            </div>
-            {posted && <Appear><p className="mt-3 text-[13px] text-[#6B7280]">Posted to 48 clients’ dashboards.</p></Appear>}
-          </>
-        )}
-        <div className="mt-6 border-t border-[#F0F1F3] pt-5">
-          <p className={field}>Posted</p>
-          <div className="mt-1">
-            <div style={{ display: "grid", gridTemplateRows: posted ? "1fr" : "0fr", opacity: posted ? 1 : 0, transition: "grid-template-rows 460ms cubic-bezier(0.77, 0, 0.175, 1), opacity 300ms ease 140ms" }}>
-              <div className="min-h-0 overflow-hidden">
-                <PostedRow a={NEWS} />
-              </div>
-            </div>
-            <PostedRow a={NEWS_OLDER} last />
+        {step === 0 ? (
+          <div
+            ref={fieldRef}
+            className="-mx-2.5 mt-4 flex items-end gap-4 rounded-lg px-2.5 pb-1"
+            style={{ background: over ? "#F0F9F8" : "rgba(240,249,248,0)", boxShadow: over ? "0 0 0 2px rgba(48,158,150,0.55)" : RING_OFF, transition: "background-color 200ms ease, box-shadow 200ms ease" }}
+          >
+            <p className="min-w-0 flex-1 truncate border-b border-[#E5E7EB] py-2.5 text-[15px] text-[#9CA3AF]">https://yourfirm.com/blog/…</p>
+            <span className="flex-shrink-0 pb-2.5 text-[13px] font-medium text-[#128F8B]">Read link</span>
           </div>
-        </div>
+        ) : (
+          <div className="mt-4">
+            {/* The card a client gets in "From your firm": a grey skeleton while
+                the article loads, then the card itself */}
+            <div className="rounded-2xl border border-[#EEF0F2] bg-white p-5" style={{ minHeight: compact ? 150 : 128, boxShadow: "0 1px 3px rgba(16,24,40,0.06), 0 8px 24px -12px rgba(16,24,40,0.14)" }}>
+              {step === 1 ? (
+                <div className="animate-pulse">
+                  <div className={`${bar} h-2.5 w-40`} />
+                  <div className={`${bar} mt-3 h-4 w-3/4`} />
+                  <div className={`${bar} mt-3 h-3 w-full`} />
+                  {compact && <div className={`${bar} mt-2 h-3 w-2/3`} />}
+                  <div className={`${bar} mt-4 h-3 w-32`} />
+                </div>
+              ) : (
+                <Appear>
+                  <CaArticleItem a={NEWS} />
+                </Appear>
+              )}
+            </div>
+            <div className="mt-4 flex min-h-[36px] items-center gap-4">
+              {step === 2 && (
+                <Appear className="flex items-center gap-4">
+                  <span className="rounded-lg bg-[#128F8B] px-4 py-2 text-[14px] font-medium text-white" style={tapStyle(tap === "post")}>Post to dashboards</span>
+                  <span className="text-[13px] font-medium text-[#128F8B]">Cancel</span>
+                </Appear>
+              )}
+              {step === 3 && (
+                <Appear className="flex items-center gap-2 text-[14px] font-medium text-[#0F7673]">
+                  <CheckIcon className="h-4 w-4" />
+                  Posted to 48 clients’ dashboards.
+                </Appear>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
@@ -266,7 +247,6 @@ const DashboardPosts = ({ step, over, tap, compact, fieldRef }: { step: number; 
 /* 2. The firm's article as it sits on the firm's own site */
 const Article = ({ compact }: { compact: boolean }) => (
   <div className="overflow-hidden rounded-xl bg-white text-left" style={{ width: compact ? 232 : 280, boxShadow: "0 30px 70px rgba(0,0,0,0.42), 0 3px 10px rgba(0,0,0,0.16)", fontFamily: FIGTREE }}>
-    <p className="truncate border-b border-[#EEF0F2] px-3.5 py-2 text-[11px] text-[#9CA3AF]">yourfirm.com/blog/the-new-estate-tax-threshold</p>
     <img src="/hudson-bridge.jpg" alt="" className="block w-full object-cover" style={{ height: compact ? 92 : 116 }} />
     <div className="px-4 pb-4 pt-3">
       <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[#0F7673]">Tax updates</p>
@@ -494,7 +474,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       setTap(null);
       setSurvey(c === 0);
       setStep(c === 0 ? 1 : 0);
-      setNews(c === 1 ? 4 : 0);
+      setNews(c === 1 ? 3 : 0);
       setOver(false);
       setCarry("off");
       setTeamEdit(c === 2 ? "done" : "idle");
@@ -565,14 +545,12 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
         setOver(true);
         await wait(C2.over);
         setCarry("drop");
-        setNews(1);
-        await wait(C2.read);
         setOver(false);
-        await tapOn("read", () => setNews(2));
-        await wait(C2.reading);
-        setNews(3);
-        await wait(C2.draft);
-        await tapOn("post", () => setNews(4));
+        setNews(1);
+        await wait(C2.loading);
+        setNews(2);
+        await wait(C2.preview);
+        await tapOn("post", () => setNews(3));
         await wait(C2.hold);
       },
       /* 3. A line of the attorney's own onto the advisors' check-in */
