@@ -190,8 +190,8 @@ const ClientCheckIn = ({ tap, compact }: { tap: Tap; compact: boolean }) => (
   </>
 );
 
-/* 2. Dashboard content: the "Upload article" box (lit while the article is
-   over it), which opens downward to the new article, loading first, then
+/* 2. Dashboard content: the "Upload article" field, a plain grey row (teal
+   while the article is over it), which opens downward to the new article, loading first, then
    posted; under it the firm's past posts, small, pushed down as it opens.
    step: 0 waiting, 1 loading, 2 the article, 3 posted */
 const PastPost = ({ a, compact, last }: { a: (typeof PAST)[number]; compact: boolean; last: boolean }) => (
@@ -217,16 +217,16 @@ const ArticleFeed = ({ step, over, tap, compact, dropRef }: { step: number; over
           <div className="min-h-0 overflow-hidden">
             <div
               ref={dropRef}
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed"
+              className="flex items-center justify-center gap-2.5 rounded-xl"
               style={{
-                height: compact ? 110 : 120,
-                borderColor: over ? "#309E96" : "#D1D5DB",
-                background: over ? "#F0F9F8" : "#FAFBFC",
-                transition: "border-color 200ms ease, background-color 200ms ease",
+                height: compact ? 64 : 72,
+                background: over ? "#E6F5F4" : "#F3F4F6",
+                color: over ? "#0F7673" : "#4B5563",
+                transition: "background-color 200ms ease, color 200ms ease",
               }}
             >
-              <UploadIcon className="h-6 w-6 text-[#309E96]" />
-              <span className="text-[16px] font-semibold text-[#1F2933]">Upload article</span>
+              <UploadIcon className="h-[18px] w-[18px]" />
+              <span className="text-[15px] font-medium">Upload article</span>
             </div>
           </div>
         </div>
