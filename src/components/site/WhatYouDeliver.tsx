@@ -143,7 +143,7 @@ const CONNECTORS: { name: string; Logo: (p: { className?: string }) => React.Rea
 const WhatYouDeliver = () => (
   <section className="bg-[#F8FAFC] py-16 md:py-24">
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
-      <LightHead eyebrow="What you deliver" title="A practice families" accent="keep coming back to." />
+      <LightHead title="Built with attorneys," accent="for attorneys." />
 
       <div className="mt-10 grid gap-3 md:mt-14 md:grid-cols-12">
         <Tile

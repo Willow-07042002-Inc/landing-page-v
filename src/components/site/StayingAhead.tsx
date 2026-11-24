@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Eyebrow, PrintFrame, WRAP } from "@/components/site/blocks";
+import { PrintFrame, WRAP } from "@/components/site/blocks";
 import PlanDropStory from "@/components/site/PlanDropStory";
 import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
@@ -77,11 +77,8 @@ const taskFor = (hash: string) => {
 };
 
 /* The section headline: a light serif line, then an italic teal line */
-export const LightHead = ({ eyebrow, title, accent }: { eyebrow: string; title: string; accent: string }) => (
+export const LightHead = ({ title, accent }: { title: string; accent: string }) => (
   <div className="mx-auto max-w-4xl text-center">
-    <div className="mb-4">
-      <Eyebrow>{eyebrow}</Eyebrow>
-    </div>
     <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
       {title}
       <span className="block italic text-[#138F8B]">{accent}</span>
@@ -129,7 +126,7 @@ const StayingAhead = () => {
   return (
     <section className="bg-[#F8FAFC] pb-16 md:pb-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
-        <LightHead eyebrow="Here's how we do it" title="How attorneys stay ahead" accent="for every client." />
+        <LightHead title="A practice families" accent="keep coming back to." />
 
         <div className="relative mt-10 md:mt-14">
           {TASKS.flatMap((t) => [t.id, ...(t.also ?? [])]).map((id) => (
