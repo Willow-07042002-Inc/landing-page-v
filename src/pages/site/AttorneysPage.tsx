@@ -10,9 +10,9 @@ import SecurityControls from "@/components/site/SecurityControls";
 /* For attorneys, with the look of harvey.ai's solution pages and a layout of
    its own: the hero, what Willow believes, how attorneys stay ahead for every
    client (task by task, on the real product), what the practice delivers
-   (quiet tiles with pieces of the product), then security set like the
-   homepage FAQ with Harvey-style rows, and the demo. No attorney reviews
-   on this page. */
+   (quiet tiles with pieces of the product), then security in the homepage
+   FAQ's type and spacing (heading left, rows right that open on click), and
+   the demo. No attorney reviews on this page. */
 
 const Belief = () => (
   <section className="bg-[#F8FAFC] pb-16 md:pb-24">
