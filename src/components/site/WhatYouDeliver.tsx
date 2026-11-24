@@ -23,9 +23,10 @@ import {
             switches (Ask me before each one goes out, and the questions),
             which flip when clicked
      small  Connect: the apps it connects to
-     wide   Speak to clients in your own voice: Approve Summary over a plan
-            summary mid-edit (the Keeping things easy film's edit), and the
-            button can be pressed. Summaries, check-in emails (Tailor: a
+     wide   Speak to clients in your own voice: a plan summary where the
+            attorney types their own wording over one power, then Approve
+            Summary presses itself (Aaron, Nov 24: animate the typing, no Done
+            button). Summaries, check-in emails (Tailor: a
             personal note, subject and message), firm updates (Settings >
             Dashboard content) and the welcome note are all editable on main
             (Nov 24); the line names only those, not "anything". Willow
@@ -106,39 +107,118 @@ const ClientList = () => (
   </div>
 );
 
-/* A plan summary in the attorney's words: the review page's Approve Summary
-   (attorney-review.tsx SummaryHead), over the real property power's meaning
-   as the attorney has reworded it, in its edit outline: the powers table of
-   the step-in card mid-edit, with Done, as the Keeping things easy film shows
-   it (EasyFilm.tsx StepInBody). Pressing Approve marks it approved. */
+/* A plan summary in the attorney's words, played as a short scene each time
+   the tile comes into view: the real property power's meaning is selected,
+   the attorney types their own wording over it (the Keeping things easy
+   film's edit, EasyFilm.tsx Rewrite and StepInBody), then the review page's
+   Approve Summary (attorney-review.tsx SummaryHead) presses itself and reads
+   Approved. With reduced motion it shows the end straight away. */
 const POWERS = [
   { power: "Real property transactions", desc: null },
   { power: "Chattel and goods transactions", desc: "Buy, sell, or manage personal property, tangible goods, and safe deposit box contents" },
   { power: "Bond, share and commodity transactions", desc: "Buy, sell, or manage stocks, bonds, mutual funds, and other securities on your behalf" },
 ];
+const POWER_KEEP = "Buy, sell, lease, mortgage, or manage ";
+const POWER_BEFORE = "real estate including co-ops, condos, and land";
+const POWER_AFTER = "your home and any other real estate";
+
+type EditStage = "idle" | "select" | "typing" | "edited";
+
+const useRewriteScene = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [stage, setStage] = useState<EditStage>("idle");
+  const [typed, setTyped] = useState(0);
+  const [tap, setTap] = useState(false);
+  const [approved, setApproved] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStage("edited");
+      setTyped(POWER_AFTER.length);
+      setApproved(true);
+      return;
+    }
+    let timers: number[] = [];
+    let armed = true;
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    const reset = () => {
+      timers.forEach(clearTimeout);
+      timers = [];
+      setStage("idle");
+      setTyped(0);
+      setTap(false);
+      setApproved(false);
+    };
+    const play = () => {
+      reset();
+      let t = 600;
+      at(t, () => setStage("select"));
+      t += 650;
+      at(t, () => setStage("typing"));
+      for (let n = 1; n <= POWER_AFTER.length; n++) {
+        t += 42;
+        at(t, () => setTyped(n));
+      }
+      /* The new words sit in their box for a moment, the box closes, and
+         only after a beat does Approve press itself (Aaron: a longer pause
+         between the edit and the approval) */
+      t += 700;
+      at(t, () => setStage("edited"));
+      t += 1300;
+      at(t, () => setTap(true));
+      t += 220;
+      at(t, () => {
+        setTap(false);
+        setApproved(true);
+      });
+    };
+    /* Plays once the scene reaches the top three quarters of the screen;
+       scrolling it away (below that line or off the top) sets it up to play
+       again */
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (armed) {
+            armed = false;
+            play();
+          }
+        } else {
+          armed = true;
+          reset();
+        }
+      },
+      { rootMargin: "0px 0px -25% 0px" }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      timers.forEach(clearTimeout);
+    };
+  }, []);
+
+  return { ref, stage, typed, tap, approved };
+};
 
 const SummaryEdit = () => {
-  const [approved, setApproved] = useState(false);
+  const { ref, stage, typed, tap, approved } = useRewriteScene();
+  const editing = stage === "select" || stage === "typing";
   return (
-    <div className="text-left">
-      <button
-        type="button"
-        onClick={() => setApproved(true)}
-        disabled={approved}
-        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13.5px] font-medium text-white transition-[background-color,transform] duration-150 ${approved ? "bg-[#309E96]" : "bg-[#128F8B] hover:bg-[#0F7673] active:scale-[0.97]"}`}
-        style={{ transitionTimingFunction: "var(--ease-out)" }}
+    <div ref={ref} aria-hidden className="text-left">
+      <span
+        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13.5px] font-medium text-white ${approved ? "bg-[#309E96]" : "bg-[#128F8B]"}`}
+        style={{
+          transform: tap ? "scale(0.96)" : "scale(1)",
+          boxShadow: tap ? "0 0 0 6px rgba(48,158,150,0.22)" : "0 0 0 0 rgba(48,158,150,0)",
+          transition: "transform 180ms var(--ease-out), box-shadow 340ms ease, background-color 200ms ease",
+        }}
       >
         <CheckIcon className="h-4 w-4" />
         {approved ? "Approved" : "Approve Summary"}
-      </button>
-      <div aria-hidden className="mt-3 rounded-t-2xl bg-white px-4 pb-4 pt-4" style={{ boxShadow: UI_SHADOW }}>
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Financial Agent powers</p>
-          <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#309E96]">
-            <CheckIcon className="h-3.5 w-3.5" />
-            Done
-          </span>
-        </div>
+      </span>
+      <div className="mt-3 rounded-t-2xl bg-white px-4 pb-4 pt-4" style={{ boxShadow: UI_SHADOW }}>
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Financial Agent powers</p>
         <div className="overflow-hidden rounded-xl" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
           <div className="flex bg-[#128F8B] text-[12.5px] font-semibold text-white">
             <div className="w-[36%] flex-shrink-0 px-3.5 py-2.5">Power</div>
@@ -149,8 +229,24 @@ const SummaryEdit = () => {
               <div className="w-[36%] flex-shrink-0 px-3.5 py-3 text-[13px] font-medium text-[#1F2933]">{w.power}</div>
               <div className="min-w-0 flex-1 px-3.5 py-3 text-[13px] leading-[1.5] text-[#6B7280]">
                 {w.desc ?? (
-                  <span className="block rounded-[3px] text-[#1F2933]" style={{ boxShadow: "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" }}>
-                    Buy, sell, lease, mortgage, or manage your home and any other real estate
+                  <span
+                    className="block rounded-[3px]"
+                    style={{
+                      color: stage === "idle" ? undefined : "#1F2933",
+                      boxShadow: editing ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
+                      transition: "box-shadow 180ms ease, color 180ms ease",
+                    }}
+                  >
+                    {POWER_KEEP}
+                    {stage === "idle" && POWER_BEFORE}
+                    {stage === "select" && <span className="bg-[#CDEBE8]">{POWER_BEFORE}</span>}
+                    {stage === "typing" && (
+                      <>
+                        {POWER_AFTER.slice(0, typed)}
+                        <span className="ml-px inline-block h-[13px] w-px translate-y-[2px] bg-[#1F2933]" />
+                      </>
+                    )}
+                    {stage === "edited" && POWER_AFTER}
                   </span>
                 )}
               </div>
@@ -271,7 +367,7 @@ const WhatYouDeliver = () => (
             <TileBody>Edit any summary, check-in email or firm update your clients see, so every word sounds like it came from you.</TileBody>
           </div>
           <div className="min-w-0 flex-1 self-end lg:mt-auto lg:w-full lg:flex-none lg:self-stretch min-[1200px]:mt-0 min-[1200px]:w-auto min-[1200px]:flex-1 min-[1200px]:self-end">
-            <Bleed heightClass="h-[228px] lg:h-[206px] min-[1200px]:h-[228px]" fadeFrom={82} live>
+            <Bleed heightClass="h-[228px] lg:h-[206px] min-[1200px]:h-[228px]" fadeFrom={82}>
               <SummaryEdit />
             </Bleed>
           </div>
