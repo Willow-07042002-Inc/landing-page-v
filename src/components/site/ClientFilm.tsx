@@ -87,14 +87,26 @@ const SHEETS: Record<"docs" | "team", SheetData[]> = {
 const FAN = [-8, -5, -2, 2, 5, 8];
 
 /* The power of attorney's powers, as the step-in card lists them
-   (AgentPowersView); the attorney puts the first one in plain words in chapter 2 */
-const POWER_BEFORE = "Buy, sell, mortgage, lease and manage real property";
-const POWER_AFTER = "Buy, sell, rent out or borrow against your property";
+   (AgentPowersView): the New York statutory short form's subjects with the
+   product's own plain descriptions (FINANCIAL_POWERS_NY in
+   estate-plan-summary-preview.tsx). In chapter 2 the attorney changes the end
+   of the first one */
+const POWER_KEEP = "Buy, sell, lease, mortgage, or manage ";
+const POWER_BEFORE = "real estate including co-ops, condos, and land";
+const POWER_AFTER = "your home and any other real estate";
 const POWERS = [
-  { power: "Real estate transactions", desc: null },
-  { power: "Banking transactions", desc: "Operate accounts, move funds, and buy or sell securities" },
-  { power: "Retirement benefit transactions", desc: "Manage IRAs and employer plans, and take required distributions" },
-  { power: "Tax matters", desc: "Prepare, sign and file returns, and deal with taxing authorities" },
+  { power: "Real property transactions", desc: null },
+  { power: "Chattel and goods transactions", desc: "Buy, sell, or manage personal property, tangible goods, and safe deposit box contents" },
+  { power: "Bond, share and commodity transactions", desc: "Buy, sell, or manage stocks, bonds, mutual funds, and other securities on your behalf" },
+  { power: "Banking transactions", desc: "Open and manage accounts, make deposits and withdrawals, and draw checks on your behalf" },
+  { power: "Business operating transactions", desc: "Operate, buy, sell, or wind up any business interest you hold" },
+  { power: "Insurance transactions", desc: "Purchase, modify, cancel, or file claims on life, health, and property insurance policies" },
+  { power: "Estate and trust transactions", desc: "Act on your behalf in estates, trusts, and beneficiary designations you have an interest in" },
+  { power: "Claims and litigation", desc: "Initiate, defend, or settle lawsuits and legal claims on your behalf" },
+  { power: "Personal and family maintenance", desc: "Provide for your support, housing, education, and the needs of your dependents" },
+  { power: "Government and military benefits", desc: "Apply for, receive, and manage Social Security, Medicare, VA, and other public benefits" },
+  { power: "Retirement benefits", desc: "Manage retirement accounts and pensions, and make elections regarding plan distributions" },
+  { power: "Tax matters", desc: "Prepare, file, and pay taxes; represent you in audits and negotiations with tax authorities" },
 ];
 
 /* Chapter 3: the attorney's own check-in settings (Settings > Staying in
@@ -417,9 +429,11 @@ const TheirDocuments = () => (
   </>
 );
 
-/* Text being rewritten: selected, then typed over, then settled */
-const Rewrite = ({ stage, before, after, typed }: { stage: EditStage; before: string; after: string; typed: number }) => (
+/* Text being rewritten: selected, then typed over, then settled. `keep` is
+   the start of the line, left as it is */
+const Rewrite = ({ stage, before, after, typed, keep = "" }: { stage: EditStage; before: string; after: string; typed: number; keep?: string }) => (
   <>
+    {keep}
     {stage === "idle" && before}
     {stage === "select" && <span className="bg-[#CDEBE8]">{before}</span>}
     {stage === "typing" && (
@@ -434,14 +448,26 @@ const Rewrite = ({ stage, before, after, typed }: { stage: EditStage; before: st
 
 /* Chapter 2: the step-in card for Daniel's power of attorney: his agents in
    order (RoleChainView), then what they can do (AgentPowersView: one document,
-   so its label instead of tabs; Power / What this means) */
+   so its label instead of tabs; Power / What this means). The block's Edit
+   sits on its label's line, as a SubBlock's action does, so it stays in view
+   above the long table */
 const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap: Tap }) => {
   const editing = edit === "select" || edit === "typing";
   return (
     <Appear>
       <RoleChain role="Financial Agent" steps={["Maria Rosen", "Leo Rosen"]} />
       <div data-powers className="mt-8">
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Financial Agent powers</p>
+        <div data-powers-action className="mb-2 flex items-center justify-between gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Financial Agent powers</p>
+          {editing ? (
+            <span className="inline-flex items-center gap-1 rounded text-[#309E96]" style={{ fontSize: 12, fontWeight: 600, ...tapStyle(tap === "done") }}>
+              <CheckIcon className="h-3.5 w-3.5" />
+              Done
+            </span>
+          ) : (
+            <span className="rounded" style={tapStyle(tap === "edit")}><SummaryEditToggle /></span>
+          )}
+        </div>
         <div className="overflow-hidden rounded-xl" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
           <div className="flex bg-[#128F8B] text-[13px] font-semibold text-white">
             <div className="w-[34%] flex-shrink-0 px-5 py-3">Power</div>
@@ -460,23 +486,13 @@ const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap:
                       transition: "box-shadow 180ms ease",
                     }}
                   >
-                    <Rewrite stage={edit} before={POWER_BEFORE} after={POWER_AFTER} typed={typed} />
+                    <Rewrite stage={edit} keep={POWER_KEEP} before={POWER_BEFORE} after={POWER_AFTER} typed={typed} />
                   </span>
                 )}
               </div>
             </div>
           ))}
         </div>
-      </div>
-      <div data-powers-action className="mt-4 flex justify-end">
-        {editing ? (
-          <span className="inline-flex items-center gap-1 rounded text-[#309E96]" style={{ fontSize: 12, fontWeight: 600, ...tapStyle(tap === "done") }}>
-            <CheckIcon className="h-3.5 w-3.5" />
-            Done
-          </span>
-        ) : (
-          <span className="rounded" style={tapStyle(tap === "edit")}><SummaryEditToggle /></span>
-        )}
       </div>
     </Appear>
   );
@@ -672,9 +688,12 @@ type Props = {
   /** A chapter has started and will take this many milliseconds (0: at rest) */
   onStart: (ms: number) => void;
   clock?: FilmClock;
+  /** Play a chapter again when it's reopened (the dev review page). On the
+      site a chapter already seen opens on its last frame */
+  rewatch?: boolean;
 };
 
-const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
+const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false }: Props) => {
   const compact = useCompact();
   const root = compact ? ROOT_COMPACT : ROOT_WIDE;
   const stage = compact ? ROOT_COMPACT : PANEL_WIDE;
@@ -693,6 +712,9 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const doneKey = useRef("");
+  /* The chapters that have started playing, and the last click we've seen */
+  const played = useRef(new Set<number>());
+  const lastReplay = useRef(replay);
   const callbacks = useRef({ onChapter, onStart });
   callbacks.current = { onChapter, onStart };
 
@@ -743,46 +765,51 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     if (row && tab) row.scrollTo({ left: Math.max(0, tab.offsetLeft - 16), behavior: "smooth" });
   }, [openTab]);
 
-  /* How far to scroll the summary to bring the powers and their Edit into view */
+  /* How far to scroll the summary to bring the powers, with their Edit, to the top */
   const powersScroll = () => {
     const win = cardsRef.current;
     const powers = win?.querySelector("[data-powers]");
-    const action = win?.querySelector("[data-powers-action]");
     const r0 = rootRef.current;
-    if (!win || !powers || !action || !r0) return 0;
+    if (!win || !powers || !r0) return 0;
     const k = r0.getBoundingClientRect().width / (compact ? ROOT_COMPACT : ROOT_WIDE).w;
-    const box = win.getBoundingClientRect();
-    const toTop = (powers.getBoundingClientRect().top - box.top) / k - 12;
-    const toEnd = (action.getBoundingClientRect().bottom - box.bottom) / k + 16;
-    return Math.max(0, Math.min(toTop, toEnd));
+    return Math.max(0, (powers.getBoundingClientRect().top - win.getBoundingClientRect().top) / k - 12);
   };
 
   useEffect(() => {
     const key = `${chapter}:${replay}:${compact}`;
+    /* A click on the chapter list (replay changes) */
+    const clicked = replay !== lastReplay.current;
+    lastReplay.current = replay;
     if (doneKey.current === key) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    /* A chapter already seen, opened again from the list, goes straight to its
+       last frame and stays there. People who prefer reduced motion get every
+       chapter that way, with chapter 3's drawer left open to show the change */
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || (clicked && !rewatch && played.current.has(chapter))) {
       doneKey.current = key;
       setPlace("hidden");
       setScan(-1);
+      setTargets([]);
+      setTap(null);
       setFiled(true);
       setBooked(chapter === 3);
       setEdit(chapter === 1 || chapter === 2 ? "done" : "idle");
       setTyped(0);
       setSent(chapter === 1 || chapter === 2);
       setStepIn(false);
-      /* At rest, chapter 3 is the client check-in's drawer, changed and saved */
       setAsk(chapter === 2);
       setSooner(chapter === 2);
       setSaved(chapter === 2);
-      setDrawer(chapter === 2);
-      setRowHi(chapter === 2 ? 2 : -1);
+      setDrawer(chapter === 2 && reduced);
+      setRowHi(chapter === 2 && reduced ? 2 : -1);
       setSummaryScroll(0);
       setBeat((["docs", "summary", "ahead", "team"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
       return;
     }
     if (!inView) return;
+    played.current.add(chapter);
 
     const R = compact ? ROOT_COMPACT : ROOT_WIDE;
     const cx = compact ? R.w / 2 : R.w - PANEL_WIDE.w / 2;
@@ -1006,7 +1033,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     return () => {
       live = false;
     };
-  }, [chapter, replay, inView, compact, clock]);
+  }, [chapter, replay, inView, compact, clock, rewatch]);
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
   const inRecord = !uploading && beat !== "accounts";

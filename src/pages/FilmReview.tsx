@@ -139,6 +139,7 @@ const FilmReview = () => {
             chapter={chapter}
             replay={replay}
             clock={clock}
+            rewatch
             onChapter={setChapter}
             onStart={() => {
               elapsed.current = 0;
