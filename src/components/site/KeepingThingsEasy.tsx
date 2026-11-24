@@ -22,6 +22,11 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
     title: "Explain the plan",
     body: "Willow drafts a plain-English summary of the plan. You review and approve it, and clients see nothing until you do.",
   },
+  {
+    id: "reaching-out",
+    title: "Reach out on schedule",
+    body: "Once the plan is approved, every check-in has a date on the client’s page, and Willow sends each one when it’s due. When an executor books a meeting from one, you see it there.",
+  },
 ];
 
 const chapterFor = (hash: string) => {

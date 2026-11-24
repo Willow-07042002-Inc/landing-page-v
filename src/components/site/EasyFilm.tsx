@@ -14,6 +14,11 @@ import { CheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icon
       puts one of the power of attorney's powers in plain words, closes it and
       approves the summary (in the product that editing happens on the approval
       page, scenario-summary-approval.tsx)
+   3. the reaching out: Daniel's Staying in touch tab (client-detail/
+      staying-in-touch.tsx on main), each kind of check-in with its next date,
+      and Emma, the executor, booking a meeting from one, with no click from
+      the attorney. The film leaves out the "Sends based on" dates and the
+      pause the product puts on Emma's check-ins once she books
    Each chapter is its own sequence, with its own start and end. The film plays
    them in order once from where it's opened and stops on the last frame.
    People who prefer reduced motion see each chapter at rest.
@@ -44,7 +49,7 @@ const FilmFrame = ({ compact, size, children }: { compact: boolean; size: { w: n
   );
 };
 
-export const EASY_CHAPTERS = 2;
+export const EASY_CHAPTERS = 3;
 /** Optional: lets a dev review page pause and slow the film */
 export type FilmClock = { rate: number; paused: boolean };
 
@@ -97,7 +102,7 @@ const POWERS = [
 ];
 
 /** How long each chapter runs at normal speed */
-export const EASY_MS = [12460, 8290 + POWER_AFTER.length * 22];
+export const EASY_MS = [12460, 8290 + POWER_AFTER.length * 22, 6390];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -106,10 +111,10 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
   transition: "transform 180ms var(--ease-out), box-shadow 340ms ease",
 });
 
-type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary";
+type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "touch";
 type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | null;
+type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "tab" | null;
 type EditStage = "idle" | "select" | "typing" | "done";
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
@@ -470,6 +475,68 @@ const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap:
   );
 };
 
+/* Chapter 3: Daniel's check-ins as his record lists them, a few weeks on
+   (early January 2027): the agent check-in went out on December 24, so its
+   next one is a year away, and the others are a year after the plan. Dates
+   carry the year only when it isn't this one, as the product writes them */
+const TOUCH_WAYS = [
+  { label: "Agent check-ins", next: "December 24" },
+  { label: "Professional check-ins", next: "November 24" },
+  { label: "Client check-ins", next: "November 24" },
+];
+
+/* client-detail/staying-in-touch.tsx: one switch per kind of check-in with
+   its next date, then "Daniel's people", where Emma's booking arrives
+   (StackGroup, StackSection and SwitchLine, as the product draws them).
+   step: 0 nothing yet, 1 the check-ins, 2 Emma has booked */
+const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
+  const box = compact ? "bg-white p-6" : "bg-white p-8";
+  const label = "mb-4 text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]";
+  return (
+    <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
+      <div className="flex flex-col gap-1.5">
+        <div className={box}>
+          <p className={label}>Staying in touch</p>
+          {TOUCH_WAYS.map((w, i) => (
+            <div
+              key={w.label}
+              className={`flex items-center gap-[13px] py-[13px] ${i < TOUCH_WAYS.length - 1 ? "border-b border-[#E5E7EB]" : ""}`}
+              style={{
+                opacity: step >= 1 ? 1 : 0,
+                transform: step >= 1 ? "translateY(0)" : "translateY(6px)",
+                transition: `opacity 300ms ease ${i * 110}ms, transform 420ms var(--ease-out) ${i * 110}ms`,
+              }}
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-[15px] text-[#1F2933]">{w.label}</span>
+                <span className="mt-px block text-[12.5px] text-[#9CA3AF]">Next: {w.next}</span>
+              </span>
+              <span className="relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full bg-[#309E96]">
+                <span className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow" style={{ transform: "translateX(18px)" }} />
+              </span>
+            </div>
+          ))}
+        </div>
+        <div
+          className={box}
+          data-booked={step >= 2 ? "" : undefined}
+          style={{
+            opacity: step >= 2 ? 1 : 0,
+            transform: step >= 2 ? "translateY(0)" : "translateY(14px)",
+            transition: "opacity 320ms ease, transform 520ms var(--ease-out)",
+          }}
+        >
+          <p className={label}>Daniel’s people</p>
+          <div className="-mx-3 rounded-lg px-3 py-2.5" style={{ background: step >= 2 ? "#F0F9F8" : "rgba(240,249,248,0)", transition: "background-color 600ms ease 300ms" }}>
+            <p className="text-[14px] text-[#1F2933]">Emma booked Tuesday, Jan 12</p>
+            <p className="text-[13px] text-[#9CA3AF]">Executor · emma.rosen@example.com</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 type Props = {
   chapter: number;
   /** Changes when someone reopens a chapter, so it plays again */
@@ -524,6 +591,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
   const [address, setAddress] = useState(false);
   const [pulse, setPulse] = useState(false);
   const [summaryScroll, setSummaryScroll] = useState(0);
+  const [touchStep, setTouchStep] = useState(0);
   const [cardH, setCardH] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
   const [scrollA, setScrollA] = useState(0);
@@ -540,7 +608,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
   }, []);
 
   /* The tab row scrolls on phones: keep the open tab, Estate Plan, in sight */
-  const openTab = "Estate Plan";
+  const openTab = beat === "touch" ? "Staying in touch" : "Estate Plan";
   useEffect(() => {
     const row = tabsRef.current;
     const tab = row?.querySelector<HTMLElement>(`[data-tab="${openTab}"]`);
@@ -579,7 +647,8 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
       setSent(chapter >= 1);
       setStepIn(false);
       setSummaryScroll(0);
-      setBeat((["docs", "summary"] as Beat[])[chapter]);
+      setTouchStep(chapter === 2 ? 2 : 0);
+      setBeat((["docs", "summary", "touch"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
       return;
     }
@@ -739,6 +808,26 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
         await tapOn("approve", () => setSent(true));
         await wait(2200);
       },
+      /* 3. The reaching out: from the approved summary to Daniel's Staying in
+         touch tab, his check-ins each with a date, then Emma's booking. The
+         waits add up to EASY_MS[2] */
+      async () => {
+        reset();
+        setEdit("done");
+        setSent(true);
+        setStepIn(false);
+        setSummaryScroll(0);
+        setTouchStep(0);
+        setPlace("hidden");
+        setBeat("summary");
+        await wait(700);
+        await tapOn("tab", () => setBeat("touch"));
+        await wait(300);
+        setTouchStep(1);
+        await wait(2000);
+        setTouchStep(2);
+        await wait(3200);
+      },
     ];
 
     callbacks.current.onStart(EASY_MS[chapter]);
@@ -784,7 +873,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person and sets up the account. Willow then writes a plain-English summary of the plan, which the attorney edits and approves."
+      aria-label="An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person and sets up the account. Willow then writes a plain-English summary of the plan, which the attorney edits and approves, and schedules every check-in, so the executor books a meeting without the attorney reaching out."
     >
       <FilmFrame compact={compact} size={root}>
         <ScaledScreen w={root.w} h={root.h}>
@@ -862,8 +951,13 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
                         <span
                           key={t}
                           data-tab={t}
-                          className="whitespace-nowrap border-b-2 px-4 py-3 text-[13px] font-medium"
-                          style={{ borderColor: t === openTab ? "#309E96" : "transparent", color: t === openTab ? "#309E96" : "#6B7280", transition: "color 200ms ease, border-color 200ms ease" }}
+                          className="whitespace-nowrap rounded-t-md border-b-2 px-4 py-3 text-[13px] font-medium"
+                          style={{
+                            borderColor: t === openTab ? "#309E96" : "transparent",
+                            color: t === openTab ? "#309E96" : "#6B7280",
+                            background: tap === "tab" && t === "Staying in touch" ? "rgba(48,158,150,0.12)" : "rgba(48,158,150,0)",
+                            transition: "color 200ms ease, border-color 200ms ease, background-color 180ms ease",
+                          }}
                         >
                           {t}
                         </span>
@@ -872,6 +966,11 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
                   </div>
                   <div className="mt-6 min-h-0 flex-1">
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
+                    {beat === "touch" && (
+                      <Appear key="touch">
+                        <RecordTouch step={touchStep} compact={compact} />
+                      </Appear>
+                    )}
                     {beat === "summary" && (
                       <Appear key="summary" className="flex h-full flex-col">
                         <SubTabs
