@@ -138,7 +138,7 @@ const WhatYouDeliver = () => (
 
         <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
           <TileTitle>Prioritize what matters</TileTitle>
-          <TileBody>We&rsquo;ll let you know what matters, so you stay on top of everything.</TileBody>
+          <TileBody>Everything waiting on you, across every client, in one list.</TileBody>
           <div className="mt-auto pt-4">
             <Bleed height={118}>
               <RequiredActions />
