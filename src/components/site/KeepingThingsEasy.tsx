@@ -16,17 +16,17 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
   {
     id: "set-up",
     also: ["signed-plan", "dashboard"],
-    title: "Drop in the signed plan",
-    body: "Willow reads the documents you already signed, files each one under the right person, and pulls their email and phone from Outlook, so there’s nothing to retype.",
+    title: "Automate account creation",
+    body: "Willow reads the documents, files each one under the right person, and pulls their email, phone and address, so there’s nothing to retype.",
   },
   {
     id: "plan-summaries",
-    title: "Explain the plan",
+    title: "AI-generated summaries",
     body: "Willow drafts a plain-English summary of the plan. You review and approve it, and clients see nothing until you do.",
   },
   {
     id: "reaching-out",
-    title: "Reach out on schedule",
+    title: "Check-ins that send themselves",
     body: "Once the plan is approved, every check-in has a date on the client’s page, and Willow sends each one when it’s due. When an executor books a meeting from one, you see it there.",
   },
 ];
@@ -93,8 +93,8 @@ const KeepingThingsEasy = () => {
     <section id="keeping-things-easy" className="scroll-mt-24 bg-[#F8FAFC] py-16 md:py-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
-          You bring the signed plan.
-          <span className="block italic text-[#138F8B]">We handle the rest.</span>
+          Drop in the estate plan.
+          <span className="block italic text-[#138F8B]">We’ll handle the rest.</span>
         </h2>
 
         <div className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-8 lg:gap-y-6">

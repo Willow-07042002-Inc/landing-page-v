@@ -1,19 +1,23 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
-import { RoleChain, SummaryCards, SummaryEditToggle } from "@/components/product/attorney-review";
+import { SummaryCards } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
 import { CheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* Keeping things easy, as a film on the product's real screens:
-   1. the signed plan is dropped in, read and filed; names come from the
-      documents, emails and phones from Outlook (add-client/setup-wizard.tsx,
-      api/clients/find-contact). The film creates the account by itself; in the
-      product the attorney confirms it
-   2. the summary in the Estate Plan tab: the attorney opens the step-in card,
-      puts one of the power of attorney's powers in plain words, closes it and
-      approves the summary (in the product that editing happens on the approval
-      page, scenario-summary-approval.tsx)
+   1. the signed plan dropped into the upload box (add-client/setup-wizard.tsx,
+      without its title and steps: Aaron, Nov 24), read and filed under each
+      person; Continue, and the accounts fill themselves in: names from the
+      documents, emails and phones from Outlook (api/clients/find-contact),
+      their address from the documents; Add clients opens Daniel's record.
+      The film creates the account by itself; in the product the attorney
+      confirms it
+   2. the summary being written (Aaron, Nov 24): the will on its own, a page
+      of paper with its gifts marked as Willow reads them, fading to Daniel's
+      summary writing itself, then Approve. In the product the summary is
+      written before the attorney opens it, behind the same working mark
+      (summary-generating.tsx); the film shows the reading that goes into it
    3. the reaching out: Daniel's Staying in touch tab (client-detail/
       staying-in-touch.tsx on main), each kind of check-in with its next date,
       and Emma, the executor, booking a meeting from one, with no click from
@@ -34,7 +38,7 @@ const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
 
 /* A dark print with the product on it. The product runs off the bottom edge:
    on wide screens off the right too, in the narrow layout with room either side */
-const FilmFrame = ({ compact, size, children }: { compact: boolean; size: { w: number; h: number }; children: React.ReactNode }) => {
+const FilmFrame = ({ compact, size, children, over }: { compact: boolean; size: { w: number; h: number }; children: React.ReactNode; over?: (frame: { w: number; h: number }) => React.ReactNode }) => {
   const mat = compact ? { l: 0.05, t: 0.05, r: 0.05, b: 0 } : { l: 0.05, t: 0.065, r: 0, b: 0 };
   const w = size.w / (1 - mat.l - mat.r);
   const h = size.h / (1 - mat.t - mat.b);
@@ -48,6 +52,8 @@ const FilmFrame = ({ compact, size, children }: { compact: boolean; size: { w: n
       >
         {children}
       </div>
+      {/* Above the product, in the frame's own units: chapter 2's page of paper */}
+      {over?.({ w, h })}
     </div>
   );
 };
@@ -78,34 +84,10 @@ const ACCOUNTS = [
   { n: 2, first: "Maria", email: "maria.rosen@example.com", phone: "+1 212-555-0172" },
 ];
 
-const SHEETS: Record<"docs", SheetData[]> = { docs: DOCS };
 const FAN = [-8, -5, -2, 2, 5, 8];
 
-/* The power of attorney's powers, as the step-in card lists them
-   (AgentPowersView): the New York statutory short form's subjects with the
-   product's own plain descriptions (FINANCIAL_POWERS_NY in
-   estate-plan-summary-preview.tsx). In chapter 2 the attorney changes the end
-   of the first one */
-const POWER_KEEP = "Buy, sell, lease, mortgage, or manage ";
-const POWER_BEFORE = "real estate including co-ops, condos, and land";
-const POWER_AFTER = "your home and any other real estate";
-const POWERS = [
-  { power: "Real property transactions", desc: null },
-  { power: "Chattel and goods transactions", desc: "Buy, sell, or manage personal property, tangible goods, and safe deposit box contents" },
-  { power: "Bond, share and commodity transactions", desc: "Buy, sell, or manage stocks, bonds, mutual funds, and other securities on your behalf" },
-  { power: "Banking transactions", desc: "Open and manage accounts, make deposits and withdrawals, and draw checks on your behalf" },
-  { power: "Business operating transactions", desc: "Operate, buy, sell, or wind up any business interest you hold" },
-  { power: "Insurance transactions", desc: "Purchase, modify, cancel, or file claims on life, health, and property insurance policies" },
-  { power: "Estate and trust transactions", desc: "Act on your behalf in estates, trusts, and beneficiary designations you have an interest in" },
-  { power: "Claims and litigation", desc: "Initiate, defend, or settle lawsuits and legal claims on your behalf" },
-  { power: "Personal and family maintenance", desc: "Provide for your support, housing, education, and the needs of your dependents" },
-  { power: "Government and military benefits", desc: "Apply for, receive, and manage Social Security, Medicare, VA, and other public benefits" },
-  { power: "Retirement benefits", desc: "Manage retirement accounts and pensions, and make elections regarding plan distributions" },
-  { power: "Tax matters", desc: "Prepare, file, and pay taxes; represent you in audits and negotiations with tax authorities" },
-];
-
 /** How long each chapter runs at normal speed */
-export const EASY_MS = [12460, 8290 + POWER_AFTER.length * 22, 6390];
+export const EASY_MS = [12910, 9090, 6390];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -114,11 +96,10 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
   transition: "transform 180ms var(--ease-out), box-shadow 340ms ease",
 });
 
-type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "touch";
-type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
+type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "explain" | "summary" | "touch";
+type Place = "off" | "carry" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "tab" | null;
-type EditStage = "idle" | "select" | "typing" | "done";
+type Tap = "continue" | "approve" | "tab" | null;
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
 const FIGTREE = "Figtree, Inter, sans-serif";
@@ -159,23 +140,6 @@ const Appear = ({ className, children }: { className?: string; children: React.R
   }, []);
   return <div className={className} style={{ opacity: on ? 1 : 0, transition: "opacity 240ms ease" }}>{children}</div>;
 };
-
-const Title = () => (
-  <h3 className="text-[28px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>
-    Upload your client&apos;s estate plan
-  </h3>
-);
-
-const Progress = ({ step = 1 }: { step?: 1 | 2 }) => (
-  <div className="mb-6 mt-3">
-    <p className="mb-2 text-[15px] font-semibold text-[#309E96]">
-      {step} of 2<span className="font-medium text-[#9CA3AF]"> · {step === 1 ? "Their documents" : "Create their accounts"}</span>
-    </p>
-    <div className="h-2 w-full overflow-hidden rounded-full bg-[#EEF0F2]">
-      <div className="h-full rounded-full bg-[#309E96]" style={{ width: step === 1 ? "50%" : "100%" }} />
-    </div>
-  </div>
-);
 
 /* Where Willow is looking: the source's own icon, one soft pulse per search */
 const SEARCH_PULSE = "@keyframes film-search-pulse { 0%, 100% { transform: scale(0.9); opacity: 0.55; } 50% { transform: scale(1.12); opacity: 1; } }";
@@ -422,75 +386,170 @@ const TheirDocuments = () => (
   </>
 );
 
-/* Text being rewritten: selected, then typed over, then settled. `keep` is
-   the start of the line, left as it is */
-const Rewrite = ({ stage, before, after, typed, keep = "", rest = "" }: { stage: EditStage; before: string; after: string; typed: number; keep?: string; rest?: string }) => (
-  <>
-    {keep}
-    {stage === "idle" && before}
-    {stage === "select" && <span className="bg-[#CDEBE8]">{before}</span>}
-    {stage === "typing" && (
-      <>
-        {after.slice(0, typed)}
-        <span className="ml-px inline-block h-[14px] w-px translate-y-[2px] bg-[#1F2933]" />
-      </>
-    )}
-    {stage === "done" && after}
-    {rest}
-  </>
-);
+/* Chapter 2: Willow writing the summary (Aaron, Nov 24). First the will on
+   its own, a page of paper on the print: its two gifts marked as Willow
+   reads them. The page fades, and Daniel's summary writes itself in the
+   Estate Plan tab: What You'll Leave Behind, Maria if she survives him,
+   otherwise Emma and Leo in equal shares (the card, scenario tabs and share
+   bars as scenario-will-summary.tsx draws them), the product's working mark
+   breathing beneath (working-mark.tsx: the W and its legal puns, one every
+   2.8s) until it's done. Then Approve */
+const PUNS = ["Reading the fine print…", "Hereinafter referred to as “loading”…", "Taking it under advisement…"];
+const SERIF = "Georgia, 'Times New Roman', serif";
+const WILL_A = "I give all the rest, residue and remainder of my estate to my wife, MARIA ROSEN, if she survives me.";
+const WILL_B = "If my wife does not survive me, I give my residuary estate in equal shares to my children, EMMA ROSEN and LEO ROSEN.";
+const SCENARIOS = ["If Maria survives you", "If Maria doesn’t survive you"];
+const SHARES = [
+  [{ name: "Maria Rosen", percent: 100 }],
+  [
+    { name: "Emma Rosen", percent: 50 },
+    { name: "Leo Rosen", percent: 50 },
+  ],
+];
 
-/* Chapter 2: the step-in card for Daniel's power of attorney: his agents in
-   order (RoleChainView), then what they can do (AgentPowersView: one document,
-   so its label instead of tabs; Power / What this means). The block's Edit
-   sits on its label's line, as a SubBlock's action does, so it stays in view
-   above the long table */
-const StepInBody = ({ edit, typed, tap }: { edit: EditStage; typed: number; tap: Tap }) => {
-  const editing = edit === "select" || edit === "typing";
+/* A marker run over the words, line after line, as Willow reads them; it
+   fades back once Willow has moved on */
+const Marked = ({ on, faint, ms, still, children }: { on: boolean; faint?: boolean; ms: number; still: boolean; children: React.ReactNode }) => {
+  const c = faint ? "#DDF0EE" : "#BFE5E1";
   return (
-    <Appear>
-      <RoleChain role="Financial Agent" steps={["Maria Rosen", "Leo Rosen"]} />
-      <div data-powers className="mt-8">
-        <div data-powers-action className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]">Financial Agent powers</p>
-          {editing ? (
-            <span className="inline-flex items-center gap-1 rounded text-[#309E96]" style={{ fontSize: 12, fontWeight: 600, ...tapStyle(tap === "done") }}>
-              <CheckIcon className="h-3.5 w-3.5" />
-              Done
-            </span>
-          ) : (
-            <span className="rounded" style={tapStyle(tap === "edit")}><SummaryEditToggle /></span>
-          )}
-        </div>
-        <div className="overflow-hidden rounded-xl" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
-          <div className="flex bg-[#128F8B] text-[13px] font-semibold text-white">
-            <div className="w-[34%] flex-shrink-0 px-5 py-3">Power</div>
-            <div className="min-w-0 flex-1 px-5 py-3">What this means</div>
-          </div>
-          {POWERS.map((w, i) => (
-            <div key={w.power} className={`flex items-start border-b border-[#E5E7EB] last:border-b-0 ${i % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]"}`}>
-              <div className="w-[34%] flex-shrink-0 px-5 py-4 text-[14px] font-medium text-[#1F2933]">{w.power}</div>
-              <div className="min-w-0 flex-1 px-5 py-4 text-[14px] leading-[1.5] text-[#6B7280]">
-                {w.desc ?? (
-                  <span
-                    className="block rounded-[3px]"
-                    style={{
-                      color: edit === "idle" ? undefined : "#1F2933",
-                      boxShadow: editing ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
-                      transition: "box-shadow 180ms ease",
-                    }}
-                  >
-                    <Rewrite stage={edit} keep={POWER_KEEP} before={POWER_BEFORE} after={POWER_AFTER} typed={typed} />
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Appear>
+    <span
+      style={{
+        backgroundImage: `linear-gradient(${c}, ${c})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: on ? "100% 100%" : "0% 100%",
+        transition: on && !still ? `background-size ${ms}ms linear` : "none",
+        color: on ? "#111827" : undefined,
+      }}
+    >
+      {children}
+    </span>
   );
 };
+
+/* The will's page, set on the print with room either side and its foot off
+   the frame, as a piece of paper rather than part of the product */
+const WillPaper = ({ size, show, hl, still }: { size: { w: number; h: number }; show: boolean; hl: number; still: boolean }) => {
+  const head = "mt-5 text-center text-[11.5px] font-bold uppercase tracking-[0.16em] text-[#1F2933]";
+  const para = "mt-2.5 text-[13.5px] leading-[1.65] text-[#4B5563]";
+  const side = Math.max(36, (size.w - 420) / 2);
+  return (
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{ opacity: show ? 1 : 0, visibility: show ? "visible" : "hidden", transition: still ? "none" : show ? "opacity 420ms ease" : "opacity 560ms ease, visibility 0s linear 560ms" }}
+    >
+      <img src="/central-park.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+      <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
+      <ScaledScreen w={size.w} h={size.h}>
+        <div className="relative" style={{ width: size.w, height: size.h }}>
+          <div
+            className="absolute rounded-[6px] bg-white"
+            style={{
+              left: side,
+              right: side,
+              top: 34,
+              bottom: -24,
+              boxShadow: "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)",
+              transform: show ? "translateY(0) scale(1)" : "translateY(-10px) scale(0.97)",
+              transition: still ? "none" : "transform 600ms var(--ease-in-out)",
+            }}
+          >
+            <div className="px-10 pt-9" style={{ fontFamily: SERIF }}>
+              <p className="text-center text-[15px] font-bold uppercase tracking-[0.18em] text-[#1F2933]">Last Will and Testament</p>
+              <p className="mt-1 text-center text-[12.5px] uppercase tracking-[0.14em] text-[#4B5563]">of Daniel Rosen</p>
+              <p className={`${para} mt-5`} style={{ textIndent: 24 }}>
+                I, DANIEL ROSEN, of the City, County and State of New York, declare this to be my Last Will and Testament.
+              </p>
+              <p className={head}>Article First</p>
+              <p className={para} style={{ textIndent: 24 }}>
+                I direct that my just debts, funeral expenses and the expenses of administering my estate be paid from my estate.
+              </p>
+              <p className={head}>Article Second</p>
+              <p className={para} style={{ textIndent: 24 }}>
+                <Marked on={hl >= 1} faint={hl >= 2} ms={900} still={still}>{WILL_A}</Marked>
+              </p>
+              <p className={para} style={{ textIndent: 24 }}>
+                <Marked on={hl >= 2} ms={1000} still={still}>{WILL_B}</Marked>
+              </p>
+              <p className={head}>Article Third</p>
+              <p className={para} style={{ textIndent: 24 }}>
+                I appoint my wife, MARIA ROSEN, as Executor of this Will. If she fails to qualify or ceases to act, I appoint my daughter, EMMA ROSEN.
+              </p>
+            </div>
+          </div>
+        </div>
+      </ScaledScreen>
+    </div>
+  );
+};
+
+/* ShareRow, its bar filling as it's written */
+const ShareBar = ({ name, percent, still }: { name: string; percent: number; still: boolean }) => {
+  const [on, setOn] = useState(still);
+  useEffect(() => {
+    if (still) return setOn(true);
+    const t = window.setTimeout(() => setOn(true), 80);
+    return () => window.clearTimeout(t);
+  }, [still]);
+  return (
+    <div>
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <span className="text-[14px] font-medium text-[#1F2933]">{name}</span>
+        <span className="text-[14px] font-semibold text-[#128F8B]">{percent}%</span>
+      </div>
+      <div className="h-2.5 overflow-hidden rounded-full bg-[#E5E7EB]">
+        <div className="h-full rounded-full bg-[#128F8B]" style={{ width: on ? `${percent}%` : "0%", transition: still ? "none" : "width 800ms var(--ease-out)" }} />
+      </div>
+    </div>
+  );
+};
+
+/* working-mark.tsx, small: the W breathing beside the line of the moment */
+const WorkingRow = ({ pun }: { pun: number }) => (
+  <div className="mt-4 flex items-center gap-3">
+    <span className="flex h-7 w-7 flex-shrink-0 animate-pulse items-center justify-center rounded-full bg-[#309E96] motion-reduce:animate-none">
+      <span className="text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 14, lineHeight: 1, marginTop: 2 }}>W</span>
+    </span>
+    <Appear key={pun}>
+      <span className="text-[13px] text-[#6B7280]">{PUNS[pun]}</span>
+    </Appear>
+  </div>
+);
+
+/* What You'll Leave Behind, open, writing itself */
+const LeaveBehindLive = ({ share, pun, ready, still }: { share: number; pun: number; ready: boolean; still: boolean }) => (
+  <div className="h-full overflow-hidden rounded-t-2xl bg-white" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+    <div className="flex items-center gap-3 p-4">
+      <img src="/mock/tree-icon.png" alt="" width={36} height={36} className="h-9 w-9 flex-shrink-0 object-contain" />
+      <div className="min-w-0 flex-1">
+        <div className="text-[15px] font-semibold text-[#1F2933]">What You’ll Leave Behind</div>
+        <div className="truncate text-[12.5px] text-[#9CA3AF]">How your estate is managed and distributed</div>
+      </div>
+      <WIcon name="chevronDown" className="h-4 w-4 flex-shrink-0 rotate-180 text-[#6B7280]" />
+    </div>
+    <div className="px-4 pb-4">
+      {share >= 1 && (
+        <Appear>
+          <div className="mb-3 inline-flex items-center gap-4 border-b border-[#E5E7EB] pb-2">
+            {SCENARIOS.map((s, i) => (
+              <span key={s} className="whitespace-nowrap text-[13px] font-medium" style={{ color: share - 1 === i ? "#128F8B" : "#6B7280", transition: "color 300ms ease" }}>
+                {s}
+              </span>
+            ))}
+          </div>
+          <p className="mb-3 text-[14px] font-semibold text-[#1F2933]">The Remaining Estate</p>
+          <Appear key={share}>
+            <div className="space-y-3">
+              {SHARES[share - 1].map((r) => (
+                <ShareBar key={r.name} name={r.name} percent={r.percent} still={still} />
+              ))}
+            </div>
+          </Appear>
+        </Appear>
+      )}
+      {!ready && <WorkingRow pun={pun} />}
+    </div>
+  </div>
+);
 
 /* Chapter 3: Daniel's check-ins as his record lists them, a few weeks on
    (early January 2027): the agent check-in went out on December 24, so its
@@ -556,10 +615,10 @@ const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
 };
 
 const FILM_LABEL =
-  "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person and sets up the account. Willow then writes a plain-English summary of the plan, which the attorney edits and approves, and schedules every check-in, so the executor books a meeting without the attorney reaching out.";
+  "An attorney drops a client's signed estate plan into Willow, which reads it and files each document under the right person. Willow then reads the will and writes a plain-English summary of who gets what, which the attorney approves, and schedules every check-in, so the executor books a meeting without the attorney reaching out.";
 const TILE_LABELS = [
-  "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person, and fills in the clients' emails and phones from Outlook.",
-  "Willow's plain-English summary of the plan: the attorney rewords one power of attorney power, then approves it and it's sent.",
+  "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person, and fills in the clients' names, emails, phones and address before opening the client's record.",
+  "A page of Daniel's will, its gifts marked as Willow reads them, fades to the summary Willow writes from it: Maria if she survives him, otherwise Emma and Leo in equal shares. The attorney approves it.",
   "The client's Staying in touch tab: each kind of check-in with its next date, and the executor booking a meeting from one.",
 ];
 
@@ -589,14 +648,16 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   const stage = compact ? ROOT_COMPACT : PANEL_WIDE;
   const panelCx = compact ? root.w / 2 : root.w - PANEL_WIDE.w / 2;
   const pad = compact ? 24 : 32;
-  const cardEmpty = pad * 2 + 46;
   const sheet = compact ? { w: 112, h: 146 } : { w: 94, h: 124 }; // six fit inside the card's padding
+  const sheetsH = compact ? sheet.h * 2 + 8 : sheet.h;
+  const lineH = 46 + 12; // the drop line and the room under it
+  /* The empty box is already big enough for the documents it's about to hold */
+  const zoneH = pad * 2 + lineH + sheetsH;
 
   const frameRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -609,27 +670,32 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
 
   const [inView, setInView] = useState(false);
   const [beat, setBeat] = useState<Beat>("empty");
-  const [sheetSet, setSheetSet] = useState<keyof typeof SHEETS>("docs");
   const [place, setPlace] = useState<Place>("off");
   const [scan, setScan] = useState(-1);
   const [fanY, setFanY] = useState(0);
   const [targets, setTargets] = useState<Point[]>([]);
   const [tap, setTap] = useState<Tap>(null);
-  const [edit, setEdit] = useState<EditStage>("idle");
-  const [typed, setTyped] = useState(0);
   const [sent, setSent] = useState(false);
-  const [stepIn, setStepIn] = useState(false);
+  /* Chapter 2: what's marked in the will, what's written in the summary */
+  const [hl, setHl] = useState(0);
+  const [share, setShare] = useState(0);
+  const [pun, setPun] = useState(0);
+  const [ready, setReady] = useState(false);
+  /* Chapter 2 opens on the will as a page of paper, before the product */
+  const [paper, setPaper] = useState(false);
+  /* Chapter 1's second step: who Outlook has found, who it's looking for */
   const [found, setFound] = useState(0);
   const [looking, setLooking] = useState(0);
   const [address, setAddress] = useState(false);
   const [pulse, setPulse] = useState(false);
-  const [summaryScroll, setSummaryScroll] = useState(0);
+  const [scrollB, setScrollB] = useState(0);
+  const accountsRef = useRef<HTMLDivElement>(null);
+  /* At rest on a last frame: nothing animates into place */
+  const [still, setStill] = useState(false);
   const [touchStep, setTouchStep] = useState(0);
   const [cardH, setCardH] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
   const [scrollA, setScrollA] = useState(0);
-  const [scrollB, setScrollB] = useState(0);
-  const accountsRef = useRef<HTMLDivElement>(null);
   /* In the short narrow frame the record scrolls down to Emma's booking */
   const recordRef = useRef<HTMLDivElement>(null);
   const [touchLift, setTouchLift] = useState(0);
@@ -666,16 +732,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   }, [beat, root.h]);
   const lift = beat === "touch" && touchStep >= 2 ? touchLift : 0;
 
-  /* How far to scroll the summary to bring the powers, with their Edit, to the top */
-  const powersScroll = () => {
-    const win = cardsRef.current;
-    const powers = win?.querySelector("[data-powers]");
-    const r0 = rootRef.current;
-    if (!win || !powers || !r0) return 0;
-    const k = r0.getBoundingClientRect().width / (compact ? ROOT_COMPACT : ROOT_WIDE).w;
-    return Math.max(0, (powers.getBoundingClientRect().top - win.getBoundingClientRect().top) / k - 12);
-  };
-
   useEffect(() => {
     const key = `${chapter}:${replay}:${compact}:${hold}`;
     /* A click on the chapter list (replay changes) */
@@ -689,18 +745,20 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || hold || (clicked && !rewatch && played.current.has(chapter))) {
       doneKey.current = key;
+      setStill(true);
       setPlace("hidden");
       setScan(-1);
       setTargets([]);
       setTap(null);
-      setEdit(chapter >= 1 ? "done" : "idle");
-      setTyped(0);
-      setSent(chapter >= 1);
-      setStepIn(false);
-      setSummaryScroll(0);
+      setHl(2);
+      setShare(2);
+      setPun(0);
+      setReady(true);
+      setPaper(false);
       setScrollB(0);
+      setSent(chapter >= 1);
       setTouchStep(chapter === 2 ? 2 : 0);
-      setBeat((["docs", "summary", "touch"] as Beat[])[chapter]);
+      setBeat((["docs", "explain", "touch"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
       return;
     }
@@ -709,8 +767,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
 
     const R = compact ? ROOT_COMPACT : ROOT_WIDE;
     const cx = compact ? R.w / 2 : R.w - PANEL_WIDE.w / 2;
-    const space = compact ? 24 : 32;
-    const sh = compact ? 146 : 124;
     let live = true;
     const wait = (ms: number) =>
       new Promise<void>((resolve, reject) => {
@@ -744,14 +800,16 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
       return { top: (r.top - s.top) / k, bottom: (r.bottom - s.top) / k, x: (r.left + r.width / 2 - s.left) / k, y: (r.top + r.height / 2 - s.top) / k };
     };
     const reset = () => {
+      setStill(false);
       setScan(-1);
       setTargets([]);
+      setTap(null);
       setFound(0);
       setLooking(0);
       setAddress(false);
       setPulse(false);
-      setTap(null);
       setScrollB(0);
+      setPaper(false);
     };
     const readSheets = async (n: number, each: number) => {
       for (let i = 0; i < n; i++) {
@@ -767,26 +825,25 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
       setTap(null);
     };
 
+    /* Each chapter's waits add up to its EASY_MS */
     const chapters: (() => Promise<void>)[] = [
-      /* 1. The signed plan goes in */
+      /* 1. The signed plan goes into the box, is read and filed; Continue,
+         the accounts fill themselves in; Add clients opens Daniel's record */
       async () => {
         reset();
         setBeat("empty");
-        setSheetSet("docs");
         setPlace("off");
-        setCardH(space * 2 + 46);
+        setCardH(zoneH);
         setScrollA(0);
         await wait(420);
         const card = box(cardRef.current);
-        const drop = { x: cx, y: card.top + space + 23 };
-        setDropAt(drop);
-        /* While it reads, the card holds the documents */
-        const sheetsH = compact ? sh * 2 + 8 : sh;
-        setFanY(card.top + space + sh / 2);
+        /* The documents land inside the box, under its drop line... */
+        setDropAt({ x: cx, y: card.top + pad + lineH + sheetsH / 2 });
+        /* ...and, the line gone, spread out in the middle of it to be read */
+        setFanY(card.top + (zoneH - sheetsH) / 2 + sheet.h / 2);
         setBeat("carry");
         setPlace("carry");
         await wait(960);
-        setCardH(space * 2 + sheetsH);
         setBeat("reading");
         setPlace("fan");
         await wait(680);
@@ -811,8 +868,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setLooking(0);
         /* Down to Maria, when she's below the frame */
         const accounts = accountsRef.current;
-        const client2 = accounts?.querySelector<HTMLElement>("[data-client='2']");
-        setScrollB(Math.max(0, bottomWithin(client2, accounts) + 16 - R.h));
+        setScrollB(Math.max(0, bottomWithin(accounts?.querySelector<HTMLElement>("[data-client='2']"), accounts) + 16 - R.h));
         await wait(420);
         setLooking(2);
         await wait(720);
@@ -832,50 +888,42 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setPulse(false);
         await wait(420);
         setBeat("docs");
-        await wait(1150);
+        await wait(1600);
       },
-      /* 2. Open the step-in card, put one power in plain words, close it, approve */
+      /* 2. The will on its own, its gifts marked; it fades to the summary,
+         which writes itself; Approve */
       async () => {
         reset();
-        setEdit("idle");
-        setTyped(0);
+        setHl(0);
+        setShare(0);
+        setPun(0);
+        setReady(false);
         setSent(false);
-        setStepIn(false);
-        setSummaryScroll(0);
         setPlace("hidden");
-        setBeat("summary");
-        await wait(800);
-        await tapOn("stepin", () => setStepIn(true));
-        await wait(420);
-        setSummaryScroll(powersScroll());
+        setBeat("explain");
+        setPaper(true);
+        await wait(600);
+        setHl(1);
         await wait(1100);
-        await tapOn("edit", () => setEdit("select"));
-        await wait(420);
-        setEdit("typing");
-        for (let n = 1; n <= POWER_AFTER.length; n++) {
-          setTyped(n);
-          await wait(22);
-        }
-        await wait(260);
-        await tapOn("done", () => setEdit("done"));
-        await wait(620);
-        /* Back up, and the card closes: the summary with every card shut */
-        setSummaryScroll(0);
-        await wait(760);
-        await tapOn("stepin", () => setStepIn(false));
-        await wait(760);
+        setHl(2);
+        await wait(1300);
+        setPaper(false);
+        await wait(900);
+        setShare(1);
+        await wait(1300);
+        setPun(1);
+        setShare(2);
+        await wait(1100);
+        setReady(true);
+        await wait(800);
         await tapOn("approve", () => setSent(true));
-        await wait(2200);
+        await wait(1800);
       },
       /* 3. The reaching out: from the approved summary to Daniel's Staying in
-         touch tab, his check-ins each with a date, then Emma's booking. The
-         waits add up to EASY_MS[2] */
+         touch tab, his check-ins each with a date, then Emma's booking */
       async () => {
         reset();
-        setEdit("done");
         setSent(true);
-        setStepIn(false);
-        setSummaryScroll(0);
         setTouchStep(0);
         setPlace("hidden");
         setBeat("summary");
@@ -901,18 +949,18 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
     return () => {
       live = false;
     };
-  }, [chapter, replay, inView, compact, clock, rewatch, hold]);
+  }, [chapter, replay, inView, compact, clock, rewatch, hold, pad, lineH, sheetsH, zoneH, sheet.h]);
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
-  const inRecord = !uploading && beat !== "accounts";
+  const inRecord = beat === "docs" || beat === "explain" || beat === "summary" || beat === "touch";
   const sorted = !(beat === "empty" || beat === "carry" || beat === "reading"); // stays on through the fade out
   const panelPad = compact ? "px-4 py-6" : "px-16 py-10";
-  const list = SHEETS[sheetSet];
+  const list = DOCS;
   const sheetAt = (i: number) => {
     const n = list.length;
     const off = (i - (n - 1) / 2) * 3;
     const fan = () => {
-      if (compact && sheetSet === "docs" && (beat === "reading" || beat === "filed")) {
+      if (compact && (beat === "reading" || beat === "filed")) {
         return { x: panelCx + ((i % 3) - 1) * (sheet.w + 8), y: fanY + Math.floor(i / 3) * (sheet.h + 8) };
       }
       const gap = compact ? (root.w - sheet.w - 24) / Math.max(1, n - 1) : sheet.w + 8;
@@ -920,7 +968,6 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
     };
     if (place === "off") return { x: root.w + 130 + off, y: root.h - 70 - off, r: FAN[i % 6], s: 0.92, o: 1, t: "none" };
     if (place === "carry") return { x: dropAt.x + off, y: dropAt.y - off, r: FAN[i % 6], s: 0.92, o: 1, t: `transform 900ms ${MOVE}` };
-    if (place === "gather") return { x: panelCx + off, y: fanY - off, r: FAN[i % 6], s: 0.92, o: 0, t: "none" };
     if (place === "hidden") return { ...fan(), r: 0, s: 0.16, o: 0, t: "none" };
     if (place === "fan") return { ...fan(), r: 0, s: 1, o: 1, t: `transform 560ms var(--ease-in-out) ${i * 30}ms, opacity 200ms ease` };
     const to = targets[i] ?? fan();
@@ -935,7 +982,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
       role="img"
       aria-label={tile ? TILE_LABELS[chapter] : FILM_LABEL}
     >
-      <FilmFrame compact={compact} size={root}>
+      <FilmFrame compact={compact} size={root} over={(frame) => <WillPaper size={frame} show={paper} hl={hl} still={still} />}>
         <ScaledScreen w={root.w} h={root.h}>
           <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: root.w, height: root.h }}>
             {!compact && (
@@ -950,15 +997,13 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
               className={`${compact ? "relative" : "absolute right-0 top-16 z-20"} overflow-hidden bg-[#F0F2F5] text-left`}
               style={{ width: stage.w, height: stage.h, fontFamily: FIGTREE, boxShadow: compact ? undefined : "-4px 0 24px rgba(0,0,0,0.08)" }}
             >
-              {/* Upload their estate plan */}
+              {/* The upload box, and Continue */}
               <div
                 className="absolute inset-x-0 top-0"
                 style={{ opacity: uploading ? 1 : 0, transform: `translateY(${-scrollA}px)`, transition: "opacity 440ms ease, transform 640ms var(--ease-in-out)" }}
               >
                 <div className={panelPad}>
-                  <Title />
-                  <Progress />
-                  <div ref={cardRef} className="relative overflow-hidden rounded-2xl bg-white" style={{ height: cardH ?? cardEmpty, transition: "height 460ms var(--ease-in-out)" }}>
+                  <div ref={cardRef} className="relative overflow-hidden rounded-2xl bg-white" style={{ height: cardH ?? zoneH, transition: "height 460ms var(--ease-in-out)" }}>
                     <div ref={innerRef} className="flex flex-col gap-1.5 bg-[#F3F4F6]">
                       <div className={compact ? "bg-white p-6" : "bg-white p-8"}>
                         {(beat === "empty" || beat === "carry") && <DropLine active={beat === "carry"} />}
@@ -982,15 +1027,13 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                 </div>
               </div>
 
-              {/* 2 of 2 · Create their accounts */}
+              {/* Their accounts, filling themselves in */}
               <div
                 ref={accountsRef}
                 className="absolute inset-x-0 top-0"
                 style={{ opacity: beat === "accounts" ? 1 : 0, transform: `translateY(${-scrollB}px)`, transition: "opacity 440ms ease, transform 640ms var(--ease-in-out)" }}
               >
                 <div className={panelPad}>
-                  <Title />
-                  <Progress step={2} />
                   <TheirAccounts found={found} looking={looking} address={address} pulse={pulse} compact={compact} />
                 </div>
               </div>
@@ -1039,6 +1082,25 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                         <RecordTouch step={touchStep} compact={compact} />
                       </Appear>
                     )}
+                    {beat === "explain" && (
+                      <Appear key="explain" className="flex h-full flex-col">
+                        <SubTabs
+                          active="Summary"
+                          right={
+                            <span
+                              className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white"
+                              style={{ ...tapStyle(tap === "approve"), opacity: ready ? 1 : 0, transition: `opacity ${still ? 0 : 300}ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease` }}
+                            >
+                              {sent && <CheckIcon className="h-3.5 w-3.5" />}
+                              {sent ? "Approved and sent" : "Approve"}
+                            </span>
+                          }
+                        />
+                        <div className="min-h-0 flex-1">
+                          <LeaveBehindLive share={share} pun={pun} ready={ready} still={still} />
+                        </div>
+                      </Appear>
+                    )}
                     {beat === "summary" && (
                       <Appear key="summary" className="flex h-full flex-col">
                         <SubTabs
@@ -1050,21 +1112,8 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                             </span>
                           }
                         />
-                        <div ref={cardsRef} className="min-h-0 flex-1 overflow-hidden rounded-t-2xl">
-                          <div style={{ transform: `translateY(${-summaryScroll}px)`, transition: "transform 900ms var(--ease-in-out)" }}>
-                            <SummaryCards
-                              flush
-                              familyOpen={false}
-                              leaveOpen={false}
-                              protectsOpen={false}
-                              stepInOpen={stepIn}
-                              stepInBody={<StepInBody edit={edit} typed={typed} tap={tap} />}
-                              stepInStyle={{
-                                boxShadow: tap === "stepin" ? "inset 0 0 0 2px rgba(48,158,150,0.55)" : "inset 0 0 0 0 rgba(48,158,150,0)",
-                                transition: "box-shadow 240ms ease",
-                              }}
-                            />
-                          </div>
+                        <div className="min-h-0 flex-1 overflow-hidden rounded-t-2xl">
+                          <SummaryCards flush familyOpen={false} leaveOpen={false} protectsOpen={false} />
                         </div>
                       </Appear>
                     )}
@@ -1079,7 +1128,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
               const p = sheetAt(i);
               return (
                 <div
-                  key={`${sheetSet}-${i}`}
+                  key={i}
                   className="pointer-events-none absolute left-0 top-0 z-40"
                   style={{
                     width: sheet.w,
