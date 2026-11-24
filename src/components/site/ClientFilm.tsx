@@ -3,7 +3,6 @@ import { PrintFrame } from "@/components/site/blocks";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import { SummaryCards, SummaryEditToggle, SummaryReviewScreenCropped } from "@/components/product/attorney-review";
-import { OutlookLogo } from "@/components/product/attorney-booking";
 import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, SpinnerIcon, ViewIcon } from "@/components/product/willow-icons";
 
 /* One client's life on Willow as one film, on the product's real screens:
@@ -27,7 +26,7 @@ const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
 
 export const FILM_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
-export const FILM_MS = [11740, 8800, 4160, 4380];
+export const FILM_MS = [12460, 8800, 4160, 4380];
 /** Optional: lets the dev review page (/dev/film) pause and slow the film */
 export type FilmClock = { rate: number; paused: boolean };
 
@@ -120,15 +119,10 @@ const Appear = ({ className, children }: { className?: string; children: React.R
   return <div className={className} style={{ opacity: on ? 1 : 0, transition: "opacity 240ms ease" }}>{children}</div>;
 };
 
-const Title = ({ startOver }: { startOver: boolean }) => (
-  <div className="flex items-baseline justify-between gap-4">
-    <h3 className="text-[28px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>
-      Upload your client&apos;s estate plan
-    </h3>
-    <span className="flex-shrink-0 text-[13px] font-medium text-[#6B7280]" style={{ opacity: startOver ? 1 : 0, transition: "opacity 200ms ease" }}>
-      Start over
-    </span>
-  </div>
+const Title = () => (
+  <h3 className="text-[28px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>
+    Upload your client&apos;s estate plan
+  </h3>
 );
 
 const Progress = ({ step = 1 }: { step?: 1 | 2 }) => (
@@ -143,7 +137,7 @@ const Progress = ({ step = 1 }: { step?: 1 | 2 }) => (
 );
 
 /* Step 2 of the real form, filling itself in: names from the documents, then
-   Outlook finds Daniel, then Maria, then their address appears underneath */
+   Outlook finds Daniel, then Maria, then their address fills its blank fields */
 const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: number; looking: number; address: boolean; pulse: boolean; compact: boolean }) => {
   const field = `min-w-0 truncate border-b border-[#E5E7EB] leading-[22px] text-[#1F2933] ${compact ? "py-2 text-[14px]" : "py-2.5 text-[15px]"}`;
   const section = compact ? "bg-white p-4" : "bg-white p-6";
@@ -155,12 +149,15 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
       <span className="absolute inset-x-0 truncate" style={{ top: compact ? 8 : 10, opacity: on ? 1 : 0, transition: fade }}>{value}</span>
     </div>
   );
-  const note = (on: boolean) => (
-    <span className="flex flex-shrink-0 items-center gap-1 text-[12px] text-[#9CA3AF]" style={{ opacity: on ? 1 : 0, transition: on ? fade : clear }}>
-      <OutlookLogo className="h-3.5 w-3.5" />
-      Found in Outlook
-    </span>
-  );
+  const street =
+    looking === 3 ? (
+      <>
+        <SpinnerIcon className="h-3.5 w-3.5 flex-shrink-0 animate-spin text-[#309E96]" />
+        Searching documents&hellip;
+      </>
+    ) : (
+      "Street address"
+    );
   return (
     <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
       <div className="flex flex-col gap-1.5">
@@ -171,7 +168,7 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
             looking === p.n ? (
               <>
                 <SpinnerIcon className="h-3.5 w-3.5 flex-shrink-0 animate-spin text-[#309E96]" />
-                Looking for {p.first}&apos;s email&hellip;
+                Searching Outlook&hellip;
               </>
             ) : (
               "Email *"
@@ -191,45 +188,38 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
                     <div className={field}>{p.first}</div>
                     <div className={field}>Rosen</div>
                   </div>
-                  <div className="relative">
-                    {email}
-                    {on && <span className="absolute right-0 top-1/2 -translate-y-1/2 bg-white pl-2">{note(on)}</span>}
-                  </div>
+                  {email}
                   {phone}
                 </div>
               ) : (
                 <div className="grid grid-cols-2 items-start gap-x-6 gap-y-2">
                   <div className={field}>{p.first}</div>
                   <div className={field}>Rosen</div>
-                  <div>
-                    {email}
-                    <div className="mt-1">{note(on)}</div>
-                  </div>
+                  {email}
                   {phone}
                 </div>
               )}
             </div>
           );
         })}
-        <div style={{ display: "grid", gridTemplateRows: address ? "1fr" : "0fr", transition: "grid-template-rows 420ms var(--ease-in-out)" }}>
-          <div className="min-h-0 overflow-hidden">
-            <div className={section} style={{ opacity: address ? 1 : 0, transition: "opacity 360ms ease 120ms" }}>
-              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">
-                Their home address <span className="font-normal normal-case tracking-normal">(from their documents)</span>
-              </p>
-              {compact ? (
-                <div className={field}>85 Grove Street, New York, 10014</div>
-              ) : (
-                <div className="grid grid-cols-2 gap-x-6">
-                  <div className={field}>85 Grove Street</div>
-                  <div className="grid grid-cols-[1fr_96px] gap-x-6">
-                    <div className={field}>New York</div>
-                    <div className={field}>10014</div>
-                  </div>
-                </div>
-              )}
+        <div className={section}>
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">
+            Their home address{" "}
+            <span className="font-normal normal-case tracking-normal" style={{ opacity: address ? 1 : 0, transition: address ? fade : clear }}>
+              (from their documents)
+            </span>
+          </p>
+          {compact ? (
+            filled(address, street, "85 Grove Street, New York, 10014")
+          ) : (
+            <div className="grid grid-cols-2 gap-x-6">
+              {filled(address, street, "85 Grove Street")}
+              <div className="grid grid-cols-[1fr_96px] gap-x-6">
+                {filled(address, "City", "New York")}
+                {filled(address, "ZIP code", "10014")}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div className={compact ? "bg-white p-3" : "bg-white px-6 py-4"}>
           <div
@@ -241,7 +231,7 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
               transition: "opacity 420ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease",
             }}
           >
-            Add the couple
+            Add clients
           </div>
         </div>
       </div>
@@ -255,16 +245,6 @@ const DropLine = ({ active }: { active?: boolean }) => (
       <p className="text-[14px] text-[#6B7280]">Drop all their documents here.</p>
       <span className="text-[14px] font-medium text-[#309E96]">Choose PDFs</span>
     </div>
-  </div>
-);
-
-/* working-mark.tsx: the W, breathing, and a line of legal wordplay */
-const WorkingMark = ({ line = "Reading the fine print…", tight = false }: { line?: string; tight?: boolean }) => (
-  <div className={`flex flex-col items-center text-center ${tight ? "" : "py-8"}`}>
-    <span className="flex h-9 w-9 animate-pulse items-center justify-center rounded-full bg-[#309E96] text-white" style={{ fontFamily: "Pacifico, cursive", fontSize: 18, lineHeight: 1, paddingTop: 2 }}>
-      W
-    </span>
-    <p className="mt-3 text-[15px] font-semibold text-[#1F2933]">{line}</p>
   </div>
 );
 
@@ -651,15 +631,13 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         const card = box(cardRef.current);
         const drop = { x: cx, y: card.top + space + 23 };
         setDropAt(drop);
-        /* While it reads, the card holds the mark and, under it, the documents */
-        const markH = 72;
-        const gap = 20;
+        /* While it reads, the card holds the documents */
         const sheetsH = compact ? sh * 2 + 8 : sh;
-        setFanY(card.top + space + markH + gap + sh / 2);
+        setFanY(card.top + space + sh / 2);
         setBeat("carry");
         setPlace("carry");
         await wait(960);
-        setCardH(space * 2 + markH + gap + sheetsH);
+        setCardH(space * 2 + sheetsH);
         setBeat("reading");
         setPlace("fan");
         await wait(680);
@@ -687,8 +665,12 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
         await wait(720);
         setFound(2);
         setLooking(0);
+        /* The address gets the same beat as each client: a pause, a search, then in */
         await wait(420);
+        setLooking(3);
+        await wait(720);
         setAddress(true);
+        setLooking(0);
         await wait(900);
         setPulse(true);
         await wait(190);
@@ -784,7 +766,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
   const inRecord = !uploading && beat !== "accounts";
-  const reading = beat === "reading";
   const sorted = !(beat === "empty" || beat === "carry" || beat === "reading"); // stays on through the fade out
   const panelPad = compact ? "px-4 py-6" : "px-16 py-10";
   const list = SHEETS[sheetSet];
@@ -870,28 +851,27 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
                 style={{ opacity: uploading ? 1 : 0, transform: `translateY(${-scrollA}px)`, transition: "opacity 440ms ease, transform 640ms var(--ease-in-out)" }}
               >
                 <div className={panelPad}>
-                  <Title startOver={beat !== "empty"} />
+                  <Title />
                   <Progress />
                   <div ref={cardRef} className="relative overflow-hidden rounded-2xl bg-white" style={{ height: cardH ?? cardEmpty, transition: "height 460ms var(--ease-in-out)" }}>
-                    <div ref={innerRef} className={compact ? "bg-white p-6" : "bg-white p-8"}>
-                      {(beat === "empty" || beat === "carry") && <DropLine active={beat === "carry"} />}
-                      <div className={beat === "empty" || beat === "carry" ? "mt-2" : ""}>
-                        <DocGroups on={sorted} iconRefs={iconRefs} />
+                    <div ref={innerRef} className="flex flex-col gap-1.5 bg-[#F3F4F6]">
+                      <div className={compact ? "bg-white p-6" : "bg-white p-8"}>
+                        {(beat === "empty" || beat === "carry") && <DropLine active={beat === "carry"} />}
+                        <div className={beat === "empty" || beat === "carry" ? "mt-2" : ""}>
+                          <DocGroups on={sorted} iconRefs={iconRefs} />
+                        </div>
                       </div>
-                      <div className="mt-5 flex justify-end">
+                      <div className={compact ? "bg-white p-3" : "bg-white px-6 py-4"}>
                         <Fade on={sorted} delay={880}>
                           <div
                             ref={continueRef}
-                            className="inline-flex h-11 items-center justify-center rounded-[10px] bg-[#309E96] px-6 text-[15px] font-semibold text-white"
+                            className="flex h-11 w-full items-center justify-center rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white"
                             style={tapStyle(tap === "continue")}
                           >
                             Continue
                           </div>
                         </Fade>
                       </div>
-                    </div>
-                    <div className="absolute inset-x-0 top-0" style={{ paddingTop: pad, opacity: reading ? 1 : 0, transition: "opacity 200ms ease" }}>
-                      <WorkingMark tight />
                     </div>
                   </div>
                 </div>
@@ -900,7 +880,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
               {/* 2 of 2 · Create their accounts */}
               <div className="absolute inset-x-0 top-0" style={{ opacity: beat === "accounts" ? 1 : 0, transition: "opacity 440ms ease" }}>
                 <div className={panelPad}>
-                  <Title startOver />
+                  <Title />
                   <Progress step={2} />
                   <TheirAccounts found={found} looking={looking} address={address} pulse={pulse} compact={compact} />
                 </div>
