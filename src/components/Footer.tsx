@@ -1,13 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { openCookieSettings } from "@/lib/consent";
-import { ATTORNEY_LOGIN, CLIENT_LOGIN, DEMO_PATH, FOOTER_COLUMNS, type NavLink } from "@/content/siteMap";
+import { DEMO_PATH, FOOTER_COLUMNS, type NavLink } from "@/content/siteMap";
 
 /* Site footer: one closing line with Request a demo across the top, as on
    harvey.ai (the page's demo ask lives here, not in a box above; Aaron,
-   Nov 24), a rule, then the brand block and the two portals on the left, the
-   full site map in three columns (the same map the header menus use), then
-   the disclaimer and copyright. Deep teal ground. */
+   Nov 24), a rule, then the logo with one small Inter line under it (no
+   log-in buttons: the header's Log in covers both portals; Aaron, Nov 24),
+   the full site map in three columns (the same map the header menus use),
+   then the disclaimer, the copyright and the About page's line. Deep teal
+   ground. */
 
 const linkCls = "text-[14px] text-white/75 transition-colors hover:text-white";
 
@@ -45,17 +47,9 @@ const Footer = () => (
             className="h-11 w-auto"
             style={{ filter: "brightness(0) invert(1)", WebkitFilter: "brightness(0) invert(1)" }}
           />
-          <p className="mt-5 font-heading text-[19px] leading-snug text-white">
+          <p className="mt-5 font-sans text-[15px] leading-relaxed text-white/80" style={{ textWrap: "balance" }}>
             The estate planning platform for attorneys and the families they serve.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            <a href={ATTORNEY_LOGIN} className="press inline-flex h-10 items-center rounded-md border border-white/30 px-4 text-[14px] font-medium text-white hover:border-white/60">
-              Attorney log in
-            </a>
-            <a href={CLIENT_LOGIN} className="press inline-flex h-10 items-center rounded-md border border-white/30 px-4 text-[14px] font-medium text-white hover:border-white/60">
-              Client log in
-            </a>
-          </div>
         </div>
 
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
@@ -90,7 +84,7 @@ const Footer = () => (
         </p>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} 07042002 Inc., doing business as Willow. All rights reserved.</p>
-          <p className="font-heading italic text-white/70">We handle what you'd rather ignore.</p>
+          <p className="font-heading italic text-white/70">Estate plans shouldn&rsquo;t live in binders.</p>
         </div>
       </div>
     </div>
