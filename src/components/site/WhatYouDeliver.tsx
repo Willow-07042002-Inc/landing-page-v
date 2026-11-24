@@ -71,13 +71,13 @@ const RequiredActions = () => (
 const InYourWords = () => (
   <div className="w-full overflow-hidden rounded-t-2xl bg-white text-left" style={{ boxShadow: UI_SHADOW }}>
     <div className="h-1 bg-[#309E96]" />
-    <div className="px-6 py-5">
+    <div className="px-5 py-4">
       <div className="flex items-baseline justify-between gap-3">
-        <p className="font-heading text-[15px] font-bold text-[#1F2933]">Alvarez Family Law</p>
-        <p className="flex-shrink-0 text-[12.5px] font-medium text-[#309E96]">Every July 14</p>
+        <p className="font-heading text-[14px] font-bold text-[#1F2933]">Alvarez Family Law</p>
+        <p className="flex-shrink-0 text-[12px] font-medium text-[#309E96]">Every July 14</p>
       </div>
-      <p className="mt-4 text-[15px] font-semibold leading-snug text-[#1F2933]">Checking in: has anything changed?</p>
-      <div className="mt-3 space-y-2.5 text-[14px] leading-[1.6] text-[#4B5563]">
+      <p className="mt-3 text-[14px] font-semibold leading-snug text-[#1F2933]">Checking in: has anything changed?</p>
+      <div className="mt-2 space-y-2 text-[13px] leading-[1.55] text-[#4B5563]">
         <p>Hi Daniel,</p>
         <p>It&rsquo;s been a while since we finished your estate plan, and I wanted to check in.</p>
         <p>Once a year I ask every client the same short questions. It&rsquo;s how we make sure your plan still says what you want it to.</p>
@@ -112,22 +112,23 @@ const WhatYouDeliver = () => (
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
       <LightHead title="Built with attorneys," accent="for attorneys." />
 
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12">
-        <article className={`${TILE} px-7 pt-7 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>
+      <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12 lg:grid-rows-[252px_252px]">
+        <article className={`${TILE} px-6 pt-6 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>
           <TileTitle>Manage your clients from one space</TileTitle>
           <TileBody>Every client, their documents, their team and your notes, all in one place.</TileBody>
-          <div className="mt-auto pt-8">
-            <Bleed height={520}>
+          <div className="mt-auto pt-5">
+            <Bleed height={385}>
               <ClientList />
             </Bleed>
           </div>
         </article>
 
-        <article id="integrations" className={`${TILE} scroll-mt-24 p-7 lg:col-span-3 lg:min-h-[340px]`}>
+        <article id="integrations" className={`${TILE} scroll-mt-24 p-6 lg:col-span-3`}>
           <TileTitle>Connect</TileTitle>
-          <ul className="mt-auto grid grid-cols-3 gap-1.5 pt-6">
+          <TileBody>Your calendar, video and contacts, connected once.</TileBody>
+          <ul className="mt-auto grid grid-cols-3 gap-1.5 pt-4">
             {CONNECTORS.map(({ name, Logo }) => (
-              <li key={name} title={name} className="flex h-11 items-center justify-center rounded-md bg-white">
+              <li key={name} title={name} className="flex h-10 items-center justify-center rounded-md bg-white">
                 <Logo className="h-5 w-5 object-contain" />
                 <span className="sr-only">{name}</span>
               </li>
@@ -135,23 +136,23 @@ const WhatYouDeliver = () => (
           </ul>
         </article>
 
-        <article className={`${TILE} px-7 pt-7 lg:col-span-3 lg:min-h-[340px]`}>
+        <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
           <TileTitle>Prioritize what matters</TileTitle>
           <TileBody>We&rsquo;ll let you know what matters, so you stay on top of everything.</TileBody>
-          <div className="mt-auto pt-5">
-            <Bleed height={150}>
+          <div className="mt-auto pt-4">
+            <Bleed height={118}>
               <RequiredActions />
             </Bleed>
           </div>
         </article>
 
-        <article className={`${TILE} gap-6 px-7 pt-7 sm:col-span-2 sm:flex-row lg:col-span-6 lg:min-h-[340px]`}>
-          <div className="sm:w-[38%] sm:flex-shrink-0 sm:pb-7">
+        <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row lg:col-span-6`}>
+          <div className="sm:w-[38%] sm:flex-shrink-0 sm:pb-6">
             <TileTitle>Works in your style</TileTitle>
             <TileBody>Your words, your logo and your timing. Set them once, and Willow follows them for every client.</TileBody>
           </div>
           <div className="min-w-0 flex-1 self-end">
-            <Bleed height={300}>
+            <Bleed height={228}>
               <InYourWords />
             </Bleed>
           </div>
