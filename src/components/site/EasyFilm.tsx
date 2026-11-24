@@ -373,7 +373,8 @@ const TheirDocuments = () => (
    You'll Leave Behind writing itself line by line: Gifts & Bequests as
    GiftTable draws it (Recipient, The Gift), then The Remaining Estate's
    share bars, with the product's working mark breathing beneath
-   (working-mark.tsx: the W and its legal puns) until the first line is in */
+   (working-mark.tsx: the W and its legal puns) until The Remaining Estate
+   comes in */
 const PUNS = ["Reading the fine print…", "Hereinafter referred to as “loading”…", "Taking it under advisement…"];
 const SERIF = "Georgia, 'Times New Roman', serif";
 /* The will's words for each gift, how long the marker takes over them, and
@@ -587,9 +588,9 @@ const SummaryLive = ({ written, pun, still }: { written: number; pun: number; st
             </div>
           </Reveal>
         )}
-        {/* The working mark only while nothing is written: it folds away as
-            the first line comes in (Aaron, Nov 24) */}
-        <Reveal show={written === 0} still={still}>
+        {/* The working mark moves down under each line as it's written, and
+            fades away the moment The Remaining Estate comes in (Aaron, Nov 24) */}
+        <Reveal show={written < 4} still={still}>
           <WorkingRow pun={pun} />
         </Reveal>
       </div>
@@ -1085,6 +1086,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         setWritten(1);
         await wait(650);
         setWritten(2);
+        setPun(1);
         await wait(650);
         setWritten(3);
         await wait(700);
