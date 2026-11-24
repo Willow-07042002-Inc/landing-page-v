@@ -21,13 +21,15 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
       then it's posted to clients' dashboards. In the product
       (dashboard-content.tsx) the attorney pastes the article's link, Willow
       reads its headline and blurb, and posts carry no image.
-   3. The professional check-in to the client's financial advisor and
-      accountant (DEFAULTS.maintenance_checkin), a sentence typed onto it and
-      saved.
-   4. The dashboard's Required actions: Maria, Daniel's executor, asks to meet
-      about his plan; the attorney books the time in the access request popup
-      (reminders-bell.tsx AccessRequestModal); the row moves through the
-      product's own titles to "Release access to Daniel's plan?"
+   3. The yearly note to the executors and guardians a plan names
+      (DEFAULTS.agent_checkin), a line typed onto it offering them a plan of
+      their own, and saved.
+   4. That note as Maria, Daniel's executor, has had it each year since he
+      signed, three stacked; then the dashboard's Required actions, where
+      Maria asks to meet about his plan; the attorney books the time in the
+      access request popup (reminders-bell.tsx AccessRequestModal); the row
+      moves through the product's own titles to "Release access to Daniel's
+      plan?"
    Each chapter is its own sequence. The film plays them in order from where
    it's opened and stops on the last frame. People who prefer reduced motion
    see each chapter at rest. */
@@ -55,6 +57,10 @@ const PAST = [
 /* Chapter 3: what the attorney types onto the advisors' check-in */
 const TEAM_TYPED = " And if you’d ever like a plan of your own, I’d be glad to help.";
 
+/* Chapter 4 opens on the yearly note Maria has had since Daniel signed
+   (agent_checkin: after 1 month, then once a year), newest in front */
+const NOTES = ["Oct 2024", "Oct 2025", "Oct 2026"];
+
 /* Chapter 4: the access request popup's times (the attorney's open hours) */
 const DAYS = ["Tue, Dec 1", "Wed, Dec 2", "Thu, Dec 3", "Fri, Dec 4"];
 const SLOTS = ["9:00 AM", "10:00 AM", "11:30 AM", "1:00 PM", "2:30 PM", "4:00 PM"];
@@ -72,7 +78,7 @@ const TAP = 190;
 const C1 = { read: 2000, sheet: 1700, hold: 2300 };
 const C2 = { rest: 900, carry: 950, over: 300, loading: 900, preview: 1700, hold: 2200 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
-const C4 = { rest: 700, row: 1200, modal: 900, pick: 600, day: 350, slot: 450, booked: 1100, upcoming: 1300, hold: 2200 };
+const C4 = { rest: 500, note: 550, read: 2000, swap: 900, row: 1200, modal: 900, pick: 600, day: 350, slot: 450, booked: 1100, upcoming: 1300, hold: 2200 };
 
 export const KEEP_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
@@ -80,7 +86,7 @@ export const KEEP_MS = [
   C1.read + TAP + C1.sheet + TAP + C1.hold,
   C2.rest + C2.carry + C2.over + C2.loading + C2.preview + TAP + C2.hold,
   C3.read + TAP + TEAM_TYPED.length * C3.perChar + C3.after + C3.beforeSave + TAP + C3.hold,
-  C4.rest + C4.row + TAP + C4.modal + TAP + C4.pick + TAP + C4.day + TAP + C4.slot + TAP + C4.booked + C4.upcoming + C4.hold,
+  C4.rest + NOTES.length * C4.note + C4.read + C4.swap + C4.row + TAP + C4.modal + TAP + C4.pick + TAP + C4.day + TAP + C4.slot + TAP + C4.booked + C4.upcoming + C4.hold,
 ];
 
 type Tap = "preview" | "next" | "post" | "message" | "save" | "book" | "pick" | "day" | "slot" | "bookit" | null;
@@ -346,8 +352,31 @@ const TeamCheckIn = ({ edit, typed, saved, tap, compact }: { edit: Edit; typed: 
   );
 };
 
-/* 4. The dashboard's Required actions (reminders-column.tsx), the access
-   request arriving on top */
+/* 4, first: the note as Maria gets it each year, the product's default words
+   (touchpoints.ts DEFAULTS.agent_checkin) with Daniel's and Maria's names in.
+   Stacked newest in front, so each older one shows as a strip above it */
+const NOTE_STRIP = 54;
+const NoteToMaria = ({ date, compact }: { date: string; compact: boolean }) => (
+  <>
+    <div className={`flex items-center justify-between gap-3 border-b border-[#EEF0F2] ${compact ? "px-5" : "px-7"}`} style={{ height: NOTE_STRIP }}>
+      <span className="truncate font-semibold text-[#1F2933]" style={{ fontSize: compact ? 14 : 15 }}>Checking in on Daniel Rosen’s estate plan</span>
+      <span className="flex-shrink-0 text-[13px] font-medium text-[#6B7280]">{date}</span>
+    </div>
+    <Mail compact={compact}>
+      <p className="mb-3 text-[#374151]" style={para(compact)}>Hi Maria,</p>
+      <p className="mb-3 text-[#374151]" style={para(compact)}>
+        I’m Rachel Alvarez, Daniel Rosen’s estate planning attorney. Daniel has named you as Executor in his plan, a real vote of confidence, and nothing you need to do today.
+      </p>
+      <p className="mb-3 text-[#374151]" style={para(compact)}>
+        When the time comes, what you need will be waiting in your Willow account, which Daniel has shared with you. If you’d like to understand what the role involves, I’m happy to walk you through it.
+      </p>
+      <MailButton compact={compact}>Book a meeting</MailButton>
+    </Mail>
+  </>
+);
+
+/* 4, then: the dashboard's Required actions (reminders-column.tsx), the
+   access request arriving on top */
 const AccessRow = ({ state, tap }: { state: Access; tap: Tap }) => {
   const row = ACCESS_ROW[state === "none" ? "asked" : state];
   return (
@@ -497,6 +526,8 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
   const [teamEdit, setTeamEdit] = useState<Edit>("idle");
   const [teamTyped, setTeamTyped] = useState(0);
   const [saved, setSaved] = useState(false);
+  const [notes, setNotes] = useState(0);
+  const [dash, setDash] = useState(false);
   const [access, setAccess] = useState<Access>("none");
   const [modal, setModal] = useState(false);
   const [picking, setPicking] = useState(false);
@@ -528,6 +559,8 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       setTeamEdit(c === 2 ? "done" : "idle");
       setTeamTyped(0);
       setSaved(c === 2);
+      setNotes(c === 3 ? NOTES.length : 0);
+      setDash(c === 3);
       setAccess(c === 3 ? "met" : "none");
       setModal(false);
       setPicking(false);
@@ -601,7 +634,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
         await tapOn("post", () => setNews(3));
         await wait(C2.hold);
       },
-      /* 3. A line of the attorney's own onto the advisors' check-in */
+      /* 3. A line of the attorney's own onto the executors' yearly note */
       async () => {
         await wait(C3.read);
         await tapOn("message", () => setTeamEdit("typing"));
@@ -615,9 +648,17 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
         await tapOn("save", () => setSaved(true));
         await wait(C3.hold);
       },
-      /* 4. The executor asks to meet; the meeting comes before any access */
+      /* 4. The executor has had your note every year; when she asks to meet,
+         the meeting comes before any access */
       async () => {
         await wait(C4.rest);
+        for (let n = 1; n <= NOTES.length; n++) {
+          setNotes(n);
+          await wait(C4.note);
+        }
+        await wait(C4.read);
+        setDash(true);
+        await wait(C4.swap);
         setAccess("asked");
         await wait(C4.row);
         await tapOn("book", () => setModal(true));
@@ -676,7 +717,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="Willow checks in with clients every year and previews the questions they're asked, posts the firm's articles to every client's dashboard, writes to the advisors on a client's team, and when an executor asks for what a client held back, sets up a meeting with the attorney before anything opens."
+      aria-label="Willow checks in with clients every year and previews the questions they're asked, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when an executor who has heard from the attorney every year asks for what a client held back, sets up a meeting with the attorney before anything opens."
     >
       <Print size={size}>
         <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: size.w, height: size.h }}>
@@ -689,7 +730,34 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
           <Piece on={shown === 2} place={place}>
             <TeamCheckIn edit={teamEdit} typed={teamTyped} saved={saved} tap={tap} compact={compact} />
           </Piece>
-          <Piece on={shown === 3} place={columnPlace}>
+          {/* 4. Maria's yearly notes: each slides up from below the frame,
+              already opaque, so the one under it never shows through; they
+              sink away together when the dashboard comes */}
+          {NOTES.map((date, i) => {
+            const inset = (NOTES.length - 1 - i) * (compact ? 8 : 14);
+            const on = shown === 3 && !dash && notes > i;
+            return (
+              <div
+                key={date}
+                className="pointer-events-none absolute"
+                style={{
+                  left: place.left + inset,
+                  right: place.right + inset,
+                  top: place.top + i * NOTE_STRIP,
+                  bottom: -48,
+                  zIndex: 10 + i,
+                  opacity: on ? 1 : 0,
+                  transform: on ? "translateY(0)" : `translateY(${dash ? 64 : size.h}px)`,
+                  transition: on ? "opacity 100ms linear, transform 720ms var(--ease-out)" : "opacity 220ms ease, transform 320ms ease",
+                }}
+              >
+                <div className="h-full overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
+                  <NoteToMaria date={date} compact={compact} />
+                </div>
+              </div>
+            );
+          })}
+          <Piece on={shown === 3 && dash} place={columnPlace}>
             <RequiredActions access={access} tap={tap} />
           </Piece>
 
