@@ -1,14 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { WRAP } from "@/components/site/blocks";
 import EasyFilm from "@/components/site/EasyFilm";
 
-/* Keeping things easy: the admin Willow takes off the attorney, set out like
-   "A practice families keep coming back to" (StayingAhead.tsx) but mirrored,
-   the film on the left and the ruled list of chapters on the right, the open
-   chapter's rule filling as it plays. On phones and tablets the list is a row
-   above the film. Each chapter has an anchor; the parked pages in
-   src/content/pages.tsx land on #dashboard and #plan-summaries. */
+/* Keeping things easy: the admin Willow takes off the attorney, as a row of
+   three tiles (Aaron, Nov 24, 2026), each with its words above and its own
+   short film below. Once the row is in view the films play one after
+   another; the one playing grows a little, its rule fills, and it settles
+   back when it's done. A tile not playing rests on its last frame. Clicking a
+   tile plays it again. Below 1024px the tiles stack. Each chapter has an
+   anchor; the parked pages in src/content/pages.tsx land on #dashboard and
+   #plan-summaries, and a hash starts the row from its tile. */
 
 export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: string }[] = [
   {
@@ -34,55 +36,59 @@ const chapterFor = (hash: string) => {
   return EASY_CHAPTERS.findIndex((c) => c.id === key || c.also?.includes(key));
 };
 
-/* The open chapter's line fills as it plays */
+/* A tile's rule fills as its film plays */
 const Fill = ({ ms }: { ms: number }) => {
-  const [on, setOn] = useState(ms === 0);
+  const [on, setOn] = useState(false);
   useEffect(() => {
     const t = window.setTimeout(() => setOn(true), 16);
     return () => window.clearTimeout(t);
   }, []);
-  return <span className="absolute left-0 top-[-2px] h-0.5 bg-[#138F8B]" style={{ width: on ? "100%" : "0%", transition: on && ms ? `width ${ms}ms linear` : "none" }} />;
+  return <span className="absolute left-0 top-[-2px] h-0.5 bg-[#138F8B]" style={{ width: on ? "100%" : "0%", transition: on ? `width ${ms}ms linear` : "none" }} />;
 };
+
+const noop = () => undefined;
+const GROW = 1.035;
 
 const KeepingThingsEasy = () => {
   const { hash } = useLocation();
-  const [active, setActive] = useState(() => Math.max(0, chapterFor(hash)));
-  const [replay, setReplay] = useState(0);
-  const [run, setRun] = useState<{ id: number; ms: number } | null>(null);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const rowRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const n = EASY_CHAPTERS.length;
+  /* Whose turn it is to play; the rest hold on their last frame */
+  const [turn, setTurn] = useState<number | null>(() => Math.max(0, chapterFor(hash)));
+  /* Bumped to play a tile again */
+  const [runs, setRuns] = useState<number[]>(() => EASY_CHAPTERS.map(() => 0));
+  /* The tile playing right now, and for how long */
+  const [live, setLive] = useState<{ i: number; id: number; ms: number } | null>(null);
+  const [played, setPlayed] = useState<boolean[]>(() => EASY_CHAPTERS.map(() => false));
+  /* Still in the first pass through the row: each tile hands on to the next */
+  const auto = useRef(true);
 
   useEffect(() => {
     const i = chapterFor(hash);
-    if (i >= 0) setActive(i);
+    if (i >= 0) {
+      auto.current = true;
+      setTurn(i);
+    }
   }, [hash]);
 
-  /* On phones the row scrolls: keep the open chapter in sight */
-  useEffect(() => {
-    const tab = tabRefs.current[active];
-    const row = tab?.parentElement;
-    if (tab && row && row.scrollWidth > row.clientWidth) {
-      row.scrollTo({ left: tab.offsetLeft - (row.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
-    }
-  }, [active]);
-
-  const open = (i: number, focus = false) => {
-    setActive(i);
-    setRun(null);
-    setReplay((r) => r + 1);
-    if (focus) {
-      tabRefs.current[i]?.focus({ preventScroll: true });
-      rowRefs.current[i]?.focus({ preventScroll: true });
-    }
-  };
-  const onKey = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") open((active + 1) % EASY_CHAPTERS.length, true);
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") open((active + EASY_CHAPTERS.length - 1) % EASY_CHAPTERS.length, true);
-    else return;
-    e.preventDefault();
+  const play = (i: number) => {
+    auto.current = false;
+    setPlayed((p) => p.map((v, k) => (k === i ? false : v)));
+    setRuns((r) => r.map((v, k) => (k === i ? v + 1 : v)));
+    setTurn(i);
   };
 
-  const chapter = EASY_CHAPTERS[active];
+  const started = useCallback((i: number, ms: number) => {
+    if (ms > 0) setLive((l) => ({ i, id: (l?.id ?? 0) + 1, ms }));
+  }, []);
+  const ended = useCallback(
+    (i: number) => {
+      setLive((l) => (l?.i === i ? null : l));
+      setPlayed((p) => p.map((v, k) => (k === i ? true : v)));
+      setTurn((t) => (t !== i ? t : auto.current && i < n - 1 ? i + 1 : null));
+    },
+    [n]
+  );
+
   return (
     <section id="keeping-things-easy" className="scroll-mt-24 bg-[#F8FAFC] py-16 md:py-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
@@ -91,82 +97,61 @@ const KeepingThingsEasy = () => {
           <span className="block italic text-[#138F8B]">We handle the rest.</span>
         </h2>
 
-        <div className="relative mt-10 grid gap-6 md:mt-12 lg:grid-cols-[minmax(0,11fr)_minmax(0,5fr)] lg:items-start lg:gap-14">
+        <div className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-8 lg:gap-y-6">
           {EASY_CHAPTERS.flatMap((c) => [c.id, ...(c.also ?? [])]).map((id) => (
             <span key={id} id={id} className="absolute -top-24 left-0" aria-hidden />
           ))}
 
-          <div className="min-w-0 lg:order-2">
-            {/* Phones and tablets: a row above the film */}
-            <div className="lg:hidden">
-              <div role="tablist" aria-label="What Willow takes off your plate" onKeyDown={onKey} className="relative flex gap-4 overflow-x-auto pt-0.5 [scrollbar-width:none]">
-                {EASY_CHAPTERS.map((c, i) => (
-                  <button
-                    key={c.id}
-                    ref={(el) => { tabRefs.current[i] = el; }}
-                    type="button"
-                    role="tab"
-                    id={`easy-tab-${c.id}`}
-                    aria-selected={i === active}
-                    aria-controls="easy-panel"
-                    tabIndex={i === active ? 0 : -1}
-                    onClick={() => open(i)}
-                    className={`relative flex-shrink-0 border-t-2 border-gray-200 pb-2 pr-3 pt-3.5 text-left text-[15px] font-medium leading-snug transition-colors ${
-                      i === active ? "text-[#222222]" : "text-gray-500 hover:text-[#222222]"
-                    }`}
+          {EASY_CHAPTERS.map((c, i) => {
+            const playing = live?.i === i;
+            const quiet = live !== null && !playing;
+            return (
+              <div key={c.id} className="group relative grid gap-5 lg:row-span-2 lg:grid-rows-subgrid lg:gap-y-6">
+                <div className="relative border-t-2 border-gray-200 pt-5">
+                  {live?.i === i ? <Fill key={live.id} ms={live.ms} /> : played[i] && <span className="absolute left-0 top-[-2px] h-0.5 w-full bg-[#138F8B]" />}
+                  <h3
+                    className="text-[20px] font-medium leading-snug"
+                    style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em", color: quiet ? "#6B7280" : "#222222", transition: "color 300ms ease" }}
                   >
-                    {i < active && <span className="absolute left-0 top-[-2px] h-0.5 w-full bg-[#138F8B]" />}
-                    {i === active && run && <Fill key={run.id} ms={run.ms} />}
                     {c.title}
-                  </button>
-                ))}
-              </div>
-              <p key={chapter.id} className="mt-4 max-w-3xl text-[16px] leading-relaxed text-gray-600 sm:min-h-[3.25rem]" style={{ textWrap: "pretty" }}>
-                {chapter.body}
-              </p>
-            </div>
+                  </h3>
+                  <p className="mt-2 max-w-[28rem] text-[15px] leading-relaxed text-gray-600" style={{ textWrap: "pretty" }}>
+                    {c.body}
+                  </p>
+                </div>
 
-            {/* Desktop: the ruled list */}
-            <div role="tablist" aria-orientation="vertical" aria-label="What Willow takes off your plate" onKeyDown={onKey} className="hidden border-b-2 border-gray-200 lg:block">
-              {EASY_CHAPTERS.map((c, i) => {
-                const on = i === active;
-                return (
-                  <div key={c.id} className="relative border-t-2 border-gray-200">
-                    {on && run && <Fill key={run.id} ms={run.ms} />}
-                    <button
-                      ref={(el) => { rowRefs.current[i] = el; }}
-                      type="button"
-                      role="tab"
-                      aria-selected={on}
-                      aria-controls="easy-panel"
-                      tabIndex={on ? 0 : -1}
-                      onClick={() => open(i)}
-                      className={`block w-full py-5 text-left text-[20px] font-medium leading-snug transition-colors ${on ? "text-[#222222]" : "text-gray-500 hover:text-[#222222]"}`}
-                      style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" }}
-                    >
-                      {c.title}
-                    </button>
-                    <div style={{ display: "grid", gridTemplateRows: on ? "1fr" : "0fr", transition: "grid-template-rows 340ms var(--ease-in-out)" }}>
-                      <div className="min-h-0 overflow-hidden">
-                        <p className="pb-6 pr-4 text-[15px] leading-relaxed text-gray-600" style={{ opacity: on ? 1 : 0, transition: on ? "opacity 260ms ease 120ms" : "opacity 120ms ease", textWrap: "pretty" }}>
-                          {c.body}
-                        </p>
-                      </div>
-                    </div>
+                {/* The tile: lifts on hover, grows while it plays */}
+                <div className="max-w-[440px] transition-transform duration-200 ease-out group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+                  <div
+                    className="rounded-xl"
+                    style={{
+                      transform: playing ? `scale(${GROW})` : "scale(1)",
+                      boxShadow: playing ? "0 28px 60px -24px rgba(6,45,44,0.55)" : "0 0 0 0 rgba(6,45,44,0)",
+                      transition: "transform 700ms var(--ease-in-out), box-shadow 700ms ease",
+                    }}
+                  >
+                    <EasyFilm
+                      tile
+                      rewatch
+                      chapter={i}
+                      replay={runs[i]}
+                      hold={turn !== i}
+                      onChapter={noop}
+                      onStart={(ms) => started(i, ms)}
+                      onEnd={() => ended(i)}
+                    />
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
 
-          <div id="easy-panel" role="tabpanel" aria-labelledby={`easy-tab-${chapter.id}`} className="min-w-0 lg:order-1">
-            <EasyFilm
-              chapter={active}
-              replay={replay}
-              onChapter={setActive}
-              onStart={(ms) => setRun((r) => ({ id: (r?.id ?? 0) + 1, ms }))}
-            />
-          </div>
+                <button
+                  type="button"
+                  onClick={() => play(i)}
+                  aria-label={`Play “${c.title}” again`}
+                  className="absolute -inset-2 z-10 cursor-pointer rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#138F8B] focus-visible:ring-offset-4 focus-visible:ring-offset-[#F8FAFC]"
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

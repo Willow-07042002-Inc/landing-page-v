@@ -22,17 +22,20 @@ import { CheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icon
    Each chapter is its own sequence, with its own start and end. The film plays
    them in order once from where it's opened and stops on the last frame.
    People who prefer reduced motion see each chapter at rest.
+   On the site (Nov 24, 2026) each chapter is a tile of its own in a row of
+   three (`tile`): the narrow layout, held on its last frame until its turn
+   (`hold`), telling the section when it's done (`onEnd`).
    Copied from ClientFilm.tsx at 8de2d8c, where these were chapters 1 and 2
    (Nov 24, 2026: they moved to their own section). */
 
 const ROOT_WIDE = { w: 1140, h: 855 }; // a laptop-width window, so the panel reads beside the chapter list
-const ROOT_COMPACT = { w: 420, h: 720 };
+const ROOT_COMPACT = { w: 420, h: 640 };
 const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
 
-/* A dark print with the product on it. On wide screens the product runs off
-   the right and bottom edges; on phones it keeps an even mat */
+/* A dark print with the product on it. The product runs off the bottom edge:
+   on wide screens off the right too, in the narrow layout with room either side */
 const FilmFrame = ({ compact, size, children }: { compact: boolean; size: { w: number; h: number }; children: React.ReactNode }) => {
-  const mat = compact ? { l: 0.04, t: 0.04, r: 0.04, b: 0.04 } : { l: 0.05, t: 0.065, r: 0, b: 0 };
+  const mat = compact ? { l: 0.05, t: 0.05, r: 0.05, b: 0 } : { l: 0.05, t: 0.065, r: 0, b: 0 };
   const w = size.w / (1 - mat.l - mat.r);
   const h = size.h / (1 - mat.t - mat.b);
   return (
@@ -40,7 +43,7 @@ const FilmFrame = ({ compact, size, children }: { compact: boolean; size: { w: n
       <img src="/central-park.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
       <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
       <div
-        className={`absolute overflow-hidden bg-white ${compact ? "rounded-lg" : "rounded-tl-xl"}`}
+        className={`absolute overflow-hidden bg-white ${compact ? "rounded-t-lg" : "rounded-tl-xl"}`}
         style={{ left: `${mat.l * 100}%`, top: `${mat.t * 100}%`, right: `${mat.r * 100}%`, bottom: `${mat.b * 100}%`, boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}
       >
         {children}
@@ -257,6 +260,7 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
         </div>
         <div className={compact ? "bg-white p-3" : "bg-white px-6 py-4"}>
           <div
+            data-add-clients
             className="flex h-11 w-full items-center justify-center rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white"
             style={{
               opacity: address ? 1 : 0.5,
@@ -537,6 +541,14 @@ const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
   );
 };
 
+const FILM_LABEL =
+  "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person and sets up the account. Willow then writes a plain-English summary of the plan, which the attorney edits and approves, and schedules every check-in, so the executor books a meeting without the attorney reaching out.";
+const TILE_LABELS = [
+  "An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person, and fills in the clients' emails and phones from Outlook.",
+  "Willow's plain-English summary of the plan: the attorney rewords one power of attorney power, then approves it and it's sent.",
+  "The client's Staying in touch tab: each kind of check-in with its next date, and the executor booking a meeting from one.",
+];
+
 type Props = {
   chapter: number;
   /** Changes when someone reopens a chapter, so it plays again */
@@ -548,10 +560,17 @@ type Props = {
   /** Play a chapter again when it's reopened (the dev review page). On the
       site a chapter already seen opens on its last frame */
   rewatch?: boolean;
+  /** One chapter in a narrow tile, at every screen width */
+  tile?: boolean;
+  /** Not this chapter's turn: rest on its last frame */
+  hold?: boolean;
+  /** The chapter has played to its end */
+  onEnd?: () => void;
 };
 
-const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false }: Props) => {
-  const compact = useCompact();
+const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false, tile = false, hold = false, onEnd }: Props) => {
+  const narrow = useCompact();
+  const compact = tile || narrow;
   const root = compact ? ROOT_COMPACT : ROOT_WIDE;
   const stage = compact ? ROOT_COMPACT : PANEL_WIDE;
   const panelCx = compact ? root.w / 2 : root.w - PANEL_WIDE.w / 2;
@@ -571,8 +590,8 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
   /* The chapters that have started playing, and the last click we've seen */
   const played = useRef(new Set<number>());
   const lastReplay = useRef(replay);
-  const callbacks = useRef({ onChapter, onStart });
-  callbacks.current = { onChapter, onStart };
+  const callbacks = useRef({ onChapter, onStart, onEnd });
+  callbacks.current = { onChapter, onStart, onEnd };
 
   const [inView, setInView] = useState(false);
   const [beat, setBeat] = useState<Beat>("empty");
@@ -595,6 +614,8 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
   const [cardH, setCardH] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<Point>({ x: 0, y: 0 });
   const [scrollA, setScrollA] = useState(0);
+  const [scrollB, setScrollB] = useState(0);
+  const accountsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -607,12 +628,15 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
     return () => io.disconnect();
   }, []);
 
-  /* The tab row scrolls on phones: keep the open tab, Estate Plan, in sight */
+  /* The tab row scrolls in the narrow layout: keep the open tab in sight,
+     moving only as far as it takes, so no tab is left cut in half */
   const openTab = beat === "touch" ? "Staying in touch" : "Estate Plan";
   useEffect(() => {
     const row = tabsRef.current;
     const tab = row?.querySelector<HTMLElement>(`[data-tab="${openTab}"]`);
-    if (row && tab) row.scrollTo({ left: Math.max(0, tab.offsetLeft - 16), behavior: "smooth" });
+    if (!row || !tab) return;
+    const over = tab.offsetLeft + tab.offsetWidth - row.clientWidth;
+    row.scrollTo({ left: over > 0 ? over + 16 : 0, behavior: "smooth" });
   }, [openTab]);
 
   /* How far to scroll the summary to bring the powers, with their Edit, to the top */
@@ -626,7 +650,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
   };
 
   useEffect(() => {
-    const key = `${chapter}:${replay}:${compact}`;
+    const key = `${chapter}:${replay}:${compact}:${hold}`;
     /* A click on the chapter list (replay changes) */
     const clicked = replay !== lastReplay.current;
     lastReplay.current = replay;
@@ -636,7 +660,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
        last frame and stays there. People who prefer reduced motion get every
        chapter that way */
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced || (clicked && !rewatch && played.current.has(chapter))) {
+    if (reduced || hold || (clicked && !rewatch && played.current.has(chapter))) {
       doneKey.current = key;
       setPlace("hidden");
       setScan(-1);
@@ -647,6 +671,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
       setSent(chapter >= 1);
       setStepIn(false);
       setSummaryScroll(0);
+      setScrollB(0);
       setTouchStep(chapter === 2 ? 2 : 0);
       setBeat((["docs", "summary", "touch"] as Beat[])[chapter]);
       callbacks.current.onStart(0);
@@ -699,6 +724,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
       setAddress(false);
       setPulse(false);
       setTap(null);
+      setScrollB(0);
     };
     const readSheets = async (n: number, each: number) => {
       for (let i = 0; i < n; i++) {
@@ -761,6 +787,8 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
         await wait(720);
         setFound(2);
         setLooking(0);
+        /* Down, so their address and Add clients are in sight */
+        setScrollB(Math.max(0, box(accountsRef.current?.querySelector("[data-add-clients]")).bottom + 24 - R.h));
         /* The address gets the same beat as each client: a pause, a search, then in */
         await wait(420);
         setLooking(3);
@@ -835,13 +863,14 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
       .then(() => {
         if (!live) return;
         doneKey.current = key;
+        callbacks.current.onEnd?.();
         if (chapter < EASY_CHAPTERS - 1) callbacks.current.onChapter(chapter + 1);
       })
       .catch(() => undefined);
     return () => {
       live = false;
     };
-  }, [chapter, replay, inView, compact, clock, rewatch]);
+  }, [chapter, replay, inView, compact, clock, rewatch, hold]);
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
   const inRecord = !uploading && beat !== "accounts";
@@ -873,7 +902,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="An attorney drops a client's signed estate plan into Willow, which reads it, files each document under the right person and sets up the account. Willow then writes a plain-English summary of the plan, which the attorney edits and approves, and schedules every check-in, so the executor books a meeting without the attorney reaching out."
+      aria-label={tile ? TILE_LABELS[chapter] : FILM_LABEL}
     >
       <FilmFrame compact={compact} size={root}>
         <ScaledScreen w={root.w} h={root.h}>
@@ -923,7 +952,11 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false 
               </div>
 
               {/* 2 of 2 · Create their accounts */}
-              <div className="absolute inset-x-0 top-0" style={{ opacity: beat === "accounts" ? 1 : 0, transition: "opacity 440ms ease" }}>
+              <div
+                ref={accountsRef}
+                className="absolute inset-x-0 top-0"
+                style={{ opacity: beat === "accounts" ? 1 : 0, transform: `translateY(${-scrollB}px)`, transition: "opacity 440ms ease, transform 640ms var(--ease-in-out)" }}
+              >
                 <div className={panelPad}>
                   <Title />
                   <Progress step={2} />
