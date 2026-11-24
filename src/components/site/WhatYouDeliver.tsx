@@ -22,8 +22,9 @@ import {
      small  On your terms (one line, Aaron's ask): one real decision asked
             as a question, When a client says something has changed: They
             book directly or We call them (the check-in's Call after the
-            check-in setting), as two switch rows in the style of Harvey's
-            Knowledge tile, tied so one is always on
+            check-in setting), as two white rows in the style of Harvey's
+            Knowledge tile with choose-one circles; one gets clicked (a
+            pulse, then the circle fills) as the tile comes into view
      small  Connect: the apps it connects to
      wide   Speak to clients in your own voice: a plan summary where the
             attorney types their own wording over one power, then Approve
@@ -245,41 +246,109 @@ const SummaryEdit = () => {
    the check-in (touchpoint-panel.tsx), which sets what a client's portal
    offers once they say something has changed. Its They book and We call
    them (the third, No call, left out to keep the tile simple) as rows in
-   the Harvey Knowledge tile's style: each its own small white row with a
-   label and the product's switch, no icons, and the tile's own line asks
-   the question (Aaron: no third line of text). The two are tied, so
-   switching one off switches the other on, and the tile always reads as one
-   decision (Aaron, Nov 24). A visitor can flip them */
+   the Harvey Knowledge tile's style: each its own small white row, no icons,
+   and the tile's own line asks the question (Aaron: no third line of text).
+   Only one can be chosen, so each row has a circle, not a switch (Aaron:
+   "you can't have both on at once"). When the tile comes into view nothing
+   is chosen yet; then We call them is clicked: its row presses in, a ring
+   pulses out of the circle and the circle fills. A visitor's click does the
+   same. With reduced motion it starts already chosen */
 const FOLLOW_UPS = ["They book directly", "We call them"] as const;
 type FollowUp = (typeof FOLLOW_UPS)[number];
 
 const FollowUpChoice = ({ labelledBy }: { labelledBy: string }) => {
-  const [value, setValue] = useState<FollowUp>("We call them");
-  const flip = (label: FollowUp) => setValue(label === value ? FOLLOW_UPS.find((o) => o !== label)! : label);
+  const groupRef = useRef<HTMLDivElement>(null);
+  const rows = useRef<Partial<Record<FollowUp, HTMLButtonElement | null>>>({});
+  const rings = useRef<Partial<Record<FollowUp, HTMLSpanElement | null>>>({});
+  const touched = useRef(false);
+  const [value, setValue] = useState<FollowUp | null>(null);
+
+  const choose = (label: FollowUp, pressed: boolean) => {
+    setValue(label);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (pressed) {
+      rows.current[label]?.animate([{ transform: "scale(1)" }, { transform: "scale(0.97)" }, { transform: "scale(1)" }], {
+        duration: 320,
+        easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+      });
+    }
+    rings.current[label]?.animate(
+      [
+        { transform: "scale(1)", opacity: 0.5 },
+        { transform: "scale(2.6)", opacity: 0 },
+      ],
+      { duration: 620, easing: "cubic-bezier(0.23, 1, 0.32, 1)" }
+    );
+  };
+
+  /* The click plays each time the tile comes into view, until a visitor
+     makes the choice themselves */
+  useEffect(() => {
+    const el = groupRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setValue("We call them");
+      return;
+    }
+    let timer = 0;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (touched.current) return;
+        window.clearTimeout(timer);
+        if (entry.isIntersecting) timer = window.setTimeout(() => choose("We call them", true), 700);
+        else setValue(null);
+      },
+      { rootMargin: "0px 0px -25% 0px" }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   return (
-    <div role="radiogroup" aria-labelledby={labelledBy} className="space-y-1.5 text-left" style={{ fontFamily: PRODUCT_FONT }}>
-        {FOLLOW_UPS.map((label) => {
-          const on = label === value;
-          return (
-            <button
-              key={label}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              onClick={() => flip(label)}
-              className="flex w-full items-center gap-3 rounded-[10px] bg-white px-4 py-3.5 text-left transition-transform duration-150 active:scale-[0.98]"
-              style={{ boxShadow: "0 1px 2px rgba(16,24,40,0.06), 0 0 0 1px rgba(16,24,40,0.04)", transitionTimingFunction: "var(--ease-out)" }}
-            >
-              <span className="min-w-0 flex-1 text-[14.5px] text-[#1F2933]">{label}</span>
-              <span aria-hidden className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 ${on ? "bg-[#309E96]" : "bg-[#E5E7EB]"}`}>
-                <span
-                  className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-200"
-                  style={{ transform: on ? "translateX(18px)" : "translateX(3px)", transitionTimingFunction: "var(--ease-out)" }}
-                />
-              </span>
-            </button>
-          );
-        })}
+    <div ref={groupRef} role="radiogroup" aria-labelledby={labelledBy} className="space-y-1.5 text-left" style={{ fontFamily: PRODUCT_FONT }}>
+      {FOLLOW_UPS.map((label) => {
+        const on = label === value;
+        return (
+          <button
+            key={label}
+            ref={(node) => {
+              rows.current[label] = node;
+            }}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            onClick={() => {
+              touched.current = true;
+              if (!on) choose(label, false);
+            }}
+            className="flex w-full items-center gap-3 rounded-[10px] bg-white px-4 py-3.5 text-left transition-transform duration-150 active:scale-[0.98]"
+            style={{ boxShadow: "0 1px 2px rgba(16,24,40,0.06), 0 0 0 1px rgba(16,24,40,0.04)", transitionTimingFunction: "var(--ease-out)" }}
+          >
+            <span aria-hidden className="relative flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center">
+              <span
+                ref={(node) => {
+                  rings.current[label] = node;
+                }}
+                className="pointer-events-none absolute inset-0 rounded-full bg-[#309E96] opacity-0"
+              />
+              <span
+                className={`absolute inset-0 rounded-full border-[1.5px] bg-white transition-colors duration-200 ${on ? "border-[#309E96]" : "border-[#C4C9D0]"}`}
+              />
+              <span
+                className="relative h-2.5 w-2.5 rounded-full bg-[#309E96]"
+                style={{
+                  transform: on ? "scale(1)" : "scale(0)",
+                  transition: on ? "transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1) 60ms" : "transform 160ms ease-out",
+                }}
+              />
+            </span>
+            <span className={`min-w-0 flex-1 text-[14.5px] transition-colors duration-200 ${on ? "font-medium text-[#1F2933]" : "text-[#4B5563]"}`}>{label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 };
