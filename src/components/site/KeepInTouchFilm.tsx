@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ProBellIcon, ScaledScreen, WIcon } from "@/components/product/kit";
 import { ProReminder } from "@/components/product/attorney-dashboard";
-import { CaArticleItem, CheckInSheet } from "@/components/product/client-app";
-import { CalendarCheckIcon, CheckIcon, ChevronLeftIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CheckInSheet } from "@/components/product/client-app";
+import { CalendarCheckIcon, CheckIcon, ChevronLeftIcon, UploadIcon, ViewIcon } from "@/components/product/willow-icons";
 import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type FilmProps } from "@/components/site/film-kit";
 
 /* "A practice families keep coming back to": four chapters, each one piece of
@@ -14,12 +14,12 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
       conversation the client gets (the clients app's ChatSheet, which the
       attorney's survey preview shows, survey-preview.tsx) and steps to its
       second question.
-   2. Settings > Dashboard content (dashboard-content.tsx): the firm's article
-      is dragged onto the link field, loads, and shows as the card clients
-      get in "From your firm" (client-app.tsx CaArticleItem, firm-panel.tsx),
-      then it's posted. (The product takes the article's link and shows the
-      headline and blurb it read as fields to edit; Aaron wants the card
-      shown instead of the link, Nov 24.)
+   2. One box that says "Upload article": the firm's article drops into it,
+      the box opens downward to its image, headline and blurb, and it's
+      posted to clients' dashboards. Aaron's design (Nov 24), in place of the
+      Dashboard content page: in the product (dashboard-content.tsx) the
+      attorney pastes the article's link, Willow reads its headline and
+      blurb, and posts carry no image.
    3. The professional check-in to the client's financial advisor and
       accountant (DEFAULTS.maintenance_checkin), a sentence typed onto it and
       saved.
@@ -61,7 +61,7 @@ const ACCESS_ROW = {
 /* The waits in each chapter's script, so its length is known up front */
 const TAP = 190;
 const C1 = { read: 2000, sheet: 1700, hold: 2300 };
-const C2 = { rest: 900, carry: 950, over: 300, loading: 1100, preview: 1700, hold: 2200 };
+const C2 = { rest: 900, carry: 950, over: 300, loading: 900, preview: 1700, hold: 2200 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
 const C4 = { rest: 700, row: 1200, modal: 900, pick: 600, day: 350, slot: 450, booked: 1100, upcoming: 1300, hold: 2200 };
 
@@ -183,64 +183,75 @@ const ClientCheckIn = ({ tap, compact }: { tap: Tap; compact: boolean }) => (
   </>
 );
 
-/* 2. Settings > Dashboard content: the link field (lit while the article is
-   over it), then the article loading into the card clients will see, then
-   posted. step: 0 empty, 1 loading, 2 the card, 3 posted */
-const DashboardPosts = ({ step, over, tap, compact, fieldRef }: { step: number; over: boolean; tap: Tap; compact: boolean; fieldRef: React.RefObject<HTMLDivElement> }) => {
-  const field = "text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]";
+/* 2. The upload box: "Upload article" (lit while the article is over it),
+   then it opens downward to the article, loading first, and is posted.
+   step: 0 waiting, 1 loading, 2 the article, 3 posted */
+const ArticleBox = ({ step, over, tap, compact, dropRef }: { step: number; over: boolean; tap: Tap; compact: boolean; dropRef: React.RefObject<HTMLDivElement> }) => {
+  const open = step >= 1;
+  const fold = (on: boolean): React.CSSProperties => ({ display: "grid", gridTemplateRows: on ? "1fr" : "0fr", transition: "grid-template-rows 560ms cubic-bezier(0.77, 0, 0.175, 1)" });
   const bar = "rounded-full bg-[#EEF0F2]";
   return (
-    <>
-      <Bar title="Dashboard content" compact={compact} />
-      <div className={compact ? "px-5 pt-5" : "px-7 pt-6"}>
-        <p className={field}>Posts</p>
-        <p className="mt-1 text-[12.5px] text-[#9CA3AF]">Paste a link to something your firm published.</p>
-        {step === 0 ? (
+    <div className={`overflow-hidden rounded-2xl bg-white text-left ${compact ? "p-4" : "p-5"}`} style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
+      <div style={fold(!open)}>
+        <div className="min-h-0 overflow-hidden">
           <div
-            ref={fieldRef}
-            className="-mx-2.5 mt-4 flex items-end gap-4 rounded-lg px-2.5 pb-1"
-            style={{ background: over ? "#F0F9F8" : "rgba(240,249,248,0)", boxShadow: over ? "0 0 0 2px rgba(48,158,150,0.55)" : RING_OFF, transition: "background-color 200ms ease, box-shadow 200ms ease" }}
+            ref={dropRef}
+            className="flex flex-col items-center justify-center gap-2.5 rounded-xl border-2 border-dashed"
+            style={{
+              height: compact ? 150 : 170,
+              borderColor: over ? "#309E96" : "#D1D5DB",
+              background: over ? "#F0F9F8" : "#FAFBFC",
+              transition: "border-color 200ms ease, background-color 200ms ease",
+            }}
           >
-            <p className="min-w-0 flex-1 truncate border-b border-[#E5E7EB] py-2.5 text-[15px] text-[#9CA3AF]">https://yourfirm.com/blog/…</p>
-            <span className="flex-shrink-0 pb-2.5 text-[13px] font-medium text-[#128F8B]">Read link</span>
+            <UploadIcon className="h-7 w-7 text-[#309E96]" />
+            <span className="text-[17px] font-semibold text-[#1F2933]">Upload article</span>
           </div>
-        ) : (
-          <div className="mt-4">
-            {/* The card a client gets in "From your firm": a grey skeleton while
-                the article loads, then the card itself */}
-            <div className="rounded-2xl border border-[#EEF0F2] bg-white p-5" style={{ minHeight: compact ? 150 : 128, boxShadow: "0 1px 3px rgba(16,24,40,0.06), 0 8px 24px -12px rgba(16,24,40,0.14)" }}>
-              {step === 1 ? (
-                <div className="animate-pulse">
-                  <div className={`${bar} h-2.5 w-40`} />
-                  <div className={`${bar} mt-3 h-4 w-3/4`} />
-                  <div className={`${bar} mt-3 h-3 w-full`} />
-                  {compact && <div className={`${bar} mt-2 h-3 w-2/3`} />}
-                  <div className={`${bar} mt-4 h-3 w-32`} />
-                </div>
-              ) : (
-                <Appear>
-                  <CaArticleItem a={NEWS} />
-                </Appear>
-              )}
-            </div>
-            <div className="mt-4 flex min-h-[36px] items-center gap-4">
-              {step === 2 && (
-                <Appear className="flex items-center gap-4">
-                  <span className="rounded-lg bg-[#128F8B] px-4 py-2 text-[14px] font-medium text-white" style={tapStyle(tap === "post")}>Post to dashboards</span>
-                  <span className="text-[13px] font-medium text-[#128F8B]">Cancel</span>
-                </Appear>
-              )}
-              {step === 3 && (
-                <Appear className="flex items-center gap-2 text-[14px] font-medium text-[#0F7673]">
-                  <CheckIcon className="h-4 w-4" />
-                  Posted to 48 clients’ dashboards.
-                </Appear>
-              )}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
-    </>
+      <div style={fold(open)}>
+        <div className="min-h-0 overflow-hidden">
+          <div className="relative overflow-hidden rounded-xl bg-[#EEF0F2]" style={{ height: compact ? 160 : 210 }}>
+            {step >= 2 && (
+              <Appear className="absolute inset-0">
+                <img src="/hudson-bridge.jpg" alt="" className="h-full w-full object-cover" />
+              </Appear>
+            )}
+            {step === 1 && <div className="absolute inset-0 animate-pulse bg-[#E5E7EB]" />}
+          </div>
+          <div className={compact ? "px-1 pt-4" : "px-1 pt-5"} style={{ minHeight: compact ? 104 : 96 }}>
+            {step === 1 ? (
+              <div className="animate-pulse">
+                <div className={`${bar} h-2.5 w-24`} />
+                <div className={`${bar} mt-3 h-4 w-3/4`} />
+                <div className={`${bar} mt-3 h-3 w-full`} />
+              </div>
+            ) : (
+              <Appear>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0F7673]">Tax updates</p>
+                <p className="mt-1.5 font-semibold text-[#1F2933]" style={{ fontSize: compact ? 18 : 20, lineHeight: 1.3, fontFamily: MERRIWEATHER }}>{NEWS.title}</p>
+                <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#4B5563]">{NEWS.body}</p>
+              </Appear>
+            )}
+          </div>
+          <div className="mt-4 flex min-h-[44px] items-center px-1">
+            {step === 2 && (
+              <Appear>
+                <span className="inline-flex h-11 items-center rounded-[10px] bg-[#128F8B] px-5 text-[15px] font-semibold text-white" style={tapStyle(tap === "post")}>
+                  Post to clients’ dashboards
+                </span>
+              </Appear>
+            )}
+            {step === 3 && (
+              <Appear className="flex items-center gap-2 text-[15px] font-medium text-[#0F7673]">
+                <CheckIcon className="h-4 w-4" />
+                Posted to 48 clients’ dashboards
+              </Appear>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -619,6 +630,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
   })();
   const sheetPlace: React.CSSProperties = compact ? { left: 10, right: 10, top: 16, bottom: -48 } : { left: (WIDE.w - 640) / 2, width: 640, top: 36, bottom: -48 };
   const modalPlace: React.CSSProperties = compact ? { left: 10, right: 10, top: 16 } : { left: (WIDE.w - 460) / 2, width: 460, top: 36 };
+  const boxPlace: React.CSSProperties = compact ? { left: 14, right: 14, top: 40 } : { left: (WIDE.w - 560) / 2, width: 560, top: 100 };
   const columnPlace: Place = compact ? PLACE_COMPACT : { left: (WIDE.w - 540) / 2, right: (WIDE.w - 540) / 2, top: 52 };
   const surveyOn = shown === 0 && survey;
   const modalOn = shown === 3 && modal;
@@ -635,9 +647,9 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
           <Piece on={shown === 0} place={place}>
             <ClientCheckIn tap={tap} compact={compact} />
           </Piece>
-          <Piece on={shown === 1} place={place}>
-            <DashboardPosts step={news} over={over} tap={tap} compact={compact} fieldRef={fieldRef} />
-          </Piece>
+          <Rise on={shown === 1} z={10} style={boxPlace}>
+            <ArticleBox step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
+          </Rise>
           <Piece on={shown === 2} place={place}>
             <TeamCheckIn edit={teamEdit} typed={teamTyped} saved={saved} tap={tap} compact={compact} />
           </Piece>
