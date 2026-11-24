@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PrintFrame } from "@/components/site/blocks";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import { SummaryCards, SummaryEditToggle, SummaryReviewScreenCropped } from "@/components/product/attorney-review";
@@ -21,9 +20,29 @@ import { CheckIcon, CheckInIcon, CloseIcon, NotificationIcon, ViewIcon } from "@
    The list of coming check-ins in chapter 3 is staged: the product shows the
    next date for each kind of check-in. */
 
-const ROOT_WIDE = { w: 1440, h: 855 };
+const ROOT_WIDE = { w: 1140, h: 855 }; // a laptop-width window, so the panel reads beside the chapter list
 const ROOT_COMPACT = { w: 420, h: 720 };
 const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
+
+/* A dark print with the product on it. On wide screens the product runs off
+   the right and bottom edges; on phones it keeps an even mat */
+const FilmFrame = ({ compact, size, children }: { compact: boolean; size: { w: number; h: number }; children: React.ReactNode }) => {
+  const mat = compact ? { l: 0.04, t: 0.04, r: 0.04, b: 0.04 } : { l: 0.05, t: 0.065, r: 0, b: 0 };
+  const w = size.w / (1 - mat.l - mat.r);
+  const h = size.h / (1 - mat.t - mat.b);
+  return (
+    <div className="relative w-full overflow-hidden rounded-xl bg-[#062D2C] shadow-xl" style={{ aspectRatio: `${w} / ${h}` }}>
+      <img src="/central-park.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+      <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
+      <div
+        className={`absolute overflow-hidden bg-white ${compact ? "rounded-lg" : "rounded-tl-xl"}`}
+        style={{ left: `${mat.l * 100}%`, top: `${mat.t * 100}%`, right: `${mat.r * 100}%`, bottom: `${mat.b * 100}%`, boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
 
 export const FILM_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
@@ -477,7 +496,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
   const compact = useCompact();
   const root = compact ? ROOT_COMPACT : ROOT_WIDE;
   const stage = compact ? ROOT_COMPACT : PANEL_WIDE;
-  const panelCx = compact ? root.w / 2 : 1040;
+  const panelCx = compact ? root.w / 2 : root.w - PANEL_WIDE.w / 2;
   const pad = compact ? 24 : 32;
   const cardEmpty = pad * 2 + 46;
   const sheet = compact ? { w: 112, h: 146 } : { w: 94, h: 124 }; // six fit inside the card's padding
@@ -560,7 +579,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
     if (!inView) return;
 
     const R = compact ? ROOT_COMPACT : ROOT_WIDE;
-    const cx = compact ? R.w / 2 : 1040;
+    const cx = compact ? R.w / 2 : R.w - PANEL_WIDE.w / 2;
     const space = compact ? 24 : 32;
     const sh = compact ? 146 : 124;
     let live = true;
@@ -840,7 +859,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
       role="img"
       aria-label="An attorney drops a client's signed estate plan into Willow, which files it and sets up the account. Willow writes a summary the attorney approves, schedules check-ins year after year, and reaches the executors, trustees and advisors in the plan."
     >
-      <PrintFrame print="/central-park.jpg" aspect={`${root.w} / ${root.h}`}>
+      <FilmFrame compact={compact} size={root}>
         <ScaledScreen w={root.w} h={root.h}>
           <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: root.w, height: root.h }}>
             {!compact && (
@@ -1017,7 +1036,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock }: Props) => {
 
           </div>
         </ScaledScreen>
-      </PrintFrame>
+      </FilmFrame>
     </div>
   );
 };
