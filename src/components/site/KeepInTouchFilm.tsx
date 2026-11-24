@@ -19,10 +19,11 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
       then it's posted to clients' dashboards. In the product
       (dashboard-content.tsx) the attorney pastes the article's link, Willow
       reads its headline and blurb, and posts carry no image.
-   3. Imagined, not on main (Aaron, Nov 24): a tax or law update arrives as a
+   3. Imagined, not on main (Aaron, Nov 24): a tax update arrives as a
       notification, in the style of the booked-meeting one (chapter 5). It
-      opens to the update, the clients it may affect and why, and the email
-      Willow suggests, which the attorney sends to all of them.
+      opens, top to bottom, to the update, then the clients Willow suggests
+      reaching out to (View clients, not opened), with the suggested email
+      on the right, which the attorney sends to all of them.
    4. The yearly note to the executors and guardians a plan names
       (DEFAULTS.agent_checkin), a line typed onto it offering them a plan of
       their own, and saved.
@@ -77,18 +78,17 @@ const PAST = [
 
 /* Chapter 3, imagined (no such feature on main; Aaron asked for it on the
    page, Nov 24): a New York estate tax update read against the firm's 48
-   plans, each client it may affect with why, in a plan's own terms, and the
-   email Willow suggests. No figures, so nothing here dates or misstates the
-   law */
+   plans, the clients whose plans it may affect, and the email Willow
+   suggests. No figures, so nothing here dates or misstates the law */
 const LAW_PLANS = 48;
 const AFFECTED = [
-  { initials: "ER", name: "Elena Ruiz", why: "Trust gift set by the exemption" },
-  { initials: "DR", name: "Daniel Rosen", why: "Joint estate near the exemption" },
-  { initials: "MW", name: "Marcus Webb", why: "Estate near the exemption" },
-  { initials: "PA", name: "Priya Anand", why: "Will leaves a credit shelter trust" },
-  { initials: "OG", name: "Olivia Grant", why: "Owns a home in New York" },
+  { initials: "ER", name: "Elena Ruiz" },
+  { initials: "DR", name: "Daniel Rosen" },
+  { initials: "MW", name: "Marcus Webb" },
+  { initials: "PA", name: "Priya Anand" },
+  { initials: "OG", name: "Olivia Grant" },
 ];
-const LAW_W = { wide: 760, compact: 392 };
+const LAW_W = { wide: 780, compact: 392 };
 
 /* Chapter 4: what the attorney types onto the executors' note */
 const TEAM_TYPED = " And if you’d ever like a plan of your own, I’d be glad to help.";
@@ -400,52 +400,62 @@ const Article = ({ compact }: { compact: boolean }) => (
   </div>
 );
 
-/* 3. The update as a notification: its line, then "See more" opens it to
-   the update, who it may affect, and the suggested email, with Send at the
-   foot. Each part arrives just after the card has made room */
+/* 3. The update as a notification: its line, then "See more" opens it. Top
+   to bottom: the update, then the clients to reach out to (View clients
+   would list them; the film doesn't open it), and beside them on wide
+   screens the suggested email as it would go out. Send at the foot. Each
+   part arrives just after the card has made room */
 const LawNotice = ({ open, sent, tap, compact }: { open: boolean; sent: boolean; tap: Tap; compact: boolean }) => {
   const n = AFFECTED.length;
   const update = (
     <div>
       <Label>The update</Label>
       <p className="mt-2 text-[#1F2933]" style={{ fontSize: compact ? 14 : 15, lineHeight: 1.5 }}>
-        New York’s estate tax exemption changes on January 1. Willow read it against all {LAW_PLANS} of your clients’ plans.
+        New York’s estate tax exemption changes on January 1. Willow read it against all {LAW_PLANS} {compact ? "plans" : "of your clients’ plans"}.
       </p>
     </div>
   );
-  const who = (
+  const viewClients = <span className="inline-flex h-[32px] flex-shrink-0 items-center rounded-md border border-[#309E96] px-3 text-[13px] font-semibold text-[#0F7673]">View clients</span>;
+  const clients = (
     <div>
-      <Label>May affect</Label>
-      <div className={compact ? "mt-2 space-y-1.5" : "mt-2.5 space-y-3"}>
-        {AFFECTED.map((a, i) => (
-          <Reveal key={a.name} open={open} i={2 + i}>
-            <div className="flex items-center gap-3">
-              <span className={`flex flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370] ${compact ? "h-7 w-7" : "h-8 w-8"}`}>{a.initials}</span>
-              {compact ? (
-                <span className="min-w-0 flex-1 truncate text-[13.5px]">
-                  <span className="font-medium text-[#1F2933]">{a.name}</span>
-                  <span className="text-[#6B7280]"> · {a.why}</span>
-                </span>
-              ) : (
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14.5px] font-medium text-[#1F2933]">{a.name}</span>
-                  <span className="block text-[13px] text-[#6B7280]">{a.why}</span>
-                </span>
-              )}
-            </div>
-          </Reveal>
-        ))}
+      <Label>We suggest reaching out to</Label>
+      <div className="mt-2.5 flex items-center gap-3">
+        <span className="flex flex-shrink-0">
+          {AFFECTED.map((a, i) => (
+            <span
+              key={a.name}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]"
+              style={{ marginLeft: i ? -8 : 0, boxShadow: "0 0 0 2px #FFFFFF" }}
+            >
+              {a.initials}
+            </span>
+          ))}
+        </span>
+        <span className="min-w-0 flex-1 leading-snug">
+          <span className="block font-medium text-[#1F2933]" style={{ fontSize: compact ? 14 : 14.5 }}>{n} clients</span>
+          <span className="block text-[#6B7280]" style={{ fontSize: compact ? 12.5 : 13 }}>{compact ? "may be affected" : "whose plans this may affect"}</span>
+        </span>
+        {compact && viewClients}
       </div>
+      {!compact && <div className="mt-3">{viewClients}</div>}
     </div>
   );
   const email = (
     <div>
       <Label>Suggested email</Label>
-      <div className="mt-2.5 rounded-xl bg-[#E6F5F4] px-4 py-3">
-        <p className="font-semibold text-[#1F2933]" style={{ fontSize: compact ? 14 : 14.5 }}>New York’s estate tax is changing for 2027</p>
-        <p className="mt-1.5 text-[#374151]" style={{ fontSize: compact ? 13.5 : 14, lineHeight: 1.5 }}>
-          Hi <FillIn>First name</FillIn>, New York’s estate tax exemption changes on January 1. I’ve looked at your plan, and it may affect you. I’d like to walk you through it.
-        </p>
+      <div className="mt-2.5 overflow-hidden rounded-xl border border-[#E5E7EB]">
+        <div className="border-b border-[#EEF0F2] px-4 py-2.5">
+          <p className="text-[12.5px] text-[#6B7280]">To {n} clients</p>
+          <p className="mt-0.5 font-semibold text-[#1F2933]" style={{ fontSize: compact ? 13.5 : 14 }}>New York’s estate tax is changing for 2027</p>
+        </div>
+        <div className="px-4 pb-4 pt-3" style={{ fontFamily: ARIAL }}>
+          {!compact && <img src="/logo.png" alt="" className="mb-2.5" style={{ height: 18, width: "auto" }} />}
+          <p className="text-[#374151]" style={{ fontSize: compact ? 13 : 13.5, lineHeight: 1.6 }}>Hi <FillIn>First name</FillIn>,</p>
+          <p className="mt-2 text-[#374151]" style={{ fontSize: compact ? 13 : 13.5, lineHeight: 1.6 }}>
+            New York’s estate tax exemption changes on January 1. I’ve looked at your plan, and it may affect you. I’d like to walk you through it.
+          </p>
+          {!compact && <span className="mt-3 inline-block rounded-md bg-[#309E96] px-3.5 py-2 text-[13px] font-semibold text-white">Book a meeting</span>}
+        </div>
       </div>
     </div>
   );
@@ -454,10 +464,8 @@ const LawNotice = ({ open, sent, tap, compact }: { open: boolean; sent: boolean;
       <div className={`flex items-center gap-3.5 ${compact ? "px-5 py-4" : "px-7 py-5"}`}>
         <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: compact ? 15.5 : 17 }}>New York estate tax update may affect {n} clients</p>
-          <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: compact ? 13.5 : 14 }}>
-            {compact ? "The exemption changes for 2027" : "The exemption changes for 2027 · Suggested email ready"}
-          </p>
+          <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: compact ? 15.5 : 17 }}>New York tax update: changes may affect {n} clients</p>
+          <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: compact ? 13.5 : 14 }}>Suggested email ready</p>
         </div>
         <span className="flex flex-shrink-0 items-center gap-1 rounded px-1 font-medium text-[#0C7370]" style={{ fontSize: compact ? 14 : 14.5, ...tapStyle(tap === "law") }}>
           {open ? "See less" : "See more"}
@@ -468,20 +476,23 @@ const LawNotice = ({ open, sent, tap, compact }: { open: boolean; sent: boolean;
         <div className="min-h-0 overflow-hidden">
           <div className="border-t border-[#EEF0F2]">
             {compact ? (
-              <div className="space-y-4 px-5 py-4">
-                {who}
-                <Reveal open={open} i={7}>{email}</Reveal>
+              <div className="space-y-3.5 px-5 py-4">
+                <Reveal open={open} i={0}>{update}</Reveal>
+                <Reveal open={open} i={1}>{clients}</Reveal>
+                <Reveal open={open} i={2}>{email}</Reveal>
               </div>
             ) : (
-              <div className="grid grid-cols-[1.15fr_1fr]">
+              <div className="grid grid-cols-[1fr_1.15fr]">
                 <div className="space-y-6 border-r border-[#EEF0F2] px-7 py-6">
                   <Reveal open={open} i={0}>{update}</Reveal>
-                  <Reveal open={open} i={1}>{email}</Reveal>
+                  <Reveal open={open} i={1}>{clients}</Reveal>
                 </div>
-                <div className="px-7 py-6">{who}</div>
+                <div className="px-7 py-6">
+                  <Reveal open={open} i={2}>{email}</Reveal>
+                </div>
               </div>
             )}
-            <Reveal open={open} i={compact ? 8 : 7}>
+            <Reveal open={open} i={3}>
               <div className={`flex items-center justify-end gap-4 border-t border-[#EEF0F2] ${compact ? "px-5 py-3" : "px-7 py-3.5"}`}>
                 <span className="text-[13.5px] font-medium text-[#6B7280]">Edit email</span>
                 <span
@@ -865,7 +876,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="Willow sends the check-in the attorney writes to every client once a year, each on their own date, posts the firm's articles to every client's dashboard, tells the attorney when a tax or law update may affect clients and suggests an email to them, writes every year to the executors and guardians each plan names, and when a client passes and the executor asks for access, shows the meeting she booked first, her note, and the family invited with her."
+      aria-label="Willow sends the check-in the attorney writes to every client once a year, each on their own date, posts the firm's articles to every client's dashboard, tells the attorney when a tax update may affect clients, suggests whom to reach out to and the email to send, writes every year to the executors and guardians each plan names, and when a client passes and the executor asks for access, shows the meeting she booked first, her note, and the family invited with her."
     >
       <Print size={size}>
         <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: size.w, height: size.h }}>
@@ -902,7 +913,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
             <ArticleFeed step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
           </Piece>
           {/* 3. The update, placed so it sits in the middle once opened */}
-          <Rise on={shown === 2} z={10} style={{ left: 0, right: 0, top: compact ? 53 : 100 }}>
+          <Rise on={shown === 2} z={10} style={{ left: 0, right: 0, top: compact ? 32 : 96 }}>
             <div className="mx-auto" style={{ width: compact ? LAW_W.compact : LAW_W.wide }}>
               <LawNotice open={lawOpen} sent={lawSent} tap={tap} compact={compact} />
             </div>
