@@ -29,8 +29,8 @@ const PLAN = [
 ];
 const PEOPLE = [
   { initials: "MR", name: "Maria Rosen", role: "Executor" },
-  { initials: "ER", name: "Emma Rosen", role: "Backup executor" },
-  { initials: "LR", name: "Leo Rosen", role: "Backup trustee" },
+  { initials: "ER", name: "Emma Rosen", role: "Backup co-executor" },
+  { initials: "LR", name: "Leo Rosen", role: "Backup co-executor" },
 ];
 
 type Beat = "ask" | "notify" | "open";
