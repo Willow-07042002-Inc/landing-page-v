@@ -21,7 +21,7 @@ export const KEEP_CHAPTERS: Chapter[] = [
   {
     id: "check-ins",
     also: ["survey"],
-    title: "Check in with clients every year",
+    title: "Automate client check-ins",
     body: "Every year, Willow asks each client what’s changed since they signed. The email is in your words, and you can preview the questions before anything goes out.",
   },
   {
@@ -30,16 +30,16 @@ export const KEEP_CHAPTERS: Chapter[] = [
     body: "Add a link to anything your firm publishes, and it appears on every client’s dashboard, so you stay in view between check-ins.",
   },
   {
-    id: "their-team",
-    also: ["their-people", "advisors"],
-    title: "Reach out to their team",
-    body: "Write once to the advisors and executors in each plan. Willow keeps in touch with them every year, so you know them before they need you.",
+    id: "family",
+    also: ["their-team", "their-people", "advisors", "executors"],
+    title: "Turn their family into clients",
+    body: "Every year, Willow writes to the family each plan names as executors and guardians, in your words, with a button to book time with you. When they want a plan of their own, you’re the attorney they already know.",
   },
   {
     id: "probate",
     also: ["when-it-matters", "booking"],
-    title: "Open the path to probate",
-    body: "When a client passes, their executor comes to you for what was held back. You meet with them first, and nothing opens until you grant it.",
+    title: "Be the firm their executor calls",
+    body: "When a client passes, their executor knows exactly who to call. They come to you for what was held back, you meet with them first, and nothing opens until you grant it.",
   },
 ];
 
@@ -212,7 +212,7 @@ const ChapterFilmSection = ({
   );
 };
 
-/* After signing: check-ins, the firm's updates, their team, the path to probate */
+/* After signing: check-ins, the firm's content, the family, the executor's call */
 const StayingAhead = () => (
   <ChapterFilmSection
     name="keep"

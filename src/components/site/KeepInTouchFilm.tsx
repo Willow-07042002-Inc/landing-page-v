@@ -53,7 +53,7 @@ const PAST = [
 ];
 
 /* Chapter 3: what the attorney types onto the advisors' check-in */
-const TEAM_TYPED = " If anything changes on your side, I’d be glad to hear from you.";
+const TEAM_TYPED = " And if you’d ever like a plan of your own, I’d be glad to help.";
 
 /* Chapter 4: the access request popup's times (the attorney's open hours) */
 const DAYS = ["Tue, Dec 1", "Wed, Dec 2", "Thu, Dec 3", "Fri, Dec 4"];
@@ -303,13 +303,15 @@ const Article = ({ compact }: { compact: boolean }) => (
   </div>
 );
 
-/* 3. The professional check-in to the client's advisors, being written */
+/* 3. The yearly note to the executors and guardians a plan names (the
+   product's "Note to executors & guardians" card, its default words), with a
+   line typed on that offers them a plan of their own */
 const TeamCheckIn = ({ edit, typed, saved, tap, compact }: { edit: Edit; typed: number; saved: boolean; tap: Tap; compact: boolean }) => {
   const dirty = edit !== "idle" && !saved;
   const ring = edit === "typing" || tap === "message";
   return (
     <>
-      <Bar title="Professional check-in" compact={compact}>
+      <Bar title="Note to executors & guardians" compact={compact}>
         <span
           className="inline-flex h-[34px] items-center rounded-md px-[13px] text-[13.5px] font-semibold"
           style={{ background: dirty ? "#309E96" : "#F3F4F6", color: dirty ? "#FFFFFF" : "#9CA3AF", ...tapStyle(tap === "save"), transition: "background-color 200ms ease, color 200ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}
@@ -319,14 +321,17 @@ const TeamCheckIn = ({ edit, typed, saved, tap, compact }: { edit: Edit; typed: 
       </Bar>
       <EmailHead
         compact={compact}
-        when={compact ? "Sends automatically after 1 year" : "Sends automatically after 1 year, then once a year"}
-        subject={<>Checking in from <FillIn>Your firm</FillIn> on behalf of <FillIn>Client’s name</FillIn></>}
-        to={<><Role>Financial advisor</Role><Role>Accountant</Role></>}
+        when={compact ? "Sends automatically after 1 month" : "Sends automatically after 1 month, then once a year"}
+        subject={<>Checking in on <FillIn>Client’s name</FillIn>’s estate plan</>}
+        to={<><Role>Executor</Role><Role>Guardian</Role>{!compact && <Role>Trustee</Role>}</>}
       />
       <Mail compact={compact}>
         <p className="mb-3 text-[#374151]" style={para(compact)}>Hi <FillIn>First name</FillIn>,</p>
+        <p className="mb-3 text-[#374151]" style={para(compact)}>
+          I’m <FillIn>Your name</FillIn>, <FillIn>Client’s name</FillIn>’s estate planning attorney. They’ve named you as <FillIn>Role</FillIn> in their plan, a real vote of confidence, and nothing you need to do today.
+        </p>
         <p className="-mx-1.5 mb-3 rounded-[4px] px-1.5 text-[#374151]" style={{ ...para(compact), boxShadow: ring ? RING_ON : RING_OFF, transition: "box-shadow 180ms ease" }}>
-          I’m <FillIn>Your name</FillIn>, <FillIn>Client’s name</FillIn>’s estate planning attorney. You’re listed as their <FillIn>Role</FillIn>, so I wanted to make sure we’re in touch.
+          If you’d like to understand what the role involves, I’m happy to walk you through it.
           {edit === "typing" && (
             <>
               {TEAM_TYPED.slice(0, typed)}
