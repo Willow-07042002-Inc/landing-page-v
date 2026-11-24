@@ -1,79 +1,42 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { PrintFrame, WRAP } from "@/components/site/blocks";
-import PlanDropStory from "@/components/site/PlanDropStory";
-import { ScaledScreen } from "@/components/product/kit";
-import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
-import { TeamPanel } from "@/components/product/attorney-client-panel";
-import { BookingPageScreen } from "@/components/product/attorney-booking";
-import { SummaryReviewScreenCropped, SUMMARY_REVIEW_CROP_HEIGHT } from "@/components/product/attorney-review";
-import { DashboardWithReleaseRequest, DashboardWithSendOrSkip } from "@/components/product/composites";
+import { WRAP } from "@/components/site/blocks";
+import ClientFilm from "@/components/site/ClientFilm";
 
-/* What the attorney does with Willow, one task at a time: a ruled row of tasks
-   across the top and the real product screen for the one that's open. Every
-   task has an anchor, so the deeper pages parked in src/content/pages.tsx land
-   on their part of this section. */
+/* One film of a client's life on Willow, with a row of chapters above it that
+   doubles as its progress bar: the film moves from one to the next by itself,
+   and any chapter can be opened to watch from there. Every chapter has an
+   anchor, so the deeper pages parked in src/content/pages.tsx land on theirs. */
 
-type Task = {
-  id: string;
-  also?: string[];
-  title: string;
-  body: string;
-  print?: string;
-  h?: number;
-  visual: () => React.ReactNode;
-};
-
-const TASKS: Task[] = [
+const CHAPTERS: { id: string; also?: string[]; title: string; body: string }[] = [
   {
     id: "set-up",
     also: ["signed-plan", "dashboard"],
     title: "Set up a client",
-    body: "Draft and sign the way you always have. Then drop in the signed documents, and Willow files them under the right person and fills in their details.",
-    visual: () => <PlanDropStory />,
+    body: "Draft and sign the way you always have. Then drop in the signed documents, and Willow files them under the right person and sets up their account.",
   },
   {
     id: "plan-summaries",
     title: "Explain the plan",
-    body: "Willow drafts a plain-English summary of the plan. You edit and approve it, and clients see nothing until you do.",
-    print: "/florida-coast.jpg",
-    h: SUMMARY_REVIEW_CROP_HEIGHT,
-    visual: () => <SummaryReviewScreenCropped />,
+    body: "Willow drafts a plain-English summary of the plan. You review and approve it, and clients see nothing until you do.",
   },
   {
     id: "check-ins",
+    also: ["booking"],
     title: "Check in every year",
-    body: "Willow prepares a check-in asking what's changed: a move, a new grandchild, a sale of the house. Each one waits for you to send or skip.",
-    print: "/santa-monica.jpg",
-    visual: () => <DashboardWithSendOrSkip />,
-  },
-  {
-    id: "booking",
-    title: "Book the next call",
-    body: "When something changes, clients book time on your calendar, and the meeting link is already in place.",
-    print: "/williamsburg.jpg",
-    h: 900,
-    visual: () => <BookingPageScreen email="daniel.rosen@gmail.com" />,
+    body: "Check-ins are lined up year after year for the client, their agents and their professionals. Each one waits for you to send or skip.",
   },
   {
     id: "their-people",
-    title: "Prepare their people",
-    body: "The agents and professionals named in the plan get check-ins of their own and can book time with you.",
-    print: "/willow-street.jpg",
-    visual: () => <AttorneyClientsScreen open tab="Team" panel={<TeamPanel />} />,
-  },
-  {
-    id: "when-it-matters",
-    title: "Be there when it matters",
-    body: "A family member tells you someone has passed and attaches the death certificate. You grant or deny access, and nothing opens until you do.",
-    print: "/hudson-bridge.jpg",
-    visual: () => <DashboardWithReleaseRequest />,
+    also: ["when-it-matters"],
+    title: "Reach their team",
+    body: "Down the line, the people in the plan hear from you too. Executors, trustees and advisors get check-ins and can book time with you.",
   },
 ];
 
-const taskFor = (hash: string) => {
+const chapterFor = (hash: string) => {
   const key = hash.replace("#", "");
-  return TASKS.findIndex((t) => t.id === key || t.also?.includes(key));
+  return CHAPTERS.findIndex((c) => c.id === key || c.also?.includes(key));
 };
 
 /* The section headline: a light serif line, then an italic teal line */
@@ -86,88 +49,95 @@ export const LightHead = ({ title, accent }: { title: string; accent: string }) 
   </div>
 );
 
-const FadeIn = ({ children }: { children: React.ReactNode }) => {
-  const [on, setOn] = useState(false);
+/* The open chapter's line fills as it plays */
+const Fill = ({ ms }: { ms: number }) => {
+  const [on, setOn] = useState(ms === 0);
   useEffect(() => {
     const t = window.setTimeout(() => setOn(true), 16);
     return () => window.clearTimeout(t);
   }, []);
-  return <div style={{ opacity: on ? 1 : 0, transition: "opacity 260ms ease" }}>{children}</div>;
+  return <span className="absolute left-0 top-[-2px] h-0.5 bg-[#138F8B]" style={{ width: on ? "100%" : "0%", transition: on && ms ? `width ${ms}ms linear` : "none" }} />;
 };
 
 const StayingAhead = () => {
   const { hash } = useLocation();
-  const [active, setActive] = useState(() => Math.max(0, taskFor(hash)));
+  const [active, setActive] = useState(() => Math.max(0, chapterFor(hash)));
+  const [replay, setReplay] = useState(0);
+  const [run, setRun] = useState<{ id: number; ms: number } | null>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
-    const i = taskFor(hash);
+    const i = chapterFor(hash);
     if (i >= 0) setActive(i);
   }, [hash]);
 
-  const open = (i: number, focus = false) => {
-    setActive(i);
-    const tab = tabRefs.current[i];
-    if (!tab) return;
-    if (focus) tab.focus({ preventScroll: true });
-    const row = tab.parentElement;
-    if (row && row.scrollWidth > row.clientWidth) {
+  /* On phones the row scrolls: keep the open chapter in sight */
+  useEffect(() => {
+    const tab = tabRefs.current[active];
+    const row = tab?.parentElement;
+    if (tab && row && row.scrollWidth > row.clientWidth) {
       row.scrollTo({ left: tab.offsetLeft - (row.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
     }
+  }, [active]);
+
+  const open = (i: number, focus = false) => {
+    setActive(i);
+    setRun(null);
+    setReplay((r) => r + 1);
+    if (focus) tabRefs.current[i]?.focus({ preventScroll: true });
   };
   const onKey = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowRight") open((active + 1) % TASKS.length, true);
-    else if (e.key === "ArrowLeft") open((active + TASKS.length - 1) % TASKS.length, true);
+    if (e.key === "ArrowRight") open((active + 1) % CHAPTERS.length, true);
+    else if (e.key === "ArrowLeft") open((active + CHAPTERS.length - 1) % CHAPTERS.length, true);
     else return;
     e.preventDefault();
   };
 
-  const task = TASKS[active];
+  const chapter = CHAPTERS[active];
   return (
     <section className="bg-[#F8FAFC] pb-16 md:pb-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <LightHead title="A practice families" accent="keep coming back to." />
 
         <div className="relative mt-10 md:mt-14">
-          {TASKS.flatMap((t) => [t.id, ...(t.also ?? [])]).map((id) => (
+          {CHAPTERS.flatMap((c) => [c.id, ...(c.also ?? [])]).map((id) => (
             <span key={id} id={id} className="absolute -top-24 left-0" aria-hidden />
           ))}
-          <div role="tablist" aria-label="What you do with Willow" onKeyDown={onKey} className="relative flex gap-4 overflow-x-auto [scrollbar-width:none] lg:grid lg:grid-cols-6 lg:gap-3 lg:overflow-visible">
-            {TASKS.map((t, i) => (
+          <div role="tablist" aria-label="A client's life on Willow" onKeyDown={onKey} className="relative flex gap-4 overflow-x-auto pt-0.5 [scrollbar-width:none] lg:grid lg:grid-cols-4 lg:gap-3 lg:overflow-visible">
+            {CHAPTERS.map((c, i) => (
               <button
-                key={t.id}
+                key={c.id}
                 ref={(el) => { tabRefs.current[i] = el; }}
                 type="button"
                 role="tab"
-                id={`task-tab-${t.id}`}
+                id={`chapter-tab-${c.id}`}
                 aria-selected={i === active}
-                aria-controls="task-panel"
+                aria-controls="chapter-panel"
                 tabIndex={i === active ? 0 : -1}
                 onClick={() => open(i)}
-                className={`flex-shrink-0 border-t-2 pb-2 pr-3 pt-3.5 text-left text-[15px] font-medium leading-snug transition-colors ${
-                  i === active ? "border-[#138F8B] text-[#222222]" : "border-gray-200 text-gray-500 hover:text-[#222222]"
+                className={`relative flex-shrink-0 border-t-2 border-gray-200 pb-2 pr-3 pt-3.5 text-left text-[15px] font-medium leading-snug transition-colors ${
+                  i === active ? "text-[#222222]" : "text-gray-500 hover:text-[#222222]"
                 }`}
               >
-                {t.title}
+                {i < active && <span className="absolute left-0 top-[-2px] h-0.5 w-full bg-[#138F8B]" />}
+                {i === active && run && <Fill key={run.id} ms={run.ms} />}
+                {c.title}
               </button>
             ))}
           </div>
 
-          <div id="task-panel" role="tabpanel" aria-labelledby={`task-tab-${task.id}`}>
-            <FadeIn key={task.id}>
-              <p className="mt-5 max-w-3xl text-[16px] leading-relaxed text-gray-600 md:min-h-[3.5rem] md:text-[17px]" style={{ textWrap: "pretty" }}>
-                {task.body}
-              </p>
-              <div className="mt-5">
-                {task.print ? (
-                  <PrintFrame print={task.print} aspect="1440 / 855">
-                    <ScaledScreen w={1440} h={task.h ?? 855}>{task.visual()}</ScaledScreen>
-                  </PrintFrame>
-                ) : (
-                  task.visual()
-                )}
-              </div>
-            </FadeIn>
+          <div id="chapter-panel" role="tabpanel" aria-labelledby={`chapter-tab-${chapter.id}`}>
+            <p key={chapter.id} className="mt-5 max-w-3xl text-[16px] leading-relaxed text-gray-600 md:min-h-[3.5rem] md:text-[17px]" style={{ textWrap: "pretty" }}>
+              {chapter.body}
+            </p>
+            <div className="mt-5">
+              <ClientFilm
+                chapter={active}
+                replay={replay}
+                onChapter={setActive}
+                onStart={(ms) => setRun((r) => ({ id: (r?.id ?? 0) + 1, ms }))}
+              />
+            </div>
           </div>
         </div>
       </div>
