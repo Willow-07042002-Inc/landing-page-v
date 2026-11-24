@@ -1,7 +1,7 @@
 import React from "react";
 import { WRAP } from "@/components/site/blocks";
 import { LightHead } from "@/components/site/StayingAhead";
-import { FloatStack, ProBellIcon, WIcon } from "@/components/product/kit";
+import { FloatStack, ProBellIcon } from "@/components/product/kit";
 import { ProClientRowView, ProCoupleView } from "@/components/product/attorney-clients";
 import { ProColumn, ProReminder } from "@/components/product/attorney-dashboard";
 import {
@@ -15,11 +15,9 @@ import {
 
 /* Will it fit my practice? The film above shows what Willow does; these tiles
    answer the attorney's next question, with the quiet tiles and small pieces of
-   product of harvey.ai's product grid: your clients in one space (the real
-   Clients list), your style, your apps, and you at the center (the real
-   Required actions column). Summaries and access always wait for the attorney;
-   a check-in waits only when its card has "Ask me before each one goes out"
-   on, so the copy says "can". */
+   product of harvey.ai's product grid: every client in one space (the real
+   Clients list), the apps it connects to, what needs them (the real Required
+   actions column), and a check-in in the firm's own words and style. */
 
 const UI_SHADOW = "0 1px 2px rgba(16,24,40,0.05), 0 10px 24px -8px rgba(16,24,40,0.14)";
 const PRODUCT_FONT = "Figtree, Inter, sans-serif";
@@ -37,8 +35,8 @@ const TileBody = ({ children }: { children: React.ReactNode }) => (
 );
 
 /* A piece of the product running off the bottom of its tile */
-const Bleed = ({ height, className = "", children }: { height: number; className?: string; children: React.ReactNode }) => (
-  <div aria-hidden className={`overflow-hidden px-1 pt-1 ${className}`} style={{ height, WebkitMaskImage: FADE_OUT, maskImage: FADE_OUT, fontFamily: PRODUCT_FONT }}>
+const Bleed = ({ height, children }: { height: number; children: React.ReactNode }) => (
+  <div aria-hidden className="overflow-hidden px-1 pt-1" style={{ height, WebkitMaskImage: FADE_OUT, maskImage: FADE_OUT, fontFamily: PRODUCT_FONT }}>
     {children}
   </div>
 );
@@ -50,22 +48,12 @@ const ClientRows = ({ pills }: { pills: boolean }) => (
     <ProClientRowView c={{ name: "Marcus Webb", email: "marcus.webb@outlook.com" }} />
     <ProClientRowView c={{ name: "Jordan Lee", email: "jordan.lee@gmail.com", pill: pills ? "Pending invite" : undefined }} />
     <ProClientRowView c={{ name: "Priya Anand", email: "priya.anand@outlook.com" }} />
+    <ProClientRowView c={{ name: "Grace Liu", email: "grace.liu@yahoo.com" }} />
   </FloatStack>
 );
 
-/* clients-list: the search, Add client, and the list */
 const ClientList = () => (
   <div className="mx-auto w-full max-w-[500px] text-left">
-    <div className="mb-3 flex h-10 items-center gap-2.5">
-      <div className="flex h-10 min-w-0 flex-1 items-center gap-2.5 rounded-[10px] border border-[#E5E7EB] bg-white px-3.5 text-[14px] text-[#8E8E93]">
-        <WIcon name="search" className="h-4 w-4 flex-shrink-0" />
-        <span className="truncate">Search clients</span>
-      </div>
-      <span className="inline-flex h-10 flex-shrink-0 items-center gap-1.5 rounded-[10px] bg-[#309E96] px-4 text-[14px] font-medium text-white">
-        Add client
-        <WIcon name="chevronDown" className="h-4 w-4" />
-      </span>
-    </div>
     <div className="hidden sm:block"><ClientRows pills /></div>
     <div className="sm:hidden"><ClientRows pills={false} /></div>
   </div>
@@ -74,21 +62,28 @@ const ClientList = () => (
 const RequiredActions = () => (
   <div className="w-full text-left">
     <ProColumn icon={<ProBellIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />} title="Required actions" count={3} rounding="rounded-t-2xl">
-      <ProReminder title="Daniel's summary is ready for review" cta="Review summary" />
-      <ProReminder title="Checking in: has anything changed?" sub="To Daniel and Maria · due today" cta="Send or skip" />
-      <ProReminder title="Elena says something changed" sub="Has your family dynamic changed?" cta="See what changed" />
+      <ProReminder title="Daniel's summary is ready" cta="Review summary" />
+      <ProReminder title="Elena says something changed" cta="See what changed" />
     </ProColumn>
   </div>
 );
 
+/* A check-in as the client gets it, in the firm's name and the attorney's words */
 const InYourWords = () => (
-  <div aria-hidden className="w-full overflow-hidden rounded-lg bg-white text-left" style={{ boxShadow: UI_SHADOW, fontFamily: PRODUCT_FONT }}>
+  <div className="w-full overflow-hidden rounded-t-2xl bg-white text-left" style={{ boxShadow: UI_SHADOW }}>
     <div className="h-1 bg-[#309E96]" />
-    <div className="px-3.5 py-3">
-      <p className="font-heading text-[12.5px] font-bold text-[#1F2933]">Alvarez Family Law</p>
-      <p className="mt-2 text-[12.5px] font-semibold leading-snug text-[#1F2933]">Checking in: has anything changed?</p>
-      <p className="mt-1 text-[12px] leading-snug text-[#6B7280]">Hi Daniel, I wanted to check in.</p>
-      <p className="mt-2 border-t border-[#F0F1F3] pt-2 text-[11.5px] font-medium text-[#309E96]">Every July 14</p>
+    <div className="px-6 py-5">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-heading text-[15px] font-bold text-[#1F2933]">Alvarez Family Law</p>
+        <p className="flex-shrink-0 text-[12.5px] font-medium text-[#309E96]">Every July 14</p>
+      </div>
+      <p className="mt-4 text-[15px] font-semibold leading-snug text-[#1F2933]">Checking in: has anything changed?</p>
+      <div className="mt-3 space-y-2.5 text-[14px] leading-[1.6] text-[#4B5563]">
+        <p>Hi Daniel,</p>
+        <p>It&rsquo;s been a while since we finished your estate plan, and I wanted to check in.</p>
+        <p>Once a year I ask every client the same short questions. It&rsquo;s how we make sure your plan still says what you want it to.</p>
+      </div>
+      <p className="mt-3 text-[14px] font-medium text-[#1F2933]">Rachel</p>
     </div>
   </div>
 );
@@ -113,41 +108,42 @@ const WhatYouDeliver = () => (
           <TileTitle>Manage your clients from one space</TileTitle>
           <TileBody>Every client, their documents, their team and your notes, all in one place.</TileBody>
           <div className="mt-auto pt-8">
-            <Bleed height={470}>
+            <Bleed height={520}>
               <ClientList />
             </Bleed>
           </div>
         </article>
 
-        <article className={`${TILE} p-7 lg:col-span-3 lg:min-h-[330px]`}>
-          <TileTitle>Works in your style</TileTitle>
-          <TileBody>Your words, logo and timing. Set them once.</TileBody>
-          <div className="mt-auto pt-6">
-            <InYourWords />
-          </div>
-        </article>
-
-        <article id="integrations" className={`${TILE} scroll-mt-24 p-7 lg:col-span-3 lg:min-h-[330px]`}>
-          <TileTitle>Connector library</TileTitle>
-          <TileBody>Your calendar, video and contacts, connected once.</TileBody>
-          <ul className="mt-auto grid grid-cols-3 gap-2 pt-6">
+        <article id="integrations" className={`${TILE} scroll-mt-24 p-7 lg:col-span-3 lg:min-h-[340px]`}>
+          <TileTitle>Connect</TileTitle>
+          <ul className="mt-auto grid grid-cols-2 gap-2.5 pt-6 min-[420px]:grid-cols-3 sm:grid-cols-3 lg:grid-cols-2">
             {CONNECTORS.map(({ name, Logo }) => (
-              <li key={name} title={name} className="flex aspect-square items-center justify-center rounded-lg bg-white" style={{ boxShadow: UI_SHADOW }}>
-                <Logo className="h-6 w-6" />
+              <li key={name} title={name} className="flex h-[76px] items-center justify-center rounded-lg bg-white" style={{ boxShadow: UI_SHADOW }}>
+                <Logo className="h-9 w-9" />
                 <span className="sr-only">{name}</span>
               </li>
             ))}
           </ul>
         </article>
 
-        <article className={`${TILE} gap-6 px-7 pt-7 sm:col-span-2 sm:flex-row lg:col-span-6 lg:min-h-[320px]`}>
-          <div className="sm:w-[42%] sm:flex-shrink-0 sm:pb-8">
-            <TileTitle>You stay at the center</TileTitle>
-            <TileBody>You approve every summary and access request, and you can review any check-in before it goes out.</TileBody>
+        <article className={`${TILE} px-7 pt-7 lg:col-span-3 lg:min-h-[340px]`}>
+          <TileTitle>Prioritize what matters</TileTitle>
+          <TileBody>We&rsquo;ll let you know what matters, so you stay on top of everything.</TileBody>
+          <div className="mt-auto pt-5">
+            <Bleed height={150}>
+              <RequiredActions />
+            </Bleed>
+          </div>
+        </article>
+
+        <article className={`${TILE} gap-6 px-7 pt-7 sm:col-span-2 sm:flex-row lg:col-span-6 lg:min-h-[340px]`}>
+          <div className="sm:w-[38%] sm:flex-shrink-0 sm:pb-7">
+            <TileTitle>Works in your style</TileTitle>
+            <TileBody>Your words, your logo and your timing. Set them once, and Willow follows them for every client.</TileBody>
           </div>
           <div className="min-w-0 flex-1 self-end">
-            <Bleed height={270}>
-              <RequiredActions />
+            <Bleed height={300}>
+              <InYourWords />
             </Bleed>
           </div>
         </article>
