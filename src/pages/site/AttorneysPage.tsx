@@ -16,15 +16,30 @@ import SecurityControls from "@/components/site/SecurityControls";
    closing cards: the demo ask is the footer's top line, as on harvey.ai
    (Aaron, Nov 24). No attorney reviews on this page. */
 
+/* The belief, as Aaron's own words: set like the About page's founder quote
+   (light serif in curly quotes, then the round headshot with his name and
+   "Founder & CEO, Willow"), a step smaller than it so it sits under the
+   hero without shouting, on a wider measure than the hero's subtitle. */
 const Belief = () => (
   <section className="bg-[#F8FAFC] pb-16 md:pb-24">
-    <div className={`${WRAP} max-w-5xl`}>
-      <blockquote className="text-center">
-        <p className="mx-auto max-w-[54rem] text-[1.0625rem] text-[#222222] sm:text-[1.1875rem] md:text-[1.375rem]" style={{ lineHeight: 1.5, textWrap: "balance" }}>
-          At Willow, our goal is to ensure every attorney can{" "}
-          <em className="whitespace-nowrap font-medium not-italic text-[#138F8B]">sell their practice</em> to the next attorney in line when they&rsquo;re ready to retire, rather than close it down because their relationships have faded over time.
-        </p>
-      </blockquote>
+    <div className={`${WRAP} max-w-6xl`}>
+      <figure className="text-center">
+        <blockquote>
+          <p className="mx-auto max-w-[62rem] font-heading text-[1.1875rem] font-light text-[#222222] sm:text-[1.375rem] md:text-[1.625rem]" style={{ lineHeight: 1.45, letterSpacing: "-0.005em", textWrap: "balance" }}>
+            &ldquo;At Willow, our goal is to ensure every attorney can{" "}
+            <em className="whitespace-nowrap font-normal not-italic text-[#138F8B]">sell their practice</em> to the next attorney in line when they&rsquo;re ready to retire, rather than close it down because their relationships have faded over time.&rdquo;
+          </p>
+        </blockquote>
+        <figcaption className="mt-7 flex items-center justify-center gap-3 md:mt-8">
+          <span className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-gray-200">
+            <img src="/Burlacoff Headshot.svg" alt="" className="h-full w-full object-cover" style={{ objectPosition: "center 25%", transform: "scale(1.7)" }} />
+          </span>
+          <span className="text-left">
+            <span className="block text-[15px] font-medium text-[#222222]">Aaron Burlacoff</span>
+            <span className="block text-[14px] text-gray-600">Founder &amp; CEO, Willow</span>
+          </span>
+        </figcaption>
+      </figure>
     </div>
   </section>
 );
