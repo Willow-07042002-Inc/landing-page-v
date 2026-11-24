@@ -1,19 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ScaledScreen, WIcon } from "@/components/product/kit";
 import { ZoomLogo } from "@/components/product/attorney-booking";
-import { CheckInSheet } from "@/components/product/client-app";
-import { CalendarCheckIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, NotificationIcon, UploadIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CalendarCheckIcon, CheckIcon, ChevronDownIcon, NotificationIcon, UploadIcon } from "@/components/product/willow-icons";
 import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type FilmProps } from "@/components/site/film-kit";
 
 /* "A practice families keep coming back to": four chapters, each one piece of
    the product set on a dark print. The piece rises in from below and runs off
    the bottom edge, with room left, right and above, so it reads as something
    placed in the frame rather than a screenshot of a whole screen.
-   1. The client check-in email (touchpoints.ts DEFAULTS.maintenance_survey),
-      with fill-ins for the names. "Preview survey" opens the check-in
-      conversation the client gets (the clients app's ChatSheet, which the
-      attorney's survey preview shows, survey-preview.tsx) and steps to its
-      second question.
+   1. The client check-in email (touchpoints.ts DEFAULTS.maintenance_survey:
+      its subject, button and yearly timing), its words typed in as the
+      attorney writes them, then saved; it folds into a month that fills
+      with each client's check-in on their own date.
    2. Dashboard content as Aaron designed it (Nov 24): an "Upload article"
       box over the firm's past posts, each small with its image on the left.
       The new article drops into the box, which opens downward to it, image
@@ -40,6 +38,27 @@ const PLACE_COMPACT: Place = { left: 14, right: 14, top: 22 };
 const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 const ARIAL = "Arial, 'Segoe UI', sans-serif";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
+
+/* Chapter 1: what the attorney writes, and the month it fills. Each client's
+   check-in goes on their own date, a year after they signed, then yearly
+   (cadence YEARLY). The month is an illustration: the product keeps each
+   client's next date (staying-in-touch.tsx), not a calendar. The clients are
+   the ones in the product screens; Daniel's lands on January 12, before he
+   answers on January 20 in the hero. January 2027 starts on a Friday */
+const CHECKIN_TYPED = "It’s been a year since we signed your plan, so I’m checking in. Has anything changed, like a move, a new grandchild or a change in what you own?";
+const MONTH = { name: "January 2027", lead: 5, days: 31 };
+const CHECKINS = [
+  { day: 4, name: "Elena Ruiz" },
+  { day: 7, name: "Marcus Webb" },
+  { day: 12, name: "Daniel Rosen" },
+  { day: 13, name: "Priya Anand" },
+  { day: 20, name: "Sam Whitfield" },
+  { day: 22, name: "Olivia Grant" },
+  { day: 26, name: "Grace Liu" },
+];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+/* The month's bar, weekday row and week rows, in film pixels */
+const CAL = { head: 64, week: 34, row: 98, rowCompact: 74 };
 
 /* Chapter 2's article (the page's own placeholder headline) and the firm's
    earlier posts. Photos from Unsplash (free under the Unsplash License):
@@ -72,7 +91,7 @@ const REQUEST_W = { wide: 760, compact: 392 };
 
 /* The waits in each chapter's script, so its length is known up front */
 const TAP = 190;
-const C1 = { read: 2000, sheet: 1700, hold: 2300 };
+const C1 = { read: 900, perChar: 22, after: 350, fold: 450, land: 650, chip: 230, hold: 2400 };
 const C2 = { rest: 900, carry: 950, over: 300, loading: 900, preview: 1700, hold: 2200 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
 const C4 = { read: 2200, hold: 5600 };
@@ -80,13 +99,13 @@ const C4 = { read: 2200, hold: 5600 };
 export const KEEP_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
 export const KEEP_MS = [
-  C1.read + TAP + C1.sheet + TAP + C1.hold,
+  C1.read + CHECKIN_TYPED.length * C1.perChar + C1.after + TAP + C1.fold + C1.land + CHECKINS.length * C1.chip + C1.hold,
   C2.rest + C2.carry + C2.over + C2.loading + C2.preview + TAP + C2.hold,
   C3.read + TAP + TEAM_TYPED.length * C3.perChar + C3.after + C3.beforeSave + TAP + C3.hold,
   C4.read + TAP + C4.hold,
 ];
 
-type Tap = "preview" | "next" | "post" | "message" | "save" | "more" | null;
+type Tap = "post" | "message" | "save" | "more" | null;
 type Carry = "off" | "in" | "drop";
 type Edit = "idle" | "typing" | "done";
 
@@ -164,35 +183,90 @@ const Role = ({ children }: { children: React.ReactNode }) => (
 const RING_ON = "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)";
 const RING_OFF = "0 0 0 0 rgba(48,158,150,0)";
 
-/* 1. The client check-in, and the button that previews its survey */
-const ClientCheckIn = ({ tap, compact }: { tap: Tap; compact: boolean }) => (
-  <>
-    <Bar title="Client check-in" compact={compact}>
-      <span className="inline-flex h-[34px] items-center gap-1.5 rounded-md border border-[#309E96] bg-white px-3.5 text-[13.5px] font-semibold text-[#0F7673]" style={tapStyle(tap === "preview")}>
-        <ViewIcon className="h-4 w-4" />
-        Preview survey
-      </span>
-    </Bar>
-    <EmailHead
-      compact={compact}
-      when={compact ? "Sends automatically after 1 year" : "Sends automatically after 1 year, then once a year"}
-      subject="Checking in: has anything changed?"
-      to={<><FillIn>First name</FillIn><FillIn>Last name</FillIn></>}
-    />
-    <Mail compact={compact}>
-      <p className="mb-3 text-[#374151]" style={para(compact)}>Hi <FillIn>First name</FillIn>,</p>
-      <p className="mb-3 text-[#374151]" style={para(compact)}>
-        It’s been a while since we finished your estate plan, and I wanted to check in. A plan works best when it keeps up with life: a move, a new grandchild, a change in what you own.
-      </p>
-      {!compact && (
-        <p className="mb-3 text-[#374151]" style={para(compact)}>
-          Once a year I ask every client the same short questions; it’s how we make sure your plan still says what you want it to.
+/* 1. The client check-in as the attorney writes it: the words typed in
+   (the full text held underneath, so nothing below moves), then Save */
+const ClientCheckIn = ({ typed, saved, tap, compact }: { typed: number; saved: boolean; tap: Tap; compact: boolean }) => {
+  const writing = typed < CHECKIN_TYPED.length;
+  const dirty = typed > 0 && !saved;
+  return (
+    <>
+      <Bar title="Client check-in" compact={compact}>
+        <span
+          className="inline-flex h-[34px] items-center rounded-md px-[13px] text-[13.5px] font-semibold"
+          style={{ background: dirty ? "#309E96" : "#F3F4F6", color: dirty ? "#FFFFFF" : "#9CA3AF", ...tapStyle(tap === "save"), transition: "background-color 200ms ease, color 200ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}
+        >
+          Save
+        </span>
+      </Bar>
+      <EmailHead
+        compact={compact}
+        when={compact ? "Sends automatically after 1 year" : "Sends automatically after 1 year, then once a year"}
+        subject="Checking in: has anything changed?"
+        to={<><FillIn>First name</FillIn><FillIn>Last name</FillIn></>}
+      />
+      <Mail compact={compact}>
+        <p className="mb-3 text-[#374151]" style={para(compact)}>Hi <FillIn>First name</FillIn>,</p>
+        <p className="relative -mx-1.5 mb-3 rounded-[4px] px-1.5 text-[#374151]" style={{ ...para(compact), boxShadow: writing ? RING_ON : RING_OFF, transition: "box-shadow 180ms ease" }}>
+          <span className="invisible">{CHECKIN_TYPED}</span>
+          <span className="absolute inset-0 px-1.5">
+            {CHECKIN_TYPED.slice(0, typed)}
+            {writing && <span className="ml-px inline-block h-[15px] w-px translate-y-[2px] bg-[#1F2933]" />}
+          </span>
         </p>
-      )}
-      <MailButton compact={compact}>Let us know what’s changed</MailButton>
-    </Mail>
-  </>
-);
+        <MailButton compact={compact}>Let us know what’s changed</MailButton>
+      </Mail>
+    </>
+  );
+};
+
+/* 1, then: the month the check-in fills, each client on their own day */
+const CheckInMonth = ({ chips, compact }: { chips: number; compact: boolean }) => {
+  const rowH = compact ? CAL.rowCompact : CAL.row;
+  return (
+    <>
+      <div className={`flex items-center justify-between border-b border-[#EEF0F2] ${compact ? "px-5" : "px-7"}`} style={{ height: CAL.head }}>
+        <span className="text-[17px] font-semibold text-[#1F2933]">Client check-ins</span>
+        <span className="text-[14px] font-medium text-[#6B7280]">{MONTH.name}</span>
+      </div>
+      <div className="grid grid-cols-7 items-center border-b border-[#EEF0F2] text-center text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9CA3AF]" style={{ height: CAL.week }}>
+        {WEEKDAYS.map((d) => (
+          <span key={d}>{compact ? d[0] : d}</span>
+        ))}
+      </div>
+      <div className="grid grid-cols-7">
+        {Array.from({ length: 42 }, (_, i) => {
+          const d = i - MONTH.lead + 1;
+          const at = CHECKINS.findIndex((c) => c.day === d);
+          const on = at >= 0 && chips > at;
+          return (
+            <div
+              key={i}
+              className={`min-w-0 border-b border-[#F0F1F3] ${i % 7 === 6 ? "" : "border-r"} ${compact ? "px-1 pt-1" : "px-1.5 pt-1.5"}`}
+              style={{ height: rowH, background: i % 7 === 0 || i % 7 === 6 ? "#FAFAFB" : "#FFFFFF" }}
+            >
+              {d >= 1 && d <= MONTH.days && <span className="block text-[12px] font-medium text-[#6B7280]">{d}</span>}
+              {at >= 0 && (
+                <span
+                  className="mt-1 block truncate rounded-md bg-[#E6F5F4] font-medium text-[#0C7370]"
+                  style={{
+                    fontSize: compact ? 10.5 : 11.5,
+                    padding: compact ? "2px 4px" : "3px 5px",
+                    opacity: on ? 1 : 0,
+                    transform: on ? "scale(1)" : "scale(0.85)",
+                    transformOrigin: "left center",
+                    transition: "opacity 220ms ease, transform 300ms var(--ease-out)",
+                  }}
+                >
+                  {compact ? CHECKINS[at].name.split(" ")[0] : CHECKINS[at].name}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
 
 /* 2. Dashboard content: the "Upload article" field, a plain grey row (teal
    while the article is over it), which opens downward to the new article, loading first, then
@@ -479,8 +553,10 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
   const [inView, setInView] = useState(false);
   const [shown, setShown] = useState(-1);
   const [tap, setTap] = useState<Tap>(null);
-  const [survey, setSurvey] = useState(false);
-  const [step, setStep] = useState(0);
+  const [checkTyped, setCheckTyped] = useState(0);
+  const [checkSaved, setCheckSaved] = useState(false);
+  const [filed, setFiled] = useState(false);
+  const [chips, setChips] = useState(0);
   const [news, setNews] = useState(0);
   const [over, setOver] = useState(false);
   const [carry, setCarry] = useState<Carry>("off");
@@ -506,8 +582,10 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
        last frame */
     const settle = (c: number) => {
       setTap(null);
-      setSurvey(c === 0);
-      setStep(c === 0 ? 1 : 0);
+      setCheckTyped(c === 0 ? CHECKIN_TYPED.length : 0);
+      setCheckSaved(c === 0);
+      setFiled(c === 0);
+      setChips(c === 0 ? CHECKINS.length : 0);
       setNews(c === 1 ? 3 : 0);
       setOver(false);
       setCarry("off");
@@ -557,12 +635,23 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
     };
 
     const chapters: (() => Promise<void>)[] = [
-      /* 1. The client check-in, and a look at the survey it carries */
+      /* 1. The attorney writes the check-in and saves it; it folds into the
+         month, which fills with each client's date */
       async () => {
         await wait(C1.read);
-        await tapOn("preview", () => setSurvey(true));
-        await wait(C1.sheet);
-        await tapOn("next", () => setStep(1));
+        for (let n = 1; n <= CHECKIN_TYPED.length; n++) {
+          setCheckTyped(n);
+          await wait(C1.perChar);
+        }
+        await wait(C1.after);
+        await tapOn("save", () => setCheckSaved(true));
+        await wait(C1.fold);
+        setFiled(true);
+        await wait(C1.land);
+        for (let n = 1; n <= CHECKINS.length; n++) {
+          setChips(n);
+          await wait(C1.chip);
+        }
         await wait(C1.hold);
       },
       /* 2. The firm's article goes onto every client's dashboard */
@@ -626,21 +715,55 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
     if (carry === "in") return { x: fieldAt.x + (compact ? 0 : 90), y: fieldAt.y - 6, r: -2, s: 0.94, o: 1, t: `transform 950ms ${MOVE}` };
     return { x: fieldAt.x, y: fieldAt.y, r: 0, s: 0.18, o: 0, t: "transform 380ms var(--ease-in-out), opacity 260ms ease 100ms" };
   })();
-  const sheetPlace: React.CSSProperties = compact ? { left: 10, right: 10, top: 16, bottom: -48 } : { left: (WIDE.w - 640) / 2, width: 640, top: 36, bottom: -48 };
-  const surveyOn = shown === 0 && survey;
+  /* The check-in folds from its top centre into the first client's day */
+  const fold = (() => {
+    const cell = CHECKINS[0].day - 1 + MONTH.lead;
+    const colW = (size.w - place.left - place.right) / 7;
+    const x = place.left + colW * ((cell % 7) + 0.5);
+    const y = place.top + CAL.head + CAL.week + (compact ? CAL.rowCompact : CAL.row) * (Math.floor(cell / 7) + 0.5);
+    const s = 0.1;
+    const h = size.h + 48 - place.top;
+    return { x: x - size.w / 2, y: y - place.top - (h * s) / 2, s };
+  })();
 
   return (
     <div
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="Willow checks in with clients every year and previews the questions they're asked, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when a client passes and the executor asks for access, shows the meeting she booked first, her note, and the family invited with her."
+      aria-label="Willow sends the check-in the attorney writes to every client once a year, each on their own date, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when a client passes and the executor asks for access, shows the meeting she booked first, her note, and the family invited with her."
     >
       <Print size={size}>
         <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: size.w, height: size.h }}>
-          <Piece on={shown === 0} place={place}>
-            <ClientCheckIn tap={tap} compact={compact} />
-          </Piece>
+          {/* 1. The month, rising behind the check-in as it folds in */}
+          <Rise on={shown === 0 && filed} z={9} style={{ left: place.left, right: place.right, top: place.top, bottom: -48 }}>
+            <div className="h-full overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
+              <CheckInMonth chips={chips} compact={compact} />
+            </div>
+          </Rise>
+          <div
+            className="pointer-events-none absolute"
+            style={{
+              left: place.left,
+              right: place.right,
+              top: place.top,
+              bottom: -48,
+              zIndex: 11,
+              transformOrigin: "50% 0",
+              opacity: shown === 0 && !filed ? 1 : 0,
+              transform: shown !== 0 ? "translateY(64px)" : filed ? `translate(${fold.x}px, ${fold.y}px) scale(${fold.s})` : "translateY(0)",
+              transition:
+                shown !== 0
+                  ? "opacity 220ms ease, transform 320ms ease"
+                  : filed
+                    ? "transform 640ms var(--ease-in-out), opacity 220ms ease 440ms"
+                    : "opacity 320ms ease 120ms, transform 680ms var(--ease-out) 120ms",
+            }}
+          >
+            <div className="h-full overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
+              <ClientCheckIn typed={checkTyped} saved={checkSaved} tap={tap} compact={compact} />
+            </div>
+          </div>
           <Piece on={shown === 1} place={place}>
             <ArticleFeed step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
           </Piece>
@@ -653,23 +776,6 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
               <AccessRequest open={request} tap={tap} compact={compact} />
             </div>
           </Rise>
-
-          {/* 1. The survey preview, over the check-in on a dim backdrop, with
-              the preview's arrows either side */}
-          <div className="pointer-events-none absolute inset-0 z-20 bg-black/40" style={{ opacity: surveyOn ? 1 : 0, transition: "opacity 260ms ease" }} />
-          <Rise on={surveyOn} z={30} style={sheetPlace}>
-            <CheckInSheet step={step} compact={compact} fill />
-          </Rise>
-          {!compact && (
-            <div className="pointer-events-none absolute inset-x-0 z-30 flex justify-between" style={{ paddingLeft: (WIDE.w - 640) / 2 - 50, paddingRight: (WIDE.w - 640) / 2 - 50, top: 320, opacity: surveyOn ? 1 : 0, transition: "opacity 260ms ease 200ms" }}>
-              <span className="flex h-7 w-7 items-center justify-center text-white" style={{ opacity: step === 0 ? 0.3 : 0.7 }}>
-                <ChevronLeftIcon className="h-7 w-7" />
-              </span>
-              <span className="flex h-7 w-7 items-center justify-center rounded-md" style={{ ...tapStyle(tap === "next"), color: "#FFFFFF", opacity: step === 0 ? 0.85 : 0.3 }}>
-                <WIcon name="chevronRight" className="h-7 w-7" />
-              </span>
-            </div>
-          )}
 
           {/* 2. The article, carried in from the right */}
           <div
