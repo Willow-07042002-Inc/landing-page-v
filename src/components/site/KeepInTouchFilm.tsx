@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ProBellIcon, ScaledScreen, WIcon } from "@/components/product/kit";
-import { ProReminder } from "@/components/product/attorney-dashboard";
+import { ScaledScreen, WIcon } from "@/components/product/kit";
+import { ZoomLogo } from "@/components/product/attorney-booking";
 import { CheckInSheet } from "@/components/product/client-app";
-import { CalendarCheckIcon, CheckIcon, ChevronLeftIcon, UploadIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CalendarCheckIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, NotificationIcon, UploadIcon, ViewIcon } from "@/components/product/willow-icons";
 import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type FilmProps } from "@/components/site/film-kit";
 
 /* "A practice families keep coming back to": four chapters, each one piece of
@@ -24,12 +24,10 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
    3. The yearly note to the executors and guardians a plan names
       (DEFAULTS.agent_checkin), a line typed onto it offering them a plan of
       their own, and saved.
-   4. That note as Maria, Daniel's executor, has had it each year since he
-      signed, three stacked; then the dashboard's Required actions, where
-      Maria asks to meet about his plan; the attorney books the time in the
-      access request popup (reminders-bell.tsx AccessRequestModal); the row
-      moves through the product's own titles to "Release access to Daniel's
-      plan?"
+   4. What reaches the attorney when Maria, Daniel's executor, books a
+      meeting about his plan (a firm that lets them book): the product's
+      notification, opened the way the hero's check-in card opens, to the
+      request's two parts, her note and the meeting.
    Each chapter is its own sequence. The film plays them in order from where
    it's opened and stops on the last frame. People who prefer reduced motion
    see each chapter at rest. */
@@ -57,28 +55,18 @@ const PAST = [
 /* Chapter 3: what the attorney types onto the advisors' check-in */
 const TEAM_TYPED = " And if you’d ever like a plan of your own, I’d be glad to help.";
 
-/* Chapter 4 opens on the yearly note Maria has had since Daniel signed
-   (agent_checkin: after 1 month, then once a year), newest in front */
-const NOTES = ["Oct 2024", "Oct 2025", "Oct 2026"];
-
-/* Chapter 4: the access request popup's times (the attorney's open hours) */
-const DAYS = ["Tue, Dec 1", "Wed, Dec 2", "Thu, Dec 3", "Fri, Dec 4"];
-const SLOTS = ["9:00 AM", "10:00 AM", "11:30 AM", "1:00 PM", "2:30 PM", "4:00 PM"];
-const MEETING = `${DAYS[2]} · ${SLOTS[1]}`;
-/* The row's titles as fetchDeathReminders writes them, for a request made by
-   asking to meet: before a time is booked, before the meeting, after it */
-const ACCESS_ROW = {
-  asked: { title: "Maria Rosen asked to meet about Daniel’s plan", sub: "Reach out to Maria and book a time", cta: "Book a time" },
-  booked: { title: "Upcoming meeting with Maria Rosen", sub: `${MEETING} · About Daniel’s plan`, cta: "View meeting" },
-  met: { title: "You met Maria. Release access to Daniel’s plan?", sub: "Look over what Maria sent, then grant or deny access", cta: "Review request" },
-};
+/* Chapter 4: Maria's request. The title is the product's notification
+   (notifications/registry.ts access_meeting_booked); "Note from Maria" and
+   "Meeting" are the request popup's own labels (reminders-bell.tsx) */
+const MARIA_NOTE = "Daniel passed away last week. I’d like to go over his plan with you, and what I need to do as his executor.";
+const REQUEST_W = { wide: 620, compact: 392 };
 
 /* The waits in each chapter's script, so its length is known up front */
 const TAP = 190;
 const C1 = { read: 2000, sheet: 1700, hold: 2300 };
 const C2 = { rest: 900, carry: 950, over: 300, loading: 900, preview: 1700, hold: 2200 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
-const C4 = { rest: 500, note: 550, read: 2000, swap: 900, row: 1200, modal: 900, pick: 600, day: 350, slot: 450, booked: 1100, upcoming: 1300, hold: 2200 };
+const C4 = { read: 2200, hold: 4200 };
 
 export const KEEP_CHAPTERS = 4;
 /** How long each chapter runs at normal speed */
@@ -86,12 +74,11 @@ export const KEEP_MS = [
   C1.read + TAP + C1.sheet + TAP + C1.hold,
   C2.rest + C2.carry + C2.over + C2.loading + C2.preview + TAP + C2.hold,
   C3.read + TAP + TEAM_TYPED.length * C3.perChar + C3.after + C3.beforeSave + TAP + C3.hold,
-  C4.rest + NOTES.length * C4.note + C4.read + C4.swap + C4.row + TAP + C4.modal + TAP + C4.pick + TAP + C4.day + TAP + C4.slot + TAP + C4.booked + C4.upcoming + C4.hold,
+  C4.read + TAP + C4.hold,
 ];
 
-type Tap = "preview" | "next" | "post" | "message" | "save" | "book" | "pick" | "day" | "slot" | "bookit" | null;
+type Tap = "preview" | "next" | "post" | "message" | "save" | "more" | null;
 type Carry = "off" | "in" | "drop";
-type Access = "none" | "asked" | "booked" | "met";
 type Edit = "idle" | "typing" | "done";
 
 /* The dark print the pieces are set on */
@@ -352,152 +339,73 @@ const TeamCheckIn = ({ edit, typed, saved, tap, compact }: { edit: Edit; typed: 
   );
 };
 
-/* 4, first: the note as Maria gets it each year, the product's default words
-   (touchpoints.ts DEFAULTS.agent_checkin) with Daniel's and Maria's names in.
-   Stacked newest in front, so each older one shows as a strip above it */
-const NOTE_STRIP = 54;
-const NoteToMaria = ({ date, compact }: { date: string; compact: boolean }) => (
-  <>
-    <div className={`flex items-center justify-between gap-3 border-b border-[#EEF0F2] ${compact ? "px-5" : "px-7"}`} style={{ height: NOTE_STRIP }}>
-      <span className="truncate font-semibold text-[#1F2933]" style={{ fontSize: compact ? 14 : 15 }}>Checking in on Daniel Rosen’s estate plan</span>
-      <span className="flex-shrink-0 text-[13px] font-medium text-[#6B7280]">{date}</span>
-    </div>
-    <Mail compact={compact}>
-      <p className="mb-3 text-[#374151]" style={para(compact)}>Hi Maria,</p>
-      <p className="mb-3 text-[#374151]" style={para(compact)}>
-        I’m Rachel Alvarez, Daniel Rosen’s estate planning attorney. Daniel has named you as Executor in his plan, a real vote of confidence, and nothing you need to do today.
-      </p>
-      <p className="mb-3 text-[#374151]" style={para(compact)}>
-        When the time comes, what you need will be waiting in your Willow account, which Daniel has shared with you. If you’d like to understand what the role involves, I’m happy to walk you through it.
-      </p>
-      <MailButton compact={compact}>Book a meeting</MailButton>
-    </Mail>
-  </>
+/* 4. The executor's request, in the hero's notification card: its title
+   line, then "See more" opens it to her note and the meeting. Each part
+   arrives just after the card has made room */
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9CA3AF]">{children}</p>
 );
-
-/* 4, then: the dashboard's Required actions (reminders-column.tsx), the
-   access request arriving on top */
-const AccessRow = ({ state, tap }: { state: Access; tap: Tap }) => {
-  const row = ACCESS_ROW[state === "none" ? "asked" : state];
-  return (
-    <div style={{ display: "grid", gridTemplateRows: state === "none" ? "0fr" : "1fr", transition: "grid-template-rows 460ms cubic-bezier(0.77, 0, 0.175, 1)" }}>
+const Reveal = ({ open, i, children }: { open: boolean; i: number; children: React.ReactNode }) => (
+  <div
+    style={{
+      opacity: open ? 1 : 0,
+      transform: open ? "translateY(0)" : "translateY(8px)",
+      transition: open ? `opacity 320ms ease ${220 + i * 90}ms, transform 420ms var(--ease-out) ${220 + i * 90}ms` : "none",
+    }}
+  >
+    {children}
+  </div>
+);
+const MariaNote = ({ compact }: { compact: boolean }) => (
+  <div>
+    <Label>Note from Maria</Label>
+    <div className="mt-3 rounded-xl bg-[#E6F5F4] px-4 py-3.5">
+      <p className="text-[#0C7370]" style={{ fontSize: compact ? 13 : 13.5 }}>Maria Rosen, Daniel’s executor</p>
+      <p className="mt-1.5 font-medium text-[#1F2933]" style={{ fontSize: compact ? 15 : 16.5, lineHeight: 1.45 }}>&ldquo;{MARIA_NOTE}&rdquo;</p>
+    </div>
+  </div>
+);
+const MariaMeeting = ({ compact }: { compact: boolean }) => (
+  <div>
+    <Label>Meeting</Label>
+    <div className="mt-3 flex items-center gap-3">
+      <CalendarCheckIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
+      <div className="min-w-0 flex-1">
+        <p className="font-medium text-[#1F2933]" style={{ fontSize: compact ? 14.5 : 15.5 }}>Thursday, December 3</p>
+        <p className="text-[#6B7280]" style={{ fontSize: compact ? 13 : 14 }}>10:00 AM · 30 minutes</p>
+      </div>
+      <span className="flex flex-shrink-0 items-center gap-1.5 font-medium text-[#374151]" style={{ fontSize: compact ? 13 : 14 }}>
+        <ZoomLogo className="h-5 w-5" />
+        Zoom
+      </span>
+    </div>
+  </div>
+);
+const AccessRequest = ({ open, tap, compact }: { open: boolean; tap: Tap; compact: boolean }) => (
+  <div className="overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
+    <div className={`flex items-center gap-3.5 ${compact ? "px-5 py-4" : "px-7 py-5"}`}>
+      <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: compact ? 15.5 : 17 }}>Maria Rosen booked a meeting about Daniel’s plan</p>
+        <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: compact ? 13.5 : 14 }}>
+          <span className="whitespace-nowrap">Daniel has passed away ·</span> <span className="whitespace-nowrap">Thursday, Dec 3</span>
+        </p>
+      </div>
+      <span className="flex flex-shrink-0 items-center gap-1 rounded px-1 font-medium text-[#0C7370]" style={{ fontSize: compact ? 14 : 14.5, ...tapStyle(tap === "more") }}>
+        {open ? "See less" : "See more"}
+        <ChevronDownIcon className="h-4 w-4" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 300ms var(--ease-out)" }} />
+      </span>
+    </div>
+    <div style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 560ms var(--ease-in-out)" }}>
       <div className="min-h-0 overflow-hidden">
-        <div className="flex min-h-[84px] items-center border-b border-[#EEF0F2] bg-[#F0F9F9] px-5 py-4">
-          <div className="flex w-full items-stretch gap-3.5">
-            <div className="w-1 flex-shrink-0 self-stretch rounded-full bg-[#7FC5BF]" />
-            <Appear key={state} className="min-w-0 flex-1">
-              <p className="font-semibold text-[#1F2933]" style={{ fontSize: 15 }}>{row.title}</p>
-              <p className="mt-0.5 text-[13px] text-[#6B7280]">{row.sub}</p>
-              <span className="mt-1.5 inline-flex items-center gap-1 rounded text-[13px] font-semibold text-[#309E96]" style={tapStyle(tap === "book" && state === "asked")}>
-                {row.cta}
-                <WIcon name="arrowRight" className="h-3.5 w-3.5" />
-              </span>
-            </Appear>
-          </div>
+        <div className={`space-y-6 border-t border-[#EEF0F2] ${compact ? "px-5 py-5" : "px-7 py-6"}`}>
+          <Reveal open={open} i={0}><MariaNote compact={compact} /></Reveal>
+          <Reveal open={open} i={1}><MariaMeeting compact={compact} /></Reveal>
         </div>
       </div>
     </div>
-  );
-};
-const RequiredActions = ({ access, tap }: { access: Access; tap: Tap }) => (
-  <>
-    <div className="flex min-h-[57px] items-center gap-2.5 border-b border-[#EEF0F2] px-5 py-3.5">
-      <ProBellIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
-      <h4 className="text-[15px] font-semibold text-[#1F2933]" style={{ fontFamily: FIGTREE }}>Required actions</h4>
-      <span className="rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[12px] font-semibold text-[#6B7280]">{access === "none" ? 3 : 4}</span>
-    </div>
-    <AccessRow state={access} tap={tap} />
-    <div className="divide-y divide-[#EEF0F2]">
-      <ProReminder title="Marcus says something changed" sub="Have you moved, or bought or sold property?" cta="See what changed" />
-      <ProReminder title="Elena Ruiz's summary is ready for review" cta="Review summary" />
-      <ProReminder title="Sam says something changed" sub="Has your family dynamic changed?" cta="See what changed" />
-    </div>
-  </>
+  </div>
 );
-
-/* 4. The access request popup for a request made by asking to meet: who
-   asked and why, where it stands, the meeting (booked here, from the
-   attorney's open times), how to reach them, and the decision */
-const AccessModal = ({ picking, day, slot, booked, tap, compact }: { picking: boolean; day: number; slot: number; booked: boolean; tap: Tap; compact: boolean }) => {
-  const label = (text: string) => <p className="text-[12.5px] font-medium text-[#6B7280]">{text}</p>;
-  return (
-    <div className={`overflow-hidden rounded-2xl bg-white text-left text-[#1F2933] ${compact ? "p-6" : "p-7"}`} style={{ fontFamily: FIGTREE, boxShadow: LIFT }}>
-      <div className="relative">
-        <span aria-hidden className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center text-[18px] text-[#C4C9D0]">&times;</span>
-        <div className="text-center">
-          <h2 className="mx-auto font-semibold text-[#1F2933]" style={{ fontFamily: MERRIWEATHER, fontSize: 24, lineHeight: 1.3 }}>Access to Daniel’s plan</h2>
-          <p className="mx-auto text-[#6B7280]" style={{ fontSize: 14, lineHeight: 1.6, marginTop: 8, textWrap: "balance" } as React.CSSProperties}>
-            Maria Rosen, Daniel’s executor, let us know Daniel has passed away, and is asking for what Daniel held back until then.
-          </p>
-        </div>
-      </div>
-      <p className="mt-2 text-center text-[13px] text-[#9CA3AF]">
-        {booked ? "You asked to meet first. Grant access once you’ve met Maria." : "Maria asked to meet. Reach out, then book the time you agree on."}
-      </p>
-      <p className="mt-2 text-center text-[13px] text-[#B45309]">
-        Granting opens what Daniel held back for everyone Daniel shared it with: Maria Rosen, Emma Rosen, Leo Rosen. Each of them is emailed.
-      </p>
-      <div className="mt-6 space-y-5">
-        <div className="border-b border-[#EEF0F2] pb-3">
-          {label("Meeting")}
-          {booked ? (
-            <Appear className="mt-1 flex items-baseline justify-between gap-3">
-              <p className="text-[14.5px] font-semibold text-[#1F2933]">{MEETING}</p>
-              <span className="flex-shrink-0 text-[13px] font-medium text-[#128F8B]">Join</span>
-            </Appear>
-          ) : !picking ? (
-            <span className="mt-1 inline-block rounded text-[14px] font-medium text-[#128F8B]" style={tapStyle(tap === "pick")}>Book a time with Maria</span>
-          ) : (
-            <Appear className="mt-2">
-              <div className="flex gap-1.5">
-                {DAYS.map((d, i) => (
-                  <span
-                    key={d}
-                    className="flex-shrink-0 rounded-full px-3 py-1.5 text-[12.5px] font-medium"
-                    style={{ background: i === day ? "#128F8B" : "#F3F4F6", color: i === day ? "#FFFFFF" : "#4B5563", ...tapStyle(tap === "day" && i === 2), transition: "background-color 160ms ease, color 160ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease" }}
-                  >
-                    {d}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-2 grid grid-cols-3 gap-1.5">
-                {SLOTS.map((t, i) => (
-                  <span
-                    key={t}
-                    className="rounded-[8px] border py-2 text-center text-[13px] font-medium"
-                    style={{
-                      borderColor: i === slot ? "#128F8B" : "#E5E7EB",
-                      background: i === slot ? "#128F8B" : "#FFFFFF",
-                      color: i === slot ? "#FFFFFF" : "#1F2933",
-                      ...tapStyle(tap === "slot" && i === 1),
-                      transition: "background-color 160ms ease, color 160ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease",
-                    }}
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-3 flex items-center gap-4">
-                <span className="rounded text-[14px] font-semibold text-[#128F8B]" style={{ opacity: slot >= 0 ? 1 : 0.4, ...tapStyle(tap === "bookit") }}>
-                  {slot >= 0 ? `Book ${SLOTS[slot]}` : "Pick a time"}
-                </span>
-                <span className="text-[13.5px] font-medium text-[#6B7280]">Not now</span>
-              </div>
-            </Appear>
-          )}
-        </div>
-        <div className="border-b border-[#EEF0F2] pb-3">
-          {label("Reach Maria")}
-          <p className="mt-1 text-[14px] text-[#1F2933]">maria.rosen@gmail.com</p>
-        </div>
-      </div>
-      <div className="mt-7 flex flex-col gap-1">
-        <span className="inline-flex h-11 w-full items-center justify-center rounded-[10px] bg-[#128F8B] text-[15px] font-semibold text-white">Grant access</span>
-        <span className="flex h-10 w-full items-center justify-center text-[14px] font-medium text-[#6B7280]">Deny</span>
-      </div>
-    </div>
-  );
-};
 
 const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false }: FilmProps) => {
   const compact = useCompact();
@@ -526,14 +434,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
   const [teamEdit, setTeamEdit] = useState<Edit>("idle");
   const [teamTyped, setTeamTyped] = useState(0);
   const [saved, setSaved] = useState(false);
-  const [notes, setNotes] = useState(0);
-  const [dash, setDash] = useState(false);
-  const [access, setAccess] = useState<Access>("none");
-  const [modal, setModal] = useState(false);
-  const [picking, setPicking] = useState(false);
-  const [day, setDay] = useState(-1);
-  const [slot, setSlot] = useState(-1);
-  const [booked, setBooked] = useState(false);
+  const [request, setRequest] = useState(false);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -559,14 +460,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
       setTeamEdit(c === 2 ? "done" : "idle");
       setTeamTyped(0);
       setSaved(c === 2);
-      setNotes(c === 3 ? NOTES.length : 0);
-      setDash(c === 3);
-      setAccess(c === 3 ? "met" : "none");
-      setModal(false);
-      setPicking(false);
-      setDay(c === 3 ? 2 : -1);
-      setSlot(c === 3 ? 1 : -1);
-      setBooked(c === 3);
+      setRequest(c === 3);
     };
 
     const key = `${chapter}:${replay}:${compact}`;
@@ -648,39 +542,11 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
         await tapOn("save", () => setSaved(true));
         await wait(C3.hold);
       },
-      /* 4. The executor has had your note every year; when she asks to meet,
-         the meeting comes before any access */
+      /* 4. The executor's request arrives; it opens to her note and the
+         meeting she booked */
       async () => {
-        await wait(C4.rest);
-        for (let n = 1; n <= NOTES.length; n++) {
-          setNotes(n);
-          await wait(C4.note);
-        }
         await wait(C4.read);
-        setDash(true);
-        await wait(C4.swap);
-        setAccess("asked");
-        await wait(C4.row);
-        await tapOn("book", () => setModal(true));
-        await wait(C4.modal);
-        await tapOn("pick", () => {
-          setPicking(true);
-          setDay(0);
-        });
-        await wait(C4.pick);
-        await tapOn("day", () => setDay(2));
-        await wait(C4.day);
-        await tapOn("slot", () => setSlot(1));
-        await wait(C4.slot);
-        await tapOn("bookit", () => {
-          setBooked(true);
-          setPicking(false);
-        });
-        await wait(C4.booked);
-        setModal(false);
-        setAccess("booked");
-        await wait(C4.upcoming);
-        setAccess("met");
+        await tapOn("more", () => setRequest(true));
         await wait(C4.hold);
       },
     ];
@@ -707,17 +573,14 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
     return { x: fieldAt.x, y: fieldAt.y, r: 0, s: 0.18, o: 0, t: "transform 380ms var(--ease-in-out), opacity 260ms ease 100ms" };
   })();
   const sheetPlace: React.CSSProperties = compact ? { left: 10, right: 10, top: 16, bottom: -48 } : { left: (WIDE.w - 640) / 2, width: 640, top: 36, bottom: -48 };
-  const modalPlace: React.CSSProperties = compact ? { left: 10, right: 10, top: 16 } : { left: (WIDE.w - 460) / 2, width: 460, top: 36 };
-  const columnPlace: Place = compact ? PLACE_COMPACT : { left: (WIDE.w - 540) / 2, right: (WIDE.w - 540) / 2, top: 52 };
   const surveyOn = shown === 0 && survey;
-  const modalOn = shown === 3 && modal;
 
   return (
     <div
       ref={frameRef}
       className="min-w-0"
       role="img"
-      aria-label="Willow checks in with clients every year and previews the questions they're asked, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when an executor who has heard from the attorney every year asks for what a client held back, sets up a meeting with the attorney before anything opens."
+      aria-label="Willow checks in with clients every year and previews the questions they're asked, posts the firm's articles to every client's dashboard, writes every year to the executors and guardians each plan names, and when a client passes, shows the executor's request with her note and the meeting she booked with the attorney."
     >
       <Print size={size}>
         <div ref={rootRef} aria-hidden className="relative overflow-hidden" style={{ width: size.w, height: size.h }}>
@@ -730,36 +593,12 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
           <Piece on={shown === 2} place={place}>
             <TeamCheckIn edit={teamEdit} typed={teamTyped} saved={saved} tap={tap} compact={compact} />
           </Piece>
-          {/* 4. Maria's yearly notes: each slides up from below the frame,
-              already opaque, so the one under it never shows through; they
-              sink away together when the dashboard comes */}
-          {NOTES.map((date, i) => {
-            const inset = (NOTES.length - 1 - i) * (compact ? 8 : 14);
-            const on = shown === 3 && !dash && notes > i;
-            return (
-              <div
-                key={date}
-                className="pointer-events-none absolute"
-                style={{
-                  left: place.left + inset,
-                  right: place.right + inset,
-                  top: place.top + i * NOTE_STRIP,
-                  bottom: -48,
-                  zIndex: 10 + i,
-                  opacity: on ? 1 : 0,
-                  transform: on ? "translateY(0)" : `translateY(${dash ? 64 : size.h}px)`,
-                  transition: on ? "opacity 100ms linear, transform 720ms var(--ease-out)" : "opacity 220ms ease, transform 320ms ease",
-                }}
-              >
-                <div className="h-full overflow-hidden rounded-2xl bg-white text-left" style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
-                  <NoteToMaria date={date} compact={compact} />
-                </div>
-              </div>
-            );
-          })}
-          <Piece on={shown === 3 && dash} place={columnPlace}>
-            <RequiredActions access={access} tap={tap} />
-          </Piece>
+          {/* 4. The request, placed so it sits in the middle once opened */}
+          <Rise on={shown === 3} z={10} style={{ left: 0, right: 0, top: compact ? 122 : 160 }}>
+            <div className="mx-auto" style={{ width: compact ? REQUEST_W.compact : REQUEST_W.wide }}>
+              <AccessRequest open={request} tap={tap} compact={compact} />
+            </div>
+          </Rise>
 
           {/* 1. The survey preview, over the check-in on a dim backdrop, with
               the preview's arrows either side */}
@@ -786,11 +625,6 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
             <Article compact={compact} />
           </div>
 
-          {/* 4. The access request popup, rising over the dashboard */}
-          <div className="pointer-events-none absolute inset-0 z-20 bg-black/40" style={{ opacity: modalOn ? 1 : 0, transition: "opacity 260ms ease" }} />
-          <Rise on={modalOn} z={30} style={modalPlace}>
-            <AccessModal picking={picking} day={day} slot={slot} booked={booked} tap={tap} compact={compact} />
-          </Rise>
         </div>
       </Print>
     </div>
