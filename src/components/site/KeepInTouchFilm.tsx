@@ -913,7 +913,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
             <ArticleFeed step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
           </Piece>
           {/* 3. The update, placed so it sits in the middle once opened */}
-          <Rise on={shown === 2} z={10} style={{ left: 0, right: 0, top: compact ? 32 : 96 }}>
+          <Rise on={shown === 2} z={10} style={{ left: 0, right: 0, top: compact ? 41 : 96 }}>
             <div className="mx-auto" style={{ width: compact ? LAW_W.compact : LAW_W.wide }}>
               <LawNotice open={lawOpen} sent={lawSent} tap={tap} compact={compact} />
             </div>
