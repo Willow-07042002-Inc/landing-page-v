@@ -26,7 +26,7 @@ export const CHAPTERS: { id: string; also?: string[]; title: string; body: strin
     id: "check-ins",
     also: ["booking", "their-people", "when-it-matters"],
     title: "Check in every year",
-    body: "Write each check-in once, in your own words. Willow sends it every year to your client and to the executors and advisors in their plan, who can book time with you.",
+    body: "Write each check-in once, in your own words. Willow sends it on its own every year, to your client and to the executors and advisors in their plan.",
   },
   {
     id: "firm-updates",

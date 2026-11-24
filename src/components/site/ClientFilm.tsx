@@ -3,7 +3,7 @@ import { FloatStack, ProSidebar, ProTopBar, ScaledScreen, WIcon } from "@/compon
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import { RoleChain, SummaryCards, SummaryEditToggle } from "@/components/product/attorney-review";
 import { OutlookLogo } from "@/components/product/attorney-booking";
-import { CheckIcon, CloseIcon, NotificationIcon, ViewIcon } from "@/components/product/willow-icons";
+import { CalendarCheckIcon, CheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 import { ClientFirmNewsScreen, type CaArticle } from "@/components/product/client-app";
 
 /* One client's life on Willow as one film, on the product's real screens:
@@ -17,9 +17,9 @@ import { ClientFirmNewsScreen, type CaArticle } from "@/components/product/clien
       page, scenario-summary-approval.tsx)
    3. the attorney's Settings > Staying in touch: the client check-in's email,
       one word changed and saved (maintenance-tab.tsx, touchpoint-panel.tsx);
-      then the check-ins as the client, an advisor and a backup executor get
-      them (lib/journey/touch-email.ts, email-layout.ts), and the executor
-      books a meeting (the bell's team_booked line)
+      then Daniel's record on its Staying in touch tab, each check-in with its
+      next date (client-detail/staying-in-touch.tsx), and the client check-in
+      floating out with the date it sends on its own (touch-email.ts)
    4. Settings > Dashboard content: a link to the firm's article becomes a post
       on every client's dashboard (dashboard-content.tsx, posts.ts), and it
       appears in Daniel's "From your firm", under Resources (firm-panel.tsx).
@@ -123,27 +123,13 @@ const MAIL_BEFORE = "a while";
 const MAIL_AFTER = "a year";
 const MAIL_REST = " since we finished your estate plan, and I wanted to check in.";
 
-/* The check-ins as they land (renderTouchEmail on the defaults, filled in).
-   Back to front: the client, his financial advisor, his backup executor */
-const MAILS = [
-  {
-    to: "Daniel Rosen",
-    subject: "Checking in: has anything changed?",
-    body: ["Hi Daniel,", `${MAIL_KEEP}${MAIL_AFTER}${MAIL_REST}`, "Once a year I ask every client the same short questions; it’s how we make sure your plan still says what you want it to."],
-    button: "Let us know what’s changed",
-  },
-  {
-    to: "Howard Kim",
-    subject: "Checking in from Alvarez Family Law on behalf of Daniel Rosen",
-    body: ["Hi Howard,", "I’m Rachel Alvarez, Daniel Rosen’s estate planning attorney. You’re listed as their financial advisor, so I wanted to make sure we’re in touch."],
-    button: "Book a meeting",
-  },
-  {
-    to: "Emma Rosen",
-    subject: "Checking in on Daniel Rosen’s estate plan",
-    body: ["Hi Emma,", "I’m Rachel Alvarez, Daniel Rosen’s estate planning attorney. Daniel has named you as backup executor in their plan, and there’s nothing you need to do today.", "If you’d like to understand what the role involves, I’m happy to walk you through it."],
-    button: "Book a meeting",
-  },
+/* Daniel's check-ins on his record: the plan was approved Nov 24, 2026, so
+   the agent check-in goes after a month and the others after a year */
+const CLIENT_NEXT = "November 24, 2027";
+const WAYS = [
+  { label: "Agent check-ins", next: "December 24" },
+  { label: "Professional check-ins", next: CLIENT_NEXT },
+  { label: "Client check-ins", next: CLIENT_NEXT },
 ];
 
 /* Chapter 4: a post from Settings > Dashboard content (the headline is the
@@ -162,7 +148,7 @@ const NEWS_OLDER: CaArticle = {
 const DANIEL_EXAMPLE = { name: "Daniel Rosen", email: "daniel.rosen@example.com" };
 
 /** How long each chapter runs at normal speed */
-export const FILM_MS = [12460, 8290 + POWER_AFTER.length * 22, 9130, 8370];
+export const FILM_MS = [12460, 8290 + POWER_AFTER.length * 22, 8390, 8370];
 
 /* A button pressing itself: nothing crosses the screen to click it */
 const tapStyle = (on: boolean): React.CSSProperties => ({
@@ -172,11 +158,12 @@ const tapStyle = (on: boolean): React.CSSProperties => ({
 });
 
 type Beat = "empty" | "carry" | "reading" | "filed" | "accounts" | "docs" | "summary" | "ahead" | "mail" | "posts" | "dash";
-/* The full-screen views after chapter 2, bottom to top */
-const LAYERS: Beat[] = ["ahead", "mail", "posts", "dash"];
+/* The full-screen views after chapter 2, bottom to top ("mail" is the
+   client's record itself, with the email floating over it) */
+const LAYERS: Beat[] = ["ahead", "posts", "dash"];
 type Place = "off" | "carry" | "gather" | "fan" | "file" | "hidden";
 type Point = { x: number; y: number };
-type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "message" | "save" | "book" | "read" | "post" | "firm" | null;
+type Tap = "continue" | "stepin" | "edit" | "done" | "approve" | "message" | "save" | "row" | "read" | "post" | "firm" | null;
 type EditStage = "idle" | "select" | "typing" | "done";
 
 const MOVE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
@@ -694,54 +681,73 @@ const StayingInTouch = ({ hi, drawer, edit, typed, saved, tap, compact }: { hi: 
   );
 };
 
-/* Chapter 3, second half: the check-ins as they land (touch-email.ts on
-   email-layout.ts): the envelope, then the email on its grey page, a white
-   card with the logo (Willow's while the firm has none), the words, the
-   button in the firm's colour, the signature, and the footer. Each lands a
-   little lower, the backup executor's in front; she books */
-const CheckInsLand = ({ shown, tap, compact }: { shown: number; tap: Tap; compact: boolean }) => (
-  <div className="relative h-full w-full overflow-hidden bg-[#E9ECEF] text-left" style={{ fontFamily: "Arial, 'Segoe UI', sans-serif" }}>
-    {MAILS.map((m, i) => {
-      const on = shown > i;
-      const pos = compact ? { left: 16, right: 16, top: 16 + i * 58 } : { left: 150 + i * 150, width: 560, top: 40 + i * 92 };
-      const front = i === MAILS.length - 1;
-      return (
-        <div
-          key={m.to}
-          data-mail={m.to}
-          className="absolute overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white"
-          style={{ ...pos, boxShadow: "0 18px 44px rgba(16,24,40,0.16), 0 2px 6px rgba(16,24,40,0.06)", opacity: on ? 1 : 0, transform: on ? "translateY(0) scale(1)" : "translateY(18px) scale(0.98)", transition: "opacity 300ms ease, transform 460ms var(--ease-out)" }}
-        >
-          <div className="border-b border-[#EEF0F2] px-5 py-3 text-[12.5px] leading-5 text-[#6B7280]" style={{ fontFamily: FIGTREE }}>
-            <p><span className="text-[#9CA3AF]">From</span> Alvarez Family Law</p>
-            <p><span className="text-[#9CA3AF]">To</span> {m.to}</p>
-            <p className="mt-1 truncate text-[14.5px] font-semibold text-[#1F2933]">{m.subject}</p>
-          </div>
-          <div className={`bg-[#F9FAFB] ${compact ? "px-4 py-4" : "px-7 py-6"}`}>
-            <div className={`rounded-2xl border border-[#E5E7EB] bg-white ${compact ? "p-5" : "p-8"}`}>
-              <img src="/logo.png" alt="" className="mb-5" style={{ height: compact ? 22 : 26, width: "auto" }} />
-              {m.body.map((p) => (
-                <p key={p} className="mb-3.5 text-[#374151]" style={{ fontSize: compact ? 14 : 15, lineHeight: 1.6 }}>{p}</p>
-              ))}
-              <span
-                className="mt-1 inline-block rounded-md bg-[#309E96] font-semibold text-white"
-                style={{ padding: compact ? "10px 18px" : "12px 24px", fontSize: compact ? 14 : 15, ...(front ? tapStyle(tap === "book") : {}) }}
-              >
-                {m.button}
+/* Chapter 3, second half: Daniel's record on its Staying in touch tab
+   (client-detail/staying-in-touch.tsx): one switch per kind of check-in with
+   its next date ("Next: …", the year only when it isn't this one). The
+   product also shows the date each schedule counts from; the film leaves it
+   out to keep the three check-ins plain. The client's is pressed and lights up */
+const ClientStayingInTouch = ({ hi, tap, compact }: { hi: boolean; tap: Tap; compact: boolean }) => (
+  <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
+    <div className={compact ? "bg-white p-6" : "bg-white p-8"}>
+      <p className="mb-4 text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]" style={{ fontFamily: FIGTREE }}>Staying in touch</p>
+      {WAYS.map((w, i) => {
+        const lit = hi && i === WAYS.length - 1;
+        return (
+          <div
+            key={w.label}
+            data-way={w.label}
+            className="-mx-3 rounded-lg px-3"
+            style={{
+              background: lit ? "#F0F9F8" : "rgba(240,249,248,0)",
+              boxShadow: tap === "row" && i === WAYS.length - 1 ? "0 0 0 2px rgba(48,158,150,0.45)" : "0 0 0 0 rgba(48,158,150,0)",
+              transition: "background-color 260ms ease, box-shadow 240ms ease",
+            }}
+          >
+            <div className={`flex items-center gap-[13px] py-2.5 ${i < WAYS.length - 1 ? "border-b border-[#E5E7EB]" : ""}`}>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[15px] text-[#1F2933]">{w.label}</span>
+                <span className="mt-px block text-[12px]" style={{ color: lit ? "#309E96" : "#9CA3AF", fontWeight: lit ? 600 : 400, transition: "color 260ms ease" }}>
+                  Next: {w.next}
+                </span>
               </span>
-              <p className="mt-5 text-[#374151]" style={{ fontSize: compact ? 14 : 15, lineHeight: 1.6 }}>
-                Rachel
-                <br />
-                Alvarez Family Law
-              </p>
+              <span className="relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full bg-[#309E96]">
+                <span className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow" style={{ transform: "translateX(18px)" }} />
+              </span>
             </div>
-            <p className="mt-3 text-center text-[11px] text-[#C4C9D0]">Alvarez Family Law · Sent through Willow</p>
           </div>
-        </div>
-      );
-    })}
+        );
+      })}
+    </div>
   </div>
 );
+
+/* The client check-in itself, floating over the record: the date it goes out
+   on its own, the subject and who it's to, then the email as touch-email.ts
+   renders it (the logo, Willow's while the firm has none; the words with the
+   attorney's change; the button) */
+const FloatingCheckIn = ({ compact }: { compact: boolean }) => {
+  const para = { fontSize: compact ? 14 : 15, lineHeight: 1.6 };
+  return (
+    <div className="overflow-hidden rounded-2xl bg-white" style={{ boxShadow: "0 28px 64px rgba(16,24,40,0.26), 0 3px 10px rgba(16,24,40,0.10)" }}>
+      <div className={`border-b border-[#EEF0F2] ${compact ? "px-5 py-3" : "px-7 py-3.5"}`} style={{ fontFamily: FIGTREE }}>
+        <p className="flex items-center gap-2 text-[13px] font-semibold text-[#0F7673]">
+          <CalendarCheckIcon className="h-4 w-4 flex-shrink-0 text-[#309E96]" />
+          Sends automatically on {CLIENT_NEXT}
+        </p>
+        <p className="mt-1.5 truncate text-[14.5px] font-semibold text-[#1F2933]">Checking in: has anything changed?</p>
+        {!compact && <p className="mt-0.5 text-[12.5px] text-[#6B7280]">To Daniel Rosen</p>}
+      </div>
+      <div className={compact ? "px-5 pb-4 pt-3.5" : "px-7 pb-6 pt-5"} style={{ fontFamily: "Arial, 'Segoe UI', sans-serif" }}>
+        <img src="/logo.png" alt="" className={compact ? "mb-3" : "mb-4"} style={{ height: compact ? 19 : 26, width: "auto" }} />
+        <p className="mb-3 text-[#374151]" style={para}>Hi Daniel,</p>
+        <p className="mb-3 text-[#374151]" style={para}>{MAIL_KEEP}{MAIL_AFTER}{MAIL_REST}</p>
+        <span className="mt-1 inline-block rounded-md bg-[#309E96] font-semibold text-white" style={{ padding: compact ? "10px 18px" : "11px 22px", fontSize: compact ? 14 : 15 }}>
+          Let us know what’s changed
+        </span>
+      </div>
+    </div>
+  );
+};
 
 /* Chapter 4, first half: Settings > Dashboard content (dashboard-content.tsx).
    Paste a link, "Read link" reads its headline and blurb, the draft opens
@@ -867,7 +873,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
   const [scan, setScan] = useState(-1);
   const [fanY, setFanY] = useState(0);
   const [targets, setTargets] = useState<Point[]>([]);
-  const [booked, setBooked] = useState(false);
   const [tap, setTap] = useState<Tap>(null);
   const [edit, setEdit] = useState<EditStage>("idle");
   const [typed, setTyped] = useState(0);
@@ -878,7 +883,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
   const [rowHi, setRowHi] = useState(-1);
   const [mailEdit, setMailEdit] = useState<EditStage>("idle");
   const [mailTyped, setMailTyped] = useState(0);
-  const [mailShown, setMailShown] = useState(0);
+  const [stayHi, setStayHi] = useState(false);
+  const [mailOn, setMailOn] = useState(false);
   const [newsStep, setNewsStep] = useState(0);
   const [dashOpen, setDashOpen] = useState(false);
   const [freshOn, setFreshOn] = useState(false);
@@ -903,9 +909,9 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
   }, []);
 
   /* The tab row scrolls on phones: keep the open tab in sight */
-  /* Chapters 3 and 4 play in full-screen views over the client's record, so
-     the record keeps its Estate Plan tab open underneath */
-  const openTab = "Estate Plan";
+  /* The record shows Estate Plan, and Staying in touch from chapter 3's
+     second half on (under chapter 4's full-screen views too) */
+  const openTab = beat === "mail" || beat === "posts" || beat === "dash" ? "Staying in touch" : "Estate Plan";
   useEffect(() => {
     const row = tabsRef.current;
     const tab = row?.querySelector<HTMLElement>(`[data-tab="${openTab}"]`);
@@ -939,7 +945,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
       setScan(-1);
       setTargets([]);
       setTap(null);
-      setBooked(chapter === 2);
       setEdit(chapter >= 1 ? "done" : "idle");
       setTyped(0);
       setSent(chapter >= 1);
@@ -949,7 +954,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
       setSaved(chapter >= 2);
       setDrawer(false);
       setRowHi(-1);
-      setMailShown(chapter >= 2 ? MAILS.length : 0);
+      setStayHi(chapter === 2);
+      setMailOn(chapter === 2);
       setNewsStep(chapter === 3 ? 4 : 0);
       setDashOpen(chapter === 3);
       setFreshOn(chapter === 3);
@@ -1000,7 +1006,6 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
     const reset = () => {
       setScan(-1);
       setTargets([]);
-      setBooked(false);
       setFound(0);
       setLooking(0);
       setAddress(false);
@@ -1116,7 +1121,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
         await wait(2200);
       },
       /* 3. The client check-in's email in Settings, one word changed and saved;
-         then the check-ins land, and the backup executor books a meeting */
+         then Daniel's record shows when it next goes, and the email floats out */
       async () => {
         reset();
         setMailEdit("idle");
@@ -1124,7 +1129,8 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
         setSaved(false);
         setDrawer(false);
         setRowHi(-1);
-        setMailShown(0);
+        setStayHi(false);
+        setMailOn(false);
         setPlace("hidden");
         setBeat("ahead");
         await wait(700);
@@ -1145,15 +1151,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
         await tapOn("save", () => setSaved(true));
         await wait(520);
         setBeat("mail");
-        await wait(600);
-        for (let n = 1; n <= MAILS.length; n++) {
-          setMailShown(n);
-          await wait(n < MAILS.length ? 520 : 900);
-        }
-        await tapOn("book", () => undefined);
-        await wait(300);
-        setBooked(true);
-        await wait(2000);
+        await wait(1000);
+        await tapOn("row", () => setStayHi(true));
+        await wait(500);
+        setMailOn(true);
+        await wait(2600);
       },
       /* 4. A link to the firm's article, posted to every client's dashboard;
          it shows up in Daniel's "From your firm" */
@@ -1321,7 +1323,7 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
                   </div>
                   <div className="mt-6 min-h-0 flex-1">
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
-                    {(beat === "summary" || LAYERS.includes(beat)) && (
+                    {(beat === "summary" || beat === "ahead") && (
                       <Appear key="summary" className="flex h-full flex-col">
                         <SubTabs
                           active="Summary"
@@ -1350,6 +1352,11 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
                         </div>
                       </Appear>
                     )}
+                    {(beat === "mail" || beat === "posts" || beat === "dash") && (
+                      <Appear key="stay" className="h-full">
+                        <ClientStayingInTouch hi={stayHi} tap={tap} compact={compact} />
+                      </Appear>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1363,12 +1370,9 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
               <StayingInTouch hi={rowHi} drawer={drawer} edit={mailEdit} typed={mailTyped} saved={saved} tap={tap} compact={compact} />
             </div>
             <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(1)}>
-              <CheckInsLand shown={mailShown} tap={tap} compact={compact} />
-            </div>
-            <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(2)}>
               <DashboardContent step={newsStep} tap={tap} compact={compact} />
             </div>
-            <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(3)}>
+            <div className="pointer-events-none absolute inset-0 z-30" style={layerStyle(2)}>
               <ClientFirmNewsScreen
                 person={DANIEL_EXAMPLE}
                 open={dashOpen}
@@ -1381,24 +1385,17 @@ const ClientFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = fals
               />
             </div>
 
-            {/* The backup executor books from her check-in: the bell's
-                team_booked line (notifications/registry.ts) */}
+            {/* The client check-in floats out over Daniel's record */}
             <div
-              className="pointer-events-none absolute z-50 flex items-center gap-3 rounded-xl bg-white px-4 py-3"
+              className="pointer-events-none absolute z-30"
               style={{
-                ...(compact ? { left: 16, right: 16, bottom: 20 } : { right: 20, top: 20, width: 360 }),
-                fontFamily: FIGTREE,
-                boxShadow: "0 12px 32px rgba(16,24,40,0.18), 0 2px 6px rgba(16,24,40,0.08)",
-                opacity: booked && beat === "mail" ? 1 : 0,
-                transform: booked && beat === "mail" ? "translateY(0)" : "translateY(-10px)",
-                transition: "opacity 240ms ease, transform 360ms var(--ease-out)",
+                ...(compact ? { left: 12, right: 12, bottom: 10 } : { left: 420, width: 640, bottom: 28 }),
+                opacity: mailOn && beat === "mail" ? 1 : 0,
+                transform: mailOn && beat === "mail" ? "translateY(0) scale(1)" : "translateY(28px) scale(0.97)",
+                transition: "opacity 320ms ease, transform 560ms var(--ease-out)",
               }}
             >
-              <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
-              <span className="min-w-0">
-                <span className="block text-[14px] font-semibold text-[#1F2933]">Emma Rosen booked an Agent meeting</span>
-                <span className="block text-[12.5px] text-[#6B7280]">Daniel’s backup executor · Tue, Feb 23 · 2:00 PM</span>
-              </span>
+              <FloatingCheckIn compact={compact} />
             </div>
 
             {/* Paper */}
