@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { WRAP } from "@/components/site/blocks";
 
-/* Security on the For attorneys page, in the homepage FAQ's own type, sizes
-   and spacing, laid out the other way round (as harvey.ai's security block
-   is): the heading on the left, ruled rows on the right that open when
-   clicked, all closed at first. No icons, no button. Willow holds no certifications, so
+/* Security on the For attorneys page: the heading and line on the left, in
+   this page's header style (light serif, an italic teal second line) and the
+   hero's subheader style; ruled rows on the right in the homepage FAQ's type
+   and spacing, each closed until clicked. The section keeps the same space
+   above it as the tiles have above theirs. No label, icons or button. Willow holds no certifications, so
    the rows are its own commitments, each one the Security page already makes
    (checked against the product and the Privacy Policy, Nov 16, 2026). */
 
@@ -39,15 +40,15 @@ const CONTROLS = [
 const SecurityControls = () => {
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <section id="security" className="bg-[#F8FAFC] pb-16 md:pb-20">
+    <section id="security" className="bg-[#F8FAFC] py-16 md:py-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <div className="flex flex-col gap-10 md:flex-row md:gap-16">
           <div className="md:w-2/5 md:pr-6">
-            <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Security</div>
-            <h2 className="mt-3 font-heading text-3xl font-bold text-[#222222] md:text-4xl" style={{ lineHeight: 1.25, textWrap: "balance" }}>
-              Built for the most private documents a family has.
+            <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+              Built for the most private
+              <span className="block italic text-[#138F8B]">documents a family has.</span>
             </h2>
-            <p className="mt-4 max-w-sm text-[17px] leading-relaxed text-gray-600 md:text-lg" style={{ textWrap: "pretty" }}>
+            <p className="mt-5 max-w-md text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em", textWrap: "pretty" }}>
               An estate plan holds a family’s finances, health and wishes. Willow is built so the right people see it at the right time, and no one else does.
             </p>
           </div>
