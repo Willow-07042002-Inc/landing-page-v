@@ -626,7 +626,7 @@ const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 /* The month's bar, weekday row and week rows, in film pixels */
 const CAL = { head: 64, week: 34, row: 98, rowCompact: 74 };
 /* The waits in chapter 3's script */
-const C3 = { read: 500, perChar: 18, after: 300, fold: 400, land: 650, chip: 230, hold: 2000 };
+const C3 = { read: 500, perChar: 18, after: 300, fold: 400, land: 420, chip: 90, hold: 2400 };
 const ARIAL = "Arial, 'Segoe UI', sans-serif";
 const RING_ON = "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)";
 const RING_OFF = "0 0 0 0 rgba(48,158,150,0)";
