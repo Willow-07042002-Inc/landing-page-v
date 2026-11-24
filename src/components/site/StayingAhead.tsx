@@ -14,8 +14,8 @@ export const CHAPTERS: { id: string; also?: string[]; title: string; body: strin
   {
     id: "set-up",
     also: ["signed-plan", "dashboard"],
-    title: "Set up a client",
-    body: "Draft and sign the way you always have. Then drop in the signed documents, and Willow files them under the right person and sets up their account.",
+    title: "Drop in the signed plan",
+    body: "Willow reads the documents you already signed, files each one under the right person, and pulls their email and phone from Outlook, so there’s nothing to retype.",
   },
   {
     id: "plan-summaries",
