@@ -14,12 +14,13 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
       conversation the client gets (the clients app's ChatSheet, which the
       attorney's survey preview shows, survey-preview.tsx) and steps to its
       second question.
-   2. One box that says "Upload article": the firm's article drops into it,
-      the box opens downward to its image, headline and blurb, and it's
-      posted to clients' dashboards. Aaron's design (Nov 24), in place of the
-      Dashboard content page: in the product (dashboard-content.tsx) the
-      attorney pastes the article's link, Willow reads its headline and
-      blurb, and posts carry no image.
+   2. Dashboard content as Aaron designed it (Nov 24): an "Upload article"
+      box over the firm's past posts, each small with its image on the left.
+      The new article drops into the box, which opens downward to it, image
+      on top and words under, pushing the past posts down and off the frame;
+      then it's posted to clients' dashboards. In the product
+      (dashboard-content.tsx) the attorney pastes the article's link, Willow
+      reads its headline and blurb, and posts carry no image.
    3. The professional check-in to the client's financial advisor and
       accountant (DEFAULTS.maintenance_checkin), a sentence typed onto it and
       saved.
@@ -40,8 +41,14 @@ const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 const ARIAL = "Arial, 'Segoe UI', sans-serif";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
 
-/* Chapter 2's article (the page's own placeholder headline) */
-const NEWS = { title: "What the new estate tax threshold means", body: "How it affects your plan, and whether you need to do anything.", date: "November 24, 2026" };
+/* Chapter 2's article (the page's own placeholder headline) and the firm's
+   earlier posts. The pictures are stand-ins until the photos are chosen */
+const NEWS = { title: "What the new estate tax threshold means", body: "How it affects your plan, and whether you need to do anything.", date: "November 24, 2026", img: "/hudson-bridge.jpg" };
+const PAST = [
+  { title: "How often you should update your estate plan", body: "Life changes, and your plan should too. Here’s when it’s worth a second look.", date: "October 20, 2026", img: "/willow-street.jpg" },
+  { title: "Choosing the right executor", body: "What the role asks of someone, and how to pick the right person.", date: "September 22, 2026", img: "/williamsburg.jpg" },
+  { title: "Why the way your home is titled matters", body: "How a deed fits with the rest of your estate plan.", date: "August 18, 2026", img: "/florida-coast.jpg" },
+];
 
 /* Chapter 3: what the attorney types onto the advisors' check-in */
 const TEAM_TYPED = " If anything changes on your side, I’d be glad to hear from you.";
@@ -183,82 +190,105 @@ const ClientCheckIn = ({ tap, compact }: { tap: Tap; compact: boolean }) => (
   </>
 );
 
-/* 2. The upload box: "Upload article" (lit while the article is over it),
-   then it opens downward to the article, loading first, and is posted.
+/* 2. Dashboard content: the "Upload article" box (lit while the article is
+   over it), which opens downward to the new article, loading first, then
+   posted; under it the firm's past posts, small, pushed down as it opens.
    step: 0 waiting, 1 loading, 2 the article, 3 posted */
-const ArticleBox = ({ step, over, tap, compact, dropRef }: { step: number; over: boolean; tap: Tap; compact: boolean; dropRef: React.RefObject<HTMLDivElement> }) => {
+const PastPost = ({ a, compact, last }: { a: (typeof PAST)[number]; compact: boolean; last: boolean }) => (
+  <div className={`flex items-center gap-4 py-3 ${last ? "" : "border-b border-[#F0F1F3]"}`}>
+    <img src={a.img} alt="" className="flex-shrink-0 rounded-lg object-cover" style={{ width: compact ? 84 : 112, height: compact ? 60 : 72 }} />
+    <span className="min-w-0 flex-1">
+      <span className={`block text-[14px] font-medium leading-snug text-[#1F2933] ${compact ? "" : "truncate"}`}>{a.title}</span>
+      {!compact && <span className="mt-0.5 block truncate text-[12.5px] text-[#6B7280]">{a.body}</span>}
+      <span className="mt-1 block text-[12.5px] text-[#9CA3AF]">{a.date}</span>
+    </span>
+    <WIcon name="more" className="h-4 w-4 flex-shrink-0 text-[#9CA3AF]" />
+  </div>
+);
+const ArticleFeed = ({ step, over, tap, compact, dropRef }: { step: number; over: boolean; tap: Tap; compact: boolean; dropRef: React.RefObject<HTMLDivElement> }) => {
   const open = step >= 1;
   const fold = (on: boolean): React.CSSProperties => ({ display: "grid", gridTemplateRows: on ? "1fr" : "0fr", transition: "grid-template-rows 560ms cubic-bezier(0.77, 0, 0.175, 1)" });
   const bar = "rounded-full bg-[#EEF0F2]";
   return (
-    <div className={`overflow-hidden rounded-2xl bg-white text-left ${compact ? "p-4" : "p-5"}`} style={{ boxShadow: LIFT, fontFamily: FIGTREE }}>
-      <div style={fold(!open)}>
-        <div className="min-h-0 overflow-hidden">
-          <div
-            ref={dropRef}
-            className="flex flex-col items-center justify-center gap-2.5 rounded-xl border-2 border-dashed"
-            style={{
-              height: compact ? 150 : 170,
-              borderColor: over ? "#309E96" : "#D1D5DB",
-              background: over ? "#F0F9F8" : "#FAFBFC",
-              transition: "border-color 200ms ease, background-color 200ms ease",
-            }}
-          >
-            <UploadIcon className="h-7 w-7 text-[#309E96]" />
-            <span className="text-[17px] font-semibold text-[#1F2933]">Upload article</span>
+    <>
+      <Bar title="Dashboard content" compact={compact} />
+      <div className={compact ? "px-5 pt-5" : "px-7 pt-6"}>
+        <div style={fold(!open)}>
+          <div className="min-h-0 overflow-hidden">
+            <div
+              ref={dropRef}
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed"
+              style={{
+                height: compact ? 110 : 120,
+                borderColor: over ? "#309E96" : "#D1D5DB",
+                background: over ? "#F0F9F8" : "#FAFBFC",
+                transition: "border-color 200ms ease, background-color 200ms ease",
+              }}
+            >
+              <UploadIcon className="h-6 w-6 text-[#309E96]" />
+              <span className="text-[16px] font-semibold text-[#1F2933]">Upload article</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div style={fold(open)}>
-        <div className="min-h-0 overflow-hidden">
-          <div className="relative overflow-hidden rounded-xl bg-[#EEF0F2]" style={{ height: compact ? 160 : 210 }}>
-            {step >= 2 && (
-              <Appear className="absolute inset-0">
-                <img src="/hudson-bridge.jpg" alt="" className="h-full w-full object-cover" />
-              </Appear>
-            )}
-            {step === 1 && <div className="absolute inset-0 animate-pulse bg-[#E5E7EB]" />}
-          </div>
-          <div className={compact ? "px-1 pt-4" : "px-1 pt-5"} style={{ minHeight: compact ? 104 : 96 }}>
-            {step === 1 ? (
-              <div className="animate-pulse">
-                <div className={`${bar} h-2.5 w-24`} />
-                <div className={`${bar} mt-3 h-4 w-3/4`} />
-                <div className={`${bar} mt-3 h-3 w-full`} />
+        <div style={fold(open)}>
+          <div className="min-h-0 overflow-hidden">
+            <div className={`rounded-2xl border border-[#E5E7EB] bg-white ${compact ? "p-3.5" : "p-4"}`}>
+              <div className="relative overflow-hidden rounded-xl bg-[#EEF0F2]" style={{ height: compact ? 150 : 196 }}>
+                {step >= 2 && (
+                  <Appear className="absolute inset-0">
+                    <img src={NEWS.img} alt="" className="h-full w-full object-cover" />
+                  </Appear>
+                )}
+                {step === 1 && <div className="absolute inset-0 animate-pulse bg-[#E5E7EB]" />}
               </div>
-            ) : (
-              <Appear>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0F7673]">Tax updates</p>
-                <p className="mt-1.5 font-semibold text-[#1F2933]" style={{ fontSize: compact ? 18 : 20, lineHeight: 1.3, fontFamily: MERRIWEATHER }}>{NEWS.title}</p>
-                <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#4B5563]">{NEWS.body}</p>
-              </Appear>
-            )}
-          </div>
-          <div className="mt-4 flex min-h-[44px] items-center px-1">
-            {step === 2 && (
-              <Appear>
-                <span className="inline-flex h-11 items-center rounded-[10px] bg-[#128F8B] px-5 text-[15px] font-semibold text-white" style={tapStyle(tap === "post")}>
-                  Post to clients’ dashboards
-                </span>
-              </Appear>
-            )}
-            {step === 3 && (
-              <Appear className="flex items-center gap-2 text-[15px] font-medium text-[#0F7673]">
-                <CheckIcon className="h-4 w-4" />
-                Posted to 48 clients’ dashboards
-              </Appear>
-            )}
+              <div className="px-1 pt-4" style={{ minHeight: compact ? 104 : 92 }}>
+                {step === 1 ? (
+                  <div className="animate-pulse">
+                    <div className={`${bar} h-2.5 w-24`} />
+                    <div className={`${bar} mt-3 h-4 w-3/4`} />
+                    <div className={`${bar} mt-3 h-3 w-full`} />
+                  </div>
+                ) : (
+                  <Appear>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0F7673]">Tax updates</p>
+                    <p className="mt-1.5 font-semibold text-[#1F2933]" style={{ fontSize: compact ? 18 : 20, lineHeight: 1.3, fontFamily: MERRIWEATHER }}>{NEWS.title}</p>
+                    <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#4B5563]">{NEWS.body}</p>
+                  </Appear>
+                )}
+              </div>
+              <div className="mt-3 flex min-h-[44px] items-center px-1">
+                {step === 2 && (
+                  <Appear>
+                    <span className="inline-flex h-11 items-center rounded-[10px] bg-[#128F8B] px-5 text-[15px] font-semibold text-white" style={tapStyle(tap === "post")}>
+                      Post to clients’ dashboards
+                    </span>
+                  </Appear>
+                )}
+                {step === 3 && (
+                  <Appear className="flex items-center gap-2 text-[15px] font-medium text-[#0F7673]">
+                    <CheckIcon className="h-4 w-4" />
+                    Posted to 48 clients’ dashboards
+                  </Appear>
+                )}
+              </div>
+            </div>
           </div>
         </div>
+        <p className="mt-6 text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]">Posted</p>
+        <div className="mt-1">
+          {PAST.map((a, i) => (
+            <PastPost key={a.title} a={a} compact={compact} last={i === PAST.length - 1} />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
 /* 2. The firm's article as it sits on the firm's own site */
 const Article = ({ compact }: { compact: boolean }) => (
   <div className="overflow-hidden rounded-xl bg-white text-left" style={{ width: compact ? 232 : 280, boxShadow: "0 30px 70px rgba(0,0,0,0.42), 0 3px 10px rgba(0,0,0,0.16)", fontFamily: FIGTREE }}>
-    <img src="/hudson-bridge.jpg" alt="" className="block w-full object-cover" style={{ height: compact ? 92 : 116 }} />
+    <img src={NEWS.img} alt="" className="block w-full object-cover" style={{ height: compact ? 92 : 116 }} />
     <div className="px-4 pb-4 pt-3">
       <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[#0F7673]">Tax updates</p>
       <p className="mt-1 text-[15px] font-semibold leading-snug text-[#1F2933]" style={{ fontFamily: MERRIWEATHER }}>{NEWS.title}</p>
@@ -630,7 +660,6 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
   })();
   const sheetPlace: React.CSSProperties = compact ? { left: 10, right: 10, top: 16, bottom: -48 } : { left: (WIDE.w - 640) / 2, width: 640, top: 36, bottom: -48 };
   const modalPlace: React.CSSProperties = compact ? { left: 10, right: 10, top: 16 } : { left: (WIDE.w - 460) / 2, width: 460, top: 36 };
-  const boxPlace: React.CSSProperties = compact ? { left: 14, right: 14, top: 40 } : { left: (WIDE.w - 560) / 2, width: 560, top: 100 };
   const columnPlace: Place = compact ? PLACE_COMPACT : { left: (WIDE.w - 540) / 2, right: (WIDE.w - 540) / 2, top: 52 };
   const surveyOn = shown === 0 && survey;
   const modalOn = shown === 3 && modal;
@@ -647,9 +676,9 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
           <Piece on={shown === 0} place={place}>
             <ClientCheckIn tap={tap} compact={compact} />
           </Piece>
-          <Rise on={shown === 1} z={10} style={boxPlace}>
-            <ArticleBox step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
-          </Rise>
+          <Piece on={shown === 1} place={place}>
+            <ArticleFeed step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
+          </Piece>
           <Piece on={shown === 2} place={place}>
             <TeamCheckIn edit={teamEdit} typed={teamTyped} saved={saved} tap={tap} compact={compact} />
           </Piece>
