@@ -25,10 +25,12 @@ import {
      small  Connect: the apps it connects to
      wide   Speak to clients in your own voice: Approve Summary over a plan
             summary mid-edit (the Keeping things easy film's edit), and the
-            button can be pressed. Summaries, check-ins (Tailor: a personal
-            note, subject and message) and the welcome note are all editable
-            on main (Nov 24). Willow learning the attorney's voice is not
-            built, so the tile doesn't claim it */
+            button can be pressed. Summaries, check-in emails (Tailor: a
+            personal note, subject and message), firm updates (Settings >
+            Dashboard content) and the welcome note are all editable on main
+            (Nov 24); the line names only those, not "anything". Willow
+            learning the attorney's voice is not built, so the tile doesn't
+            claim it */
 
 const UI_SHADOW = "0 1px 2px rgba(16,24,40,0.05), 0 10px 24px -8px rgba(16,24,40,0.14)";
 const PRODUCT_FONT = "Figtree, Inter, sans-serif";
@@ -266,7 +268,7 @@ const WhatYouDeliver = () => (
         <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row lg:col-span-6 lg:flex-col lg:gap-4 min-[1200px]:flex-row min-[1200px]:gap-6`}>
           <div className="sm:w-[40%] sm:flex-shrink-0 sm:pb-6 lg:w-auto lg:pb-0 min-[1200px]:w-[35%] min-[1200px]:pb-6">
             <TileTitle>Speak to clients in your own voice</TileTitle>
-            <TileBody>Edit any plan summary, check-in or welcome message, so what clients read sounds like you.</TileBody>
+            <TileBody>Edit any summary, check-in email or firm update your clients see, so every word sounds like it came from you.</TileBody>
           </div>
           <div className="min-w-0 flex-1 self-end lg:mt-auto lg:w-full lg:flex-none lg:self-stretch min-[1200px]:mt-0 min-[1200px]:w-auto min-[1200px]:flex-1 min-[1200px]:self-end">
             <Bleed heightClass="h-[228px] lg:h-[206px] min-[1200px]:h-[228px]" fadeFrom={82} live>
