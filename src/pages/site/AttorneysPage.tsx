@@ -1,8 +1,5 @@
 import React from "react";
-import { PageShell, PageHero, ClosingCta, ClosingCard, WRAP, usePageMeta } from "@/components/site/blocks";
-import { ScaledScreen } from "@/components/product/kit";
-import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
-import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
+import { PageShell, PageHero, WRAP, usePageMeta } from "@/components/site/blocks";
 import CheckInStory from "@/components/site/CheckInStory";
 import StayingAhead from "@/components/site/StayingAhead";
 import KeepingThingsEasy from "@/components/site/KeepingThingsEasy";
@@ -15,10 +12,9 @@ import SecurityControls from "@/components/site/SecurityControls";
    already run (quiet tiles with pieces of the product), the admin Willow
    takes off their plate (keeping things easy: the signed plan in, the
    summary out, the reaching out on schedule), then security in the homepage
-   FAQ's type and spacing (heading left, rows right that open on click), and
-   two closing cards: Willow with your own practice (the attorney dashboard),
-   then with your clients (the client's own plan page, "From your firm" on
-   top). No attorney reviews on this page. */
+   FAQ's type and spacing (heading left, rows right that open on click). No
+   closing cards: the demo ask is the footer's top line, as on harvey.ai
+   (Aaron, Nov 24). No attorney reviews on this page. */
 
 const Belief = () => (
   <section className="bg-[#F8FAFC] pb-16 md:pb-24">
@@ -53,17 +49,6 @@ const AttorneysPage = () => {
       <WhatYouDeliver />
       <KeepingThingsEasy />
       <SecurityControls />
-      <ClosingCta
-        shot={<ScaledScreen><AttorneyDashboardScreen /></ScaledScreen>}
-        more={
-          <ClosingCard
-            title="See Willow with your clients."
-            body="See the page your clients sign in to: their plan in plain language, with your firm, your updates and their next check-in at the top."
-            image="/willow-street.jpg"
-            shot={<ScaledScreen><ClientEstatePlanTodayScreen /></ScaledScreen>}
-          />
-        }
-      />
     </PageShell>
   );
 };
