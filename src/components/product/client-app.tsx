@@ -1164,29 +1164,47 @@ const CaTile = ({ label, selected = false }: { label: string; selected?: boolean
   </span>
 );
 
+/* The firm's first two default questions and their tiles (DEFAULT_SURVEY_QUESTIONS
+   and DEFAULT_SURVEY_OPTIONS in touchpoints.ts) */
+const CA_CHECKIN_STEPS = [
+  { q: "Has your family dynamic changed?", options: ["Got married", "Divorced or separated", "A birth or adoption", "A death in the family", "A new partner"] },
+  { q: "Have you moved, or bought or sold property?", options: ["Moved", "Bought or sold property", "Moved to another state"] },
+];
+
 /* The check-in sheet on its own: conversation.tsx ChatSheet (sm+: 640 wide,
-   min(760px, 88vh) tall, rounded-2xl), open on the first question. 640x760. */
-export const CheckInSheet = () => (
-  <div role="dialog" aria-label="Has anything changed?" className="flex h-[760px] w-full max-w-[640px] flex-col overflow-hidden rounded-2xl bg-white" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+   min(760px, 88vh) tall, rounded-2xl), open on the first question. 640x760.
+   `step` opens it on a later question, with the ones before it folded up as
+   already asked (as the attorney's survey preview steps through them);
+   `compact` is the phone layout (tiles in one column, no indent, as
+   LifeChangesConversation's grid-cols-1 / sm:pl-[60px]); `fill` takes its
+   container's height instead of 760 */
+export const CheckInSheet = ({ step = 0, compact = false, fill = false }: { step?: number; compact?: boolean; fill?: boolean }) => {
+  const at = CA_CHECKIN_STEPS[Math.min(step, CA_CHECKIN_STEPS.length - 1)];
+  const indent = compact ? "" : "pl-[60px]";
+  return (
+  <div role="dialog" aria-label="Has anything changed?" className={`flex ${fill ? "h-full" : "h-[760px]"} w-full max-w-[640px] flex-col overflow-hidden rounded-2xl bg-white`} style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
     {/* Header: the firm's name (no logo inside the portal), and the × ("Not now") */}
-    <div className="flex flex-shrink-0 items-center justify-between px-8 py-5">
+    <div className={`flex flex-shrink-0 items-center justify-between ${compact ? "px-5 py-4" : "px-8 py-5"}`}>
       <span className="truncate text-[#1F2933]" style={{ ...CA_SERIF, fontSize: 16, fontWeight: 600 }}>Alvarez Family Law</span>
       <span aria-label="Not now" className="p-1 text-[#9CA3AF] hover:text-[#4B5563]">
         <CaCloseIcon className="h-5 w-5" />
       </span>
     </div>
-    <div className="min-h-0 flex-1 overflow-hidden px-8 pb-6 pt-2">
+    <div className={`min-h-0 flex-1 overflow-hidden pb-6 pt-2 ${compact ? "px-5" : "px-8"}`}>
       {/* The greeting, folded up into the thread once she has typed it */}
       <CaPastTurn q="Hi Daniel. Rachel at Alvarez Family Law asked me to check in on your plan." />
-      {/* The first of the firm's questions (the default "family" question): tap what applies */}
-      <div className="scroll-mt-2">
-        <CaEva note="Tap anything that has.">Has your family dynamic changed?</CaEva>
-        <div className="mt-8 grid grid-cols-2 gap-3 pl-[60px]">
-          {["Got married", "Divorced or separated", "A birth or adoption", "A death in the family", "A new partner"].map((o) => (
+      {CA_CHECKIN_STEPS.slice(0, Math.min(step, CA_CHECKIN_STEPS.length - 1)).map((s) => (
+        <CaPastTurn key={s.q} q={s.q} />
+      ))}
+      {/* The question it's on (the first is the default "family" question): tap what applies */}
+      <div key={at.q} className="scroll-mt-2">
+        <CaEva note="Tap anything that has.">{at.q}</CaEva>
+        <div className={`mt-8 grid gap-3 ${compact ? "grid-cols-1" : "grid-cols-2"} ${indent}`}>
+          {at.options.map((o) => (
             <CaTile key={o} label={o} />
           ))}
         </div>
-        <div className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 pl-[60px]">
+        <div className={`mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 ${indent}`}>
           {/* PrimaryButton, disabled until something is tapped */}
           <span className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E5E7EB] px-10 py-3 text-[#9CA3AF]" style={{ fontSize: 15, fontWeight: 600 }}>
             That&rsquo;s right
@@ -1199,7 +1217,8 @@ export const CheckInSheet = () => (
       <div className="h-8" />
     </div>
   </div>
-);
+  );
+};
 
 /* Daniel's check-in, open over the client app: ChatSheet's scrim (fixed
    inset-0 z-[60], sm:bg-black/50) centring the sheet. 1440 x 900: at 900 the

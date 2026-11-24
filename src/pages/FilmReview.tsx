@@ -1,10 +1,22 @@
-/* Dev only (/dev/film): the For attorneys film on its own, with pause, slow
+/* Dev only (/dev/film): a For attorneys film on its own, with pause, slow
    motion and chapter jumps, for going through it and giving notes. It renders
-   the same ClientFilm and chapter copy as the page, so it updates with them.
-   Not routed in production builds. */
+   the same film and chapter copy as the page, so it updates with them: "A
+   practice families keep coming back to" by default, the "Keeping things
+   easy" film at /dev/film?film=easy. Not routed in production builds. */
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import ClientFilm, { FILM_CHAPTERS, FILM_MS, type FilmClock } from "@/components/site/ClientFilm";
-import { CHAPTERS } from "@/components/site/StayingAhead";
+import KeepInTouchFilm, { KEEP_MS } from "@/components/site/KeepInTouchFilm";
+import EasyFilm, { EASY_MS } from "@/components/site/EasyFilm";
+import { KEEP_CHAPTERS } from "@/components/site/StayingAhead";
+import { EASY_CHAPTERS } from "@/components/site/KeepingThingsEasy";
+import type { FilmClock } from "@/components/site/film-kit";
+
+const FILMS = {
+  keep: { name: "Keep coming back", Film: KeepInTouchFilm, ms: KEEP_MS, chapters: KEEP_CHAPTERS },
+  easy: { name: "Keeping things easy", Film: EasyFilm, ms: EASY_MS, chapters: EASY_CHAPTERS },
+};
+const which: keyof typeof FILMS = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("film") === "easy" ? "easy" : "keep";
+const { Film, ms: FILM_MS, chapters: CHAPTERS } = FILMS[which];
+const FILM_CHAPTERS = CHAPTERS.length;
 
 const SPEEDS = [0.25, 0.5, 1];
 const TOTAL = FILM_MS.reduce((a, b) => a + b, 0);
@@ -113,10 +125,17 @@ const FilmReview = () => {
           <span className="text-[15px] font-semibold" style={{ fontVariantNumeric: "tabular-nums" }} data-film-time>
             {stamp(before + inChapter)} <span className="font-normal text-gray-400">/ {stamp(TOTAL)}</span>
           </span>
-          <span className="ml-auto hidden text-[13px] text-gray-400 md:block">Space to pause · arrow keys for chapters</span>
+          <span className="ml-auto hidden text-[13px] text-gray-400 md:block">
+            {(Object.keys(FILMS) as (keyof typeof FILMS)[]).map((k) => (
+              <a key={k} href={k === "keep" ? "?" : `?film=${k}`} className={`mr-4 ${k === which ? "font-medium text-[#222222]" : "hover:text-[#222222]"}`}>
+                {FILMS[k].name}
+              </a>
+            ))}
+            Space to pause · arrow keys for chapters
+          </span>
         </div>
 
-        <div className="mt-3 grid grid-cols-4 gap-2">
+        <div className="mt-3 grid gap-2" style={{ gridTemplateColumns: `repeat(${FILM_CHAPTERS}, minmax(0, 1fr))` }}>
           {CHAPTERS.map((c, i) => (
             <button key={c.id} type="button" onClick={() => jump(i)} aria-current={i === chapter} className="text-left">
               <span className="block h-1 overflow-hidden rounded-full bg-gray-200">
@@ -135,7 +154,7 @@ const FilmReview = () => {
         <p className="mt-2 min-h-[2.75rem] max-w-4xl text-[14.5px] leading-snug text-gray-600">{CHAPTERS[chapter].body}</p>
 
         <div ref={filmRef} className="mt-1">
-          <ClientFilm
+          <Film
             chapter={chapter}
             replay={replay}
             clock={clock}
