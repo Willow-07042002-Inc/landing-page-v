@@ -26,7 +26,7 @@ export const KEEP_CHAPTERS: Chapter[] = [
   },
   {
     id: "firm-updates",
-    title: "Share your firm’s updates",
+    title: "Share your firm’s content and updates",
     body: "Add a link to anything your firm publishes, and it appears on every client’s dashboard, so you stay in view between check-ins.",
   },
   {

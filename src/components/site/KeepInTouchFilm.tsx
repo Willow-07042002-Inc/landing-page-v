@@ -42,12 +42,14 @@ const ARIAL = "Arial, 'Segoe UI', sans-serif";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
 
 /* Chapter 2's article (the page's own placeholder headline) and the firm's
-   earlier posts. The pictures are stand-ins until the photos are chosen */
-const NEWS = { title: "What the new estate tax threshold means", body: "How it affects your plan, and whether you need to do anything.", date: "November 24, 2026", img: "/hudson-bridge.jpg" };
+   earlier posts. Photos from Unsplash (free under the Unsplash License):
+   omGSZqBXkqY, ik34RApLqXc, sUq45MwJuHs, 3HfGnyPfWqQ. pos keeps the faces
+   in the crop */
+const NEWS = { title: "What the new estate tax threshold means", body: "How it affects your plan, and whether you need to do anything.", date: "November 24, 2026", img: "/articles/advisor-meeting.jpg", pos: "50% 30%" };
 const PAST = [
-  { title: "How often you should update your estate plan", body: "Life changes, and your plan should too. Here’s when it’s worth a second look.", date: "October 20, 2026", img: "/willow-street.jpg" },
-  { title: "Choosing the right executor", body: "What the role asks of someone, and how to pick the right person.", date: "September 22, 2026", img: "/williamsburg.jpg" },
-  { title: "Why the way your home is titled matters", body: "How a deed fits with the rest of your estate plan.", date: "August 18, 2026", img: "/florida-coast.jpg" },
+  { title: "How often you should update your estate plan", body: "Life changes, and your plan should too. Here’s when it’s worth a second look.", date: "October 20, 2026", img: "/articles/couple-outdoors.jpg", pos: "50% 15%" },
+  { title: "Choosing the right executor", body: "What the role asks of someone, and how to pick the right person.", date: "September 22, 2026", img: "/articles/two-men-talking.jpg", pos: "50% 50%" },
+  { title: "Why the way your home is titled matters", body: "How a deed fits with the rest of your estate plan.", date: "August 18, 2026", img: "/articles/house-keys.jpg", pos: "50% 50%" },
 ];
 
 /* Chapter 3: what the attorney types onto the advisors' check-in */
@@ -196,7 +198,7 @@ const ClientCheckIn = ({ tap, compact }: { tap: Tap; compact: boolean }) => (
    step: 0 waiting, 1 loading, 2 the article, 3 posted */
 const PastPost = ({ a, compact, last }: { a: (typeof PAST)[number]; compact: boolean; last: boolean }) => (
   <div className={`flex items-center gap-4 py-3 ${last ? "" : "border-b border-[#F0F1F3]"}`}>
-    <img src={a.img} alt="" className="flex-shrink-0 rounded-lg object-cover" style={{ width: compact ? 84 : 112, height: compact ? 60 : 72 }} />
+    <img src={a.img} alt="" className="flex-shrink-0 rounded-lg object-cover" style={{ width: compact ? 84 : 112, height: compact ? 60 : 72, objectPosition: a.pos }} />
     <span className="min-w-0 flex-1">
       <span className={`block text-[14px] font-medium leading-snug text-[#1F2933] ${compact ? "" : "truncate"}`}>{a.title}</span>
       {!compact && <span className="mt-0.5 block truncate text-[12.5px] text-[#6B7280]">{a.body}</span>}
@@ -236,7 +238,7 @@ const ArticleFeed = ({ step, over, tap, compact, dropRef }: { step: number; over
               <div className="relative overflow-hidden rounded-xl bg-[#EEF0F2]" style={{ height: compact ? 150 : 196 }}>
                 {step >= 2 && (
                   <Appear className="absolute inset-0">
-                    <img src={NEWS.img} alt="" className="h-full w-full object-cover" />
+                    <img src={NEWS.img} alt="" className="h-full w-full object-cover" style={{ objectPosition: NEWS.pos }} />
                   </Appear>
                 )}
                 {step === 1 && <div className="absolute inset-0 animate-pulse bg-[#E5E7EB]" />}
@@ -288,7 +290,7 @@ const ArticleFeed = ({ step, over, tap, compact, dropRef }: { step: number; over
 /* 2. The firm's article as it sits on the firm's own site */
 const Article = ({ compact }: { compact: boolean }) => (
   <div className="overflow-hidden rounded-xl bg-white text-left" style={{ width: compact ? 232 : 280, boxShadow: "0 30px 70px rgba(0,0,0,0.42), 0 3px 10px rgba(0,0,0,0.16)", fontFamily: FIGTREE }}>
-    <img src={NEWS.img} alt="" className="block w-full object-cover" style={{ height: compact ? 92 : 116 }} />
+    <img src={NEWS.img} alt="" className="block w-full object-cover" style={{ height: compact ? 92 : 116, objectPosition: NEWS.pos }} />
     <div className="px-4 pb-4 pt-3">
       <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[#0F7673]">Tax updates</p>
       <p className="mt-1 text-[15px] font-semibold leading-snug text-[#1F2933]" style={{ fontFamily: MERRIWEATHER }}>{NEWS.title}</p>
