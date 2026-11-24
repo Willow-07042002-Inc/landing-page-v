@@ -340,26 +340,10 @@ const Sheet = ({ d, scanning, scanned }: { d: SheetData; scanning: boolean; scan
   </div>
 );
 
-const SubTabs = ({ active, right }: { active: "Documents" | "Summary"; right?: React.ReactNode }) => (
-  <div className="mb-6 flex flex-shrink-0 items-center justify-between gap-3 border-b border-[#E5E7EB] pb-px">
-    <div className="flex">
-      {(["Documents", "Summary"] as const).map((t) => (
-        <span
-          key={t}
-          data-sub={t}
-          className={`whitespace-nowrap rounded-t-md border-b-2 px-4 py-3 text-[13px] font-medium ${t === active ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}
-        >
-          {t}
-        </span>
-      ))}
-    </div>
-    {right}
-  </div>
-);
-
+/* The Estate Plan tab's documents. The film leaves out the tab's own
+   Documents / Summary row (Aaron, Nov 24: less clunky) */
 const TheirDocuments = () => (
   <>
-    <SubTabs active="Documents" />
     <div className="space-y-6">
       <div>
         <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
@@ -516,7 +500,7 @@ const WorkingRow = ({ pun }: { pun: number }) => (
 );
 
 /* What You'll Leave Behind, open, writing itself */
-const LeaveBehindLive = ({ share, pun, ready, still }: { share: number; pun: number; ready: boolean; still: boolean }) => (
+const LeaveBehindLive = ({ share, pun, ready, sent, tap, still }: { share: number; pun: number; ready: boolean; sent: boolean; tap: Tap; still: boolean }) => (
   <div className="h-full overflow-hidden rounded-t-2xl bg-white" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
     <div className="flex items-center gap-3 p-4">
       <img src="/mock/tree-icon.png" alt="" width={36} height={36} className="h-9 w-9 flex-shrink-0 object-contain" />
@@ -547,6 +531,16 @@ const LeaveBehindLive = ({ share, pun, ready, still }: { share: number; pun: num
         </Appear>
       )}
       {!ready && <WorkingRow pun={pun} />}
+      {/* Written: Approve Summary (the review page's button), here at its foot */}
+      {ready && (
+        <div className="mt-5" style={{ opacity: 1, animation: still ? undefined : "film-approve-in 320ms ease" }}>
+          <style>{"@keyframes film-approve-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }"}</style>
+          <div className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-[#309E96] text-[15px] font-semibold text-white" style={tapStyle(tap === "approve")}>
+            {sent && <CheckIcon className="h-4 w-4" />}
+            {sent ? "Approved and sent" : "Approve Summary"}
+          </div>
+        </div>
+      )}
     </div>
   </div>
 );
@@ -1083,38 +1077,13 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                       </Appear>
                     )}
                     {beat === "explain" && (
-                      <Appear key="explain" className="flex h-full flex-col">
-                        <SubTabs
-                          active="Summary"
-                          right={
-                            <span
-                              className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white"
-                              style={{ ...tapStyle(tap === "approve"), opacity: ready ? 1 : 0, transition: `opacity ${still ? 0 : 300}ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease` }}
-                            >
-                              {sent && <CheckIcon className="h-3.5 w-3.5" />}
-                              {sent ? "Approved and sent" : "Approve"}
-                            </span>
-                          }
-                        />
-                        <div className="min-h-0 flex-1">
-                          <LeaveBehindLive share={share} pun={pun} ready={ready} still={still} />
-                        </div>
+                      <Appear key="explain" className="h-full">
+                        <LeaveBehindLive share={share} pun={pun} ready={ready} sent={sent} tap={tap} still={still} />
                       </Appear>
                     )}
                     {beat === "summary" && (
-                      <Appear key="summary" className="flex h-full flex-col">
-                        <SubTabs
-                          active="Summary"
-                          right={
-                            <span className="inline-flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full bg-[#309E96] px-5 text-[13px] font-medium text-white" style={tapStyle(tap === "approve")}>
-                              {sent && <CheckIcon className="h-3.5 w-3.5" />}
-                              {sent ? "Approved and sent" : "Approve"}
-                            </span>
-                          }
-                        />
-                        <div className="min-h-0 flex-1 overflow-hidden rounded-t-2xl">
-                          <SummaryCards flush familyOpen={false} leaveOpen={false} protectsOpen={false} />
-                        </div>
+                      <Appear key="summary" className="h-full overflow-hidden rounded-t-2xl">
+                        <SummaryCards flush familyOpen={false} leaveOpen={false} protectsOpen={false} />
                       </Appear>
                     )}
                   </div>
