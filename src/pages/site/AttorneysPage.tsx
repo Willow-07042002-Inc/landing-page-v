@@ -4,12 +4,15 @@ import { ScaledScreen } from "@/components/product/kit";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import CheckInStory from "@/components/site/CheckInStory";
 import StayingAhead from "@/components/site/StayingAhead";
+import KeepingThingsEasy from "@/components/site/KeepingThingsEasy";
 import WhatYouDeliver from "@/components/site/WhatYouDeliver";
 import SecurityControls from "@/components/site/SecurityControls";
 
 /* For attorneys, with the look of harvey.ai's solution pages and a layout of
    its own: the hero, what Willow believes, how attorneys stay ahead for every
-   client (task by task, on the real product), what the practice delivers
+   client (task by task, on the real product), the admin Willow takes off
+   their plate (keeping things easy: the signed plan in, the summary out),
+   what the practice delivers
    (quiet tiles with pieces of the product), then security in the homepage
    FAQ's type and spacing (heading left, rows right that open on click), and
    the demo. No attorney reviews on this page. */
@@ -44,6 +47,7 @@ const AttorneysPage = () => {
       />
       <Belief />
       <StayingAhead />
+      <KeepingThingsEasy />
       <WhatYouDeliver />
       <SecurityControls />
       <ClosingCta shot={<ScaledScreen><AttorneyDashboardScreen /></ScaledScreen>} />
