@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FloatStack, ScaledScreen, WIcon } from "@/components/product/kit";
 import { AttorneyClientsScreen, CLIENT_PANEL_TABS, ProDocRow, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import { RoleChain, SummaryCards, SummaryEditToggle } from "@/components/product/attorney-review";
@@ -29,7 +29,7 @@ import { CheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icon
    (Nov 24, 2026: they moved to their own section). */
 
 const ROOT_WIDE = { w: 1140, h: 855 }; // a laptop-width window, so the panel reads beside the chapter list
-const ROOT_COMPACT = { w: 420, h: 640 };
+const ROOT_COMPACT = { w: 440, h: 500 };
 const PANEL_WIDE = { w: 800, h: 791 }; // under the 64px top bar
 
 /* A dark print with the product on it. The product runs off the bottom edge:
@@ -138,6 +138,19 @@ const Fade = ({ on, delay = 0, children }: { on: boolean; delay?: number; childr
   <div style={{ opacity: on ? 1 : 0, transition: on ? `opacity 240ms ease ${delay}ms` : "none" }}>{children}</div>
 );
 
+/* How far down a container an element ends, from layout alone (transforms
+   and their transitions don't count) */
+const bottomWithin = (el: HTMLElement | null | undefined, container: HTMLElement | null) => {
+  if (!el || !container) return 0;
+  let y = el.offsetHeight;
+  let n: HTMLElement | null = el;
+  while (n && n !== container) {
+    y += n.offsetTop;
+    n = n.offsetParent as HTMLElement | null;
+  }
+  return y;
+};
+
 const Appear = ({ className, children }: { className?: string; children: React.ReactNode }) => {
   const [on, setOn] = useState(false);
   useEffect(() => {
@@ -214,7 +227,7 @@ const TheirAccounts = ({ found, looking, address, pulse, compact }: { found: num
           );
           const phone = filled(on, "Phone", p.phone);
           return (
-            <div key={p.n} className={section}>
+            <div key={p.n} data-client={p.n} className={section}>
               <div className="mb-2 flex items-baseline justify-between gap-3">
                 <p className="text-xs font-medium uppercase tracking-wide text-[#9CA3AF]">Client {p.n}</p>
                 {p.n === 1 && <p className="text-[11.5px] text-[#9CA3AF]">* Required</p>}
@@ -494,8 +507,8 @@ const TOUCH_WAYS = [
    (StackGroup, StackSection and SwitchLine, as the product draws them).
    step: 0 nothing yet, 1 the check-ins, 2 Emma has booked */
 const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
-  const box = compact ? "bg-white p-6" : "bg-white p-8";
-  const label = "mb-4 text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]";
+  const box = compact ? "bg-white p-5" : "bg-white p-8";
+  const label = `${compact ? "mb-3" : "mb-4"} text-[11px] font-medium uppercase tracking-wide text-[#9CA3AF]`;
   return (
     <div className="overflow-hidden rounded-2xl bg-[#F3F4F6]">
       <div className="flex flex-col gap-1.5">
@@ -504,7 +517,7 @@ const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
           {TOUCH_WAYS.map((w, i) => (
             <div
               key={w.label}
-              className={`flex items-center gap-[13px] py-[13px] ${i < TOUCH_WAYS.length - 1 ? "border-b border-[#E5E7EB]" : ""}`}
+              className={`flex items-center gap-[13px] ${compact ? "py-[10px]" : "py-[13px]"} ${i < TOUCH_WAYS.length - 1 ? "border-b border-[#E5E7EB]" : ""}`}
               style={{
                 opacity: step >= 1 ? 1 : 0,
                 transform: step >= 1 ? "translateY(0)" : "translateY(6px)",
@@ -523,6 +536,7 @@ const RecordTouch = ({ step, compact }: { step: number; compact: boolean }) => {
         </div>
         <div
           className={box}
+          data-touch-people
           data-booked={step >= 2 ? "" : undefined}
           style={{
             opacity: step >= 2 ? 1 : 0,
@@ -616,6 +630,9 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
   const [scrollA, setScrollA] = useState(0);
   const [scrollB, setScrollB] = useState(0);
   const accountsRef = useRef<HTMLDivElement>(null);
+  /* In the short narrow frame the record scrolls down to Emma's booking */
+  const recordRef = useRef<HTMLDivElement>(null);
+  const [touchLift, setTouchLift] = useState(0);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -638,6 +655,16 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
     const over = tab.offsetLeft + tab.offsetWidth - row.clientWidth;
     row.scrollTo({ left: over > 0 ? over + 16 : 0, behavior: "smooth" });
   }, [openTab]);
+
+  useLayoutEffect(() => {
+    if (beat !== "touch") return;
+    const people = recordRef.current?.querySelector<HTMLElement>("[data-touch-people]");
+    const need = bottomWithin(people, recordRef.current) + 20 - root.h;
+    /* When it has to move, it moves up to the tab row, so no line is left cut in half */
+    const tabsTop = tabsRef.current?.offsetTop ?? 0;
+    setTouchLift(need > 0 ? Math.max(need, tabsTop - 12) : 0);
+  }, [beat, root.h]);
+  const lift = beat === "touch" && touchStep >= 2 ? touchLift : 0;
 
   /* How far to scroll the summary to bring the powers, with their Edit, to the top */
   const powersScroll = () => {
@@ -782,13 +809,17 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
         await wait(720);
         setFound(1);
         setLooking(0);
+        /* Down to Maria, when she's below the frame */
+        const accounts = accountsRef.current;
+        const client2 = accounts?.querySelector<HTMLElement>("[data-client='2']");
+        setScrollB(Math.max(0, bottomWithin(client2, accounts) + 16 - R.h));
         await wait(420);
         setLooking(2);
         await wait(720);
         setFound(2);
         setLooking(0);
         /* Down, so their address and Add clients are in sight */
-        setScrollB(Math.max(0, box(accountsRef.current?.querySelector("[data-add-clients]")).bottom + 24 - R.h));
+        setScrollB(Math.max(0, bottomWithin(accounts?.querySelector<HTMLElement>("[data-add-clients]"), accounts) + 24 - R.h));
         /* The address gets the same beat as each client: a pause, a search, then in */
         await wait(420);
         setLooking(3);
@@ -966,8 +997,12 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
 
               {/* The client */}
               <div className="absolute inset-0" style={{ opacity: inRecord ? 1 : 0, transition: "opacity 440ms ease" }}>
-                <div className={`flex h-full flex-col ${compact ? "px-4 pt-6" : "px-16 pt-10"}`}>
-                  <div className="mb-6 flex flex-shrink-0 items-start justify-between gap-3">
+                <div
+                  ref={recordRef}
+                  className={`relative flex h-full flex-col ${compact ? "px-4 pt-6" : "px-16 pt-10"}`}
+                  style={{ transform: `translateY(${-lift}px)`, transition: lift ? "transform 700ms var(--ease-in-out)" : "none" }}
+                >
+                  <div className={`${compact ? "mb-4" : "mb-6"} flex flex-shrink-0 items-start justify-between gap-3`}>
                     <div>
                       <h3 className="text-[26px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>Daniel Rosen</h3>
                       <p className="mt-1 text-[15px] text-[#6B7280]">
@@ -997,7 +1032,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                       ))}
                     </div>
                   </div>
-                  <div className="mt-6 min-h-0 flex-1">
+                  <div className={`${compact ? "mt-4" : "mt-6"} min-h-0 flex-1`}>
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
                     {beat === "touch" && (
                       <Appear key="touch">
