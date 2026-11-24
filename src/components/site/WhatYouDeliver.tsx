@@ -1,9 +1,8 @@
 import React from "react";
 import { WRAP } from "@/components/site/blocks";
 import { LightHead } from "@/components/site/StayingAhead";
-import { FloatStack, ProBellIcon } from "@/components/product/kit";
-import { ProClientRowView, ProCoupleView } from "@/components/product/attorney-clients";
-import { ProColumn, ProReminder } from "@/components/product/attorney-dashboard";
+import { FloatStack, WIcon } from "@/components/product/kit";
+import { ProClientRowView, ProCoupleView, ProDocSectionLabel } from "@/components/product/attorney-clients";
 import {
   GoogleCalendarLogo,
   GoogleMeetLogo,
@@ -13,14 +12,16 @@ import {
 } from "@/components/product/attorney-booking";
 
 /* Will it fit my practice? The film above shows what Willow does; these tiles
-   answer the attorney's next question, with the quiet tiles and small pieces of
-   product of harvey.ai's product grid: every client in one space (the real
-   Clients list), the apps it connects to, what needs them (the real Required
-   actions column), and a check-in in the firm's own words and style. */
+   answer the attorney's next question, each with a small piece of the real
+   product: bring the clients you already have (the Clients list; importing
+   contacts is being built, Nov 24, and Aaron cleared claiming it), keep
+   drafting and signing your way (the signed PDFs on a client's plan), the
+   apps it connects to, and you at the center (a check-in in the firm's name
+   and the attorney's words, with the email's real Book a meeting button). */
 
 const UI_SHADOW = "0 1px 2px rgba(16,24,40,0.05), 0 10px 24px -8px rgba(16,24,40,0.14)";
 const PRODUCT_FONT = "Figtree, Inter, sans-serif";
-const FADE_OUT = "linear-gradient(to bottom, #000 74%, transparent 100%)";
+const fadeOut = (from = 74) => `linear-gradient(to bottom, #000 ${from}%, transparent 100%)`;
 const TILE = "flex flex-col overflow-hidden rounded-xl bg-[#EEF2F1]";
 
 const TileTitle = ({ children }: { children: React.ReactNode }) => (
@@ -33,9 +34,10 @@ const TileBody = ({ children }: { children: React.ReactNode }) => (
   <p className="mt-2 max-w-md text-[15px] leading-relaxed text-gray-600">{children}</p>
 );
 
-/* A piece of the product running off the bottom of its tile */
-const Bleed = ({ height, children }: { height: number; children: React.ReactNode }) => (
-  <div aria-hidden className="overflow-hidden px-1 pt-1" style={{ height, WebkitMaskImage: FADE_OUT, maskImage: FADE_OUT, fontFamily: PRODUCT_FONT }}>
+/* A piece of the product running off the bottom of its tile. `fadeFrom`: where
+   the fade starts, in percent of the height */
+const Bleed = ({ height, fadeFrom, children }: { height: number; fadeFrom?: number; children: React.ReactNode }) => (
+  <div aria-hidden className="overflow-hidden px-1 pt-1" style={{ height, WebkitMaskImage: fadeOut(fadeFrom), maskImage: fadeOut(fadeFrom), fontFamily: PRODUCT_FONT }}>
     {children}
   </div>
 );
@@ -58,12 +60,27 @@ const ClientList = () => (
   </div>
 );
 
-const RequiredActions = () => (
+/* A client's signed plan as the Estate Plan tab lists it (estate-plans-tab.tsx
+   DocumentRow), with rows tightened for a small tile */
+const DocLine = ({ label, detail }: { label: string; detail?: string }) => (
+  <div className="flex items-center gap-3 px-4 py-3">
+    <WIcon name="document" className="h-5 w-5 flex-shrink-0 text-[#309E96]" />
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-[14px] font-semibold text-[#1F2933]">{label}</p>
+      {detail && <p className="mt-0.5 truncate text-[12px] text-[#9CA3AF]">{detail}</p>}
+    </div>
+    <WIcon name="more" className="h-4 w-4 flex-shrink-0 text-[#9CA3AF]" />
+  </div>
+);
+
+const SignedPlan = () => (
   <div className="w-full text-left">
-    <ProColumn icon={<ProBellIcon className="h-5 w-5 flex-shrink-0 text-[#309E96]" />} title="Required actions" count={3} rounding="rounded-t-2xl">
-      <ProReminder title="Daniel's summary is ready" cta="Review summary" />
-      <ProReminder title="Elena says something changed" cta="See what changed" />
-    </ProColumn>
+    <ProDocSectionLabel label="Daniel's documents" action="Choose PDFs" />
+    <FloatStack>
+      <DocLine label="Last Will & Testament" />
+      <DocLine label="Revocable Living Trust" detail="Joint trust (married couple)" />
+      <DocLine label="Power of Attorney" />
+    </FloatStack>
   </div>
 );
 
@@ -79,9 +96,9 @@ const InYourWords = () => (
       <p className="mt-3 text-[14px] font-semibold leading-snug text-[#1F2933]">Checking in: has anything changed?</p>
       <div className="mt-2 space-y-2 text-[13px] leading-[1.55] text-[#4B5563]">
         <p>Hi Daniel,</p>
-        <p>It&rsquo;s been a while since we finished your estate plan, and I wanted to check in.</p>
-        <p>Once a year I ask every client the same short questions. It&rsquo;s how we make sure your plan still says what you want it to.</p>
+        <p>It&rsquo;s been a while since we finished your estate plan. If anything has changed, let&rsquo;s talk.</p>
       </div>
+      <span className="mt-3 inline-flex rounded-lg bg-[#309E96] px-4 py-2 text-[13px] font-semibold text-white">Book a meeting</span>
       <p className="mt-3 text-[14px] font-medium text-[#1F2933]">Rachel</p>
     </div>
   </div>
@@ -114,11 +131,21 @@ const WhatYouDeliver = () => (
 
       <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12 lg:grid-rows-[252px_252px]">
         <article className={`${TILE} px-6 pt-6 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>
-          <TileTitle>Manage your clients from one space</TileTitle>
-          <TileBody>Every client, their documents, their team and your notes, all in one place.</TileBody>
+          <TileTitle>Bring the clients you already have</TileTitle>
+          <TileBody>Import your contacts, add the plans you&rsquo;ve already signed, and see every client in one list.</TileBody>
           <div className="mt-auto pt-5">
             <Bleed height={385}>
               <ClientList />
+            </Bleed>
+          </div>
+        </article>
+
+        <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
+          <TileTitle>Draft and sign your way</TileTitle>
+          <TileBody>Keep your process. Willow starts from the signed PDF.</TileBody>
+          <div className="mt-auto pt-4">
+            <Bleed height={124}>
+              <SignedPlan />
             </Bleed>
           </div>
         </article>
@@ -136,23 +163,13 @@ const WhatYouDeliver = () => (
           </ul>
         </article>
 
-        <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
-          <TileTitle>Prioritize what matters</TileTitle>
-          <TileBody>Everything waiting on you, across every client, in one list.</TileBody>
-          <div className="mt-auto pt-4">
-            <Bleed height={118}>
-              <RequiredActions />
-            </Bleed>
-          </div>
-        </article>
-
         <article className={`${TILE} gap-6 px-6 pt-6 sm:col-span-2 sm:flex-row lg:col-span-6`}>
           <div className="sm:w-[38%] sm:flex-shrink-0 sm:pb-6">
-            <TileTitle>Works in your style</TileTitle>
-            <TileBody>Your words, your logo and your timing. Set them once, and Willow follows them for every client.</TileBody>
+            <TileTitle>You stay at the center</TileTitle>
+            <TileBody>Every check-in goes out in your words, under your firm&rsquo;s name, and clients book time with you.</TileBody>
           </div>
           <div className="min-w-0 flex-1 self-end">
-            <Bleed height={228}>
+            <Bleed height={228} fadeFrom={88}>
               <InYourWords />
             </Bleed>
           </div>
