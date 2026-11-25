@@ -8,6 +8,8 @@ export const NYSBA_FORM_TYPE = "nysba_2026";
 /* A client on For clients asking Willow to reach out to their attorney: the
    name and email are the attorney's, not the client's. */
 export const CLIENT_REFERRAL_FORM_TYPE = "client_attorney_referral";
+/* The Contact page's form (/contact). */
+export const CONTACT_FORM_TYPE = "contact";
 
 /* Every surface that sells the Founding Partner offer, with the label the
    digest prints on a card so a lead can be traced back to where it came from.
@@ -20,6 +22,7 @@ export const SIGNUP_FORM_TYPES = [
   { type: FOUNDING_100_FORM_TYPE, label: "Founding 100" },
   { type: NYSBA_FORM_TYPE, label: "NY State Bar" },
   { type: CLIENT_REFERRAL_FORM_TYPE, label: "Client referral: reach out to this attorney" },
+  { type: CONTACT_FORM_TYPE, label: "Contact form" },
 ] as const;
 
 export type SignupFormType = (typeof SIGNUP_FORM_TYPES)[number]["type"];

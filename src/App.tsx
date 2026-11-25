@@ -25,6 +25,7 @@ import ForClientsPage from "./pages/ForClientsPage";
 const DevScreens = React.lazy(() => import("./pages/DevScreens"));
 const FilmReview = React.lazy(() => import("./pages/FilmReview"));
 import NewsPage from "./pages/NewsPage";
+import ContactPage from "./pages/site/ContactPage";
 const RegulatoryLibraryPage = React.lazy(() => import("./pages/RegulatoryLibraryPage"));
 import StateDetailPage from "./pages/StateDetailPage";
 import RequestAccess from "./pages/RequestAccess";
@@ -74,6 +75,7 @@ const App = () => (
           <Route path="/solutions/guardians" element={<Navigate to="/solutions/their-team#guardians" replace />} />
           <Route path="/solutions/agents" element={<Navigate to="/solutions/their-team#agents" replace />} />
           <Route path="/legal" element={<LegalCenterPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/legislation-by-state" element={<React.Suspense fallback={null}><RegulatoryLibraryPage /></React.Suspense>} />
           <Route path="/legislation-by-state/:slug" element={<StateDetailPage />} />
@@ -136,7 +138,7 @@ const App = () => (
           {/* Spelled-out alias: easier to say out loud at a booth than "nysba" */}
           <Route path="/new-york-state-bar" element={<Navigate to="/nysba" replace />} />
           {/* Retired pages — old links land somewhere sensible instead of a 404 */}
-          {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/contact", "/create-will", "/availability-map", "/learn", "/pitol"].map((p) => (
+          {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/create-will", "/availability-map", "/learn", "/pitol"].map((p) => (
             <Route key={p} path={p} element={<Navigate to="/" replace />} />
           ))}
           <Route path="/book" element={<Navigate to="/request-access" replace />} />

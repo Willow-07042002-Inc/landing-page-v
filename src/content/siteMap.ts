@@ -67,7 +67,7 @@ export const COMPANY_COLUMNS: NavColumn[] = [
     links: [
       { label: "Where we're live", desc: "The states Willow serves today", to: "/availability" },
       { label: "Careers", desc: "Join our team as a founding member", to: "/careers" },
-      { label: "Contact", desc: "Talk to our team", href: `mailto:${SUPPORT_EMAIL}` },
+      { label: "Contact", desc: "Talk to our team", to: "/contact" },
     ],
   },
   {
@@ -127,7 +127,7 @@ export const FOOTER_COLUMNS: NavColumn[] = [
     links: [
       { label: "Where we're live", to: "/availability" },
       { label: "Careers", to: "/careers" },
-      { label: "Contact", href: `mailto:${SUPPORT_EMAIL}` },
+      { label: "Contact", to: "/contact" },
     ],
   },
   {
