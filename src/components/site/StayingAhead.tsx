@@ -31,7 +31,7 @@ export const KEEP_CHAPTERS: Chapter[] = [
   {
     id: "firm-updates",
     title: "Share your firm’s content and updates",
-    body: "Whether it’s a blog post, a tax update or anything else your clients would find useful, drop it into Willow. We’ll add it to their dashboard and email it to them, so you stay top of mind.",
+    body: "Whether it’s a blog post, a tax update or anything else your clients would find useful, drop it into Willow. We’ll update their dashboard and send an email, so you stay top of mind.",
   },
   {
     id: "law-changes",
