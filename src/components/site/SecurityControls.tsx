@@ -10,30 +10,36 @@ import { WRAP } from "@/components/site/blocks";
    the rows are its own commitments, each one the Security page already makes
    (checked against the product and the Privacy Policy, Nov 16, 2026). */
 
+/* Six statements, in the order attorneys ask them (Aaron, Nov 25): the
+   For attorneys section and the Security page's six commitments and FAQ,
+   folded into one list. Each title is a plain statement, each line one
+   sentence. Every claim is one the product or the Privacy Policy makes:
+   per-item release (now, on incapacity, after a passing, or the client's own
+   condition) is ReleaseSelector.tsx; meet-first is access-meeting.ts. */
 const CONTROLS = [
   {
-    title: "Protected sign-in",
-    body: "Attorneys, clients and the people they name confirm each sign-in with a one-time code sent to their email, with the option to trust a device they use often.",
+    title: "Clients control when their team sees their documents",
+    body: "Everyone your client names gets their own account and knows where everything is, and your client can lock any part of the plan so it isn’t released too early.",
   },
   {
-    title: "Encrypted and kept in the United States",
-    body: "Information is encrypted as it travels and where it’s stored. Willow’s database, files and applications run on Supabase, on Amazon Web Services, and Vercel, in the United States.",
+    title: "We never train AI on your clients’ data",
+    body: "AI reads a plan only to draft the summary you approve, runs in the United States and never sees your email or calendar.",
   },
   {
-    title: "Access the client controls",
-    body: "Only the client, their attorney and the people the client names can see a document, and only when the client says so. The rules are enforced in the database itself.",
+    title: "Client data is encrypted, kept in the US and never sold",
+    body: "Everyone signs in with a one-time code, and everything is encrypted as it travels and where it’s stored, on Supabase, Amazon Web Services and Vercel.",
   },
   {
-    title: "Nothing released early",
-    body: "Anything sealed until a passing stays sealed until the client’s attorney verifies it, usually from the death certificate.",
+    title: "Nothing locked is opened until you verify it",
+    body: "Anything locked until a passing stays locked until you confirm it, usually from the death certificate, and you can choose to meet the family first.",
   },
   {
-    title: "A record of every access",
-    body: "Every view, download, share, release request and release decision is logged, and the record is kept for seven years.",
+    title: "Every access is on record",
+    body: "Every view, download, share and release decision is logged and kept for seven years.",
   },
   {
-    title: "AI with firm limits",
-    body: "AI reads a document only to draft a summary for you to review. Processing stays in the United States, nothing is used to train AI, and nothing from a connected email or calendar is ever sent to it.",
+    title: "We only take what we need from your email and calendar",
+    body: "Willow never reads the body of an email, and your connection is encrypted and kept on our servers only.",
   },
 ];
 
