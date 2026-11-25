@@ -25,7 +25,7 @@ export const PREPARE_CHAPTERS: Chapter[] = [
   {
     id: "control",
     title: "They decide what opens, and when",
-    body: "Clients put everything in place today and choose when each piece is released. The will stays sealed until you verify a passing; until then, the people they’ve named see only that something is waiting.",
+    body: "Clients put everything in place today and choose when each piece is released. The will stays sealed until you verify a passing. Until then, the people they’ve named can sign in, but only see what your client has shared with them so far.",
   },
   {
     id: "stay-current",

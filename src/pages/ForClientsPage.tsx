@@ -150,7 +150,7 @@ const CLIENT_FAQ = [
   },
   {
     q: "Can clients keep parts of their plan private until they pass?",
-    a: "Yes. Your clients have full authority to choose what’s shared now and what waits until they pass away. Anything held back stays sealed until you verify the passing; until then, the people they’ve named see only that something is waiting for them.",
+    a: "Yes. Your clients have full authority to choose what’s shared now and what waits until they pass away. Anything held back stays sealed until you verify the passing. Until then, the people they’ve named can sign in to their accounts, but only see what your client has shared with them so far.",
   },
   {
     q: "Can clients change who has access later?",
