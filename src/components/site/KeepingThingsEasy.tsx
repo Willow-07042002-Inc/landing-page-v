@@ -96,9 +96,6 @@ const KeepingThingsEasy = () => {
           Drop in the estate plan.
           <span className="block italic text-[#138F8B]">We’ll handle the rest.</span>
         </h2>
-        <p className="mt-5 max-w-xl text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em", textWrap: "pretty" }}>
-          Let us handle the admin, so you can do what you do best.
-        </p>
 
         <div className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-8 lg:gap-y-6">
           {EASY_CHAPTERS.flatMap((c) => [c.id, ...(c.also ?? [])]).map((id) => (
