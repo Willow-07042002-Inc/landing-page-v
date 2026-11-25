@@ -10,7 +10,7 @@ import { WRAP } from "@/components/site/blocks";
    the rows are its own commitments, each one the Security page already makes
    (checked against the product and the Privacy Policy, Nov 16, 2026). */
 
-/* Five statements, in the order attorneys ask them (Aaron, Nov 25): the
+/* Four statements, in the order attorneys ask them (Aaron, Nov 25): the
    For attorneys section and the Security page's six commitments and FAQ,
    folded into one list. Each title is a plain statement, each line one
    sentence. Every claim is one the product or the Privacy Policy makes:
@@ -36,10 +36,6 @@ const CONTROLS = [
   {
     title: "Every access is on record",
     body: "Every view, download, share and release decision is logged.",
-  },
-  {
-    title: "We only take what we need from your email and calendar",
-    body: "Willow never reads the body of an email, and your connection is encrypted and kept on our servers only.",
   },
 ];
 
