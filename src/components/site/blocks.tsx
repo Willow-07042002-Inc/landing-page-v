@@ -92,7 +92,7 @@ export const PrintFrame = ({
   children,
   aspect = "900 / 560",
   className = "",
-  dark = false,
+  dark = true,
 }: {
   print: string;
   children: React.ReactNode;
@@ -100,8 +100,9 @@ export const PrintFrame = ({
   width?: string;
   frameAspect?: string;
   className?: string;
-  /** The For attorneys hero's ground: the photograph under the deep teal
-      wash (rgba(6,45,44,0.74)), not the light one. */
+  /** The photograph under the deep teal wash (rgba(6,45,44,0.74)), as on
+      every product frame on the site (Aaron, Nov 25). false: the old light
+      wash. */
   dark?: boolean;
 }) =>
   print === "self" ? (

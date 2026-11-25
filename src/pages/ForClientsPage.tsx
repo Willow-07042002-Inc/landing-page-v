@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
-import { PageShell, PageHero, PrintFrame, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, usePageMeta, WRAP, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import {
   TeamRosterVignette,
@@ -185,7 +185,7 @@ const ForClientsPage = () => {
         subtitle="Modern enough for the next generation. Simple enough for their parents. Your plan and your people in one place, and a direct line back to your attorney whenever life changes."
         visualAspect="1440 / 855"
         visual={
-          <PrintFrame print="/florida-coast.jpg" aspect="1440 / 855" className="shadow-2xl" dark>
+          <PrintFrame print="/florida-coast.jpg" aspect="1440 / 855" className="shadow-2xl">
             <ScaledScreen>
               <ClientEstatePlanTodayScreen closed />
             </ScaledScreen>
@@ -197,31 +197,32 @@ const ForClientsPage = () => {
           the attorney's calendar */}
       <StayInTouchFilm />
 
-      {/* The summary — five chapters in a continuous carousel */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
+      {/* The summary — five chapters in a continuous carousel. The one
+          centred heading on the page after the hero, between two set left,
+          as For attorneys alternates them (Aaron, Nov 25). */}
+      <section className="relative overflow-hidden bg-[#F8FAFC] pb-16 md:pb-24">
         <div className="container relative z-10 mx-auto px-4 md:px-8">
-          <div className="mx-auto mb-10 max-w-2xl text-center md:mb-12">
+          <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
             <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
-              Countless pages, <span className={ACCENT_CLS}>one simple summary.</span>
+              Forget the legalese. <span className={ACCENT_CLS}>We&rsquo;ll summarize everything.</span>
             </h2>
-            <p className={`mt-5 ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
-              Willow turns every plan into a story the family can actually follow — reviewed and approved by you before they see a word.
+            <p className={`mx-auto mt-5 max-w-2xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
+              Willow turns your plan into a story your family can actually follow, reviewed and approved by your attorney before anyone sees a word.
             </p>
           </div>
           <ChapterCarousel />
         </div>
       </section>
 
-      {/* Preparedness & sharing */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
-        <div className="container relative z-10 mx-auto px-4 md:px-8 lg:px-10 max-w-6xl">
-          <div className="mx-auto mb-12 max-w-4xl text-center md:mb-16">
+      {/* Preparedness & sharing: the heading set left, as Stay in touch */}
+      <section className="relative overflow-hidden bg-[#F8FAFC] pb-16 md:pb-24">
+        <div className={`${WRAP} relative z-10 max-w-6xl lg:px-10`}>
+          <div className="mb-12 max-w-3xl md:mb-16">
             <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
-              Everyone prepared. <span className={ACCENT_CLS}>Nothing shared early.</span>
+              Prepare your team now, <span className={ACCENT_CLS}>so no one&rsquo;s left scrambling later.</span>
             </h2>
-            <p className={`mt-5 ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
-              Everyone gets exactly what they need, exactly when they need it,
-              <span className="block">from one place you control.</span>
+            <p className={`mt-5 max-w-2xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
+              Everyone gets exactly what they need, exactly when they need it, from one place you control.
             </p>
           </div>
           <div className="flex flex-col gap-16 md:gap-24">

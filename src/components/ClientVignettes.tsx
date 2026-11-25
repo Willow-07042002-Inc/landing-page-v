@@ -51,7 +51,7 @@ const CoastCard = ({ w = 720, img = "/florida-coast.jpg", children }: { w?: numb
   <Bleed bg="#FAFBFC">
     <div className="relative h-full w-full">
       <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+      <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl bg-white"
         style={{ width: w, boxShadow: "0 8px 40px rgba(0,0,0,0.15)" }}
@@ -408,7 +408,7 @@ export const CategoriesVignette = () => {
       <div ref={ref} className="relative h-full w-full">
         {/* The willow-street print behind the card — softened so the card stays the subject */}
         <img src="/willow-street.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
         <div
           className="absolute left-1/2 w-[660px] -translate-x-1/2 overflow-hidden rounded-2xl bg-white"
           style={{ top: 96, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
@@ -560,7 +560,7 @@ export const ReleaseTimingVignette = () => {
       <div ref={ref} className="relative flex flex-1 items-center justify-center">
         {/* The NY skyline print behind the control — softened so the card stays the subject */}
         <img src="/nyc-skyline.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
         {/* Zoomed fragment of the contact card — Maria's "what she can see" list */}
         <div className="relative" style={{ transform: "scale(1.3)", transformOrigin: "center 40%" }}>
           <div className="w-[530px] rounded-2xl bg-white px-8 pb-4 pt-5" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.10)" }}>
@@ -601,7 +601,7 @@ export const LifeUpdateVignette = () => (
   <Bleed bg="#FAFBFC">
     <div className="relative flex flex-1 items-center justify-center">
       <img src="/florida-coast.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+      <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
       <div className="relative w-[470px] rounded-2xl bg-white" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)", padding: "26px 36px 30px", transform: "scale(1.25)" }}>
         <div className="relative w-full" style={{ marginBottom: 16 }}>
           <div className="absolute left-1/2 w-full -translate-x-1/2 border-t border-gray-200" style={{ top: 28 }} />
@@ -649,7 +649,7 @@ export const SectionShareVignette = () => {
     <Bleed bg="#FAFBFC">
       <div ref={ref} className="relative flex flex-1 items-center justify-center">
         <img src="/central-park.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
         <div className="relative w-[470px] rounded-2xl bg-white" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)", padding: "24px 34px 24px", transform: "scale(1.3)" }}>
           {/* ModalHeader, verbatim: portrait on the hairline, serif title, one line */}
           <div className="relative w-full" style={{ marginBottom: 21 }}>
@@ -699,7 +699,7 @@ export const RoleChangeVignette = () => {
       <div ref={ref} className="relative flex flex-1 items-center justify-center">
         {/* The river-bridge print behind the card — same treatment as its siblings */}
         <img src="/hudson-bridge.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
         {/* Zoomed like the Control card so the content reads large */}
         <div className="relative w-[490px] rounded-2xl bg-white" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)", padding: "26px 36px 24px", transform: "scale(1.3)" }}>
           {/* ModalHeader: portrait centred on a hairline, serif title, one line under */}
