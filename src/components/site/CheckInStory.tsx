@@ -19,7 +19,9 @@ const COMPACT = { w: 400, h: 640 };
 const START_AFTER_SCROLL = 60;
 
 const QUESTIONS = ["Has your family dynamic changed?", "Have you moved, or bought or sold property?", "Has what you own changed in a big way?"];
-const NOTE = "We bought a chalet in Stowe, Vermont. Should the chalet go into our trust too?";
+/* Daniel's answer: one loss that touches two roles in his plan (Aaron, Nov 25) */
+const PICK = 0;
+const NOTE = "Unfortunately, my brother Paul passed away last month. He was our executor and our children’s guardian.";
 
 const PLAN = [
   { name: "Last Will & Testament", Icon: WillIcon },
@@ -27,10 +29,11 @@ const PLAN = [
   { name: "Trust transfer deed", Icon: PropertyIcon, detail: "Joint with Maria" },
   { name: "Power of Attorney", Icon: PoaIcon },
 ];
-const PEOPLE = [
-  { initials: "MR", name: "Maria Rosen", role: "Executor" },
-  { initials: "ER", name: "Emma Rosen", role: "Backup co-executor" },
-  { initials: "LR", name: "Leo Rosen", role: "Backup co-executor" },
+/* Paul, whom the answer is about, then Maria with the role the product
+   screens give her */
+const PEOPLE: { initials: string; name: string; note?: string; role: string }[] = [
+  { initials: "PR", name: "Paul Rosen", note: "Brother · Passed away", role: "Executor · Guardian" },
+  { initials: "MR", name: "Maria Rosen", note: "Wife", role: "Power of Attorney" },
 ];
 
 type Beat = "ask" | "notify" | "open";
@@ -74,9 +77,8 @@ const WhatChanged = () => (
       <span className="text-[12.5px] text-[#9CA3AF]">January 20</span>
     </div>
     <div className="mt-3 rounded-xl bg-[#E6F5F4] px-4 py-3.5">
-      <p className="text-[13px] text-[#0C7370]">{QUESTIONS[1]}</p>
-      <p className="mt-1.5 text-[15px] font-medium leading-snug text-[#1F2933]">We bought a chalet in Stowe, Vermont.</p>
-      <p className="mt-1 text-[14px] leading-snug text-[#374151]">&ldquo;Should the chalet go into our trust too?&rdquo;</p>
+      <p className="text-[13px] text-[#0C7370]">{QUESTIONS[PICK]}</p>
+      <p className="mt-1.5 text-[15px] font-medium leading-snug text-[#1F2933]" style={{ textWrap: "balance" }}>{NOTE}</p>
     </div>
   </div>
 );
@@ -120,7 +122,10 @@ const ThePeople = () => (
       {PEOPLE.map((p) => (
         <li key={p.name} className="flex items-center gap-3">
           <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]">{p.initials}</span>
-          <span className="flex-1 text-[14px] font-medium text-[#1F2933]">{p.name}</span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[14px] font-medium leading-snug text-[#1F2933]">{p.name}</span>
+            {p.note && <span className="block text-[12.5px] leading-snug text-[#9CA3AF]">{p.note}</span>}
+          </span>
           <span className="text-[12.5px] text-[#6B7280]">{p.role}</span>
         </li>
       ))}
@@ -287,11 +292,11 @@ const CheckInStory = () => {
                 <h2 className="mt-1.5 font-heading text-[22px] font-bold leading-[1.3] text-[#1F2933]">Hi Daniel, has anything changed since your plan was last signed?</h2>
                 <div className="mt-5 space-y-2">
                   {QUESTIONS.map((q, i) => {
-                    const on = i === 1 && picked;
+                    const on = i === PICK && picked;
                     return (
                       <div
                         key={q}
-                        ref={i === 1 ? rowRef : undefined}
+                        ref={i === PICK ? rowRef : undefined}
                         className="flex items-center gap-3 rounded-lg border px-3.5 py-2.5"
                         style={{ background: on ? "#E6F5F4" : "#F3F4F6", borderColor: on ? "#128F8B" : "transparent", transition: "background-color 160ms ease, border-color 160ms ease" }}
                       >
@@ -303,7 +308,7 @@ const CheckInStory = () => {
                     );
                   })}
                 </div>
-                <div className="mt-3 h-[70px] rounded-lg border border-[#E5E7EB] px-3.5 py-2.5 text-[14px] leading-[1.45] text-[#1F2933]">
+                <div className="mt-3 rounded-lg border border-[#E5E7EB] px-3.5 py-2.5 text-[14px] leading-[1.45] text-[#1F2933]" style={{ height: compact ? 104 : 70 }}>
                   {typed === 0 ? (
                     <span className="text-[#9CA3AF]">Tell Rachel what changed</span>
                   ) : (
