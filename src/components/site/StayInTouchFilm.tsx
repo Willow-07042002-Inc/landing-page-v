@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { WRAP } from "@/components/site/blocks";
 import { ScaledScreen } from "@/components/product/kit";
-import { FIGTREE, tapStyle, useCompact } from "@/components/site/film-kit";
+import { FIGTREE, tapStyle, useCompact, useFilmTurn } from "@/components/site/film-kit";
 import {
   CheckInParts,
   CaAnsweredTurn,
@@ -546,6 +546,9 @@ const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: numb
 const StayInTouchFilm = () => {
   const narrow = useCompact();
   const rowRef = useRef<HTMLDivElement>(null);
+  /* The row's turn to play: one film at a time, site-wide (Aaron, Nov 25).
+     Without it every tile rests on its last frame */
+  const rowTurn = useFilmTurn(rowRef);
   const [seen, setSeen] = useState(false);
   /* Whose turn it is to play; the rest hold on their last frame */
   const [turn, setTurn] = useState<number | null>(0);
@@ -555,20 +558,8 @@ const StayInTouchFilm = () => {
   const auto = useRef(true);
 
   useEffect(() => {
-    const el = rowRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setSeen(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    if (rowTurn) setSeen(true);
+  }, [rowTurn]);
 
   const play = (i: number) => {
     auto.current = false;
@@ -592,7 +583,7 @@ const StayInTouchFilm = () => {
 
         <div ref={rowRef} className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-2 lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-6">
           {CHAPTERS.map((c, i) => {
-            const go = seen && turn === i;
+            const go = rowTurn && turn === i;
             const playing = go && !played[i];
             const quiet = seen && turn !== null && turn !== i && !played[turn];
             return (

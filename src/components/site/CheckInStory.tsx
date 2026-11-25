@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PrintFrame } from "@/components/site/blocks";
+import { useFilmTurn } from "@/components/site/film-kit";
 import { ScaledScreen } from "@/components/product/kit";
 import { ZoomLogo } from "@/components/product/attorney-booking";
 import { CalendarCheckIcon, ChevronDownIcon, NotificationIcon, PoaIcon, PropertyIcon, TrustIcon, WillIcon } from "@/components/product/willow-icons";
@@ -155,6 +156,12 @@ const CheckInStory = () => {
   const [pressed, setPressed] = useState(false);
   const [cursor, setCursor] = useState<Cursor>({ x: 0, y: 0, who: "Daniel", shown: false, down: false });
   const finished = useRef(false);
+  /* Its turn to play: one film at a time, site-wide (Aaron, Nov 25) */
+  const turn = useFilmTurn(frameRef);
+  const turnRef = useRef(turn);
+  turnRef.current = turn;
+  const syncRef = useRef<() => void>(() => undefined);
+  useEffect(() => syncRef.current(), [turn]);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -223,44 +230,38 @@ const CheckInStory = () => {
       await wait(950, id);
       await click(id, () => {
         finished.current = true; // from here on the matter stays open
-        io.disconnect();
         setBeat("open");
       });
       await wait(360, id);
       setCursor((c) => ({ ...c, shown: false }));
     };
 
-    /* Nothing starts until the visitor has scrolled a little and the print is
-       mostly on screen. Once it's going, only leaving the screen stops it. */
+    /* Nothing starts until the visitor has scrolled a little and the film
+       holds the turn (it's the one most on screen). Losing the turn stops it
+       and puts it back on its first frame, still. */
     let scrolled = window.scrollY >= START_AFTER_SCROLL;
-    let inView = false;
     let playing = false;
     const sync = () => {
-      const go = scrolled && inView;
+      const go = scrolled && turnRef.current && !finished.current;
       if (go === playing) return;
       playing = go;
       run += 1;
       if (go) play(run).catch(() => undefined);
+      else if (!finished.current) reset();
     };
+    syncRef.current = sync;
     const onScroll = () => {
       if (window.scrollY < START_AFTER_SCROLL) return;
       scrolled = true;
       window.removeEventListener("scroll", onScroll);
       sync();
     };
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        inView = entry.intersectionRatio >= 0.5 || (playing && entry.isIntersecting);
-        sync();
-      },
-      { threshold: [0, 0.5] }
-    );
     window.addEventListener("scroll", onScroll, { passive: true });
-    io.observe(frame);
+    sync();
     return () => {
       run += 1;
+      syncRef.current = () => undefined;
       window.removeEventListener("scroll", onScroll);
-      io.disconnect();
     };
   }, [compact, size.h, size.w]);
 

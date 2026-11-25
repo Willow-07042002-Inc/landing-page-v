@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { WRAP } from "@/components/site/blocks";
 import EasyFilm from "@/components/site/EasyFilm";
+import { useFilmTurn } from "@/components/site/film-kit";
 
 /* Keeping things easy: the admin Willow takes off the attorney, as a row of
    three tiles (Aaron, Nov 24, 2026), each with its words above and its own
@@ -61,6 +62,16 @@ const KeepingThingsEasy = () => {
   const [played, setPlayed] = useState<boolean[]>(() => EASY_CHAPTERS.map(() => false));
   /* Still in the first pass through the row: each tile hands on to the next */
   const auto = useRef(true);
+  /* The row's turn to play: one film at a time, site-wide (Aaron, Nov 25).
+     Before its first turn the playing tile shows its first frame; once it
+     has played, losing the turn rests every tile on its last frame */
+  const rowRef = useRef<HTMLDivElement>(null);
+  const rowTurn = useFilmTurn(rowRef);
+  const [began, setBegan] = useState(false);
+  useEffect(() => {
+    if (rowTurn) setBegan(true);
+    else setLive(null);
+  }, [rowTurn]);
 
   useEffect(() => {
     const i = chapterFor(hash);
@@ -97,7 +108,7 @@ const KeepingThingsEasy = () => {
           <span className="block italic text-[#138F8B]">We’ll handle the rest.</span>
         </h2>
 
-        <div className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-8 lg:gap-y-6">
+        <div ref={rowRef} className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-8 lg:gap-y-6">
           {EASY_CHAPTERS.flatMap((c) => [c.id, ...(c.also ?? [])]).map((id) => (
             <span key={id} id={id} className="absolute -top-24 left-0" aria-hidden />
           ))}
@@ -135,7 +146,8 @@ const KeepingThingsEasy = () => {
                       rewatch
                       chapter={i}
                       replay={runs[i]}
-                      hold={turn !== i}
+                      hold={turn !== i || (began && !rowTurn)}
+                      allowed={rowTurn}
                       onChapter={noop}
                       onStart={(ms) => started(i, ms)}
                       onEnd={() => ended(i)}
