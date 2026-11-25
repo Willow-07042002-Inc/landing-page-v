@@ -43,13 +43,13 @@ export const KEEP_CHAPTERS: Chapter[] = [
     id: "family",
     also: ["their-team", "their-people", "advisors", "executors"],
     title: "Turn their family into clients",
-    body: "Every year, Willow writes to the family each plan names as executors and guardians, in your words, with a button to book time with you. When they want a plan of their own, you’re the attorney they already know.",
+    body: "Write once to the family each plan names, and Willow keeps in touch every year, making it easy for them to book a time on your calendar.",
   },
   {
     id: "probate",
     also: ["when-it-matters", "booking"],
     title: "Be the firm the executors call",
-    body: "Willow keeps you in touch with each executor from the day the plan is signed. When a client passes, they already know to come back to you. Their request to open the plan comes straight to your firm, and you meet them first.",
+    body: "When a client passes, Willow puts their executor in touch with you first, and you can choose to open the plan only after you’ve met.",
   },
 ];
 
