@@ -1,5 +1,5 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { WRAP, PrintFrame } from "@/components/site/blocks";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { WRAP } from "@/components/site/blocks";
 import { ScaledScreen } from "@/components/product/kit";
 import { tapStyle, useCompact } from "@/components/site/film-kit";
 import {
@@ -9,22 +9,32 @@ import {
   CaQuietButton,
   CaMonthCalendar,
   CaSlotList,
-  CheckInOver,
+  ClientFirmNewsScreen,
+  type CaArticle,
 } from "@/components/product/client-app";
 
-/* For clients, staying in touch: one film of the yearly check-in as Daniel
-   lives it, beside the three steps it shows (Aaron, Nov 24: "I'm just filling
-   out the survey, and then it should go 'we recommend', and then it shows the
-   attorney's calendar"). The words are the product's own
-   (apps/clients/components/dashboard/touch/LifeChangesConversation.tsx):
-   nothing in his family changed, he bought property (the chalet the For
-   attorneys hero has him tell Rachel about), so Eva offers a call with
-   Rachel's open times in the thread, he picks one and books it.
-   Buttons press themselves; nothing crosses the screen to click them. It
-   plays once when it scrolls into view and rests on its last frame; a step
-   on the left plays it from there, and tapping the film plays it again. */
+/* For clients, staying in touch: two tiles set the way For attorneys' Keeping
+   things easy sets its three (Aaron, Nov 25, 2026), each with its words above
+   and its own short film below. Once the row is in view the films play one
+   after another; the one playing grows a little and its rule fills. A tile
+   not playing rests on its last frame, and clicking a tile plays it again.
+   Below 1024px the tiles stack.
+   1. Book time with your attorney: the check-in conversation alone, with no
+      dashboard behind it. The words are the product's own
+      (apps/clients/components/dashboard/touch/LifeChangesConversation.tsx):
+      nothing in Daniel's family changed, he bought property (the chalet the
+      For attorneys hero has him tell Rachel about), so Eva offers a call with
+      Rachel's open times in the thread; he picks one and books it.
+   2. Updates from your firm: his dashboard, "From your firm" open on
+      Resources, where the firm's articles list newest first
+      (firm-panel.tsx FirmNewsList). The firm's newest article comes in at
+      the top. The articles are the ones For attorneys shows the firm
+      posting (KeepInTouchFilm.tsx); the portal shows them without pictures.
+   Buttons press themselves; nothing crosses the screen to click them. */
 
 const { Eva, Tile, CloseIcon, SERIF } = CheckInParts;
+
+/* ---- 1. The check-in ----------------------------------------------------- */
 
 const Q1 = { q: "Has your family dynamic changed?", options: ["Got married", "Divorced or separated", "A birth or adoption", "A death in the family", "A new partner"] };
 const Q2 = { q: "Have you moved, or bought or sold property?", options: ["Moved", "Bought or sold property", "Moved to another state"] };
@@ -46,35 +56,15 @@ const T = {
   pick: 3300, // "Bought or sold property"
   confirm: 4300, // "That's right"
   offer: 4900, // Eva recommends a call
-  calendar: 6700, // Rachel's open times
-  time: 8300, // 10:00 AM
-  book: 9300, // "Book it"
-  booking: 9550,
-  booked: 10900,
-  end: 11600,
+  calendar: 7000, // Rachel's open times
+  time: 8600, // 10:00 AM
+  book: 9600, // "Book it"
+  booking: 9850,
+  booked: 11200,
+  end: 11900,
 };
 const TAP = 260;
 const pressed = (t: number, at: number) => t >= at && t < at + TAP;
-
-export const STEPS = [
-  {
-    title: "Answer your yearly check-in",
-    body: "Once a year, your attorney asks what’s changed since your plan was signed. Tap anything that has.",
-    from: 0,
-  },
-  {
-    title: "See what we recommend",
-    body: "When something has changed, Willow suggests a call, so your attorney can make sure your plan still reflects your life.",
-    from: T.offer,
-  },
-  {
-    title: "Book time with your attorney",
-    body: "Your attorney’s open times are right there in the conversation. Pick one, and the invite goes to your calendar.",
-    from: T.calendar,
-  },
-];
-const stepAt = (t: number) => (t >= T.calendar ? 2 : t >= T.offer ? 1 : 0);
-const stepEnd = (i: number) => (i === 0 ? T.offer : i === 1 ? T.calendar : T.end);
 
 /* Slides up into the thread once, as the product's chatIn does */
 const Rise = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
@@ -90,10 +80,10 @@ const Rise = ({ children, className = "" }: { children: React.ReactNode; classNa
   );
 };
 
-/* The sheet at time t: the thread keeps its newest turn in view, the way the
-   conversation scrolls as it grows */
-const Sheet = ({ t, compact }: { t: number; compact: boolean }) => {
-  const indent = compact ? "" : "pl-[60px]";
+/* The conversation at time t, filling its tile. The thread keeps its newest
+   turn in view, the way the conversation scrolls as it grows. `narrow`: a
+   phone, where the tiles take one column and the times sit under the month */
+const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [shift, setShift] = useState(0);
@@ -102,6 +92,7 @@ const Sheet = ({ t, compact }: { t: number; compact: boolean }) => {
   const timePicked = t >= T.time;
   const showCalendar = t >= T.calendar;
   const booking = t >= T.booking && t < T.booked;
+  const cols = narrow ? "grid-cols-1" : "grid-cols-2";
 
   useLayoutEffect(() => {
     const box = boxRef.current;
@@ -115,24 +106,24 @@ const Sheet = ({ t, compact }: { t: number; compact: boolean }) => {
   }, [phase, showCalendar, booking]);
 
   return (
-    <div role="img" aria-label="Daniel's yearly check-in: he tells his attorney he bought property, Willow suggests a call, and he books a time on her calendar." className={`flex h-full w-full ${compact ? "" : "max-w-[640px]"} flex-col overflow-hidden rounded-2xl bg-white`} style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)", height: compact ? "100%" : 760 }}>
-      <div className={`flex flex-shrink-0 items-center justify-between ${compact ? "px-5 py-4" : "px-8 py-5"}`}>
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white text-left" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
+      <div className="flex flex-shrink-0 items-center justify-between px-6 py-4">
         <span className="truncate text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600 }}>Alvarez Family Law</span>
         <span className="p-1 text-[#9CA3AF]">
           <CloseIcon className="h-5 w-5" />
         </span>
       </div>
-      <div ref={boxRef} className={`relative min-h-0 flex-1 overflow-hidden ${compact ? "px-5" : "px-8"}`}>
+      <div ref={boxRef} className="relative min-h-0 flex-1 overflow-hidden px-6">
         <div ref={bodyRef} className="pb-6 pt-2" style={{ transform: `translateY(${shift}px)`, transition: "transform 520ms cubic-bezier(0.23,1,0.32,1)" }}>
           <CaAnsweredTurn q="Hi Daniel. Rachel at Alvarez Family Law asked me to check in on your plan." />
 
           {phase === "q1" && (
             <div>
               <Eva note="Tap anything that has.">{Q1.q}</Eva>
-              <div className={`mt-8 grid gap-3 ${compact ? "grid-cols-1" : "grid-cols-2"} ${indent}`}>
+              <div className={`mt-6 grid gap-2.5 ${cols}`}>
                 {Q1.options.map((o) => <Tile key={o} label={o} />)}
               </div>
-              <div className={`mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 ${indent}`}>
+              <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <CaPrimaryButton disabled>That&rsquo;s right</CaPrimaryButton>
                 <CaQuietButton style={{ ...tapStyle(pressed(t, T.none)), borderRadius: 12, color: pressed(t, T.none) ? "#1F2933" : undefined }}>None of these</CaQuietButton>
               </div>
@@ -144,14 +135,14 @@ const Sheet = ({ t, compact }: { t: number; compact: boolean }) => {
           {phase === "q2" && (
             <Rise>
               <Eva note="Tap anything that has.">{Q2.q}</Eva>
-              <div className={`mt-8 grid gap-3 ${compact ? "grid-cols-1" : "grid-cols-2"} ${indent}`}>
+              <div className={`mt-6 grid gap-2.5 ${cols}`}>
                 {Q2.options.map((o) => (
                   <div key={o} className="rounded-xl" style={o === PICK ? tapStyle(pressed(t, T.pick)) : undefined}>
                     <Tile label={o} selected={o === PICK && picked} />
                   </div>
                 ))}
               </div>
-              <div className={`mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 ${indent}`}>
+              <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <CaPrimaryButton disabled={!picked} style={tapStyle(pressed(t, T.confirm))}>That&rsquo;s right</CaPrimaryButton>
                 <CaQuietButton>None of these</CaQuietButton>
               </div>
@@ -165,18 +156,16 @@ const Sheet = ({ t, compact }: { t: number; compact: boolean }) => {
               <Eva>{OFFER}</Eva>
               {showCalendar && (
                 <Rise>
-                  <div className={`mt-8 ${indent}`}>
-                    <div className={compact ? "grid gap-6" : "grid h-[310px] grid-cols-[300px_minmax(0,1fr)] gap-6"}>
+                  <div className="mt-6">
+                    <div className={narrow ? "grid gap-6" : "grid h-[300px] grid-cols-[280px_minmax(0,1fr)] gap-5"}>
                       <CaMonthCalendar month={MONTH} open={OPEN} selected={OPEN[0]} />
-                      <div className={compact ? "" : "flex min-h-0 flex-col border-l border-gray-100 pl-6"}>
-                        <CaSlotList heading={DAY} slots={SLOTS} selected={timePicked ? TIME : null} pressed={pressed(t, T.time) ? TIME : null} compact={compact} note="Times shown in EST." />
+                      <div className={narrow ? "" : "flex min-h-0 flex-col border-l border-gray-100 pl-5"}>
+                        <CaSlotList heading={DAY} slots={SLOTS} selected={timePicked ? TIME : null} pressed={pressed(t, T.time) ? TIME : null} compact={narrow} note="Times shown in EST." />
                       </div>
                     </div>
                   </div>
-                  {booking && (
-                    <p className={`mt-6 text-[14px] text-[#6B7280] ${indent}`}>Booking that for you — it takes a moment while Rachel&rsquo;s calendar is updated.</p>
-                  )}
-                  <div className={`mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 ${indent}`}>
+                  {booking && <p className="mt-5 text-[14px] text-[#6B7280]">Booking that for you — it takes a moment while Rachel&rsquo;s calendar is updated.</p>}
+                  <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1">
                     <CaPrimaryButton disabled={!timePicked || booking} style={tapStyle(pressed(t, T.book))}>Book it</CaPrimaryButton>
                     <CaQuietButton>Not now</CaQuietButton>
                   </div>
@@ -199,118 +188,217 @@ const Sheet = ({ t, compact }: { t: number; compact: boolean }) => {
   );
 };
 
-/* The clock: real time from a moving origin, so a throttled tab catches up
-   instead of slowing down. Starts once half the film is in view */
-const useFilmClock = (ref: React.RefObject<HTMLElement>) => {
+/* ---- 2. The firm's articles on the dashboard ------------------------------ */
+
+const NEWS: CaArticle = { date: "November 24, 2026", title: "What the new estate tax threshold means", body: "How it affects your plan, and whether you need to do anything." };
+const PAST: CaArticle[] = [
+  { date: "October 20, 2026", title: "How often you should update your estate plan", body: "Life changes, and your plan should too. Here’s when it’s worth a second look." },
+  { date: "September 22, 2026", title: "Choosing the right executor", body: "What the role asks of someone, and how to pick the right person." },
+];
+/* The page scrolls from the top of his dashboard down to the card, then the
+   new article comes in */
+const N = { scroll: 900, arrive: 2000, end: 4800 };
+const SCROLL = { wide: 200, narrow: 190 };
+
+/* ---- The row -------------------------------------------------------------- */
+
+const CHAPTERS = [
+  {
+    id: "book-a-time",
+    title: "Book time with your attorney",
+    body: "A quick survey each year asks what’s changed. If something has, pick a time on your attorney’s calendar, right in the conversation.",
+    label: "Daniel answers his yearly check-in: he bought property, so Willow suggests a call, and he books a time on his attorney's calendar.",
+    end: T.end + 1400,
+  },
+  {
+    id: "firm-updates",
+    title: "Updates from your firm",
+    body: "When your attorney shares an article, it appears on your dashboard, under From your firm.",
+    label: "Daniel's dashboard: his firm's newest article appears at the top of From your firm.",
+    end: N.end,
+  },
+];
+
+/* The tile: a dark print with the product on it, running off the bottom edge
+   with room either side (EasyFilm's FilmFrame, narrow) */
+const MAT = { l: 0.05, t: 0.05, r: 0.05 };
+const TileFrame = ({ size, children }: { size: { w: number; h: number }; children: React.ReactNode }) => {
+  const w = size.w / (1 - MAT.l - MAT.r);
+  const h = size.h / (1 - MAT.t);
+  return (
+    <div className="relative w-full overflow-hidden rounded-xl bg-[#062D2C] shadow-xl" style={{ aspectRatio: `${w} / ${h}` }}>
+      <img src="/central-park.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+      <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
+      <div
+        className="absolute overflow-hidden rounded-t-lg bg-white"
+        style={{ left: `${MAT.l * 100}%`, top: `${MAT.t * 100}%`, right: `${MAT.r * 100}%`, bottom: 0, boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}
+      >
+        <ScaledScreen w={size.w} h={size.h}>{children}</ScaledScreen>
+      </div>
+    </div>
+  );
+};
+
+/* A film's clock: from 0 while it's this tile's turn, else its last frame.
+   Real time from an origin, so a throttled tab catches up instead of slowing */
+const useTileClock = (end: number, go: boolean, run: number, onEnd: () => void) => {
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const [t, setT] = useState(reduced ? T.end : 0);
-  const origin = useRef<number | null>(null);
-  const [run, setRun] = useState(0);
-
+  const [t, setT] = useState(end);
+  /* Bumped each time it starts, so the film starts fresh rather than
+     animating back from its last frame */
+  const [epoch, setEpoch] = useState(0);
+  const done = useRef(onEnd);
+  done.current = onEnd;
   useEffect(() => {
-    if (reduced) return;
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting && origin.current === null) {
-          origin.current = Date.now();
-          setRun((r) => r + 1);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.5 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [ref, reduced]);
-
-  useEffect(() => {
-    if (!run || origin.current === null) return;
+    if (!go) {
+      setT(end);
+      return;
+    }
+    if (reduced) {
+      setT(end);
+      done.current();
+      return;
+    }
+    const origin = Date.now();
+    setT(0);
+    setEpoch((e) => e + 1);
     const id = window.setInterval(() => {
-      const now = Date.now() - (origin.current ?? Date.now());
-      setT(Math.min(now, T.end));
-      if (now >= T.end) window.clearInterval(id);
+      const now = Date.now() - origin;
+      setT(Math.min(now, end));
+      if (now >= end) {
+        window.clearInterval(id);
+        done.current();
+      }
     }, 50);
     return () => window.clearInterval(id);
-  }, [run]);
+  }, [go, run, end, reduced]);
+  return { t, epoch };
+};
 
-  const playFrom = (from: number) => {
-    if (reduced) return;
-    origin.current = Date.now() - from;
-    setT(from);
-    setRun((r) => r + 1);
-  };
-  return { t, playFrom };
+/* A tile's rule fills as its film plays */
+const Fill = ({ ms }: { ms: number }) => {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setOn(true), 16);
+    return () => window.clearTimeout(id);
+  }, []);
+  return <span className="absolute left-0 top-[-2px] h-0.5 bg-[#138F8B]" style={{ width: on ? "100%" : "0%", transition: on ? `width ${ms}ms linear` : "none" }} />;
+};
+
+const GROW = 1.035;
+
+const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: number; narrow: boolean; onEnd: () => void }) => {
+  const c = CHAPTERS[i];
+  const { t, epoch } = useTileClock(c.end, go, run, onEnd);
+  const size = narrow ? { w: 400, h: 560 } : { w: 480, h: 580 };
+  const scroll = narrow ? SCROLL.narrow : SCROLL.wide;
+  return (
+    <div role="img" aria-label={c.label}>
+      <TileFrame size={size}>
+        <div key={epoch} aria-hidden style={{ width: size.w, height: size.h }}>
+          {i === 0 ? (
+            <CheckIn t={Math.min(t, T.end)} narrow={narrow} />
+          ) : (
+            <div style={{ transform: `translateY(${t >= N.scroll ? -scroll : 0}px)`, transition: "transform 900ms var(--ease-in-out)" }}>
+              <ClientFirmNewsScreen open compact articles={PAST} fresh={NEWS} freshOn={t >= N.arrive} height={size.h + scroll} />
+            </div>
+          )}
+        </div>
+      </TileFrame>
+    </div>
+  );
 };
 
 const StayInTouchFilm = () => {
-  const compact = useCompact();
-  const ref = useRef<HTMLDivElement>(null);
-  const { t, playFrom } = useFilmClock(ref);
-  const active = stepAt(t);
-  const size = compact ? { w: 400, h: 840 } : { w: 1000, h: 860 };
+  const narrow = useCompact();
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [seen, setSeen] = useState(false);
+  /* Whose turn it is to play; the rest hold on their last frame */
+  const [turn, setTurn] = useState<number | null>(0);
+  const [runs, setRuns] = useState(() => CHAPTERS.map(() => 0));
+  const [played, setPlayed] = useState(() => CHAPTERS.map(() => false));
+  /* Still in the first pass through the row: each tile hands on to the next */
+  const auto = useRef(true);
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setSeen(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const play = (i: number) => {
+    auto.current = false;
+    setPlayed((p) => p.map((v, k) => (k === i ? false : v)));
+    setRuns((r) => r.map((v, k) => (k === i ? v + 1 : v)));
+    setTurn(i);
+  };
+
+  const ended = useCallback((i: number) => {
+    setPlayed((p) => p.map((v, k) => (k === i ? true : v)));
+    setTurn((t) => (t !== i ? t : auto.current && i < CHAPTERS.length - 1 ? i + 1 : null));
+  }, []);
 
   return (
-    <section className="bg-[#F8FAFC] pb-16 md:pb-24">
+    <section id="stay-in-touch" className="scroll-mt-24 bg-[#F8FAFC] pb-16 md:pb-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
-        <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2 }}>
+        <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
           Stay in touch with
           <span className="block italic text-[#138F8B]">the attorney who knows your plan.</span>
         </h2>
 
-        <div className="mt-10 grid items-start gap-10 md:mt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,11fr)] lg:gap-14">
-          {/* The three steps, ruled as For attorneys' chapters are: the open
-              one's rule fills as the film plays it */}
-          <div role="tablist" aria-label="Staying in touch with your attorney" className="border-b-2 border-gray-200">
-            {STEPS.map((s, i) => {
-              const on = i === active;
-              const span = stepEnd(i) - s.from;
-              const fill = i < active ? 1 : on ? Math.min(1, Math.max(0, (t - s.from) / span)) : 0;
-              return (
-                <div key={s.title} className="relative border-t-2 border-gray-200">
-                  <span className="absolute left-0 top-[-2px] h-0.5 bg-[#138F8B]" style={{ width: `${(on ? fill : 0) * 100}%` }} />
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={on}
-                    onClick={() => playFrom(s.from)}
-                    className={`block w-full py-5 text-left text-[20px] font-medium leading-snug transition-colors ${on ? "text-[#222222]" : "text-gray-500 hover:text-[#222222]"}`}
-                    style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" }}
+        <div ref={rowRef} className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-2 lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-6">
+          {CHAPTERS.map((c, i) => {
+            const go = seen && turn === i;
+            const playing = go && !played[i];
+            const quiet = seen && turn !== null && turn !== i && !played[turn];
+            return (
+              <div key={c.id} id={c.id} className="group relative grid scroll-mt-24 gap-5 lg:row-span-2 lg:grid-rows-subgrid lg:gap-y-6">
+                <div className="relative border-t-2 border-gray-200 pt-5">
+                  {playing ? <Fill key={runs[i]} ms={c.end} /> : played[i] && <span className="absolute left-0 top-[-2px] h-0.5 w-full bg-[#138F8B]" />}
+                  <h3
+                    className="text-[20px] font-medium leading-snug"
+                    style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em", color: quiet ? "#6B7280" : "#222222", transition: "color 300ms ease" }}
                   >
-                    {s.title}
-                  </button>
-                  <div style={{ display: "grid", gridTemplateRows: on ? "1fr" : "0fr", transition: "grid-template-rows 340ms cubic-bezier(0.77,0,0.175,1)" }}>
-                    <div className="min-h-0 overflow-hidden">
-                      <p className="pb-6 pr-4 text-[15px] leading-relaxed text-gray-600" style={{ opacity: on ? 1 : 0, transition: on ? "opacity 260ms ease 120ms" : "opacity 120ms ease", textWrap: "pretty" }}>
-                        {s.body}
-                      </p>
-                    </div>
+                    {c.title}
+                  </h3>
+                  <p className="mt-2 max-w-[30rem] text-[15px] leading-relaxed text-gray-600" style={{ textWrap: "pretty" }}>
+                    {c.body}
+                  </p>
+                </div>
+
+                {/* The tile: lifts on hover, grows while it plays */}
+                <div className="max-w-[560px] transition-transform duration-200 ease-out group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+                  <div
+                    className="rounded-xl"
+                    style={{
+                      transform: playing ? `scale(${GROW})` : "scale(1)",
+                      boxShadow: playing ? "0 28px 60px -24px rgba(6,45,44,0.55)" : "0 0 0 0 rgba(6,45,44,0)",
+                      transition: "transform 700ms var(--ease-in-out), box-shadow 700ms ease",
+                    }}
+                  >
+                    <Film i={i} go={go} run={runs[i]} narrow={narrow} onEnd={() => ended(i)} />
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          <div ref={ref} className="relative min-w-0">
-            <PrintFrame print="/florida-coast.jpg" aspect={`${size.w} / ${size.h}`} className="shadow-2xl" dark>
-              <ScaledScreen w={size.w} h={size.h}>
-                {compact ? (
-                  <div className="h-full w-full">
-                    <Sheet t={t} compact />
-                  </div>
-                ) : (
-                  <CheckInOver sheet={<Sheet t={t} compact={false} />} height={size.h} />
-                )}
-              </ScaledScreen>
-            </PrintFrame>
-            <button
-              type="button"
-              onClick={() => playFrom(0)}
-              aria-label="Play the check-in again"
-              className="absolute inset-0 z-10 cursor-pointer rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#138F8B] focus-visible:ring-offset-4 focus-visible:ring-offset-[#F8FAFC]"
-            />
-          </div>
+                <button
+                  type="button"
+                  onClick={() => play(i)}
+                  aria-label={`Play “${c.title}” again`}
+                  className="absolute -inset-2 z-10 cursor-pointer rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#138F8B] focus-visible:ring-offset-4 focus-visible:ring-offset-[#F8FAFC]"
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
