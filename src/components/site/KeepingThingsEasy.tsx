@@ -17,17 +17,17 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
     id: "set-up",
     also: ["signed-plan", "dashboard"],
     title: "Automate account creation",
-    body: "Drop in a signed plan, and Willow sets up your client’s account for you, so there’s nothing to retype.",
+    body: "Just drop in your documents, and Willow goes through the details and your contacts to put it all together.",
   },
   {
     id: "plan-summaries",
     title: "AI-generated summaries",
-    body: "Willow drafts a plain-English summary of every plan, and clients only see it once you’ve approved it.",
+    body: "Willow creates a visual summary of every estate plan, and you can change any of its wording before clients see it.",
   },
   {
     id: "reaching-out",
     title: "Check-ins that send themselves",
-    body: "Write your check-in once, and Willow sends it to every client on their own date, year after year.",
+    body: "Reminders, surveys and emails can all be automated, so you’re never buried in follow-up.",
   },
 ];
 
@@ -96,6 +96,9 @@ const KeepingThingsEasy = () => {
           Drop in the estate plan.
           <span className="block italic text-[#138F8B]">We’ll handle the rest.</span>
         </h2>
+        <p className="mt-5 max-w-xl text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em", textWrap: "pretty" }}>
+          Let us handle the admin, so you can do what you do best.
+        </p>
 
         <div className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-8 lg:gap-y-6">
           {EASY_CHAPTERS.flatMap((c) => [c.id, ...(c.also ?? [])]).map((id) => (
