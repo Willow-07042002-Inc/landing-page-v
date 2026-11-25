@@ -6,9 +6,13 @@ import type { FilmProps } from "@/components/site/film-kit";
 
 /* A film of Willow at work beside its chapters, set out like harvey.ai's "how
    teams stay ahead": the headline top left, a ruled list of chapters beside
-   the film, the open chapter's rule filling as it plays. (On phones and
-   tablets the list is a row above the film.) The film moves from one chapter
-   to the next by itself, and any chapter can be opened to watch from there.
+   the film, the open chapter's rule filling as it plays. The film moves from
+   one chapter to the next by itself, and any chapter can be opened to watch
+   from there. Below 1024px (phones held upright, tablets) the chapters stack
+   instead, the way Keeping things easy's tiles do: each chapter's words, then
+   its own film, which plays when it scrolls into view and rests on its last
+   frame; tapping it plays it again (Aaron, Nov 24: scroll from one to the
+   next, not a row that slides on by itself).
    Every chapter has an anchor, so the deeper pages parked in
    src/content/pages.tsx land on theirs. Here: staying in touch after
    signing. The admin (the signed plan in, and explained) is the next
@@ -69,6 +73,52 @@ const Fill = ({ ms }: { ms: number }) => {
   return <span className="absolute left-0 top-[-2px] h-0.5 bg-[#138F8B]" style={{ width: on ? "100%" : "0%", transition: on && ms ? `width ${ms}ms linear` : "none" }} />;
 };
 
+const WIDE = "(min-width: 1024px)";
+const useWide = () => {
+  const [wide, setWide] = useState(() => typeof window === "undefined" || window.matchMedia(WIDE).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(WIDE);
+    const on = () => setWide(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return wide;
+};
+
+const noop = () => undefined;
+
+/* Below 1024px: one chapter, its words above its own film. Its rule fills
+   while the film plays; tapping the film plays it again */
+const StackedChapter = ({ c, i, Film }: { c: Chapter; i: number; Film: React.ComponentType<FilmProps> }) => {
+  const [replay, setReplay] = useState(0);
+  const [run, setRun] = useState<{ id: number; ms: number } | null>(null);
+  return (
+    <div className="relative grid gap-5">
+      {[c.id, ...(c.also ?? [])].map((id) => (
+        <span key={id} id={id} className="absolute -top-24 left-0" aria-hidden />
+      ))}
+      <div className="relative border-t-2 border-gray-200 pt-5">
+        {run && <Fill key={run.id} ms={run.ms} />}
+        <h3 className="text-[20px] font-medium leading-snug text-[#222222]" style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" }}>
+          {c.title}
+        </h3>
+        <p className="mt-2 max-w-[36rem] text-[15px] leading-relaxed text-gray-600" style={{ textWrap: "pretty" }}>
+          {c.body}
+        </p>
+      </div>
+      <div className="relative">
+        <Film rewatch chapter={i} replay={replay} onChapter={noop} onStart={(ms) => setRun((r) => ({ id: (r?.id ?? 0) + 1, ms }))} />
+        <button
+          type="button"
+          onClick={() => setReplay((r) => r + 1)}
+          aria-label={`Play “${c.title}” again`}
+          className="absolute inset-0 z-10 cursor-pointer rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#138F8B] focus-visible:ring-offset-4 focus-visible:ring-offset-[#F8FAFC]"
+        />
+      </div>
+    </div>
+  );
+};
+
 const ChapterFilmSection = ({
   name,
   title,
@@ -93,8 +143,8 @@ const ChapterFilmSection = ({
   const [active, setActive] = useState(() => Math.max(0, chapterFor(hash)));
   const [replay, setReplay] = useState(0);
   const [run, setRun] = useState<{ id: number; ms: number } | null>(null);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const rowRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const wide = useWide();
 
   useEffect(() => {
     const i = chapterFor(hash);
@@ -102,23 +152,11 @@ const ChapterFilmSection = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hash]);
 
-  /* On phones the row scrolls: keep the open chapter in sight */
-  useEffect(() => {
-    const tab = tabRefs.current[active];
-    const row = tab?.parentElement;
-    if (tab && row && row.scrollWidth > row.clientWidth) {
-      row.scrollTo({ left: tab.offsetLeft - (row.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
-    }
-  }, [active]);
-
   const open = (i: number, focus = false) => {
     setActive(i);
     setRun(null);
     setReplay((r) => r + 1);
-    if (focus) {
-      tabRefs.current[i]?.focus({ preventScroll: true });
-      rowRefs.current[i]?.focus({ preventScroll: true });
-    }
+    if (focus) rowRefs.current[i]?.focus({ preventScroll: true });
   };
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowRight" || e.key === "ArrowDown") open((active + 1) % chapters.length, true);
@@ -137,45 +175,22 @@ const ChapterFilmSection = ({
           <span className="block italic text-[#138F8B]">{accent}</span>
         </h2>
 
-        <div className="relative mt-10 grid gap-6 md:mt-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,11fr)] lg:items-start lg:gap-14">
+        {!wide ? (
+          /* Phones and tablets: the chapters stacked, one after another */
+          <div aria-label={label} className="mt-10 grid gap-14 md:mt-12">
+            {chapters.map((c, i) => (
+              <StackedChapter key={c.id} c={c} i={i} Film={Film} />
+            ))}
+          </div>
+        ) : (
+        <div className="relative mt-12 grid grid-cols-[minmax(0,5fr)_minmax(0,11fr)] items-start gap-14">
           {chapters.flatMap((c) => [c.id, ...(c.also ?? [])]).map((id) => (
             <span key={id} id={id} className="absolute -top-24 left-0" aria-hidden />
           ))}
 
           <div className="min-w-0">
-            {/* Phones and tablets: a row above the film */}
-            <div className="lg:hidden">
-              <div role="tablist" aria-label={label} onKeyDown={onKey} className="relative flex gap-4 overflow-x-auto pt-0.5 [scrollbar-width:none]">
-                {chapters.map((c, i) => (
-                  <button
-                    key={c.id}
-                    ref={(el) => {
-                      tabRefs.current[i] = el;
-                    }}
-                    type="button"
-                    role="tab"
-                    id={`${name}-tab-${c.id}`}
-                    aria-selected={i === active}
-                    aria-controls={panel}
-                    tabIndex={i === active ? 0 : -1}
-                    onClick={() => open(i)}
-                    className={`relative flex-shrink-0 border-t-2 border-gray-200 pb-2 pr-3 pt-3.5 text-left text-[15px] font-medium leading-snug transition-colors ${
-                      i === active ? "text-[#222222]" : "text-gray-500 hover:text-[#222222]"
-                    }`}
-                  >
-                    {i < active && <span className="absolute left-0 top-[-2px] h-0.5 w-full bg-[#138F8B]" />}
-                    {i === active && run && <Fill key={run.id} ms={run.ms} />}
-                    {c.title}
-                  </button>
-                ))}
-              </div>
-              <p key={chapter.id} className="mt-4 max-w-3xl text-[16px] leading-relaxed text-gray-600 sm:min-h-[3.25rem]" style={{ textWrap: "pretty" }}>
-                {chapter.body}
-              </p>
-            </div>
-
-            {/* Desktop: the ruled list */}
-            <div role="tablist" aria-orientation="vertical" aria-label={label} onKeyDown={onKey} className="hidden border-b-2 border-gray-200 lg:block">
+            {/* The ruled list */}
+            <div role="tablist" aria-orientation="vertical" aria-label={label} onKeyDown={onKey} className="border-b-2 border-gray-200">
               {chapters.map((c, i) => {
                 const on = i === active;
                 return (
@@ -187,6 +202,7 @@ const ChapterFilmSection = ({
                       }}
                       type="button"
                       role="tab"
+                      id={`${name}-tab-${c.id}`}
                       aria-selected={on}
                       aria-controls={panel}
                       tabIndex={on ? 0 : -1}
@@ -213,6 +229,7 @@ const ChapterFilmSection = ({
             <Film chapter={active} replay={replay} onChapter={setActive} onStart={(ms) => setRun((r) => ({ id: (r?.id ?? 0) + 1, ms }))} />
           </div>
         </div>
+        )}
       </div>
     </section>
   );
