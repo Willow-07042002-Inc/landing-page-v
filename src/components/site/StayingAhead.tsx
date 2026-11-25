@@ -119,13 +119,14 @@ const StackedChapter = ({ c, i, Film }: { c: Chapter; i: number; Film: React.Com
   );
 };
 
-const ChapterFilmSection = ({
+export const ChapterFilmSection = ({
   name,
   title,
   accent,
   label,
   chapters,
   Film,
+  sectionClass = "bg-[#F8FAFC] pb-16 md:pb-24",
 }: {
   /** Keeps this section's ids apart from the other's */
   name: string;
@@ -134,6 +135,8 @@ const ChapterFilmSection = ({
   label: string;
   chapters: Chapter[];
   Film: React.ComponentType<FilmProps>;
+  /** The section's ground and padding (For clients sets it on its own) */
+  sectionClass?: string;
 }) => {
   const { hash } = useLocation();
   const chapterFor = (h: string) => {
@@ -168,7 +171,7 @@ const ChapterFilmSection = ({
   const chapter = chapters[active];
   const panel = `${name}-panel`;
   return (
-    <section className="bg-[#F8FAFC] pb-16 md:pb-24">
+    <section className={sectionClass}>
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2 }}>
           {title}

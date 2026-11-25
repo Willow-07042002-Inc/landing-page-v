@@ -2,18 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
-import { PageShell, PageHero, PrintFrame, usePageMeta, WRAP, Eyebrow, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
+import { ChapterFilmSection } from "@/components/site/StayingAhead";
+import PrepareFilm, { PREPARE_CHAPTERS } from "@/components/site/PrepareFilm";
 import {
   TeamRosterVignette,
   StepInVignette,
   WhoGetsWhatVignette,
   TrustVignette,
   DocumentsVaultVignette,
-  CategoriesVignette,
-  ReleaseTimingVignette,
-  RoleChangeVignette,
-  SectionShareVignette,
 } from "@/components/ClientVignettes";
 
 /* ── The five summary chapters, shown in a continuous (wrap-around) carousel:
@@ -134,39 +132,6 @@ const ChapterCarousel = () => {
   );
 };
 
-/* ── One preparedness row: eyebrow + title + body beside a vignette ── */
-const ShareBlock = ({
-  eyebrow,
-  title,
-  body,
-  note,
-  flip,
-  children,
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-  note?: string;
-  flip?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className={`flex flex-col gap-8 lg:gap-12 items-center lg:flex-row ${flip ? "lg:flex-row-reverse" : ""}`}>
-    {/* Golden-section split: copy 38.2%, product 61.8% — from lg up; phones and
-        iPad portrait stack, so the product keeps its full width */}
-    <div className="w-full lg:w-[38.2%]">
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h3 className={`mt-2 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>
-        {title}
-      </h3>
-      <p className={`mt-2 ${BODY_CLS} text-gray-600`}>{body}</p>
-      {note && <p className="mt-2 text-[13.5px] text-gray-400">{note}</p>}
-    </div>
-    <div className="w-full lg:w-[61.8%]">
-      <VignetteFrame>{children}</VignetteFrame>
-    </div>
-  </div>
-);
-
 const ForClientsPage = () => {
   usePageMeta(
     "Willow for Clients & Their Team",
@@ -214,51 +179,17 @@ const ForClientsPage = () => {
         </div>
       </section>
 
-      {/* Preparedness & sharing: the heading set left, as Stay in touch */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
-        <div className={`${WRAP} relative z-10 max-w-6xl lg:px-10`}>
-          <div className="mb-12 max-w-3xl md:mb-16">
-            <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
-              Prepare your team now, <span className={ACCENT_CLS}>so no one&rsquo;s left scrambling later.</span>
-            </h2>
-            <p className={`mt-5 max-w-2xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
-              Everyone gets exactly what they need, exactly when they need it, from one place you control.
-            </p>
-          </div>
-          <div className="flex flex-col gap-16 md:gap-24">
-            <ShareBlock
-              eyebrow="Gather"
-              title="Everything they'll need, where they'll look for it."
-              body="Beyond the legal documents: accounts, insurance, passwords, the pediatrician's number. Willow tells you exactly what to gather and where it goes, so when someone has to step in, it's waiting for them, not buried in a drawer, an inbox, or someone's memory."
-            >
-              <CategoriesVignette />
-            </ShareBlock>
-            <ShareBlock
-              flip
-              eyebrow="Share"
-              title="Everyone ends up prepared."
-              body="An executor needs different things than a guardian. Willow understands each role and recommends who should receive what. You review it and approve. Everyone you've named gets their own portal, so what's meant for them is there when they sign in."
-            >
-              <SectionShareVignette />
-            </ShareBlock>
-            <ShareBlock
-              eyebrow="Control"
-              title="You control what opens, and when."
-              body="Putting something in someone's hands too early can cause friction in a family. So Willow lets you put everything in place today and control when each piece releases. The will stays sealed until your passing is verified by your attorney. Until then, the people you've named can see something is waiting for them, but not what it says."
-            >
-              <ReleaseTimingVignette />
-            </ShareBlock>
-            <ShareBlock
-              flip
-              eyebrow="Stay current"
-              title="Nothing goes out of date."
-              body="When a plan is updated and responsibilities change hands, Willow notices and proposes exactly what needs to change in what you've already shared. You review it once and approve."
-            >
-              <RoleChangeVignette />
-            </ShareBlock>
-          </div>
-        </div>
-      </section>
+      {/* Preparing their team: chapters left, the client's screen right, as
+          For attorneys sets out "A practice families keep coming back to" */}
+      <ChapterFilmSection
+        name="prepare"
+        title="Prepare your team now,"
+        accent="so no one's left scrambling."
+        label="Preparing the people you've named"
+        chapters={PREPARE_CHAPTERS}
+        Film={PrepareFilm}
+        sectionClass="bg-[#F8FAFC] py-16 md:py-24"
+      />
 
     </PageShell>
   );

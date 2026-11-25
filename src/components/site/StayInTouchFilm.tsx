@@ -449,9 +449,10 @@ const frameOf = (size: { w: number; h: number }) => ({ w: size.w / (1 - MAT.l - 
 const TileFrame = ({ size, bare = false, children }: { size: { w: number; h: number }; bare?: boolean; children: React.ReactNode }) => {
   const { w, h } = frameOf(size);
   return (
-    <div className="relative w-full overflow-hidden rounded-xl bg-[#062D2C] shadow-xl" style={{ aspectRatio: `${w} / ${h}` }}>
+    <div className="relative w-full overflow-hidden rounded-xl bg-[#F8FAFC] shadow-xl" style={{ aspectRatio: `${w} / ${h}` }}>
       <img src="/central-park.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
-      <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
+      {/* The client side's light wash (Aaron, Nov 25: attorneys dark, clients light) */}
+      <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
       {bare ? (
         <ScaledScreen w={w} h={h}>{children}</ScaledScreen>
       ) : (

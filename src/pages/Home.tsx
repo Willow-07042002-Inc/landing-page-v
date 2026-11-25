@@ -342,7 +342,7 @@ const StackedCapabilities = () => {
                 >
                   <div className="relative h-full w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl">
                     <img src={cap.print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
+                    <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
                     <div
                       className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-white ${cap.fitAspect ? "" : "h-[70%]"}`}
                       style={{ width: cap.fitWidth ?? "92%", boxShadow: "0 8px 40px rgba(0,0,0,0.18)", ...(cap.fitAspect ? { aspectRatio: cap.fitAspect } : {}) }}
@@ -373,7 +373,7 @@ const StackedCapabilities = () => {
             </div>
             <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl md:max-w-[560px] md:justify-self-end" style={{ aspectRatio: "1 / 1" }}>
               <img src={cap.print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-              <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
+              <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
               <div
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-white ${cap.fitAspect ? "" : "h-[70%]"}`}
                 style={{ width: cap.fitWidth ?? "92%", boxShadow: "0 8px 40px rgba(0,0,0,0.18)", ...(cap.fitAspect ? { aspectRatio: cap.fitAspect } : {}) }}

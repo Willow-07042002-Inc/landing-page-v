@@ -92,7 +92,7 @@ export const PrintFrame = ({
   children,
   aspect = "900 / 560",
   className = "",
-  dark = true,
+  dark = false,
 }: {
   print: string;
   children: React.ReactNode;
@@ -100,9 +100,9 @@ export const PrintFrame = ({
   width?: string;
   frameAspect?: string;
   className?: string;
-  /** The photograph under the deep teal wash (rgba(6,45,44,0.74)), as on
-      every product frame on the site (Aaron, Nov 25). false: the old light
-      wash. */
+  /** The photograph under the deep teal wash (rgba(6,45,44,0.74)): the
+      attorney side's frames. Without it, the light wash the home page and
+      the client side use (Aaron, Nov 25: attorneys dark, clients light). */
   dark?: boolean;
 }) =>
   print === "self" ? (
