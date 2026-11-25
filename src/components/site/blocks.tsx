@@ -148,7 +148,8 @@ export const PageHero = ({
   eyebrow?: React.ReactNode;
   title: React.ReactNode;
   accent?: string;
-  subtitle: string;
+  /** Text, or text with a hand-placed line break */
+  subtitle: React.ReactNode;
   secondary?: { label: string; to: string };
   visual?: React.ReactNode;
   visualAspect?: string;
