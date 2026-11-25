@@ -55,7 +55,7 @@ const AttorneysPage = () => {
         eyebrow="For attorneys"
         title="Signing shouldn't be the last time"
         accent="you hear from a client."
-        subtitle="Willow ensures clients come back year after year. It makes you the obvious choice for their family and executors."
+        subtitle="Willow ensures clients come back year after year, and makes you the obvious choice for their family and executors."
         visualAspect="1128 / 670"
         visual={<CheckInStory />}
       />

@@ -26,12 +26,12 @@ export const KEEP_CHAPTERS: Chapter[] = [
     id: "check-ins",
     also: ["survey"],
     title: "Automate client check-ins",
-    body: "Write the check-in once, in your words. Willow sends it to every client a year after they sign, then every year, asking what’s changed.",
+    body: "Write your check-in emails once, in your own words. Choose how often they go out, and Willow handles it from there.",
   },
   {
     id: "firm-updates",
     title: "Share your firm’s content and updates",
-    body: "Add a link to anything your firm publishes, and it appears on every client’s dashboard, so you stay in view between check-ins.",
+    body: "Whether it’s a blog post, a tax update or anything else your clients would find useful, drop it into Willow. We’ll add it to their dashboard and email it to them, so you stay top of mind.",
   },
   {
     id: "law-changes",
