@@ -22,7 +22,7 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
   {
     id: "plan-summaries",
     title: "AI-generated summaries",
-    body: "Willow creates a visual summary of every estate plan, and you can change any of its wording before clients see it.",
+    body: "Willow creates a visual summary of every estate plan, so all that’s left is your approval.",
   },
   {
     id: "reaching-out",
