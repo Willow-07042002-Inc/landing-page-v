@@ -32,7 +32,7 @@ import {
       posting (KeepInTouchFilm.tsx); the portal shows them without pictures.
    Buttons press themselves; nothing crosses the screen to click them. */
 
-const { Eva, Tile, CloseIcon, SERIF } = CheckInParts;
+const { Eva, Tile, SERIF } = CheckInParts;
 
 /* ---- 1. The check-in ----------------------------------------------------- */
 
@@ -93,6 +93,7 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
   const showCalendar = t >= T.calendar;
   const booking = t >= T.booking && t < T.booked;
   const cols = narrow ? "grid-cols-1" : "grid-cols-2";
+  const pad = narrow ? "px-6" : "px-12";
 
   useLayoutEffect(() => {
     const box = boxRef.current;
@@ -107,23 +108,23 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-white text-left" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      <div className="flex flex-shrink-0 items-center justify-between px-6 py-4">
-        <span className="truncate text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600 }}>Alvarez Family Law</span>
-        <span className="p-1 text-[#9CA3AF]">
-          <CloseIcon className="h-5 w-5" />
-        </span>
+      {/* The firm's name, as the sheet's header has it; no × (Aaron, Nov 25) */}
+      <div className={`flex-shrink-0 ${pad} ${narrow ? "pb-2 pt-5" : "pb-3 pt-9"}`}>
+        <span className="block truncate text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600 }}>Alvarez Family Law</span>
       </div>
-      <div ref={boxRef} className="relative min-h-0 flex-1 overflow-hidden px-6">
-        <div ref={bodyRef} className="pb-6 pt-2" style={{ transform: `translateY(${shift}px)`, transition: "transform 520ms cubic-bezier(0.23,1,0.32,1)" }}>
+      <div ref={boxRef} className={`relative min-h-0 flex-1 overflow-hidden ${pad}`}>
+        {/* Earlier turns fade out under the header as the thread moves up */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-white to-transparent" />
+        <div ref={bodyRef} className={narrow ? "pb-6 pt-3" : "pb-10 pt-5"} style={{ transform: `translateY(${shift}px)`, transition: "transform 520ms cubic-bezier(0.23,1,0.32,1)" }}>
           <CaAnsweredTurn q="Hi Daniel. Rachel at Alvarez Family Law asked me to check in on your plan." />
 
           {phase === "q1" && (
             <div>
               <Eva note="Tap anything that has.">{Q1.q}</Eva>
-              <div className={`mt-6 grid gap-2.5 ${cols}`}>
+              <div className={`${narrow ? "mt-6" : "mt-7"} grid gap-3 ${cols}`}>
                 {Q1.options.map((o) => <Tile key={o} label={o} />)}
               </div>
-              <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <div className={`${narrow ? "mt-6" : "mt-8"} flex flex-wrap items-center gap-x-2 gap-y-1`}>
                 <CaPrimaryButton disabled>That&rsquo;s right</CaPrimaryButton>
                 <CaQuietButton style={{ ...tapStyle(pressed(t, T.none)), borderRadius: 12, color: pressed(t, T.none) ? "#1F2933" : undefined }}>None of these</CaQuietButton>
               </div>
@@ -135,14 +136,14 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
           {phase === "q2" && (
             <Rise>
               <Eva note="Tap anything that has.">{Q2.q}</Eva>
-              <div className={`mt-6 grid gap-2.5 ${cols}`}>
+              <div className={`${narrow ? "mt-6" : "mt-7"} grid gap-3 ${cols}`}>
                 {Q2.options.map((o) => (
                   <div key={o} className="rounded-xl" style={o === PICK ? tapStyle(pressed(t, T.pick)) : undefined}>
                     <Tile label={o} selected={o === PICK && picked} />
                   </div>
                 ))}
               </div>
-              <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <div className={`${narrow ? "mt-6" : "mt-8"} flex flex-wrap items-center gap-x-2 gap-y-1`}>
                 <CaPrimaryButton disabled={!picked} style={tapStyle(pressed(t, T.confirm))}>That&rsquo;s right</CaPrimaryButton>
                 <CaQuietButton>None of these</CaQuietButton>
               </div>
@@ -165,7 +166,7 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
                     </div>
                   </div>
                   {booking && <p className="mt-5 text-[14px] text-[#6B7280]">Booking that for you — it takes a moment while Rachel&rsquo;s calendar is updated.</p>}
-                  <div className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <div className={`${narrow ? "mt-6" : "mt-8"} flex flex-wrap items-center gap-x-2 gap-y-1`}>
                     <CaPrimaryButton disabled={!timePicked || booking} style={tapStyle(pressed(t, T.book))}>Book it</CaPrimaryButton>
                     <CaQuietButton>Not now</CaQuietButton>
                   </div>
@@ -198,7 +199,7 @@ const PAST: CaArticle[] = [
 /* The page scrolls from the top of his dashboard down to the card, then the
    new article comes in */
 const N = { scroll: 900, arrive: 2000, end: 4800 };
-const SCROLL = { wide: 200, narrow: 190 };
+const SCROLL = { wide: 210, narrow: 190 };
 
 /* ---- The row -------------------------------------------------------------- */
 
@@ -290,7 +291,9 @@ const GROW = 1.035;
 const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: number; narrow: boolean; onEnd: () => void }) => {
   const c = CHAPTERS[i];
   const { t, epoch } = useTileClock(c.end, go, run, onEnd);
-  const size = narrow ? { w: 400, h: 560 } : { w: 480, h: 580 };
+  /* The wide tile is drawn a little smaller than life (about 0.85), so the
+     conversation has room around it rather than filling the frame */
+  const size = narrow ? { w: 400, h: 560 } : { w: 600, h: 725 };
   const scroll = narrow ? SCROLL.narrow : SCROLL.wide;
   return (
     <div role="img" aria-label={c.label}>
