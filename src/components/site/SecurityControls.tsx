@@ -31,7 +31,7 @@ const CONTROLS = [
   },
   {
     title: "Client data is encrypted, kept in the US and never sold",
-    body: "Everything is encrypted with AES-256, the same standard banks rely on, both as it travels and where it’s stored.",
+    body: "Plans and documents are stored with AES-256 encryption, the same standard banks rely on, and protected with TLS as they travel.",
   },
   {
     title: "Every access is on record",
