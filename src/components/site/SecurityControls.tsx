@@ -17,7 +17,9 @@ import { WRAP } from "@/components/site/blocks";
    per-item release (now, on incapacity, after a passing, or the client's own
    condition) is ReleaseSelector.tsx; meet-first is access-meeting.ts; the AI
    row is the Anthropic organization's zero data retention, which the firm
-   agreements promise (willow-platform CLAUDE.md, "AI and client data"). */
+   agreements promise (willow-platform CLAUDE.md, "AI and client data");
+   AES-256 at rest and TLS in transit are Supabase's and Vercel's own
+   statements (supabase.com/security, vercel.com/security, read Nov 25). */
 const CONTROLS = [
   {
     title: "Clients control when their team sees their documents",
@@ -29,7 +31,7 @@ const CONTROLS = [
   },
   {
     title: "Client data is encrypted, kept in the US and never sold",
-    body: "Everyone signs in with a one-time code, and everything is encrypted as it travels and where it’s stored, on Supabase, Amazon Web Services and Vercel.",
+    body: "Everything is encrypted with AES-256, the same standard banks rely on, both as it travels and where it’s stored.",
   },
   {
     title: "Nothing locked is opened until you verify it",
