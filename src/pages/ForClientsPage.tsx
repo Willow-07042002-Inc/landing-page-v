@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
-import { PageShell, PageHero, PrintFrame, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, SecondaryButton, WRAP, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
+import { CLIENT_LOGIN } from "@/content/siteMap";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import { ChapterFilmSection } from "@/components/site/StayingAhead";
 import PrepareFilm, { PREPARE_CHAPTERS } from "@/components/site/PrepareFilm";
@@ -132,6 +133,46 @@ const ChapterCarousel = () => {
   );
 };
 
+/* ── The page's close, for the client reading it (Aaron, Nov 25): Willow
+      comes through their attorney, so the ask is to bring it up with them,
+      by an email they write themselves, or to sign in if they already have
+      it. Set like the home page's founder note: the light print fills the
+      rounded box and a white card floats over it. The attorney's demo ask is
+      the footer's top line, just below. ── */
+const ATTORNEY_EMAIL = `mailto:?subject=${encodeURIComponent("Willow for my estate plan")}&body=${encodeURIComponent(
+  "Hi,\n\nI came across Willow, which keeps an estate plan, and the attorney who wrote it, in one place for the whole family: https://www.willow-inc.com/for-clients\n\nIs it something you offer, or could set up for my plan?\n\nThank you,"
+)}`;
+
+const ClientAsk = () => (
+  <section className="bg-[#F8FAFC] pb-16 md:pb-24">
+    <div className={`${WRAP} max-w-6xl lg:px-10`}>
+      <div className="relative overflow-hidden rounded-3xl">
+        <img src="/williamsburg.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+        <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+        <div className="relative z-10 p-5 sm:p-10 md:p-16">
+          <div className="mx-auto max-w-3xl rounded-2xl bg-white px-6 py-10 text-center sm:px-10 md:px-14 md:py-14" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+            <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+              Want Willow for your plan? <span className={ACCENT_CLS}>Ask your attorney.</span>
+            </h2>
+            <p className={`mx-auto mt-5 max-w-xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
+              Willow comes through the attorney who drafted your plan. Send them a note about it, or sign in if you already have Willow.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a
+                href={ATTORNEY_EMAIL}
+                className="press inline-flex h-11 items-center justify-center rounded-md bg-[#128F8B] px-6 text-[15px] font-medium text-white hover:bg-[#0C7370]"
+              >
+                Email your attorney about Willow
+              </a>
+              <SecondaryButton href={CLIENT_LOGIN}>Log in to your plan</SecondaryButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const ForClientsPage = () => {
   usePageMeta(
     "Willow for Clients & Their Team",
@@ -191,6 +232,7 @@ const ForClientsPage = () => {
         sectionClass="bg-[#F8FAFC] py-16 md:py-24"
       />
 
+      <ClientAsk />
     </PageShell>
   );
 };
