@@ -4,6 +4,7 @@ import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
 import { PageShell, PageHero, PrintFrame, usePageMeta } from "@/components/site/blocks";
+import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import {
   TeamRosterVignette,
   StepInVignette,
@@ -222,6 +223,10 @@ const ForClientsPage = () => {
           </PrintFrame>
         }
       />
+
+      {/* Staying in touch: the yearly check-in through to a call booked on
+          the attorney's calendar */}
+      <StayInTouchFilm />
 
       {/* The summary — five chapters in a continuous carousel */}
       <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">

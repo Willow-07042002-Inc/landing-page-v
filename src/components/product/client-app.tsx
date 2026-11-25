@@ -1275,3 +1275,134 @@ export const CheckInPromptCard = () => (
     </div>
   </div>
 );
+
+/* ---- The check-in, played through to a booked call ----------------------
+   The pieces the For clients film (site/StayInTouchFilm.tsx) assembles, from
+   apps/clients (origin/main, Nov 24 2026):
+   - touch/conversation.tsx PastTurn with an answer: Eva's question folded
+     small, the client's answer in a teal bubble on the right; PrimaryButton
+     (PRIMARY_CLASS) and QuietButton
+   - touch/LifeChangesConversation.tsx TimePicker: the month grid and the
+     chosen day's times beside it (stacked on a phone), then "Book it" /
+     "Not now"
+   - dashboard/booking/MonthCalendar.tsx MonthCalendar + SlotList (pills) */
+export const CheckInParts = { Eva: CaEva, Tile: CaTile, CloseIcon: CaCloseIcon, SERIF: CA_SERIF };
+
+export const CaAnsweredTurn = ({ q, a }: { q: string; a?: string | null }) => (
+  <div className="mb-7">
+    <div className="flex items-start gap-3">
+      <img src="/mock/eva.png" alt="" className="mt-0.5 h-7 w-7 flex-shrink-0 rounded-full bg-[#54A79A]/10 object-cover" />
+      <p className="text-[#6B7280]" style={{ ...CA_SERIF, fontSize: 16, lineHeight: 1.5 }}>{q}</p>
+    </div>
+    {a && (
+      <div className="mt-3 flex justify-end">
+        <div className="max-w-[80%] rounded-2xl rounded-br-md bg-[#128F8B] px-4 py-2.5 text-white" style={{ fontSize: 15, lineHeight: 1.45 }}>
+          {a}
+        </div>
+      </div>
+    )}
+  </div>
+);
+
+/* conversation.tsx PrimaryButton: teal, grey while disabled */
+export const CaPrimaryButton = ({ children, disabled = false, style }: { children: React.ReactNode; disabled?: boolean; style?: React.CSSProperties }) => (
+  <span
+    className={`inline-flex items-center justify-center gap-2 rounded-xl px-10 py-3 transition-colors ${disabled ? "bg-[#E5E7EB] text-[#9CA3AF]" : "bg-[#128F8B] text-white"}`}
+    style={{ fontSize: 15, fontWeight: 600, ...style }}
+  >
+    {children}
+  </span>
+);
+export const CaQuietButton = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
+  <span className="px-4 py-3 text-[#6B7280]" style={{ fontSize: 15, fontWeight: 500, ...style }}>
+    {children}
+  </span>
+);
+
+const CA_WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const CA_BRAND = "#128F8B";
+
+/* MonthCalendar.tsx MonthCalendar: the days with open times tinted teal, the
+   chosen one filled. `month` is { y, m } with m from 1 */
+export const CaMonthCalendar = ({ month, open, selected }: { month: { y: number; m: number }; open: string[]; selected: string | null }) => {
+  const { y, m } = month;
+  const startWeekday = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const label = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
+  const cells: (string | null)[] = [];
+  for (let i = 0; i < startWeekday; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
+  return (
+    <div className="mt-2">
+      <div className="flex items-center justify-between">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 opacity-25">
+          <CaChevronLeftIcon className="h-4 w-4" />
+        </span>
+        <span className="text-[14px] font-semibold text-gray-800">{label}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 opacity-25">
+          <CaChevronLeftIcon className="h-4 w-4 rotate-180" />
+        </span>
+      </div>
+      <div className="mt-3 grid grid-cols-7 gap-1">
+        {CA_WEEKDAYS.map((w) => (
+          <div key={w} className="text-center text-[11px] font-medium text-gray-400">{w}</div>
+        ))}
+        {cells.map((ds, i) => {
+          if (!ds) return <div key={`b${i}`} />;
+          const avail = open.includes(ds);
+          const on = ds === selected;
+          return (
+            <span
+              key={ds}
+              className={`flex h-9 w-9 items-center justify-center justify-self-center rounded-full text-[13px] font-medium transition-colors ${avail ? "" : "text-gray-300"}`}
+              style={on ? { backgroundColor: CA_BRAND, color: "#fff" } : avail ? { backgroundColor: "#128F8B14", color: CA_BRAND } : undefined}
+            >
+              {Number(ds.slice(8))}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* MonthCalendar.tsx SlotList, variant "pills": the day, its times as round
+   buttons (one column beside the grid, two on a phone), the zone note */
+export const CaSlotList = ({ heading, slots, selected, compact = false, pressed, note }: { heading: string; slots: string[]; selected: string | null; compact?: boolean; pressed?: string | null; note?: string }) => (
+  <div className={compact ? "" : "flex min-h-0 flex-1 flex-col"}>
+    <p className="text-[14px] font-semibold text-gray-800">{heading}</p>
+    <div className={`mt-3 grid content-start gap-2 ${compact ? "grid-cols-2" : "grid-cols-1"}`}>
+      {slots.map((s) => {
+        const on = s === selected;
+        return (
+          <span
+            key={s}
+            className={`rounded-full border py-2 text-center text-[13px] font-medium transition-colors ${on ? "" : "border-gray-200 text-gray-800"}`}
+            style={{
+              ...(on ? { backgroundColor: CA_BRAND, borderColor: CA_BRAND, color: "#fff" } : {}),
+              transform: pressed === s ? "scale(0.96)" : "scale(1)",
+              boxShadow: pressed === s ? "0 0 0 6px rgba(48,158,150,0.22)" : "0 0 0 0 rgba(48,158,150,0)",
+              transition: "transform 180ms cubic-bezier(0.23,1,0.32,1), box-shadow 340ms ease, background-color 160ms ease, color 160ms ease",
+            }}
+          >
+            {s}
+          </span>
+        );
+      })}
+    </div>
+    {note && <p className="mt-3 text-[12px] text-gray-400">{note}</p>}
+  </div>
+);
+
+/* Daniel's Estate Plan tab under the check-in's scrim (ChatSheet: fixed
+   inset-0, bg-black/50, the sheet centred), with whatever sheet is passed */
+export const CheckInOver = ({ sheet, height = 900 }: { sheet: React.ReactNode; height?: number }) => (
+  <ClientFrame
+    active="estate-plan"
+    person={DANIEL}
+    height={height}
+    overlay={<div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/50 px-4 py-6">{sheet}</div>}
+  >
+    <CaEstatePlanPage firmOpen />
+  </ClientFrame>
+);
