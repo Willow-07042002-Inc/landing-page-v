@@ -138,21 +138,31 @@ export const PageHero = ({
   secondary,
   visual,
   visualAspect = "900 / 560",
+  ground = "#F8FAFC",
+  wide = false,
 }: {
-  eyebrow: React.ReactNode;
+  /** A wider headline measure (max-w-5xl), for the home page's rotating
+      phrases, so its longest fits one line on desktop. */
+  wide?: boolean;
+  /** The small label above the headline; the home page has none. */
+  eyebrow?: React.ReactNode;
   title: React.ReactNode;
   accent?: string;
   subtitle: string;
   secondary?: { label: string; to: string };
   visual?: React.ReactNode;
   visualAspect?: string;
+  /** The section's ground: the page's own, so no seam shows under it. */
+  ground?: string;
 }) => (
-  <section className="bg-[#F8FAFC] pb-16 pt-14 md:pb-24 md:pt-20">
+  <section className="pb-16 pt-14 md:pb-24 md:pt-20" style={{ background: ground }}>
     <div className={`${WRAP} enter flex flex-col items-center text-center`}>
-      <div className="mb-5">
-        <Eyebrow>{eyebrow}</Eyebrow>
-      </div>
-      <h1 className="mb-5 max-w-4xl font-heading text-[2rem] font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+      {eyebrow && (
+        <div className="mb-5">
+          <Eyebrow>{eyebrow}</Eyebrow>
+        </div>
+      )}
+      <h1 className={`mb-5 ${wide ? "max-w-5xl" : "max-w-4xl"} font-heading text-[2rem] font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]`} style={{ lineHeight: 1.2, textWrap: "balance" }}>
         {typeof title === "string" ? <TwoTone lead={title} accent={accent} italic /> : title}
       </h1>
       <p className="mb-8 max-w-2xl text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em", textWrap: "balance" }}>

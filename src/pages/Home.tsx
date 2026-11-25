@@ -17,20 +17,23 @@ import {
 } from "@/components/ProductVignettes";
 
 import { ScaledScreen } from "@/components/product/kit";
+import { PageHero, PrintFrame } from "@/components/site/blocks";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 
 // Rotating phrases for the hero, as on willow-inc.com ("their plan" singular,
-// and "never lose" / "a document." on two lines, at Aaron's word, Nov 17). The
-// stem commands the attorney ("Ensure your clients…"), so every phrase is an
-// outcome they guarantee by using Willow.
+// at Aaron's word, Nov 17). The stem commands the attorney ("Ensure your
+// clients…"), so every phrase is an outcome they guarantee by using Willow.
+// In the centred hero (Nov 25) every phrase is one line on desktop, so
+// "never lose a document." no longer breaks after "lose": a two-line phrase
+// would leave an empty line under all the others.
 // Every phrase sits in the same grid cell, so the headline is always as tall
 // as its longest phrase at the current width and never jumps as they change.
 const HERO_PHRASES = [
   "actually understand their\u00A0plan.",
   "can sign from anywhere.",
-  "never lose\na document.",
+  "never lose a\u00A0document.",
   "keep executors and guardians prepared.",
   "keep coming back to\u00A0you.",
 ]
@@ -77,29 +80,24 @@ const HeroRotator = () => {
   );
 };
 
-/* One product shot under the hero, matted in a print the way harvey.ai frames
-   its hero screenshot. Harvey's frame is 1376×750 at 1440 (radius 4px, 8px
-   from 1025px) and its screen window sits centred with an even mat, 83% of the
-   frame's width; the window shows 1440×775 of the 1440×855 canvas.
-   The screen is the attorney's Clients page, recreated from the product code,
-   with Daniel Rosen's panel open beside the dimmed list, as it is after
-   clicking a client in the product. On a phone the window is shifted so the
-   panel and the list both show. */
+/* One product shot under the hero, in the same print as the For attorneys and
+   For clients heroes (PrintFrame: the screen's own proportions, an even 4%
+   mat), so the three pages open alike (Aaron, Nov 25). The screen is the
+   attorney's Clients page, recreated from the product code, with Daniel
+   Rosen's panel open beside the dimmed list, as it is after clicking a client
+   in the product. */
 const HeroShot = () => (
-  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[4px] md:aspect-[1376/750] min-[1025px]:rounded-[8px]">
-    <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-    <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+  <PrintFrame print="/golden-gate.jpg" aspect="1440 / 855" className="shadow-2xl">
     <div
       role="img"
       aria-label="The Willow Clients page: clients and couples with joint accounts, and one client's estate plan documents open beside the list."
-      className="absolute left-[-25%] top-[7%] w-[170%] overflow-hidden rounded-lg bg-[#F0F2F5] [aspect-ratio:1440/855] md:left-[8.43%] md:top-[8.93%] md:w-[83.14%] md:[aspect-ratio:1440/775]"
-      style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
+      className="absolute inset-0 bg-[#F0F2F5]"
     >
       <ScaledScreen>
         <AttorneyClientsScreen open />
       </ScaledScreen>
     </div>
-  </div>
+  </PrintFrame>
 );
 
 /* Two doors, as on harvey.ai: hovering a card widens it to a 1.4 share of the
@@ -573,41 +571,33 @@ const Home = () => {
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
 
-      {/* Hero, on harvey.ai's grid (.hv-* in index.css): the headline on the
-          left half; from 1025px the sentence and the one button sit in the
-          right half with their bottom on the headline's last line. */}
-      <section className="w-full bg-[#FCFCFD] pt-[calc(72px+env(safe-area-inset-top)+var(--hv-lg))]">
-        <div className="hv-wrap hv-grid">
-          <div className="hv-content enter">
-            <h1 className="hv-h1 col-span-full font-heading font-light text-[#222222] min-[1025px]:col-span-3 min-[1445px]:col-span-6">
+      {/* Hero, as on For attorneys and For clients: the headline, sentence
+          and button centred, then the product in its print at the same width,
+          with no label above the headline (Aaron, Nov 25). pt-16 clears the
+          fixed header, as PageShell's main does on the other pages. */}
+      <div className="pt-16">
+        <PageHero
+          ground="#FCFCFD"
+          wide
+          title={
+            <>
               <span className="block">Ensure your clients</span>
               <HeroRotator />
-            </h1>
-            <div className="col-span-full mt-[var(--hv-md)] flex flex-col items-start gap-[var(--hv-lg)] min-[1025px]:col-span-3 min-[1025px]:col-start-4 min-[1025px]:mb-[var(--hv-xs)] min-[1025px]:mt-0 min-[1025px]:gap-[var(--hv-md)] min-[1025px]:self-end min-[1445px]:col-span-4 min-[1445px]:col-start-7">
-              <p className="hv-body-1 max-w-[560px] text-gray-600 min-[1025px]:max-w-none" style={{ textWrap: "pretty" }}>
-                Modernize your practice with our all-in-one platform purpose-built for estate planning attorneys and the clients they serve.
-              </p>
-              <Link
-                to="/request-access"
-                className="press inline-flex h-12 w-max items-center justify-center rounded-[4px] bg-[#128F8B] px-5 text-[15px] font-medium text-white transition-colors duration-300 hover:bg-[#0C7370]"
-                style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
-                data-hero-demo-button
-              >
-                Request a demo
-              </Link>
-            </div>
-          </div>
-        </div>
-        <div className="hv-wrap mt-14 md:mt-20 min-[1025px]:mt-[120px]">
-          <HeroShot />
-        </div>
-      </section>
+            </>
+          }
+          subtitle="Modernize your practice with our all-in-one platform purpose-built for estate planning attorneys and the clients they serve."
+          visualAspect="1440 / 855"
+          visual={<HeroShot />}
+        />
+      </div>
 
       {/* As seen in, set as on the live site (small tracked label, the same
           logo sizes), with equal space above and below so it sits centred
-          between the product shot and the cards. Yahoo Finance as on the
-          live site, and the two linked articles. */}
-      <section className="bg-[#FCFCFD] py-12 md:py-14 min-[1025px]:py-[72px]">
+          between the product shot and the cards: the space above is the
+          hero's own bottom padding (pb-16, md:pb-24), so this matches it
+          below. Yahoo Finance as on the live site, and the two linked
+          articles. */}
+      <section className="bg-[#FCFCFD] pb-16 md:pb-24">
         <div className="hv-wrap">
           <div className="flex flex-col items-center justify-center gap-5">
             <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">As seen in</h2>
