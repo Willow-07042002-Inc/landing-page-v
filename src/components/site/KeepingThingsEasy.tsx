@@ -17,17 +17,17 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
     id: "set-up",
     also: ["signed-plan", "dashboard"],
     title: "Automate account creation",
-    body: "Willow reads the documents, files each one under the right person, and pulls their email, phone and address, so there’s nothing to retype.",
+    body: "Drop in a signed plan, and Willow sets up your client’s account for you, so there’s nothing to retype.",
   },
   {
     id: "plan-summaries",
     title: "AI-generated summaries",
-    body: "Willow drafts a plain-English summary of the plan. You review and approve it, and clients see nothing until you do.",
+    body: "Willow drafts a plain-English summary of every plan, and clients only see it once you’ve approved it.",
   },
   {
     id: "reaching-out",
     title: "Check-ins that send themselves",
-    body: "Write the check-in once. Willow gives every client their own date and sends it when it’s due, every year.",
+    body: "Write your check-in once, and Willow sends it to every client on their own date, year after year.",
   },
 ];
 

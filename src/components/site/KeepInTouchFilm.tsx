@@ -265,7 +265,7 @@ const CheckInMonth = ({ chips, compact }: { chips: number; compact: boolean }) =
             <div
               key={i}
               className={`min-w-0 border-b border-[#F0F1F3] ${i % 7 === 6 ? "" : "border-r"} ${compact ? "px-1 pt-1" : "px-1.5 pt-1.5"}`}
-              style={{ height: rowH, background: i % 7 === 0 || i % 7 === 6 ? "#FAFAFB" : "#FFFFFF" }}
+              style={{ height: rowH, background: "#FFFFFF" }}
             >
               {d >= 1 && d <= MONTH.days && <span className="block text-[12px] font-medium text-[#6B7280]">{d}</span>}
               {at >= 0 && (
