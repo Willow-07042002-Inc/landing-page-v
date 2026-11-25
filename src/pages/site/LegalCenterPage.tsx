@@ -109,6 +109,11 @@ const LegalCenterPage = () => {
               </div>
             </div>
           ))}
+          {/* Carried over from the live /terms index (main, Nov 25), so the
+              Legal center says everything that page did */}
+          <p className="text-[14px] leading-relaxed text-gray-500 lg:ml-[calc(33.333%+2.75rem)]">
+            Each document here is the current version. Earlier versions are available on request.
+          </p>
         </div>
       </section>
     </PageShell>
