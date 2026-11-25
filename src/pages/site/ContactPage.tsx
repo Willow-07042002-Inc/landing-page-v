@@ -1,19 +1,24 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { PageShell, WRAP, Eyebrow, usePageMeta, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
-import { DEMO_PATH } from "@/content/siteMap";
+import { PageShell, usePageMeta } from "@/components/site/blocks";
+import { ScaledScreen } from "@/components/product/kit";
+import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { supabase } from "@/lib/supabase";
 import { CONTACT_FORM_TYPE } from "@/lib/founding100";
 
-/* Contact (Aaron, Nov 25): one short form, name, email and a message, in
-   place of the mailto the menus used to open. It saves to form_submissions
-   under its own form_type, which the nightly lead digest includes, so a
-   message reaches the team's inbox. No support address on the page (Aaron,
-   Nov 25: on a marketing page it reads as a support queue). As with the
-   other site forms, no thank-you over a message that failed to save. */
+/* Contact (Aaron, Nov 25), set out like the New York State Bar page: the
+   heading and a short form on the left; on the right the city print, and
+   in place of that page's white offer card, the attorney dashboard rising
+   in from the print's right edge. Just a name, an email and a message. It
+   saves to form_submissions under its own form_type, which the nightly lead
+   digest includes, so every message reaches the team's inbox. No support
+   address on the page (Aaron, Nov 25). As with the other site forms, no
+   thank-you over a message that failed to save. */
 
-const FIELD = "w-full border-b border-[#D4DAE0] bg-transparent pb-2 text-[16px] text-[#222222] transition-colors focus:border-[#128F8B] focus:outline-none";
+const GLOW = "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)";
 
+/* The partner pages' line-based field: the same underline, 16px text (iOS
+   Safari zooms in on anything smaller) and teal focus */
+const FIELD = "w-full border-b border-[#D4DAE0] bg-transparent pb-2 text-[16px] text-[#222222] placeholder:text-gray-300 transition-colors focus:border-[#128F8B] focus:outline-none";
 const Label = ({ children }: { children: React.ReactNode }) => (
   <span className="mb-1.5 block text-[13px] font-medium text-gray-500">{children}</span>
 );
@@ -48,64 +53,77 @@ const ContactPage = () => {
 
   return (
     <PageShell>
-      <section className="pb-24 pt-14 md:pb-32 md:pt-20">
-        <div className={`${WRAP} enter max-w-2xl`}>
-          <div className="text-center">
-            <Eyebrow>Contact</Eyebrow>
-            <h1 className="mt-5 font-heading text-[2rem] font-light text-[#222222] sm:text-4xl md:text-5xl" style={{ lineHeight: 1.2, textWrap: "balance" }}>
-              Talk to our team
-            </h1>
-            <p className={`mx-auto mt-5 max-w-lg ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
-              Send us a note and we&rsquo;ll get back to you.
-            </p>
-          </div>
+      <div className="overflow-x-clip pb-24 pt-12 md:pb-32 md:pt-16">
+        <div className="container mx-auto max-w-7xl px-5 md:px-8">
+          <div className="grid gap-14 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
+            {/* The form, left on desktop */}
+            <section className="enter mx-auto w-full max-w-[520px] text-center lg:mx-0 lg:max-w-none lg:text-left">
+              <h1 className="font-heading text-[2rem] font-light text-[#222222] sm:text-[2.5rem] lg:text-[2.25rem]" style={{ lineHeight: 1.15, letterSpacing: "-0.01em", textWrap: "balance" }}>
+                Contact us
+              </h1>
+              <p className="mx-auto mt-4 max-w-md text-[16px] text-gray-500 md:text-[17px] lg:mx-0 lg:max-w-none" style={{ lineHeight: 1.6, textWrap: "balance" }}>
+                Feel free to reach out, or send us a note here.
+              </p>
 
-          <div className="mt-10 rounded-2xl bg-white p-6 sm:p-10" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.08)" }}>
-            {status === "done" ? (
-              <div className="py-6 text-center" role="status">
-                <div className="font-heading text-[1.625rem] font-light text-[#222222]">Thank you.</div>
-                <p className="mx-auto mt-3 max-w-sm text-[15px] leading-relaxed text-gray-600">
-                  We&rsquo;ve got your message and will be in touch soon.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={submit} className="space-y-7">
-                <label className="block">
-                  <Label>Name</Label>
-                  <input required autoComplete="name" value={form.name} onChange={set("name")} className={FIELD} />
-                </label>
-                <label className="block">
-                  <Label>Email</Label>
-                  <input required type="email" autoComplete="email" value={form.email} onChange={set("email")} className={FIELD} />
-                </label>
-                <label className="block">
-                  <Label>Message</Label>
-                  <textarea required rows={4} value={form.message} onChange={set("message")} className={`${FIELD} resize-none`} />
-                </label>
-                {error && (
-                  <p role="alert" className="text-[14px] text-red-600">
-                    {error}
+              {status === "done" ? (
+                <div className="mt-10 border-t border-gray-200 pt-10" role="status">
+                  <h2 className="font-heading text-2xl font-light text-[#222222]">Thank you.</h2>
+                  <p className="mx-auto mt-3 max-w-sm text-[15px] text-gray-500 lg:mx-0" style={{ lineHeight: 1.6 }}>
+                    We&rsquo;ve got your message and will be in touch soon.
                   </p>
-                )}
-                <button
-                  type="submit"
-                  disabled={status === "sending"}
-                  className="press inline-flex h-11 w-full items-center justify-center rounded-md bg-[#128F8B] px-6 text-[15px] font-medium text-white hover:bg-[#0C7370] disabled:opacity-60"
-                >
-                  {status === "sending" ? "Sending…" : "Send message"}
-                </button>
-              </form>
-            )}
-          </div>
+                </div>
+              ) : (
+                <form onSubmit={submit} className="mt-9 space-y-6 text-left">
+                  <label className="block">
+                    <Label>Name</Label>
+                    <input required autoComplete="name" placeholder="Jane Whitfield" value={form.name} onChange={set("name")} className={FIELD} />
+                  </label>
+                  <label className="block">
+                    <Label>Email</Label>
+                    <input required type="email" inputMode="email" autoComplete="email" placeholder="jane@whitfieldlaw.com" value={form.email} onChange={set("email")} className={FIELD} />
+                  </label>
+                  <label className="block">
+                    <Label>Message</Label>
+                    <textarea required rows={4} placeholder="How can we help?" value={form.message} onChange={set("message")} className={`${FIELD} resize-none`} />
+                  </label>
+                  {error && (
+                    <p role="alert" className="text-[14px] text-[#B4342E]">
+                      {error}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={status === "sending"}
+                    className="press inline-flex h-12 w-full items-center justify-center rounded-md bg-[#128F8B] px-6 text-[15px] font-medium text-white hover:bg-[#0C7370] disabled:opacity-60"
+                    style={{ boxShadow: GLOW }}
+                  >
+                    {status === "sending" ? "Sending…" : "Send message"}
+                  </button>
+                </form>
+              )}
+            </section>
 
-          <p className="mt-8 text-center text-[15px] text-gray-500">
-            Want to see Willow with your own practice?{" "}
-            <Link to={DEMO_PATH} className="font-medium text-[#0C7370] underline decoration-[#0C7370]/30 underline-offset-2 hover:decoration-[#0C7370]">
-              Request a demo
-            </Link>
-          </p>
+            {/* The print, with the attorney dashboard rising in from its
+                right edge. Stacked (phones, tablets): it runs edge to edge,
+                as the bar pages' print does. */}
+            <section
+              aria-hidden
+              className="relative mx-[calc(50%-50vw)] h-[340px] w-screen overflow-hidden sm:h-[420px] lg:mx-0 lg:h-[560px] lg:w-auto lg:rounded-3xl"
+            >
+              <img src="/central-park.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
+              <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.15)" }} />
+              <div
+                className="absolute -bottom-12 -right-12 left-[20%] top-[22%] overflow-hidden rounded-tl-xl bg-white"
+                style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.3)" }}
+              >
+                <ScaledScreen>
+                  <AttorneyDashboardScreen />
+                </ScaledScreen>
+              </div>
+            </section>
+          </div>
         </div>
-      </section>
+      </div>
     </PageShell>
   );
 };
