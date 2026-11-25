@@ -35,7 +35,6 @@ import NewYorkStateBar from "./pages/NewYorkStateBar";
 import WhereWereLive from "./pages/WhereWereLive";
 import ZoomGuide from "./pages/ZoomGuide";
 import TemplatePage from "./pages/site/TemplatePage";
-import SecurityPage from "./pages/site/SecurityPage";
 import AboutPage from "./pages/site/AboutPage";
 import LegalCenterPage from "./pages/site/LegalCenterPage";
 import AttorneysPage from "./pages/site/AttorneysPage";
@@ -75,7 +74,6 @@ const App = () => (
           <Route path="/solutions/executors-trustees" element={<Navigate to="/solutions/their-team#executors-trustees" replace />} />
           <Route path="/solutions/guardians" element={<Navigate to="/solutions/their-team#guardians" replace />} />
           <Route path="/solutions/agents" element={<Navigate to="/solutions/their-team#agents" replace />} />
-          <Route path="/security" element={<SecurityPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/legal" element={<LegalCenterPage />} />
           <Route path="/news" element={<NewsPage />} />
@@ -106,7 +104,8 @@ const App = () => (
             ["/solutions/trusts", "/platform/plan-summaries"],
             ["/solutions/powers-of-attorney", "/platform/plan-summaries"],
             ["/solutions/guardianship", "/platform/plan-summaries"],
-            ["/trust", "/security"],
+            ["/trust", "/platform"],
+            ["/security", "/platform"],
             ["/company", "/about"],
             ["/about-us", "/about"],
             ["/member-agreement", "/member-terms"],

@@ -422,56 +422,6 @@ export const LinkCards = ({
   </section>
 );
 
-/* ── The dark print card (the homepage's client band) ── */
-const DarkPrintCard = ({ image, children, right }: { image: string; children: React.ReactNode; right?: React.ReactNode }) => (
-  <div className="relative overflow-hidden rounded-3xl">
-    <img src={image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
-    <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
-    <div className={`relative z-10 grid ${right ? "md:grid-cols-[1fr_1.15fr]" : ""}`}>
-      <div className={`p-8 md:p-14 lg:p-16 ${right ? "md:pr-4" : ""}`}>{children}</div>
-      {right}
-    </div>
-  </div>
-);
-
-/* ── Security: the four commitments on the dark print card ── */
-export const SECURITY_POINTS = [
-  { title: "A code at every sign-in", body: "Attorneys and clients confirm each sign-in with a one-time code sent to their email." },
-  { title: "Access the client controls", body: "Only the people a client names can see their documents, and only when the client says so." },
-  { title: "No training on client documents", body: "Client documents are never used to train AI models, and AI processing stays in the United States." },
-  { title: "Every release on record", body: "Each view, download, share and release is logged, and the record is kept for seven years." },
-];
-
-export const SecurityBand = () => (
-  <section className="bg-[#F8FAFC] py-12 md:py-16">
-    <div className={WRAP}>
-      <DarkPrintCard image="/nyc-street.jpg">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
-          <div>
-            <Eyebrow light>Security</Eyebrow>
-            <h2 className={`mt-3 ${H2_CLS} text-white`} style={H2_STYLE}>
-              Built for the most private documents a family has.
-            </h2>
-            <div className="mt-8">
-              <SecondaryButton to="/security" light>
-                How we protect client information
-              </SecondaryButton>
-            </div>
-          </div>
-          <div className="grid gap-x-10 gap-y-7 sm:grid-cols-2">
-            {SECURITY_POINTS.map((p) => (
-              <div key={p.title} className="border-t border-white/25 pt-4">
-                <h3 className={`${H3_CLS} text-white`} style={H3_STYLE}>{p.title}</h3>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-white/80">{p.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </DarkPrintCard>
-    </div>
-  </section>
-);
-
 /* ── A single pulled statement, centered, light serif ── */
 export const Statement = ({ children, by }: { children: React.ReactNode; by?: string }) => (
   <section className="bg-white py-16 md:py-24">

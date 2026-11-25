@@ -59,7 +59,6 @@ export type PageDef = {
   statement?: { text: string; by?: string };
   faq?: { q: string; a: string }[];
   related: string[];
-  security?: boolean;
   closing?: { title: string; body: string };
 };
 
@@ -74,7 +73,6 @@ export const CARDS: Record<string, { label: string; desc: string; image: string;
   "/for-clients": { label: "Overview", desc: "A plan the whole family understands.", image: "/west-side-hwy.jpg", eyebrow: "For clients & their team" },
   "/platform/sharing": { label: "Sharing & release", desc: "Share now, or hold back until a passing is verified.", image: "/willow-street.jpg", eyebrow: "For clients & their team" },
   "/solutions/their-team": { label: "Their team", desc: "Executors, trustees, guardians and agents, each with their own view.", image: "/hudson-bridge.jpg", eyebrow: "For clients & their team" },
-  "/security": { label: "Security", desc: "How client information is protected, and who can see it.", image: "/williamsburg.jpg", eyebrow: "Trust" },
   "/legislation-by-state": { label: "Legislation by state", desc: "Where electronic wills and remote signing stand, state by state.", image: "/nyc-skyline.jpg", eyebrow: "Resource" },
   "/availability": { label: "Where we're live", desc: "Every state Willow serves today, and where signing is coming.", image: "/florida-coast.jpg", eyebrow: "Resource" },
 };
@@ -223,7 +221,6 @@ export const PAGES: PageDef[] = [
       { q: "Can a client change their mind?", a: "Yes. Your client can change who has each document, and when, from their Shared tab at any time." },
     ],
     related: ["/for-clients", "/solutions/their-team", "/platform/plan-summaries"],
-    security: true,
   },
   {
     path: "/solutions/their-team",

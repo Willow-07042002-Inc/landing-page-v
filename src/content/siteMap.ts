@@ -90,7 +90,6 @@ export const NAV: NavMenu[] = [
     columns: PLATFORM_COLUMNS,
     feature: USA_TODAY_FEATURE,
   },
-  { label: "Security", to: "/security" },
   {
     label: "Resources",
     columns: RESOURCE_COLUMNS,
@@ -126,7 +125,6 @@ export const FOOTER_COLUMNS: NavColumn[] = [
       { label: "About", to: "/about" },
       { label: "Where we're live", to: "/availability" },
       { label: "Careers", to: "/careers" },
-      { label: "Security", to: "/security" },
       { label: "Contact", href: `mailto:${SUPPORT_EMAIL}` },
       { label: "Legal center", to: "/legal" },
       { label: "Privacy Policy", to: "/privacy" },

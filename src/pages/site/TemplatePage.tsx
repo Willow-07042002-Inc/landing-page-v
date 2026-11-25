@@ -9,7 +9,6 @@ import {
   Steps,
   Faq,
   LinkCards,
-  SecurityBand,
   Statement,
   usePageMeta,
 } from "@/components/site/blocks";
@@ -18,7 +17,7 @@ import { CARDS, pageByPath } from "@/content/pages";
 /* Renders any platform or solutions page from its definition in
    src/content/pages.tsx, in the homepage's order and clothes: the hero and
    the product, three points, how it works, the product in depth, a
-   statement, FAQ, security, related pages, the dark closing card, quotes. */
+   statement, FAQ, related pages, quotes. */
 
 /* Section titles take their second phrase in teal, the way the For Clients
    page sets "Countless pages, / one simple summary." */
@@ -86,7 +85,6 @@ const TemplatePage = () => {
       {def.rows && <FeatureRows eyebrow={def.rowsEyebrow} title={rows.title} accent={rows.accent} lead={def.rowsLead} rows={def.rows} />}
       {def.statement && <Statement by={def.statement.by}>{def.statement.text}</Statement>}
       {def.faq && <Faq items={def.faq} />}
-      {def.security && <SecurityBand />}
       {related.length > 0 && (
         <LinkCards eyebrow={side.label} title={path === side.to ? "Everything here," : side.more} accent={path === side.to ? "page by page." : undefined} cards={related} />
       )}
