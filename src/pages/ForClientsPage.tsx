@@ -142,7 +142,7 @@ const ChapterCarousel = () => {
 const CLIENT_FAQ = [
   {
     q: "Who can see a client’s plan?",
-    a: "Your client and your firm. Nobody else sees anything until your client shares it, and they decide who gets each document and when.",
+    a: "Your client and your firm. Nobody else sees anything until your client shares it.",
   },
   {
     q: "Do the people my clients share with have to pay?",
