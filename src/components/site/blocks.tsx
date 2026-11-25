@@ -327,10 +327,25 @@ export const Steps = ({ eyebrow, title, accent, steps }: { eyebrow?: string; tit
 );
 
 /* ── FAQ: the homepage's — lines, not boxes; questions left, heading right ── */
-export const Faq = ({ title = "Common questions", items }: { title?: string; items: { q: string; a: string }[] }) => {
+export const Faq = ({
+  title = "Common questions",
+  items,
+  blurb = "Still can't find what you're looking for? We're happy to walk through anything specific to your practice or your state.",
+  action = <PrimaryButton>Let's get started</PrimaryButton>,
+  sectionClass = "bg-[#FCFCFD] py-16 md:py-20",
+}: {
+  title?: string;
+  items: { q: string; a: string }[];
+  /** The line under the heading */
+  blurb?: React.ReactNode;
+  /** The button under it; null for none */
+  action?: React.ReactNode;
+  /** The section's ground and padding */
+  sectionClass?: string;
+}) => {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="bg-[#FCFCFD] py-16 md:py-20">
+    <section className={sectionClass}>
       <div className={`${WRAP} max-w-6xl lg:px-12`}>
         <div className="flex flex-col gap-10 md:flex-row md:gap-16">
           <div className="order-2 md:order-1 md:w-3/5">
@@ -365,11 +380,9 @@ export const Faq = ({ title = "Common questions", items }: { title?: string; ite
               {title}
             </h2>
             <p className={`mt-5 max-w-sm ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
-              Still can't find what you're looking for? We're happy to walk through anything specific to your practice or your state.
+              {blurb}
             </p>
-            <div className="mt-6">
-              <PrimaryButton>Let's get started</PrimaryButton>
-            </div>
+            {action && <div className="mt-6">{action}</div>}
           </div>
         </div>
       </div>

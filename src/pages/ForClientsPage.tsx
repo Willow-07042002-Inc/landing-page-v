@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
-import { PageShell, PageHero, PrintFrame, SecondaryButton, WRAP, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
-import { CLIENT_LOGIN } from "@/content/siteMap";
+import { PageShell, PageHero, PrintFrame, Faq, WRAP, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
+import { SUPPORT_EMAIL } from "@/content/siteMap";
+import ReachOutButton from "@/components/site/AttorneyReferral";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import { ChapterFilmSection } from "@/components/site/StayingAhead";
 import PrepareFilm, { PREPARE_CHAPTERS } from "@/components/site/PrepareFilm";
@@ -133,38 +134,68 @@ const ChapterCarousel = () => {
   );
 };
 
-/* ── The page's close, for the client reading it (Aaron, Nov 25): Willow
-      comes through their attorney, so the ask is to bring it up with them,
-      by an email they write themselves, or to sign in if they already have
-      it. Set like the home page's founder note: the light print fills the
-      rounded box and a white card floats over it. The attorney's demo ask is
-      the footer's top line, just below. ── */
-const ATTORNEY_EMAIL = `mailto:?subject=${encodeURIComponent("Willow for my estate plan")}&body=${encodeURIComponent(
-  "Hi,\n\nI came across Willow, which keeps an estate plan, and the attorney who wrote it, in one place for the whole family: https://www.willow-inc.com/for-clients\n\nIs it something you offer, or could set up for my plan?\n\nThank you,"
-)}`;
+/* ── Questions a client asks before asking for Willow (Aaron, Nov 25). The
+      answers restate what the page and the product already say; the one
+      new fact, that the people a client names don't pay, is Aaron's. Kept
+      plain so "at any time" never reads as "before you've released it". ── */
+const CLIENT_FAQ = [
+  {
+    q: "Who can see my plan?",
+    a: "You and your attorney. Nobody else sees anything until you share it, and you decide who gets each document and when.",
+  },
+  {
+    q: "Do the people I share with have to pay?",
+    a: "No. It’s part of your plan. Everyone you name gets their own account at no cost, and sees what you’ve shared with them.",
+  },
+  {
+    q: "Can I keep my will private until I pass?",
+    a: "Yes. Share some things now and hold others back. Your will stays sealed until your attorney verifies your passing; until then, the people you’ve named see only that something is waiting for them.",
+  },
+  {
+    q: "Can I change who has access later?",
+    a: "Yes, at any time. Add or remove people and change what each one has. When your plan is updated, Willow suggests what to change in what you’ve already shared, and you approve it.",
+  },
+  {
+    q: "Who writes the plain-English summary?",
+    a: "Willow drafts it from your signed documents, and your attorney reviews and approves it before you see a word.",
+  },
+  {
+    q: "Does Willow give legal advice?",
+    a: "No. Your attorney advises you and drafts your documents. Willow keeps them safe, explains them once your attorney has approved the wording, and keeps you in touch with your attorney.",
+  },
+  {
+    q: "Is my information used to train AI?",
+    a: "Never. Your documents are read only to draft the summary your attorney reviews, and that processing stays in the United States.",
+  },
+  {
+    q: "How do I get Willow?",
+    a: "Through your estate planning attorney. If yours doesn’t offer it yet, tell us who they are below and we’ll reach out to them.",
+  },
+];
 
+/* ── The page's close, for the client reading it (Aaron, Nov 25): Willow
+      comes through their attorney, so Willow offers to reach out to them.
+      The button opens a small window asking only for the attorney's name
+      and email (AttorneyReferral.tsx). Set like the home page's founder
+      note, a white card floating over the print, with the print a little
+      darker than the page's other frames so the card stands off it. The
+      attorney's demo ask is the footer's top line, just below. ── */
 const ClientAsk = () => (
   <section className="bg-[#F8FAFC] pb-16 md:pb-24">
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
       <div className="relative overflow-hidden rounded-3xl">
         <img src="/williamsburg.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
-        <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
+        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.4)" }} />
         <div className="relative z-10 p-5 sm:p-10 md:p-16">
-          <div className="mx-auto max-w-3xl rounded-2xl bg-white px-6 py-10 text-center sm:px-10 md:px-14 md:py-14" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+          <div className="mx-auto max-w-4xl rounded-2xl bg-white px-6 py-10 text-center sm:px-10 md:px-14 md:py-14" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
             <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
-              Want Willow for your plan? <span className={ACCENT_CLS}>Ask your attorney.</span>
+              Want Willow for your plan? <span className={ACCENT_CLS}>We&rsquo;ll reach out to your attorney.</span>
             </h2>
             <p className={`mx-auto mt-5 max-w-xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
-              Willow comes through the attorney who drafted your plan. Send them a note about it, or sign in if you already have Willow.
+              Tell us who drafted your plan, and we&rsquo;ll get in touch with them about Willow.
             </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a
-                href={ATTORNEY_EMAIL}
-                className="press inline-flex h-11 items-center justify-center rounded-md bg-[#128F8B] px-6 text-[15px] font-medium text-white hover:bg-[#0C7370]"
-              >
-                Email your attorney about Willow
-              </a>
-              <SecondaryButton href={CLIENT_LOGIN}>Log in to your plan</SecondaryButton>
+            <div className="mt-8">
+              <ReachOutButton />
             </div>
           </div>
         </div>
@@ -206,7 +237,7 @@ const ForClientsPage = () => {
       {/* The summary — five chapters in a continuous carousel. The one
           centred heading on the page after the hero, between two set left,
           as For attorneys alternates them (Aaron, Nov 25). */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
+      <section className="relative overflow-hidden bg-[#F8FAFC] pb-16 md:pb-24">
         <div className="container relative z-10 mx-auto px-4 md:px-8">
           <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
             <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
@@ -229,7 +260,22 @@ const ForClientsPage = () => {
         label="Preparing the people you've named"
         chapters={PREPARE_CHAPTERS}
         Film={PrepareFilm}
-        sectionClass="bg-[#F8FAFC] py-16 md:py-24"
+        sectionClass="bg-[#F8FAFC] pb-16 md:pb-24"
+      />
+
+      <Faq
+        items={CLIENT_FAQ}
+        blurb={
+          <>
+            Questions about your plan itself are best for your attorney. For anything about Willow, write to us at{" "}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#0C7370] underline decoration-[#0C7370]/30 underline-offset-2 hover:decoration-[#0C7370]">
+              {SUPPORT_EMAIL}
+            </a>
+            .
+          </>
+        }
+        action={null}
+        sectionClass="bg-[#F8FAFC] pb-16 md:pb-24"
       />
 
       <ClientAsk />
