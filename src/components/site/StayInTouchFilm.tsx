@@ -10,7 +10,7 @@ import {
   CaMonthCalendar,
   CaSlotList,
 } from "@/components/product/client-app";
-import { ChevronDownIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
+import { CheckIcon, ChevronDownIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
 
 /* For clients, staying in touch: two tiles set the way For attorneys' Keeping
    things easy sets its three (Aaron, Nov 25, 2026), each with its words above
@@ -31,7 +31,7 @@ import { ChevronDownIcon, NotificationIcon, TrustIcon } from "@/components/produ
       (imagined; see below).
    Buttons press themselves; nothing crosses the screen to click them. */
 
-const { Eva, Tile, SERIF } = CheckInParts;
+const { Eva, SERIF } = CheckInParts;
 
 /* ---- 1. The check-in ----------------------------------------------------- */
 
@@ -46,7 +46,11 @@ const DAY = "Tuesday, Dec 1";
 const SLOTS = ["9:00 AM", "10:00 AM", "11:30 AM", "2:00 PM", "3:30 PM"];
 const TIME = "10:00 AM";
 const BOOKED = `Booked: ${DAY} at ${TIME} EST`;
-const CLOSE = "I’ve sent an invite to your calendar. Is there anything else on your mind before the meeting?";
+/* A closing line rather than the product's question ("Is there anything else
+   on your mind before the meeting?"), so it's plain Willow handled the booking
+   for the firm (Aaron, Nov 25). Booking puts it on Rachel's calendar, as the
+   product's "while Rachel's calendar is updated" line says */
+const CLOSE = "You’re all set. I’ve sent you the invite and put it on Rachel’s calendar.";
 
 /* The beats, in ms from the start */
 const T = {
@@ -80,21 +84,50 @@ const Rise = ({ children, className = "" }: { children: React.ReactNode; classNa
   );
 };
 
+/* An answer to tap: a soft pill that wraps with the others, and once picked
+   it fills teal as its check slides in. Imagined in place of the product's
+   bordered tiles with a dot on the right (conversation.tsx Tile), which read
+   as a form (Aaron, Nov 25) */
+const Choice = ({ label, selected = false, down = false, narrow }: { label: string; selected?: boolean; down?: boolean; narrow: boolean }) => (
+  <span
+    className={`inline-flex items-center whitespace-nowrap rounded-full ${narrow ? "h-[40px] px-4" : "h-[44px] px-[18px]"}`}
+    style={{
+      ...tapStyle(down),
+      background: selected ? "#128F8B" : "#F0F4F4",
+      color: selected ? "#FFFFFF" : "#1F2933",
+      fontSize: narrow ? 14.5 : 15,
+      fontWeight: 500,
+      letterSpacing: "-0.005em",
+      transition: "background-color 220ms ease, color 220ms ease, transform 180ms var(--ease-out), box-shadow 340ms ease",
+    }}
+  >
+    <span className="inline-flex overflow-hidden" style={{ width: selected ? 22 : 0, transition: "width 260ms var(--ease-out)" }}>
+      <CheckIcon
+        className="h-4 w-4 flex-shrink-0"
+        style={{ opacity: selected ? 1 : 0, transform: selected ? "scale(1)" : "scale(0.6)", transition: "opacity 200ms ease 60ms, transform 260ms var(--ease-out) 60ms" }}
+      />
+    </span>
+    {label}
+  </span>
+);
+
 /* The meeting once it's booked, under Eva's last line: a calendar leaf with
-   its day, the date and time beside it, and its details a tap away. No box
-   around it (Aaron, Nov 25). Imagined: the product's conversation ends on
-   Eva's line, with no link to the event */
+   its month on a teal band and its day under it, the date and time beside
+   it, and its details a tap away. No box around it, and no serifs on the
+   date (Aaron, Nov 25).
+   Imagined: the product's conversation ends on Eva's line, with no link to
+   the event */
 const EventCard = () => (
   <div className="ml-[60px] mt-6 flex items-center gap-4">
     <span
-      className="w-[54px] flex-shrink-0 overflow-hidden rounded-xl bg-white text-center"
-      style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.06), 0 6px 18px rgba(15,23,42,0.10)" }}
+      className="w-[52px] flex-shrink-0 overflow-hidden rounded-[13px] bg-white text-center"
+      style={{ boxShadow: "0 0 0 1px rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.08), 0 10px 22px -10px rgba(15,23,42,0.28)" }}
     >
-      <span className="block bg-[#128F8B] py-[3px] text-[10px] font-semibold uppercase tracking-[0.14em] text-white">Dec</span>
-      <span className="block pb-1.5 pt-1 text-[#1F2933]" style={{ ...SERIF, fontSize: 22, fontWeight: 600, lineHeight: 1.25 }}>1</span>
+      <span className="block bg-[#128F8B] py-[4px] text-[10px] font-semibold uppercase leading-[12px] tracking-[0.14em] text-white">Dec</span>
+      <span className="block pb-[9px] pt-[7px] text-[23px] font-medium leading-none text-[#1F2933]" style={{ letterSpacing: "-0.02em" }}>1</span>
     </span>
     <span className="min-w-0 leading-snug">
-      <span className="block text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600 }}>Tuesday, December 1</span>
+      <span className="block font-semibold text-[#1F2933]" style={{ fontSize: 15.5, letterSpacing: "-0.01em" }}>Tuesday, December 1</span>
       <span className="mt-0.5 block text-[#6B7280]" style={{ fontSize: 13.5 }}>{TIME} EST · with Rachel</span>
       <span className="mt-1.5 inline-flex items-center gap-0.5 font-semibold text-[#128F8B]" style={{ fontSize: 13.5 }}>
         See event details
@@ -116,8 +149,9 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
   const timePicked = t >= T.time;
   const showCalendar = t >= T.calendar;
   const booking = t >= T.booking && t < T.booked;
-  const cols = narrow ? "grid-cols-1" : "grid-cols-2";
   const pad = narrow ? "px-6" : "px-12";
+  /* The answers line up under Eva's words; on a phone they take the full width */
+  const indent = narrow ? "" : "pl-[60px]";
 
   useLayoutEffect(() => {
     const box = boxRef.current;
@@ -145,10 +179,10 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
           {phase === "q1" && (
             <div>
               <Eva note="Tap anything that has.">{Q1.q}</Eva>
-              <div className={`${narrow ? "mt-6" : "mt-7"} grid gap-3 ${cols}`}>
-                {Q1.options.map((o) => <Tile key={o} label={o} />)}
+              <div className={`${narrow ? "mt-5" : "mt-6"} flex flex-wrap gap-2.5 ${indent}`}>
+                {Q1.options.map((o) => <Choice key={o} label={o} narrow={narrow} />)}
               </div>
-              <div className={`${narrow ? "mt-6" : "mt-8"} flex flex-wrap items-center gap-x-2 gap-y-1`}>
+              <div className={`${narrow ? "mt-6" : "mt-8"} flex flex-wrap items-center gap-x-2 gap-y-1 ${indent}`}>
                 <CaPrimaryButton disabled>That&rsquo;s right</CaPrimaryButton>
                 <CaQuietButton style={{ ...tapStyle(pressed(t, T.none)), borderRadius: 12, color: pressed(t, T.none) ? "#1F2933" : undefined }}>None of these</CaQuietButton>
               </div>
@@ -160,14 +194,12 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
           {phase === "q2" && (
             <Rise>
               <Eva note="Tap anything that has.">{Q2.q}</Eva>
-              <div className={`${narrow ? "mt-6" : "mt-7"} grid gap-3 ${cols}`}>
+              <div className={`${narrow ? "mt-5" : "mt-6"} flex flex-wrap gap-2.5 ${indent}`}>
                 {Q2.options.map((o) => (
-                  <div key={o} className="rounded-xl" style={o === PICK ? tapStyle(pressed(t, T.pick)) : undefined}>
-                    <Tile label={o} selected={o === PICK && picked} />
-                  </div>
+                  <Choice key={o} label={o} selected={o === PICK && picked} down={o === PICK && pressed(t, T.pick)} narrow={narrow} />
                 ))}
               </div>
-              <div className={`${narrow ? "mt-6" : "mt-8"} flex flex-wrap items-center gap-x-2 gap-y-1`}>
+              <div className={`${narrow ? "mt-6" : "mt-8"} flex flex-wrap items-center gap-x-2 gap-y-1 ${indent}`}>
                 <CaPrimaryButton disabled={!picked} style={tapStyle(pressed(t, T.confirm))}>That&rsquo;s right</CaPrimaryButton>
                 <CaQuietButton>None of these</CaQuietButton>
               </div>
