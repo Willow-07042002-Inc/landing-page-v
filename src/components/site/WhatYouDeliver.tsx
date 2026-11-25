@@ -478,7 +478,7 @@ const WhatYouDeliver = () => (
 
         <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
           <TileTitle>On your terms</TileTitle>
-          <TileBody id="follow-up-question">Run your practice in your own style, with Willow set up to work the way you do.</TileBody>
+          <TileBody id="follow-up-question">Run your practice the way you do, and Willow matches your style.</TileBody>
           <div className="mt-auto pb-5 pt-4">
             <FollowUpChoice labelledBy="follow-up-question" />
           </div>
