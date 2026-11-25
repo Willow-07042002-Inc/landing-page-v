@@ -467,7 +467,7 @@ const WhatYouDeliver = () => (
       <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12 lg:grid-rows-[minmax(252px,auto)_minmax(252px,auto)]">
         <article className={`${TILE} px-6 pt-6 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>
           <TileTitle>Bring the clients you already have</TileTitle>
-          <TileBody>Import your contacts, add the plans you&rsquo;ve already signed, and see every client in one list.</TileBody>
+          <TileBody>Import your client history, then use Willow to get back in touch with past clients and renew the relationships that have faded over the years.</TileBody>
           {/* The list fills the tile however tall the two rows beside it get */}
           <div className="relative mt-5 min-h-[385px] flex-1">
             <Bleed heightClass="absolute inset-0" fadeFrom={68}>
@@ -478,7 +478,7 @@ const WhatYouDeliver = () => (
 
         <article className={`${TILE} px-6 pt-6 lg:col-span-3`}>
           <TileTitle>On your terms</TileTitle>
-          <TileBody id="follow-up-question">When a client&rsquo;s life changes, you choose what happens next.</TileBody>
+          <TileBody id="follow-up-question">Run your practice in your own style, with Willow set up to work the way you do.</TileBody>
           <div className="mt-auto pb-5 pt-4">
             <FollowUpChoice labelledBy="follow-up-question" />
           </div>
