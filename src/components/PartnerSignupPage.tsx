@@ -219,7 +219,7 @@ const PartnerSignupPage = ({
   return (
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
-      <main className="flex-grow overflow-x-clip pt-28 md:pt-32 lg:pb-28">
+      <main className="flex-grow overflow-x-clip pt-28 md:pt-32 lg:pb-24">
         <div className="container mx-auto max-w-7xl px-5 md:px-8">
           <div className="grid gap-14 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
 

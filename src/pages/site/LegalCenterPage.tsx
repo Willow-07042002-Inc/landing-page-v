@@ -94,7 +94,7 @@ const LegalCenterPage = () => {
           <h1 className="font-sans text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Legal center</h1>
         </div>
       </section>
-      <section className="pb-20 md:pb-28">
+      <section className="pb-16 md:pb-24">
         <div className={`${WRAP} space-y-14`}>
           {GROUPS.map((g) => (
             <div key={g.title} className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16">

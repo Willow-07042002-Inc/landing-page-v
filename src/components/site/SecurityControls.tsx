@@ -42,7 +42,7 @@ const CONTROLS = [
 const SecurityControls = () => {
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <section id="security" className="bg-[#F8FAFC] py-16 md:py-24">
+    <section id="security" className="bg-[#F8FAFC] pb-16 md:pb-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <div className="flex flex-col gap-10 md:flex-row md:gap-16">
           <div className="md:w-2/5 md:pr-6">

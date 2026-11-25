@@ -141,7 +141,7 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
    line on the cards is from the live homepage, apart from the two titles. Each card's print is
    pinned to its outer edge at 5:4, so it doesn't move as the card widens. */
 const AudienceRouter = () => (
-  <section className="bg-[#FCFCFD] pb-6 md:pb-10 min-[1025px]:pb-14">
+  <section className="bg-[#FCFCFD] pb-16 md:pb-24">
     <div className="hv-wrap hv-grid">
       <div className="hv-content">
         <div className="col-span-full flex flex-col gap-[var(--hv-lg)]">
@@ -275,7 +275,7 @@ const StackedCapabilities = () => {
   return (
     <>
       {/* Section intro — scrolls away before the pin, like General Magic */}
-      <div className="container mx-auto px-4 pt-14 md:px-6 md:pt-16 lg:px-10 max-w-7xl">
+      <div className="container mx-auto max-w-7xl px-4 md:px-6 lg:px-10">
         <Eyebrow>Core capabilities</Eyebrow>
         <h2 className={`mt-3 max-w-3xl ${H2_CLS} text-[#222222]`} style={H2_STYLE}>
           Purpose-built for estate attorneys
@@ -361,7 +361,7 @@ const StackedCapabilities = () => {
 
       {/* Phones, and any screen with reduced motion: a still list, each
           capability beside its print from 768px */}
-      <div className={`${reduced ? "" : "md:hidden"} container mx-auto flex max-w-7xl flex-col gap-10 px-4 pb-6 pt-10 md:gap-20 md:px-6 md:pb-16 md:pt-14 lg:px-10`}>
+      <div className={`${reduced ? "" : "md:hidden"} container mx-auto flex max-w-7xl flex-col gap-10 px-4 pt-10 md:gap-20 md:px-6 md:pt-14 lg:px-10`}>
         {CAPABILITIES.map((cap, i) => (
           <div key={cap.title} className="md:grid md:grid-cols-[38.2fr_61.8fr] md:items-center md:gap-8 lg:gap-10">
             <div className="md:border-t md:border-gray-200 md:pt-4">
@@ -482,7 +482,7 @@ const FaqSection = () => {
     setOpen(null);
   };
   return (
-    <section className="bg-[#FCFCFD] py-16 md:py-20">
+    <section className="bg-[#FCFCFD] pb-16 md:pb-24">
       <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-6xl">
         <div className="flex flex-col gap-10 md:flex-row md:gap-16">
           {/* Accordion — lines, not boxes */}
@@ -597,7 +597,7 @@ const Home = () => {
       <AudienceRouter />
 
       {/* Core capabilities */}
-      <section className="bg-[#FCFCFD]">
+      <section className="bg-[#FCFCFD] pb-16 md:pb-24">
         <StackedCapabilities />
       </section>
 
@@ -606,7 +606,7 @@ const Home = () => {
 
       {/* Our commitment to lawyers — the Golden Gate print fills the rounded
           box; a smaller white box floats over it and carries the content */}
-      <section className="bg-[#FCFCFD] py-10 md:py-16">
+      <section className="bg-[#FCFCFD] pb-16 md:pb-24">
         <div className="container mx-auto max-w-7xl px-4 md:px-8">
           <div className="relative overflow-hidden rounded-3xl">
             <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
