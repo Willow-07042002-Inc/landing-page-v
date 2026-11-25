@@ -287,7 +287,7 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
 const N = { in: 500, tap: 2000, open: 2250, mark: 3500, end: 10400 };
 const ARTICLE = "The IRS clarified that assets in certain irrevocable trusts, ones kept outside your taxable estate, may not get a new “stepped-up” tax basis when you die.";
 const THOUGHTS =
-  "When we set up this trust, one goal was to move assets outside your taxable estate while you kept paying its income tax. This guidance raises a point about the tax basis of those assets. I’d like to review how the trust is set up, what it holds, and whether our plan still makes sense. It doesn’t necessarily mean anything needs to change, but it’s worth a conversation.";
+  "One goal of this trust was to keep assets outside your taxable estate while you paid its income tax. This guidance touches the tax basis of those assets, so I’d like to review the trust and what it holds. It doesn’t necessarily mean anything needs to change, but it’s worth a conversation.";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
 const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 
@@ -338,7 +338,7 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
   const open = t >= N.open;
   const pad = narrow ? "px-5" : "px-7";
   return (
-    <div className="absolute" style={{ left: inset, right: inset, top: narrow ? 26 : 34 }}>
+    <div className="absolute" style={{ left: inset, right: inset, top: narrow ? 26 : 31 }}>
       <div
         className="overflow-hidden rounded-2xl bg-white text-left"
         style={{
@@ -349,7 +349,7 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
           transition: "opacity 220ms ease-out, transform 560ms var(--ease-out)",
         }}
       >
-        <div className={`flex items-start gap-3.5 ${pad} ${narrow ? "py-4" : "py-5"}`}>
+        <div className={`flex items-start gap-3.5 ${pad} py-4`}>
           <NotificationIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#128F8B]" />
           <div className="min-w-0 flex-1">
             <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Rachel Alvarez posted a tax update</p>
@@ -367,16 +367,17 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
         <div style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 560ms var(--ease-in-out)" }}>
           <div className="min-h-0 overflow-hidden">
             <div className="border-t border-[#EEF0F2]">
-              <div className={`${narrow ? "space-y-4 py-4" : "space-y-5 py-5"} ${pad}`}>
+              <div className={`space-y-4 py-4 ${pad}`}>
                 <Reveal open={open} i={0}>
-                  <Label>The update</Label>
-                  <p className="mt-2 text-[#1F2933]" style={{ fontSize: narrow ? 14 : 15, lineHeight: 1.5 }}>
-                    {ARTICLE}{" "}
-                    <span className="inline-flex items-center gap-0.5 whitespace-nowrap font-semibold text-[#0C7370]">
-                      Read Revenue Ruling 2023-2
-                      <ArrowUpRight className="h-4 w-4" />
+                  {/* The ruling itself, a tap away beside the label */}
+                  <div className="flex items-center justify-between gap-3">
+                    <Label>The update</Label>
+                    <span className="inline-flex items-center gap-0.5 whitespace-nowrap font-semibold text-[#0C7370]" style={{ fontSize: 13 }}>
+                      Rev. Rul. 2023-2
+                      <ArrowUpRight className="h-3.5 w-3.5" />
                     </span>
-                  </p>
+                  </div>
+                  <p className="mt-2 text-[#1F2933]" style={{ fontSize: narrow ? 14 : 15, lineHeight: 1.5 }}>{ARTICLE}</p>
                 </Reveal>
                 <Reveal open={open} i={1}>
                   <Label>Where it touches your plan</Label>
@@ -391,7 +392,7 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
                       <Mark on={t >= N.mark}>I intend this trust to be treated as a grantor trust for income tax purposes</Mark>.
                     </p>
                     <p className="border-t border-[#EEF0F2] px-4 py-2.5 text-[#6B7280]" style={{ fontSize: narrow ? 12 : 12.5, lineHeight: 1.45 }}>
-                      This section alone doesn’t show whether the trust is outside your taxable estate. Rachel will look at the whole trust.
+                      On its own, this section doesn’t settle whether the update applies to you.
                     </p>
                   </div>
                 </Reveal>
@@ -521,7 +522,7 @@ const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: numb
      conversation has room around it rather than filling the frame. On a
      phone the tiles stack, so the update's runs taller to hold the card
      once it's open */
-  const size = narrow ? { w: 400, h: i === 1 ? 768 : 560 } : { w: 600, h: 725 };
+  const size = narrow ? { w: 400, h: i === 1 ? 812 : 560 } : { w: 600, h: 725 };
   const frame = frameOf(size);
   return (
     <div role="img" aria-label={c.label}>
