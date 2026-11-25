@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { PageShell, usePageMeta } from "@/components/site/blocks";
-import { ScaledScreen } from "@/components/product/kit";
-import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { supabase } from "@/lib/supabase";
 import { CONTACT_FORM_TYPE } from "@/lib/founding100";
 
 /* Contact (Aaron, Nov 25), set out like the New York State Bar page: the
-   heading and a short form on the left; on the right the city print, and
-   in place of that page's white offer card, the attorney dashboard rising
-   in from the print's right edge. Just a name, an email and a message. It
+   heading and a short form on the left; on the right the New York print
+   with nothing over it (Aaron, Nov 25). Just a name, an email and a
+   message. It
    saves to form_submissions under its own form_type, which the nightly lead
    digest includes, so every message reaches the team's inbox. No support
    address on the page (Aaron, Nov 25). As with the other site forms, no
@@ -103,23 +101,15 @@ const ContactPage = () => {
               )}
             </section>
 
-            {/* The print, with the attorney dashboard rising in from its
-                right edge. Stacked (phones, tablets): it runs edge to edge,
-                as the bar pages' print does. */}
+            {/* The New York print on its own (Aaron, Nov 25: no product shot).
+                Stacked (phones, tablets): it runs edge to edge, as the bar
+                pages' print does. */}
             <section
               aria-hidden
               className="relative mx-[calc(50%-50vw)] h-[340px] w-screen overflow-hidden sm:h-[420px] lg:mx-0 lg:h-[560px] lg:w-auto lg:rounded-3xl"
             >
               <img src="/central-park.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
               <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.15)" }} />
-              <div
-                className="absolute -bottom-12 -right-12 left-[20%] top-[22%] overflow-hidden rounded-tl-xl bg-white"
-                style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.3)" }}
-              >
-                <ScaledScreen>
-                  <AttorneyDashboardScreen />
-                </ScaledScreen>
-              </div>
             </section>
           </div>
         </div>
