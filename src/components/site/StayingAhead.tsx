@@ -43,7 +43,7 @@ export const KEEP_CHAPTERS: Chapter[] = [
     id: "family",
     also: ["their-team", "their-people", "advisors", "executors"],
     title: "Turn their family into clients",
-    body: "Write once to the family each plan names, and Willow keeps in touch every year, making it easy for them to book a time on your calendar.",
+    body: "Willow makes it easy to get in touch with the family your clients name in their plans, and for them to book a time on your calendar.",
   },
   {
     id: "probate",
