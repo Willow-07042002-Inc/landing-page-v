@@ -352,8 +352,9 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
         <div className={`flex items-start gap-3.5 ${pad} py-4`}>
           <NotificationIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#128F8B]" />
           <div className="min-w-0 flex-1">
-            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Rachel Alvarez posted a tax update</p>
-            <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: narrow ? 13.5 : 14 }}>Your attorney at Alvarez Family Law</p>
+            {/* The update is why she suggests a call (Aaron, Nov 25) */}
+            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Rachel recommended a check-in call</p>
+            <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: narrow ? 13.5 : 14 }}>Based on a recent tax update · Alvarez Family Law</p>
             <span
               className="-mx-1.5 mt-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold text-[#0C7370]"
               style={{ fontSize: narrow ? 14 : 14.5, ...tapStyle(pressed(t, N.tap)) }}
@@ -404,12 +405,9 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
                 </Reveal>
               </div>
               <Reveal open={open} i={3}>
-                <div className={`flex items-center gap-3 border-t border-[#EEF0F2] ${pad} ${narrow ? "py-3" : "py-3.5"}`}>
-                  <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]">RA</span>
-                  <span className="min-w-0 flex-1 leading-snug">
-                    <span className="block font-medium text-[#1F2933]" style={{ fontSize: narrow ? 14 : 14.5 }}>Talk it through with Rachel</span>
-                  </span>
-                  <span className="inline-flex h-[36px] flex-shrink-0 items-center rounded-md bg-[#309E96] px-4 text-[14px] font-semibold text-white">Schedule a meeting</span>
+                {/* Just the button (Aaron, Nov 25) */}
+                <div className={`border-t border-[#EEF0F2] ${pad} ${narrow ? "py-3" : "py-3.5"}`}>
+                  <span className="flex h-[40px] w-full items-center justify-center rounded-md bg-[#309E96] text-[14.5px] font-semibold text-white">Schedule a meeting</span>
                 </div>
                 <p className={`bg-[#F8FAFC] ${pad} py-2.5 text-[#6B7280]`} style={{ fontSize: narrow ? 12 : 12.5, lineHeight: 1.45 }}>
                   This notification does not amend, replace, or change your existing estate planning documents.
@@ -437,7 +435,7 @@ const CHAPTERS = [
     id: "firm-updates",
     title: "Updates from your firm",
     body: "When your firm posts an update, like a change in tax law, see how it affects your plan and book time to talk it through.",
-    label: "A notification: Daniel's attorney posted a tax update on IRS Revenue Ruling 2023-2. He opens it to the update, the section of his irrevocable trust it may touch, his attorney's thoughts, and a way to schedule a meeting. The notification doesn't change his documents.",
+    label: "A notification: Daniel's attorney recommends a check-in call, based on a tax update on IRS Revenue Ruling 2023-2. He opens it to the update, the section of his irrevocable trust it may touch, his attorney's thoughts, and a button to schedule a meeting. The notification doesn't change his documents.",
     end: N.end,
   },
 ];
