@@ -34,12 +34,6 @@ export const KEEP_CHAPTERS: Chapter[] = [
     body: "Whether it’s a blog post, a tax update or anything else your clients would find useful, drop it into Willow. We’ll update their dashboard and send an email, so you stay top of mind.",
   },
   {
-    id: "law-changes",
-    also: ["tax-updates", "legislation"],
-    title: "Tell clients when the law changes",
-    body: "When a tax or estate law changes, Willow reads it against every client’s plan and flags who it may affect. Look over the email it drafts, then send it to all of them at once.",
-  },
-  {
     id: "family",
     also: ["their-team", "their-people", "advisors", "executors"],
     title: "Turn their family into clients",
@@ -107,7 +101,7 @@ const StackedChapter = ({ c, i, Film }: { c: Chapter; i: number; Film: React.Com
         </p>
       </div>
       <div className="relative">
-        <Film rewatch chapter={i} replay={replay} onChapter={noop} onStart={(ms) => setRun((r) => ({ id: (r?.id ?? 0) + 1, ms }))} />
+        <Film rewatch chapter={i} replay={replay} onChapter={noop} onStart={(ms) => setRun((r) => (ms < 0 ? null : { id: (r?.id ?? 0) + 1, ms }))} />
         <button
           type="button"
           onClick={() => setReplay((r) => r + 1)}
@@ -229,7 +223,7 @@ export const ChapterFilmSection = ({
           </div>
 
           <div id={panel} role="tabpanel" aria-labelledby={`${name}-tab-${chapter.id}`} className="min-w-0">
-            <Film chapter={active} replay={replay} onChapter={setActive} onStart={(ms) => setRun((r) => ({ id: (r?.id ?? 0) + 1, ms }))} />
+            <Film chapter={active} replay={replay} onChapter={setActive} onStart={(ms) => setRun((r) => (ms < 0 ? null : { id: (r?.id ?? 0) + 1, ms }))} />
           </div>
         </div>
         )}

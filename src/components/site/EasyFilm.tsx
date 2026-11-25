@@ -827,9 +827,12 @@ type Props = {
   hold?: boolean;
   /** The chapter has played to its end */
   onEnd?: () => void;
+  /** May play now: its row holds the site-wide film turn (one film at a
+      time; Aaron, Nov 25). Until then a tile shows its first frame */
+  allowed?: boolean;
 };
 
-const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false, tile = false, hold = false, onEnd }: Props) => {
+const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false, tile = false, hold = false, onEnd, allowed = true }: Props) => {
   const narrow = useCompact();
   const compact = tile || narrow;
   const root = compact ? ROOT_COMPACT : ROOT_WIDE;
@@ -927,7 +930,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
       callbacks.current.onStart(0);
       return;
     }
-    if (!inView) return;
+    if (!inView || !allowed) return;
     played.current.add(chapter);
 
     const R = compact ? ROOT_COMPACT : ROOT_WIDE;
@@ -1126,7 +1129,7 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
     return () => {
       live = false;
     };
-  }, [chapter, replay, inView, compact, clock, rewatch, hold, pad, lineH, sheetsH, zoneH, sheet.h]);
+  }, [chapter, replay, inView, allowed, compact, clock, rewatch, hold, pad, lineH, sheetsH, zoneH, sheet.h]);
 
   const uploading = beat === "empty" || beat === "carry" || beat === "reading" || beat === "filed";
   const inRecord = beat === "docs";

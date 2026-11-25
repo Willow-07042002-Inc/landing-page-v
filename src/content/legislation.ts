@@ -15,6 +15,13 @@
    was 2021). LIVE gives no year for Minnesota. `bills` are the bill numbers
    behind LIVE's links for the states still in progress.
 
+   Two corrections to LIVE's data (Nov 25, with proof): New Jersey's bill
+   is S1336 (LIVE's own link is .../Bills/2026/S1500/1336_I1.HTM; S1500 is
+   the folder, and S1500 itself is a sweepstakes bill). Virginia's HB 133
+   failed: defeated 6-8 in the Senate Courts of Justice committee on Feb 25,
+   2026 (lis.virginia.gov/bill-details/20261/HB133, "Status: Failed"), so
+   Virginia has no law and no bill in progress.
+
    When LIVE updates their map, update this file to match. */
 
 export type LegStatus = "both" | "ewill" | "active" | "none";
@@ -68,7 +75,7 @@ export const LEGISLATION: Record<string, Entry> = {
   NE: { name: "Nebraska", status: "none" },
   NV: { name: "Nevada", status: "ewill", year: "2017" },
   NH: { name: "New Hampshire", status: "none" },
-  NJ: { name: "New Jersey", status: "active", bills: "S1500" },
+  NJ: { name: "New Jersey", status: "active", bills: "S1336" },
   NM: { name: "New Mexico", status: "none" },
   NY: { name: "New York", status: "ewill", year: "2025" },
   NC: { name: "North Carolina", status: "active" },
@@ -84,7 +91,7 @@ export const LEGISLATION: Record<string, Entry> = {
   TX: { name: "Texas", status: "none" },
   UT: { name: "Utah", status: "both", year: "2026" },
   VT: { name: "Vermont", status: "none" },
-  VA: { name: "Virginia", status: "active", bills: "HB 133" },
+  VA: { name: "Virginia", status: "none" },
   WA: { name: "Washington", status: "both", year: "2024" },
   WV: { name: "West Virginia", status: "none" },
   WI: { name: "Wisconsin", status: "none" },

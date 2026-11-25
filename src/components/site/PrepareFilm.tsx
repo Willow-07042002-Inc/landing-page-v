@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import type { FilmProps } from "@/components/site/film-kit";
+import React, { useEffect, useRef } from "react";
+import { useFilmTurn, type FilmProps } from "@/components/site/film-kit";
 import type { Chapter } from "@/components/site/StayingAhead";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { CategoriesVignette, SectionShareVignette, ReleaseTimingVignette, RoleChangeVignette } from "@/components/ClientVignettes";
@@ -42,33 +42,21 @@ const PREPARE_MS = 7000;
 
 const PrepareFilm = ({ chapter, replay, onChapter, onStart, rewatch = false }: FilmProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [seen, setSeen] = useState(false);
+  /* Its turn to play: one film at a time, site-wide (Aaron, Nov 25) */
+  const turn = useFilmTurn(ref);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setSeen(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!seen) return;
+    if (!turn) {
+      onStart(-1);
+      return;
+    }
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     onStart(reduced ? 0 : PREPARE_MS);
     if (rewatch || reduced || chapter >= SCREENS.length - 1) return;
     const t = window.setTimeout(() => onChapter(chapter + 1), PREPARE_MS);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seen, chapter, replay]);
+  }, [turn, chapter, replay]);
 
   const Screen = SCREENS[chapter] ?? SCREENS[0];
   return (

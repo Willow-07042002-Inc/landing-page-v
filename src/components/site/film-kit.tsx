@@ -12,12 +12,94 @@ export type FilmProps = {
   /** Changes when someone reopens a chapter, so it plays again */
   replay: number;
   onChapter: (next: number) => void;
-  /** A chapter has started and will take this many milliseconds (0: at rest) */
+  /** A chapter has started and will take this many milliseconds (0: at rest
+      on its last frame; -1: back on its first frame, not playing) */
   onStart: (ms: number) => void;
   clock?: FilmClock;
   /** Play a chapter again when it's reopened (the dev review page). On the
       site a chapter already seen opens on its last frame */
   rewatch?: boolean;
+};
+
+/* ── One film plays at a time, site-wide (Aaron, Nov 25) ──────────────────
+   Every film (or row of films that takes turns inside itself) registers its
+   frame here. Only one holds the turn: the one most on screen, measured as
+   how much of it is visible against how much of it could be (its own height,
+   or the screen's if it's taller). A film needs half of itself in view to
+   take the turn. The one playing keeps it while it's still at least half in
+   view, unless another is clearly more on screen; once it leaves, the next
+   best takes over. Films without the turn rest on a still frame. */
+type FilmSlot = { el: HTMLElement; set: (on: boolean) => void };
+const slots = new Set<FilmSlot>();
+let holder: FilmSlot | null = null;
+let frame = 0;
+let listening = false;
+
+const onScreen = (el: HTMLElement) => {
+  const r = el.getBoundingClientRect();
+  const vh = window.innerHeight;
+  const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
+  const whole = Math.min(r.height, vh);
+  return whole > 0 ? visible / whole : 0;
+};
+
+const choose = () => {
+  frame = 0;
+  let best: FilmSlot | null = null;
+  let bestShown = 0;
+  for (const s of slots) {
+    const f = onScreen(s.el);
+    if (f >= 0.5 && f > bestShown) {
+      best = s;
+      bestShown = f;
+    }
+  }
+  if (holder && slots.has(holder)) {
+    const held = onScreen(holder.el);
+    if (held >= 0.5 && held + 0.1 >= bestShown) best = holder;
+    else if (!best && held > 0) best = holder;
+  }
+  if (best !== holder) {
+    holder?.set(false);
+    holder = best;
+    best?.set(true);
+  }
+};
+
+/* A short timer rather than an animation frame, so the choice is still made
+   in a tab the browser is painting less often */
+const schedule = () => {
+  if (!frame) frame = window.setTimeout(choose, 60);
+};
+
+/* Dev only: which films are on the page, how much of each is on screen, and
+   which one holds the turn (window.__films() in the console) */
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as { __films: () => unknown }).__films = () =>
+    [...slots].map((s) => ({ film: (s.el.getAttribute("aria-label") ?? s.el.className).slice(0, 40), onScreen: +onScreen(s.el).toFixed(2), turn: s === holder }));
+}
+
+/** Whether the film in `ref` holds the turn to play */
+export const useFilmTurn = (ref: React.RefObject<HTMLElement>) => {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const slot: FilmSlot = { el, set: setOn };
+    slots.add(slot);
+    if (!listening) {
+      listening = true;
+      window.addEventListener("scroll", schedule, { passive: true });
+      window.addEventListener("resize", schedule);
+    }
+    schedule();
+    return () => {
+      slots.delete(slot);
+      if (holder === slot) holder = null;
+      schedule();
+    };
+  }, [ref]);
+  return on;
 };
 
 export const FIGTREE = "Figtree, Inter, sans-serif";
