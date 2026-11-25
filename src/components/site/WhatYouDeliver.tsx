@@ -467,7 +467,7 @@ const WhatYouDeliver = () => (
       <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 lg:grid-cols-12 lg:grid-rows-[minmax(252px,auto)_minmax(252px,auto)]">
         <article className={`${TILE} px-6 pt-6 sm:col-span-2 lg:col-span-6 lg:row-span-2`}>
           <TileTitle>Bring the clients you already have</TileTitle>
-          <TileBody>Import your firm&rsquo;s history and use Willow to rekindle past client relationships.</TileBody>
+          <TileBody>Import your firm&rsquo;s history and use Willow to rekindle client relationships that have faded over the years.</TileBody>
           {/* The list fills the tile however tall the two rows beside it get */}
           <div className="relative mt-5 min-h-[385px] flex-1">
             <Bleed heightClass="absolute inset-0" fadeFrom={68}>
