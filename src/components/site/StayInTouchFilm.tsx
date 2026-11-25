@@ -427,15 +427,15 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
 const CHAPTERS = [
   {
     id: "book-a-time",
-    title: "Book time with your attorney",
-    body: "A quick survey each year asks what’s changed. If something has, pick a time on your attorney’s calendar, right in the conversation.",
+    title: "Clients book time with you",
+    body: "A quick survey each year asks what’s changed. If something has, Willow makes it easy for them to find a time on your calendar for a conversation.",
     label: "Daniel answers his yearly check-in: he bought property, so Willow suggests a call, and he books a time on his attorney's calendar, with the event's details a tap away.",
     end: T.end + 1400,
   },
   {
     id: "firm-updates",
     title: "Updates from your firm",
-    body: "When your firm posts an update, like a change in tax law, see how it affects your plan and book time to talk it through.",
+    body: "When you post an update, like a change in tax law, clients see how it affects their plan and can book time with you to talk it through.",
     label: "A notification: Daniel's attorney recommends a check-in call, based on a tax update on IRS Revenue Ruling 2023-2. He opens it to the update, the section of his irrevocable trust it may touch, his attorney's thoughts, and a button to schedule a meeting. The notification doesn't change his documents.",
     end: N.end,
   },
@@ -586,8 +586,8 @@ const StayInTouchFilm = () => {
     <section id="stay-in-touch" className="scroll-mt-24 bg-[#F8FAFC] pb-16 md:pb-24">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
-          Stay in touch with
-          <span className="block italic text-[#138F8B]">the attorney who knows you best.</span>
+          Keep clients in touch
+          <span className="block italic text-[#138F8B]">with the attorney who knows them best.</span>
         </h2>
 
         <div ref={rowRef} className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-2 lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-6">

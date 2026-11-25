@@ -4,7 +4,7 @@ import type { Chapter } from "@/components/site/StayingAhead";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { CategoriesVignette, SectionShareVignette, ReleaseTimingVignette, RoleChangeVignette } from "@/components/ClientVignettes";
 
-/* For clients' "Prepare your team", set out as For attorneys' "A practice
+/* For clients' "Prepare their team", set out as For attorneys' "A practice
    families keep coming back to" (Aaron, Nov 25): the chapters ruled on the
    left, the client's own screen on the right on the light print. Each
    chapter's screen plays once when it opens, its rule fills, and the section
@@ -15,22 +15,22 @@ export const PREPARE_CHAPTERS: Chapter[] = [
   {
     id: "gather",
     title: "Gather what they’ll need",
-    body: "Beyond the legal documents: accounts, insurance, passwords, the pediatrician’s number. Willow tells you what to gather and where it goes, so it’s waiting when someone has to step in.",
+    body: "Beyond the legal documents: accounts, insurance, passwords, the pediatrician’s number. Willow tells your clients what to gather and where it goes, so it’s waiting when someone has to step in.",
   },
   {
     id: "share",
     title: "Give each person what’s theirs",
-    body: "An executor needs different things than a guardian. Willow suggests who should receive what, you approve it, and everyone you’ve named gets their own portal.",
+    body: "An executor needs different things than a guardian. Willow suggests who should receive what, your client approves it, and everyone they’ve named gets their own portal.",
   },
   {
     id: "control",
-    title: "Decide what opens, and when",
-    body: "Put everything in place today and choose when each piece is released. The will stays sealed until your attorney verifies a passing; until then, the people you’ve named see only that something is waiting.",
+    title: "They decide what opens, and when",
+    body: "Clients put everything in place today and choose when each piece is released. The will stays sealed until you verify a passing; until then, the people they’ve named see only that something is waiting.",
   },
   {
     id: "stay-current",
     title: "Keep it up to date",
-    body: "When your plan changes and responsibilities move, Willow proposes exactly what to change in what you’ve already shared. Review it once and approve.",
+    body: "When you update a plan and responsibilities move, Willow proposes exactly what to change in what your client has already shared. They review it once and approve.",
   },
 ];
 

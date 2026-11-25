@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
-import { PageShell, PageHero, PrintFrame, Faq, WRAP, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, PrimaryButton, Faq, WRAP, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
 import ReachOutButton from "@/components/site/AttorneyReferral";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import { ChapterFilmSection } from "@/components/site/StayingAhead";
@@ -19,11 +19,11 @@ import {
      the active screen sits centered while its neighbours peek in from both
      sides, so chapter 5 is visible to the left of chapter 1. ── */
 const CHAPTERS: { label: string; vis: React.ReactNode }[] = [
-  { label: "Your team", vis: <TeamRosterVignette /> },
+  { label: "Their team", vis: <TeamRosterVignette /> },
   { label: "Who's responsible if someone needs to step in", vis: <StepInVignette /> },
   { label: "Where everything goes", vis: <WhoGetsWhatVignette /> },
   { label: "Testamentary trust", vis: <TrustVignette /> },
-  { label: "Your documents", vis: <DocumentsVaultVignette /> },
+  { label: "Their documents", vis: <DocumentsVaultVignette /> },
 ];
 
 const ChapterCarousel = () => {
@@ -133,38 +133,40 @@ const ChapterCarousel = () => {
   );
 };
 
-/* ── Questions a client asks before asking for Willow (Aaron, Nov 25). The
-      answers restate what the page and the product already say; the one
-      new fact, that the people a client names don't pay, is Aaron's. Kept
-      plain so "at any time" never reads as "before you've released it". ── */
+/* ── The questions an attorney asks about their clients' side of Willow,
+      asked and answered to the attorney, as the whole site speaks (Aaron,
+      Nov 25). The answers restate what the page and the product already
+      say; the one new fact, that the people a client names don't pay, is
+      Aaron's. Kept plain so "at any time" never reads as "before it's been
+      released". ── */
 const CLIENT_FAQ = [
   {
-    q: "Who can see my plan?",
-    a: "You and your attorney. Nobody else sees anything until you share it, and you decide who gets each document and when.",
+    q: "Who can see a client’s plan?",
+    a: "Your client and your firm. Nobody else sees anything until your client shares it, and they decide who gets each document and when.",
   },
   {
-    q: "Do the people I share with have to pay?",
-    a: "No. It’s part of your plan. Everyone you name gets their own account at no cost, and sees what you’ve shared with them.",
+    q: "Do the people my clients share with have to pay?",
+    a: "No. It’s part of your client’s plan. Everyone they name gets their own account at no cost, and sees what’s been shared with them.",
   },
   {
-    q: "Can I keep parts of my estate plan private until I pass?",
-    a: "Yes. You have full authority to choose what’s shared now and what waits until you pass away. Anything you hold back stays sealed until your attorney verifies your passing; until then, the people you’ve named see only that something is waiting for them.",
+    q: "Can clients keep parts of their plan private until they pass?",
+    a: "Yes. Your clients have full authority to choose what’s shared now and what waits until they pass away. Anything held back stays sealed until you verify the passing; until then, the people they’ve named see only that something is waiting for them.",
   },
   {
-    q: "Can I change who has access later?",
-    a: "Yes, at any time. Add or remove people and change what each one has. When your plan is updated, Willow suggests what to change in what you’ve already shared, and you approve it.",
+    q: "Can clients change who has access later?",
+    a: "Yes, at any time. They can add or remove people and change what each one has. When you update a plan, Willow suggests what to change in what they’ve already shared, and your client approves it.",
   },
   {
     q: "Who writes the plain-English summary?",
-    a: "Willow drafts it from your signed documents, and your attorney reviews and approves it before you see a word.",
+    a: "Willow drafts it from the signed documents, and you review and approve it before your client sees a word.",
   },
   {
-    q: "Is my information used to train AI?",
-    a: "Never. Your documents are read only to draft the summary your attorney reviews, and that processing stays in the United States.",
+    q: "Is client information used to train AI?",
+    a: "Never. Documents are read only to draft the summary you review, and that processing stays in the United States.",
   },
   {
-    q: "How do I get Willow for my own estate plan?",
-    a: "Through your estate planning attorney. If yours doesn’t offer it yet, tell us who they are below and we’ll reach out to them.",
+    q: "How do my clients get Willow?",
+    a: "Drop in their signed documents. Willow goes through the details, creates their accounts and sends the invites to their portal.",
   },
 ];
 
@@ -202,7 +204,7 @@ const ClientAsk = () => (
 const ForClientsPage = () => {
   usePageMeta(
     "Willow for Clients & Their Team",
-    "An estate plan everyone understands: your plan and your people in one place, and a direct line back to your attorney whenever life changes."
+    "An estate plan your clients understand: their plan and their people in one place, and a direct line back to you whenever life changes."
   );
 
   return (
@@ -214,7 +216,7 @@ const ForClientsPage = () => {
         eyebrow="For clients"
         title="An estate plan"
         accent="everyone understands."
-        subtitle="Modern enough for the next generation. Simple enough for their parents. Your plan and your people in one place, and a direct line back to your attorney whenever life changes."
+        subtitle="Modern enough for the next generation. Simple enough for their parents. Your clients get their plan and their people in one place, and a direct line back to you whenever life changes."
         visualAspect="1440 / 855"
         visual={
           <PrintFrame print="/florida-coast.jpg" aspect="1440 / 855" className="shadow-2xl">
@@ -239,7 +241,7 @@ const ForClientsPage = () => {
               Forget the legalese. <span className={ACCENT_CLS}>We&rsquo;ll summarize everything.</span>
             </h2>
             <p className={`mx-auto mt-5 max-w-2xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
-              Willow turns your plan into a story your family can actually follow, reviewed and approved by your attorney before anyone sees a word.
+              Willow turns every plan into a story the family can actually follow, reviewed and approved by you before they see a word.
             </p>
           </div>
           <ChapterCarousel />
@@ -250,9 +252,9 @@ const ForClientsPage = () => {
           For attorneys sets out "A practice families keep coming back to" */}
       <ChapterFilmSection
         name="prepare"
-        title="Prepare your team now,"
+        title="Prepare their team now,"
         accent="so no one's left scrambling."
-        label="Preparing the people you've named"
+        label="Preparing the people your clients name"
         chapters={PREPARE_CHAPTERS}
         Film={PrepareFilm}
         sectionClass="bg-[#F8FAFC] pb-16 md:pb-24"
@@ -260,8 +262,8 @@ const ForClientsPage = () => {
 
       <Faq
         items={CLIENT_FAQ}
-        blurb="Anything about your own plan is best answered by your attorney."
-        action={null}
+        blurb="Want to see it from your client's side? We'll walk you through it."
+        action={<PrimaryButton>Request a demo</PrimaryButton>}
         sectionClass="bg-[#F8FAFC] pb-16 md:pb-24"
       />
 

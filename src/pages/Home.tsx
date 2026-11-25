@@ -218,7 +218,7 @@ const CAPABILITIES: { title: string; body: string; print: string; visual: React.
     fitAspect: "900 / 650",
   },
   {
-    title: "Ensure your executors and guardians are prepared.",
+    title: "Ensure your clients' executors and guardians are prepared.",
     body:
       "Willow understands everyone's role, recommends what each person should have access to, and releases it exactly when they need it, never a day earlier.",
     print: "/hudson-bridge.jpg",
