@@ -71,11 +71,12 @@ export const COMPANY_COLUMNS: NavColumn[] = [
     ],
   },
   {
-    title: "Legal & partners",
-    links: [
-      { label: "Legal center", desc: "Terms, privacy and every policy in one place", to: "/legal" },
-      { label: "New York State Bar", desc: "For NYSBA members", to: "/nysba" },
-    ],
+    title: "Partners",
+    links: [{ label: "New York State Bar", desc: "For NYSBA members", to: "/nysba" }],
+  },
+  {
+    title: "Legal",
+    links: [{ label: "Legal center", desc: "Terms, privacy and every policy in one place", to: "/legal" }],
   },
 ];
 
@@ -131,10 +132,11 @@ export const FOOTER_COLUMNS: NavColumn[] = [
     ],
   },
   {
-    title: "Legal & partners",
-    links: [
-      { label: "Legal center", to: "/legal" },
-      { label: "New York State Bar", to: "/nysba" },
-    ],
+    title: "Partners",
+    links: [{ label: "New York State Bar", to: "/nysba" }],
+  },
+  {
+    title: "Legal",
+    links: [{ label: "Legal center", to: "/legal" }],
   },
 ];
