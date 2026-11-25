@@ -166,9 +166,10 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-white text-left" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      {/* The firm's name, as the sheet's header has it; no × (Aaron, Nov 25) */}
+      {/* Who's asking, plainly: the product's header shows the firm's name;
+          here it says his attorney wants to check in. No × (Aaron, Nov 25) */}
       <div className={`flex-shrink-0 ${pad} ${narrow ? "pb-2 pt-5" : "pb-3 pt-9"}`}>
-        <span className="block truncate text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600 }}>Alvarez Family Law</span>
+        <span className="block text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600, lineHeight: 1.4, textWrap: "balance" } as React.CSSProperties}>Your attorney, Rachel&nbsp;Alvarez, wants to check in</span>
       </div>
       <div ref={boxRef} className={`relative min-h-0 flex-1 overflow-hidden ${pad}`}>
         {/* Earlier turns fade out under the header as the thread moves up */}
