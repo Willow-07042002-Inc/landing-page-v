@@ -21,9 +21,10 @@ import { Appear, FIGTREE, FillIn, MOVE, makeWait, tapStyle, useCompact, type Fil
       reads its headline and blurb, and posts carry no image.
    3. Imagined, not on main (Aaron, Nov 24): a tax update arrives as a
       notification, in the style of the booked-meeting one (chapter 5). It
-      opens, top to bottom, to the update, then the clients Willow suggests
-      reaching out to (View clients, not opened), with the suggested email
-      on the right, which the attorney sends to all of them.
+      opens, top to bottom, to the update, then the plans Willow found to
+      review, sorted into close matches and ones that need more information
+      (View clients, not opened), with the suggested email on the right,
+      which the attorney sends to the close matches.
    4. The yearly note to the executors and guardians a plan names
       (DEFAULTS.agent_checkin), a line typed onto it offering them a plan of
       their own, and saved.
@@ -77,14 +78,24 @@ const PAST = [
 ];
 
 /* Chapter 3, imagined (no such feature on main; Aaron asked for it on the
-   page, Nov 24): a New York estate tax update read against the firm's 48
-   plans, the clients whose plans it may affect, and the email Willow
-   suggests. No figures, so nothing here dates or misstates the law */
+   page, Nov 24): IRS Revenue Ruling 2023-2 (March 29, 2023), the update the
+   For clients film shows reaching Daniel (StayInTouchFilm.tsx, where the
+   ruling's facts and limits are set out; Aaron, Nov 25). Assets given as a
+   completed gift to an irrevocable grantor trust, and not in the grantor's
+   gross estate, get no basis adjustment under § 1014 at death. Willow reads
+   it against the firm's 48 plans and sorts what it finds: plans whose trust
+   resembles the ruling's facts (irrevocable, grantor trust, completed
+   gifts, nothing found that puts it in the estate) and plans with a grantor
+   trust where estate inclusion isn't clear. Revocable trusts aren't matches.
+   The attorney checks them, and the email goes only to the close matches,
+   once the attorney sends it. Every count and name is made up for the film */
 const LAW_PLANS = 48;
-const AFFECTED = [
-  { initials: "ER", name: "Elena Ruiz" },
+const LAW_MATCH = [
   { initials: "DR", name: "Daniel Rosen" },
+  { initials: "ER", name: "Elena Ruiz" },
   { initials: "MW", name: "Marcus Webb" },
+];
+const LAW_CHECK = [
   { initials: "PA", name: "Priya Anand" },
   { initials: "OG", name: "Olivia Grant" },
 ];
@@ -407,57 +418,82 @@ const Article = ({ compact }: { compact: boolean }) => (
    would list them; the film doesn't open it), and beside them on wide
    screens the suggested email as it would go out. Send at the foot. Each
    part arrives just after the card has made room */
+const Faces = ({ people }: { people: { initials: string; name: string }[] }) => (
+  <span className="flex flex-shrink-0">
+    {people.map((a, i) => (
+      <span
+        key={a.name}
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]"
+        style={{ marginLeft: i ? -8 : 0, boxShadow: "0 0 0 2px #FFFFFF" }}
+      >
+        {a.initials}
+      </span>
+    ))}
+  </span>
+);
 const LawNotice = ({ open, sent, tap, compact }: { open: boolean; sent: boolean; tap: Tap; compact: boolean }) => {
-  const n = AFFECTED.length;
+  const n = LAW_MATCH.length;
+  const rest = LAW_PLANS - LAW_MATCH.length - LAW_CHECK.length;
   const update = (
     <div>
-      <Label>The update</Label>
+      {/* The ruling itself, a tap away beside the label */}
+      <div className="flex items-center justify-between gap-3">
+        <Label>The update</Label>
+        <span className="inline-flex items-center gap-0.5 whitespace-nowrap font-semibold text-[#0C7370]" style={{ fontSize: 13 }}>
+          Rev. Rul. 2023-2
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-3.5 w-3.5">
+            <path d="M7 7h10v10" />
+            <path d="M7 17 17 7" />
+          </svg>
+        </span>
+      </div>
       <p className="mt-2 text-[#1F2933]" style={{ fontSize: compact ? 14 : 15, lineHeight: 1.5 }}>
-        New York’s estate tax exemption changes on January 1. Willow read it against all {LAW_PLANS} {compact ? "plans" : "of your clients’ plans"}.
+        Assets given to an irrevocable grantor trust and kept out of the grantor’s gross estate get no § 1014 step-up at death. Willow read it against all {LAW_PLANS} plans.
       </p>
     </div>
   );
   const viewClients = <span className="inline-flex h-[32px] flex-shrink-0 items-center rounded-md border border-[#309E96] px-3 text-[13px] font-semibold text-[#0F7673]">View clients</span>;
+  const row = (people: { initials: string; name: string }[], title: string, why: string) => (
+    <div className="flex items-center gap-3">
+      <Faces people={people} />
+      <span className="min-w-0 flex-1 leading-snug">
+        <span className="block font-medium text-[#1F2933]" style={{ fontSize: compact ? 14 : 14.5 }}>{title}</span>
+        <span className="block text-[#6B7280]" style={{ fontSize: compact ? 12.5 : 13 }}>{why}</span>
+      </span>
+    </div>
+  );
   const clients = (
     <div>
-      <Label>We suggest reaching out to</Label>
-      <div className="mt-2.5 flex items-center gap-3">
-        <span className="flex flex-shrink-0">
-          {AFFECTED.map((a, i) => (
-            <span
-              key={a.name}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]"
-              style={{ marginLeft: i ? -8 : 0, boxShadow: "0 0 0 2px #FFFFFF" }}
-            >
-              {a.initials}
-            </span>
-          ))}
-        </span>
-        <span className="min-w-0 flex-1 leading-snug">
-          <span className="block font-medium text-[#1F2933]" style={{ fontSize: compact ? 14 : 14.5 }}>{n} clients</span>
-          <span className="block text-[#6B7280]" style={{ fontSize: compact ? 12.5 : 13 }}>{compact ? "may be affected" : "whose plans this may affect"}</span>
-        </span>
-        {compact && viewClients}
+      <div className="flex items-center justify-between gap-3">
+        <Label>Plans to review</Label>
+        {viewClients}
       </div>
-      {!compact && <div className="mt-3">{viewClients}</div>}
+      <div className={compact ? "mt-2.5 space-y-2.5" : "mt-3 space-y-3"}>
+        {row(LAW_MATCH, `${n} closely match the ruling`, "Grantor trust, not in the estate")}
+        {row(LAW_CHECK, `${LAW_CHECK.length} need more information`, "Estate inclusion unclear")}
+      </div>
+      <p className="mt-2.5 text-[#9CA3AF]" style={{ fontSize: compact ? 12.5 : 13 }}>{rest} don’t match, like revocable trusts</p>
     </div>
   );
   const email = (
     <div>
       <Label>Suggested email</Label>
       <div className="mt-2.5 overflow-hidden rounded-xl border border-[#E5E7EB]">
-        <div className="border-b border-[#EEF0F2] px-4 py-2.5">
-          <p className="text-[12.5px] text-[#6B7280]">To {n} clients</p>
-          <p className="mt-0.5 font-semibold text-[#1F2933]" style={{ fontSize: compact ? 13.5 : 14 }}>New York’s estate tax is changing for 2027</p>
+        <div className={`${compact ? "" : "border-b border-[#EEF0F2]"} px-4 py-2.5`}>
+          <p className="text-[12.5px] text-[#6B7280]">To the {n} that closely match</p>
+          <p className="mt-0.5 font-semibold text-[#1F2933]" style={{ fontSize: compact ? 13.5 : 14 }}>IRS guidance on your irrevocable trust</p>
         </div>
-        <div className="px-4 pb-4 pt-3" style={{ fontFamily: ARIAL }}>
-          {!compact && <img src="/logo.png" alt="" className="mb-2.5" style={{ height: 18, width: "auto" }} />}
-          <p className="text-[#374151]" style={{ fontSize: compact ? 13 : 13.5, lineHeight: 1.6 }}>Hi <FillIn>First name</FillIn>,</p>
-          <p className="mt-2 text-[#374151]" style={{ fontSize: compact ? 13 : 13.5, lineHeight: 1.6 }}>
-            New York’s estate tax exemption changes on January 1. I’ve looked at your plan, and it may affect you. I’d like to walk you through it.
-          </p>
-          {!compact && <span className="mt-3 inline-block rounded-md bg-[#309E96] px-3.5 py-2 text-[13px] font-semibold text-white">Book a meeting</span>}
-        </div>
+        {/* On a phone the card shows the email's subject only, so it fits */}
+        {!compact && (
+          <div className="px-4 pb-4 pt-3" style={{ fontFamily: ARIAL }}>
+            <img src="/logo.png" alt="" className="mb-2.5" style={{ height: 18, width: "auto" }} />
+            <p className="text-[#374151]" style={{ fontSize: 13.5, lineHeight: 1.6 }}>Hi <FillIn>First name</FillIn>,</p>
+            <p className="mt-2 text-[#374151]" style={{ fontSize: 13.5, lineHeight: 1.6 }}>
+              The IRS recently clarified how certain assets in irrevocable trusts are taxed after death. I’d like to review your trust with you. It doesn’t necessarily mean anything needs to change.
+            </p>
+            <span className="mt-3 inline-block rounded-md bg-[#309E96] px-3.5 py-2 text-[13px] font-semibold text-white">Book a meeting</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -466,8 +502,8 @@ const LawNotice = ({ open, sent, tap, compact }: { open: boolean; sent: boolean;
       <div className={`flex items-center gap-3.5 ${compact ? "px-5 py-4" : "px-7 py-5"}`}>
         <NotificationIcon className="h-5 w-5 flex-shrink-0 text-[#128F8B]" />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: compact ? 15.5 : 17 }}>New York tax update: changes may affect {n} clients</p>
-          <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: compact ? 13.5 : 14 }}>Suggested email ready</p>
+          <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: compact ? 15.5 : 17 }}>IRS guidance may affect assets in certain irrevocable trusts</p>
+          <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: compact ? 13.5 : 14 }}>{LAW_MATCH.length + LAW_CHECK.length} of your clients’ plans to review</p>
         </div>
         <span className="flex flex-shrink-0 items-center gap-1 rounded px-1 font-medium text-[#0C7370]" style={{ fontSize: compact ? 14 : 14.5, ...tapStyle(tap === "law") }}>
           {open ? "See less" : "See more"}
@@ -915,7 +951,7 @@ const KeepInTouchFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch =
             <ArticleFeed step={news} over={over} tap={tap} compact={compact} dropRef={fieldRef} />
           </Piece>
           {/* 3. The update, placed so it sits in the middle once opened */}
-          <Rise on={shown === 2} z={10} style={{ left: 0, right: 0, top: compact ? 41 : 96 }}>
+          <Rise on={shown === 2} z={10} style={{ left: 0, right: 0, top: compact ? 41 : 85 }}>
             <div className="mx-auto" style={{ width: compact ? LAW_W.compact : LAW_W.wide }}>
               <LawNotice open={lawOpen} sent={lawSent} tap={tap} compact={compact} />
             </div>
