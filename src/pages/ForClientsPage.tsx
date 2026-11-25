@@ -178,7 +178,7 @@ const CLIENT_FAQ = [
       darker than the page's other frames so the card stands off it. The
       attorney's demo ask is the footer's top line, just below. ── */
 const ClientAsk = () => (
-  <section className="bg-[#F8FAFC] pb-16 md:pb-24">
+  <section className="bg-[#F8FAFC] pb-20 md:pb-32">
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
       <div className="relative overflow-hidden rounded-3xl">
         <img src="/williamsburg.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
@@ -234,7 +234,7 @@ const ForClientsPage = () => {
       {/* The summary — five chapters in a continuous carousel. The one
           centred heading on the page after the hero, between two set left,
           as For attorneys alternates them (Aaron, Nov 25). */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] pb-16 md:pb-24">
+      <section className="relative overflow-hidden bg-[#F8FAFC] pb-20 md:pb-32">
         <div className="container relative z-10 mx-auto px-4 md:px-8">
           <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
             <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
@@ -257,14 +257,14 @@ const ForClientsPage = () => {
         label="Preparing the people your clients name"
         chapters={PREPARE_CHAPTERS}
         Film={PrepareFilm}
-        sectionClass="bg-[#F8FAFC] pb-16 md:pb-24"
+        sectionClass="bg-[#F8FAFC] pb-20 md:pb-32"
       />
 
       <Faq
         items={CLIENT_FAQ}
         blurb="Want to see it from your client's side? We'll walk you through it."
         action={<PrimaryButton>Request a demo</PrimaryButton>}
-        sectionClass="bg-[#F8FAFC] pb-16 md:pb-24"
+        sectionClass="bg-[#F8FAFC] pb-20 md:pb-32"
       />
 
       <ClientAsk />

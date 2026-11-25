@@ -128,7 +128,7 @@ const RegulatoryLibraryPage = () => {
         visual={<LegislationMap />}
       />
 
-      <section className="bg-[#F8FAFC] pb-16 md:pb-24">
+      <section className="bg-[#F8FAFC] pb-20 md:pb-32">
         <div className={`${WRAP} max-w-6xl lg:px-10`}>
           <div className="grid gap-12 border-t border-gray-200 pt-10 md:grid-cols-3 md:gap-10 md:pt-12">
             {(["both", "ewill", "active"] as const).map((s) => (

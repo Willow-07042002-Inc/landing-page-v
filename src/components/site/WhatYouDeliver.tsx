@@ -460,7 +460,7 @@ const CONNECTORS: { name: string; Logo: Logo }[] = [
 ];
 
 const WhatYouDeliver = () => (
-  <section className="bg-[#F8FAFC] pb-16 md:pb-24">
+  <section className="bg-[#F8FAFC] pb-20 md:pb-32">
     <div className={`${WRAP} max-w-6xl lg:px-10`}>
       <LightHead title="Built to work with" accent="the practice you already run." />
 

@@ -164,7 +164,7 @@ const Careers = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
-      <main className="flex-grow pt-28 md:pt-32 pb-24">
+      <main className="flex-grow pt-28 md:pt-32 pb-20 md:pb-32">
         <div className="container mx-auto px-4">
           {/* Hero — the break is placed for line length, not grammar. At the
               sentence boundary the rows ran 898px over 280px; turning after

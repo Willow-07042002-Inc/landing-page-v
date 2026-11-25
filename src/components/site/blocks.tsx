@@ -170,7 +170,7 @@ export const PageHero = ({
   /** The section's ground: the page's own, so no seam shows under it. */
   ground?: string;
 }) => (
-  <section className="pb-16 pt-14 md:pb-24 md:pt-20" style={{ background: ground }}>
+  <section className="pb-20 pt-14 md:pb-32 md:pt-20" style={{ background: ground }}>
     <div className={`${WRAP} enter flex flex-col items-center text-center`}>
       {eyebrow && (
         <div className="mb-5">

@@ -141,7 +141,7 @@ const AUDIENCES: { title: string; body: string; cta: string; to: string; image: 
    line on the cards is from the live homepage, apart from the two titles. Each card's print is
    pinned to its outer edge at 5:4, so it doesn't move as the card widens. */
 const AudienceRouter = () => (
-  <section className="bg-[#FCFCFD] pb-16 md:pb-24">
+  <section className="bg-[#FCFCFD] pb-20 md:pb-32">
     <div className="hv-wrap hv-grid">
       <div className="hv-content">
         <div className="col-span-full flex flex-col gap-[var(--hv-lg)]">
@@ -482,7 +482,7 @@ const FaqSection = () => {
     setOpen(null);
   };
   return (
-    <section className="bg-[#FCFCFD] pb-16 md:pb-24">
+    <section className="bg-[#FCFCFD] pb-20 md:pb-32">
       <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-6xl">
         <div className="flex flex-col gap-10 md:flex-row md:gap-16">
           {/* Accordion — lines, not boxes */}
@@ -576,7 +576,7 @@ const Home = () => {
           hero's own bottom padding (pb-16, md:pb-24), so this matches it
           below. Yahoo Finance as on the live site, and the two linked
           articles. */}
-      <section className="bg-[#FCFCFD] pb-16 md:pb-24">
+      <section className="bg-[#FCFCFD] pb-20 md:pb-32">
         <div className="hv-wrap">
           <div className="flex flex-col items-center justify-center gap-5">
             <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">As seen in</h2>
@@ -597,7 +597,7 @@ const Home = () => {
       <AudienceRouter />
 
       {/* Core capabilities */}
-      <section className="bg-[#FCFCFD] pb-16 md:pb-24">
+      <section className="bg-[#FCFCFD] pb-20 md:pb-32">
         <StackedCapabilities />
       </section>
 
@@ -606,7 +606,7 @@ const Home = () => {
 
       {/* Our commitment to lawyers — the Golden Gate print fills the rounded
           box; a smaller white box floats over it and carries the content */}
-      <section className="bg-[#FCFCFD] pb-16 md:pb-24">
+      <section className="bg-[#FCFCFD] pb-20 md:pb-32">
         <div className="container mx-auto max-w-7xl px-4 md:px-8">
           <div className="relative overflow-hidden rounded-3xl">
             <img src="/golden-gate.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "center 45%" }} />
