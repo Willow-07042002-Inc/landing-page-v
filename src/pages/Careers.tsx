@@ -142,7 +142,7 @@ const Chip = ({ children }: { children: React.ReactNode }) => (
 );
 
 const Heading = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="font-heading text-xl font-bold text-[#222222]">{children}</h3>
+  <h3 className="text-[20px] font-medium leading-snug text-[#222222]" style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" }}>{children}</h3>
 );
 
 const Bullets = ({ items }: { items: string[] }) => (
@@ -174,7 +174,7 @@ const Careers = () => {
               that it wraps on its own. */}
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">Careers</div>
-            <h1 className="font-heading text-3xl font-light text-[#222222] sm:text-4xl lg:text-[2.5rem]" style={{ lineHeight: 1.25 }}>
+            <h1 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
               Estate planning has run on paper
               <br className="hidden sm:block" /> for a century. We're rebuilding it.
             </h1>

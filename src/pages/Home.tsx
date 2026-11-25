@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AttorneyQuotes from "@/components/AttorneyQuotes";
-import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -16,7 +14,7 @@ import {
 } from "@/components/ProductVignettes";
 
 import { ScaledScreen } from "@/components/product/kit";
-import { PageHero, PrintFrame, Eyebrow, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
+import { PageHero, PrintFrame, PrimaryButton, Eyebrow, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
@@ -329,12 +327,7 @@ const StackedCapabilities = () => {
                     </p>
                   </div>
                   {i === CAPABILITIES.length - 1 && (
-                    <Button
-                      className="willow-btn mt-6 h-10 px-5 text-[15px] font-medium"
-                      onClick={() => (window.location.href = "/request-access")}
-                    >
-                      Let's get started
-                    </Button>
+                    <PrimaryButton className="mt-6">Let's get started</PrimaryButton>
                   )}
                 </div>
               ))}
@@ -375,12 +368,7 @@ const StackedCapabilities = () => {
               <h3 className={`mb-2 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>{cap.title}</h3>
               <p className={`mb-4 ${BODY_CLS} text-gray-600`}>{cap.body}</p>
               {i === CAPABILITIES.length - 1 && (
-                <Button
-                  className="willow-btn mt-2 hidden h-10 px-5 text-[15px] font-medium md:inline-flex"
-                  onClick={() => (window.location.href = "/request-access")}
-                >
-                  Let's get started
-                </Button>
+                <PrimaryButton className="mt-2 hidden md:inline-flex">Let's get started</PrimaryButton>
               )}
             </div>
             <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl md:max-w-[560px] md:justify-self-end" style={{ aspectRatio: "1 / 1" }}>
@@ -548,13 +536,7 @@ const FaqSection = () => {
             <p className={`mt-5 max-w-sm ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
               Still can't find what you're looking for? We're happy to walk through anything specific to your practice or your jurisdiction.
             </p>
-            <Button
-              size="lg"
-              className="willow-btn mt-6 px-7 py-5 text-base"
-              onClick={() => (window.location.href = "/request-access")}
-            >
-              Let's get started
-            </Button>
+            <PrimaryButton className="mt-6">Let's get started</PrimaryButton>
           </div>
         </div>
       </div>
@@ -563,7 +545,6 @@ const FaqSection = () => {
 };
 
 const Home = () => {
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
@@ -659,13 +640,7 @@ const Home = () => {
               <div className="mt-4 text-[17px] font-semibold text-[#222222]">Aaron Burlacoff</div>
               <div className="mt-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-gray-400">Founder &amp; CEO, Willow</div>
               <span className="my-5 block w-12 border-t border-gray-200" />
-              <Button
-                size="lg"
-                className="willow-btn h-11 px-6 text-[15px] font-medium"
-                onClick={() => navigate("/request-access")}
-              >
-                Elevate your practice today
-              </Button>
+              <PrimaryButton>Elevate your practice today</PrimaryButton>
             </div>
           </div>
               </div>

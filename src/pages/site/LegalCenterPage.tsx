@@ -99,8 +99,8 @@ const LegalCenterPage = () => {
           {GROUPS.map((g) => (
             <div key={g.title} className="grid gap-6 lg:grid-cols-[1fr_2fr] lg:gap-16">
               <div>
-                <h2 className="font-heading text-[1.45rem] font-bold leading-snug text-[#222222]">{g.title}</h2>
-                <p className="mt-2 text-[15.5px] leading-relaxed text-gray-600">{g.lead}</p>
+                <h2 className="text-[20px] font-medium leading-snug text-[#222222]" style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" }}>{g.title}</h2>
+                <p className="mt-2 text-[15px] leading-relaxed text-gray-600">{g.lead}</p>
               </div>
               <div className="divide-y divide-gray-200 border-y border-gray-200">
                 {g.items.map((it) => (

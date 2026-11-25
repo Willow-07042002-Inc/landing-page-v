@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
-import { PageShell, PageHero, PrintFrame, usePageMeta, WRAP, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, usePageMeta, WRAP, Eyebrow, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import {
   TeamRosterVignette,
@@ -154,7 +154,7 @@ const ShareBlock = ({
     {/* Golden-section split: copy 38.2%, product 61.8% — from lg up; phones and
         iPad portrait stack, so the product keeps its full width */}
     <div className="w-full lg:w-[38.2%]">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{eyebrow}</div>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <h3 className={`mt-2 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>
         {title}
       </h3>
@@ -200,7 +200,7 @@ const ForClientsPage = () => {
       {/* The summary — five chapters in a continuous carousel. The one
           centred heading on the page after the hero, between two set left,
           as For attorneys alternates them (Aaron, Nov 25). */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] pb-16 md:pb-24">
+      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
         <div className="container relative z-10 mx-auto px-4 md:px-8">
           <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
             <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
@@ -215,7 +215,7 @@ const ForClientsPage = () => {
       </section>
 
       {/* Preparedness & sharing: the heading set left, as Stay in touch */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] pb-16 md:pb-24">
+      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
         <div className={`${WRAP} relative z-10 max-w-6xl lg:px-10`}>
           <div className="mb-12 max-w-3xl md:mb-16">
             <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
