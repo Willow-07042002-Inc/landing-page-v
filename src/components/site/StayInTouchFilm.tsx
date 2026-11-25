@@ -260,32 +260,34 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
   );
 };
 
-/* ---- 2. The firm's yearly tax update, as a notification ------------------
+/* ---- 2. The attorney's tax update, as a notification --------------------
    Imagined, not on main (Aaron, Nov 25): the clients app has no
    notifications. Set the way For attorneys sets its meeting and tax
    notifications (KeepInTouchFilm.tsx chapters 3 and 5): the card alone on
    the print, its title line, then it drops open, each part arriving just
    after the card has made room, the action at the foot.
-   The update is one every estate planner knows (Aaron, Nov 25: one from the
-   last five years that changed how plans work): the SECURE Act's end of the
-   "stretch" for inherited retirement accounts, settled by the IRS's final
-   regulations (July 2024, in effect from 2025). Most children who inherit
-   one must now empty it within 10 years; a minor child of the owner takes
-   yearly payouts until 21 (the regulations' age of majority), then has 10
-   years, so it's all out by about 31. A conduit trust, the usual pre-2020
-   way to leave an IRA to a child, must pass every distribution straight to
-   the child, so the whole account lands in their hands by their early
-   thirties, whatever age the trust otherwise holds to. The usual fix lets
-   the trustee keep distributions (an accumulation trust), at the cost of
-   trust income tax rates. Sources: the final RMD regulations, Federal
-   Register, July 19, 2024 (doc. 2024-14542); Kitces, Morningstar and
-   Fidelity on conduit trusts after SECURE. The trust's section number
-   and wording are made up for the film. */
+   The update is IRS Revenue Ruling 2023-2 (March 29, 2023; Internal Revenue
+   Bulletin 2023-16), chosen by Aaron after an outside review (Nov 25). Read
+   from the ruling itself (irs.gov/pub/irs-drop/rr-23-02.pdf): A sets up an
+   irrevocable trust, funds it with a completed gift, and keeps a power that
+   makes A its owner for income tax (a grantor trust) but doesn't put its
+   assets in A's gross estate. At A's death the assets get no basis
+   adjustment under § 1014, because they weren't acquired or passed from a
+   decedent under any part of § 1014(b); their basis stays what it was. The
+   ruling's facts also have no note between A and the trust, and trust
+   liabilities under basis. It doesn't reach assets that are in the gross
+   estate (§ 1014(b)(9)), or trusts A can revoke or amend ((b)(2), (3)), and
+   leaves Rev. Rul. 84-139 alone. So the card says "may not", the clause is
+   one that only resembles the ruling's facts, and a note under it says the
+   section alone doesn't show whether the trust is outside his estate. The
+   trust, its section number and its words are made up for the film; Rachel's
+   thoughts follow the reviewer's draft, shortened. Commentary: Journal of
+   Accountancy, EY, BDO and The Tax Adviser on the ruling. */
 
-const N = { in: 500, tap: 2000, open: 2250, mark: 3500, end: 10200 };
-const ARTICLE = "Under the SECURE Act’s final IRS rules, most children who inherit a retirement account must empty it within 10 years. For a minor child, the 10 years start at 21.";
+const N = { in: 500, tap: 2000, open: 2250, mark: 3500, end: 10400 };
+const ARTICLE = "The IRS clarified that assets in certain irrevocable trusts, ones kept outside your taxable estate, may not get a new “stepped-up” tax basis when you die.";
 const THOUGHTS =
-  "This was written when an inherited account paid out a little each year, so most of it stayed in trust. Now the whole account has to come out, and this clause hands every dollar to Emma and Leo, so they’d have all of it by their early thirties, not 35. We can let the trustee hold it instead. There’s a tax trade-off, so let’s talk it through.";
+  "When we set up this trust, one goal was to move assets outside your taxable estate while you kept paying its income tax. This guidance raises a point about the tax basis of those assets. I’d like to review how the trust is set up, what it holds, and whether our plan still makes sense. It doesn’t necessarily mean anything needs to change, but it’s worth a conversation.";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
 const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 
@@ -350,8 +352,8 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
         <div className={`flex items-start gap-3.5 ${pad} ${narrow ? "py-4" : "py-5"}`}>
           <NotificationIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#128F8B]" />
           <div className="min-w-0 flex-1">
-            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Alvarez Family Law posted a tax update</p>
-            <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: narrow ? 13.5 : 14 }}>Rachel Alvarez · Just now</p>
+            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Rachel Alvarez posted a tax update</p>
+            <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: narrow ? 13.5 : 14 }}>Your attorney at Alvarez Family Law</p>
             <span
               className="-mx-1.5 mt-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold text-[#0C7370]"
               style={{ fontSize: narrow ? 14 : 14.5, ...tapStyle(pressed(t, N.tap)) }}
@@ -371,7 +373,7 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
                   <p className="mt-2 text-[#1F2933]" style={{ fontSize: narrow ? 14 : 15, lineHeight: 1.5 }}>
                     {ARTICLE}{" "}
                     <span className="inline-flex items-center gap-0.5 whitespace-nowrap font-semibold text-[#0C7370]">
-                      Read the full update
+                      Read Revenue Ruling 2023-2
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
                   </p>
@@ -381,12 +383,15 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
                   <div className="mt-2.5 overflow-hidden rounded-xl border border-[#E5E7EB]">
                     <div className="flex items-center gap-2.5 border-b border-[#EEF0F2] bg-[#F8FAFC] px-4 py-2.5">
                       <TrustIcon className="h-4 w-4 flex-shrink-0 text-[#128F8B]" />
-                      <span className="min-w-0 flex-1 font-medium text-[#1F2933]" style={{ fontSize: 13.5 }}>Revocable Living Trust</span>
-                      <span className="flex-shrink-0 text-[#9CA3AF]" style={{ fontSize: 12.5 }}>Section 6.3</span>
+                      <span className="min-w-0 flex-1 font-medium text-[#1F2933]" style={{ fontSize: 13.5 }}>Irrevocable Living Trust</span>
+                      <span className="flex-shrink-0 text-[#9CA3AF]" style={{ fontSize: 12.5 }}>Section 8.2</span>
                     </div>
-                    <p className="px-4 py-3.5 text-[#4B5563]" style={{ fontFamily: MERRIWEATHER, fontSize: narrow ? 12.5 : 13.5, lineHeight: 1.85 }}>
-                      <span className="font-bold text-[#1F2933]">Retirement Accounts.</span> Each child’s share of my retirement accounts shall be held in trust until the child is 35, except that{" "}
-                      <Mark on={t >= N.mark}>the Trustee shall pay to the child, as soon as received, all distributions from those accounts</Mark>.
+                    <p className="px-4 pb-3 pt-3.5 text-[#4B5563]" style={{ fontFamily: MERRIWEATHER, fontSize: narrow ? 12.5 : 13.5, lineHeight: 1.85 }}>
+                      <span className="font-bold text-[#1F2933]">Grantor Trust Status.</span> The property listed in Schedule A is given to this trust as a completed gift, and this trust may not be revoked.{" "}
+                      <Mark on={t >= N.mark}>I intend this trust to be treated as a grantor trust for income tax purposes</Mark>.
+                    </p>
+                    <p className="border-t border-[#EEF0F2] px-4 py-2.5 text-[#6B7280]" style={{ fontSize: narrow ? 12 : 12.5, lineHeight: 1.45 }}>
+                      This section alone doesn’t show whether the trust is outside your taxable estate. Rachel will look at the whole trust.
                     </p>
                   </div>
                 </Reveal>
@@ -402,10 +407,12 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
                   <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]">RA</span>
                   <span className="min-w-0 flex-1 leading-snug">
                     <span className="block font-medium text-[#1F2933]" style={{ fontSize: narrow ? 14 : 14.5 }}>Talk it through with Rachel</span>
-                    <span className="block text-[#6B7280]" style={{ fontSize: 13 }}>{narrow ? "Your attorney" : "Your attorney at Alvarez Family Law"}</span>
                   </span>
-                  <span className="inline-flex h-[36px] flex-shrink-0 items-center rounded-md bg-[#309E96] px-4 text-[14px] font-semibold text-white">Book a meeting</span>
+                  <span className="inline-flex h-[36px] flex-shrink-0 items-center rounded-md bg-[#309E96] px-4 text-[14px] font-semibold text-white">Schedule a meeting</span>
                 </div>
+                <p className={`bg-[#F8FAFC] ${pad} py-2.5 text-[#6B7280]`} style={{ fontSize: narrow ? 12 : 12.5, lineHeight: 1.45 }}>
+                  This notification does not amend, replace, or change your existing estate planning documents.
+                </p>
               </Reveal>
             </div>
           </div>
@@ -429,7 +436,7 @@ const CHAPTERS = [
     id: "firm-updates",
     title: "Updates from your firm",
     body: "When your firm posts an update, like a change in tax law, see how it affects your plan and book time to talk it through.",
-    label: "A notification: Daniel's firm posted a tax update on inherited retirement accounts. He opens it to the update, the clause of his trust it touches, his attorney's thoughts, and a way to book a meeting.",
+    label: "A notification: Daniel's attorney posted a tax update on IRS Revenue Ruling 2023-2. He opens it to the update, the section of his irrevocable trust it may touch, his attorney's thoughts, and a way to schedule a meeting. The notification doesn't change his documents.",
     end: N.end,
   },
 ];
@@ -579,7 +586,7 @@ const StayInTouchFilm = () => {
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
           Stay in touch with
-          <span className="block italic text-[#138F8B]">the attorney who knows your plan.</span>
+          <span className="block italic text-[#138F8B]">the attorney who knows you best.</span>
         </h2>
 
         <div ref={rowRef} className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-2 lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-6">
