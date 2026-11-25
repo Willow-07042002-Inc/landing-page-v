@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
-import { PageShell, PageHero, PrintFrame, usePageMeta } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import {
   TeamRosterVignette,
@@ -156,10 +156,10 @@ const ShareBlock = ({
         iPad portrait stack, so the product keeps its full width */}
     <div className="w-full lg:w-[38.2%]">
       <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{eyebrow}</div>
-      <h3 className="mt-2 text-xl lg:text-2xl font-heading font-bold text-[#222222]" style={{ lineHeight: 1.35 }}>
+      <h3 className={`mt-2 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>
         {title}
       </h3>
-      <p className="mt-3 text-[15px] lg:text-base text-gray-600 leading-relaxed">{body}</p>
+      <p className={`mt-2 ${BODY_CLS} text-gray-600`}>{body}</p>
       {note && <p className="mt-2 text-[13.5px] text-gray-400">{note}</p>}
     </div>
     <div className="w-full lg:w-[61.8%]">
@@ -232,10 +232,10 @@ const ForClientsPage = () => {
       <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
         <div className="container relative z-10 mx-auto px-4 md:px-8">
           <div className="mx-auto mb-10 max-w-2xl text-center md:mb-12">
-            <h2 className="font-heading text-2xl font-bold text-[#222222] md:text-3xl lg:text-[2rem]" style={{ lineHeight: 1.3 }}>
-              Countless pages, <span className="block text-[#138F8B]">one simple summary.</span>
+            <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+              Countless pages, <span className={ACCENT_CLS}>one simple summary.</span>
             </h2>
-            <p className="mt-3 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>
+            <p className={`mt-5 ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
               Willow turns every plan into a story the family can actually follow — reviewed and approved by you before they see a word.
             </p>
           </div>
@@ -247,10 +247,10 @@ const ForClientsPage = () => {
       <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
         <div className="container relative z-10 mx-auto px-4 md:px-8 lg:px-10 max-w-6xl">
           <div className="mx-auto mb-12 max-w-4xl text-center md:mb-16">
-            <h2 className="text-2xl md:text-3xl lg:text-[2rem] font-heading font-bold text-[#222222]" style={{ lineHeight: 1.3 }}>
-              Everyone prepared. <span className="block text-[#138F8B]">Nothing shared early.</span>
+            <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+              Everyone prepared. <span className={ACCENT_CLS}>Nothing shared early.</span>
             </h2>
-            <p className="mt-3 text-[15px] md:text-base text-gray-600" style={{ lineHeight: 1.6 }}>
+            <p className={`mt-5 ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
               Everyone gets exactly what they need, exactly when they need it,
               <span className="block">from one place you control.</span>
             </p>
@@ -300,7 +300,7 @@ const ForClientsPage = () => {
             <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
             <div className="relative z-10 grid md:grid-cols-[1fr_1.15fr]">
               <div className="p-8 md:p-14 lg:p-16 md:pr-4">
-                <h2 className="font-heading text-2xl md:text-3xl lg:text-[2.25rem] font-bold text-white" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+                <h2 className={`${H2_CLS} text-white`} style={H2_STYLE}>
                   Ready to bring this{" "}
                   <br className="hidden md:block" />
                   to your clients?

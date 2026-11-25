@@ -16,10 +16,10 @@ const NewsPage = () => (
         <div className="container mx-auto max-w-6xl px-4 md:px-8">
           <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
             <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">News</div>
-            <h1 className="font-heading text-3xl font-bold text-[#222222] md:text-4xl" style={{ lineHeight: 1.2 }}>
+            <h1 className="font-heading text-[2rem] font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
               Willow in the news
             </h1>
-            <p className="mt-4 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>
+            <p className="mt-5 text-base text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em", textWrap: "pretty" }}>
               Coverage, announcements, and writing on where estate planning is headed.
             </p>
           </div>

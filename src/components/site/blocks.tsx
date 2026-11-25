@@ -120,8 +120,23 @@ export const PrintFrame = ({
     </div>
   );
 
+/* ── The site's type, as For attorneys sets it, so every page reads the same
+      (Aaron, Nov 25). Section headings: light serif, 30 / 36 / 44px, the
+      second phrase on its own line in italic teal. The line under a heading:
+      Inter 16 / 17 / 18px in grey-500. Card, tile and list titles: Inter 20px
+      medium. Their text: Inter 15px in grey-600. Product screens keep the
+      product's own type. ── */
+export const H2_CLS = "font-heading text-[1.875rem] font-light sm:text-4xl md:text-[2.75rem]";
+export const H2_STYLE: React.CSSProperties = { lineHeight: 1.2, textWrap: "balance" };
+export const ACCENT_CLS = "block italic text-[#138F8B]";
+export const LEAD_CLS = "text-base sm:text-[17px] md:text-lg";
+export const LEAD_STYLE: React.CSSProperties = { lineHeight: 1.55, letterSpacing: "0.01em", textWrap: "pretty" };
+export const H3_CLS = "text-[20px] font-medium leading-snug";
+export const H3_STYLE: React.CSSProperties = { fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" };
+export const BODY_CLS = "text-[15px] leading-relaxed";
+
 /* ── Headline with the teal second line ── */
-export const TwoTone = ({ lead, accent, italic = false }: { lead: string; accent?: string; italic?: boolean }) => (
+export const TwoTone = ({ lead, accent, italic = true }: { lead: string; accent?: string; italic?: boolean }) => (
   <>
     {lead}
     {accent && <span className={`block text-[#138F8B] ${italic ? "italic" : ""}`}>{accent}</span>}
@@ -213,11 +228,11 @@ export const SectionHead = ({
         <Eyebrow light={light}>{eyebrow}</Eyebrow>
       </div>
     )}
-    <h2 className={`font-heading text-2xl font-bold md:text-3xl lg:text-[2.25rem] ${light ? "text-white" : "text-[#222222]"}`} style={{ lineHeight: 1.25, textWrap: "balance" }}>
+    <h2 className={`${H2_CLS} ${light ? "text-white" : "text-[#222222]"}`} style={H2_STYLE}>
       {typeof title === "string" ? <TwoTone lead={title} accent={accent} /> : title}
     </h2>
     {lead && (
-      <p className={`mt-4 text-[15px] md:text-[17px] ${light ? "text-white/80" : "text-gray-600"} ${center ? "mx-auto max-w-2xl" : ""}`} style={{ lineHeight: 1.6 }}>
+      <p className={`mt-5 ${LEAD_CLS} ${light ? "text-white/80" : "text-gray-500"} ${center ? "mx-auto max-w-2xl" : ""}`} style={LEAD_STYLE}>
         {lead}
       </p>
     )}
@@ -236,10 +251,10 @@ export const ValuePoints = ({ title, accent, eyebrow, points }: { title?: string
       <div className="grid gap-10 md:grid-cols-3 md:gap-12">
         {points.map((p) => (
           <div key={p.title} className="border-t-2 border-[#222222] pt-5">
-            <h3 className="font-heading text-xl font-bold text-[#222222]" style={{ lineHeight: 1.35 }}>
+            <h3 className={`${H3_CLS} text-[#222222]`} style={H3_STYLE}>
               {p.title}
             </h3>
-            <p className="mt-3 text-[15px] leading-relaxed text-gray-600 lg:text-base">{p.body}</p>
+            <p className={`mt-2 ${BODY_CLS} text-gray-600`}>{p.body}</p>
           </div>
         ))}
       </div>
@@ -254,10 +269,10 @@ export const FeatureRow = ({ r, flip }: { r: FeatureRowData; flip?: boolean }) =
   <div className={`flex flex-col items-center gap-8 lg:flex-row lg:gap-12 ${flip ? "lg:flex-row-reverse" : ""}`}>
     <div className="w-full lg:w-[38.2%]">
       {r.eyebrow && <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{r.eyebrow}</div>}
-      <h3 className="mt-2 font-heading text-xl font-bold text-[#222222] lg:text-2xl" style={{ lineHeight: 1.35 }}>
+      <h3 className={`mt-2 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>
         {r.title}
       </h3>
-      <p className="mt-3 text-[15px] leading-relaxed text-gray-600 lg:text-base">{r.body}</p>
+      <p className={`mt-2 ${BODY_CLS} text-gray-600`}>{r.body}</p>
       {r.bullets && (
         <ul className="mt-5 space-y-2.5">
           {r.bullets.map((b) => (
@@ -303,7 +318,7 @@ export const Steps = ({ eyebrow, title, accent, steps }: { eyebrow?: string; tit
         {steps.map((s, i) => (
           <li key={s.title} className="border-t border-gray-200 pt-5">
             <div className="font-heading text-[1.75rem] font-light italic leading-none text-[#138F8B]">{i + 1}</div>
-            <h3 className="mt-3 text-[16px] font-semibold text-[#222222]">{s.title}</h3>
+            <h3 className={`mt-3 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>{s.title}</h3>
             <p className="mt-2 text-[15px] leading-relaxed text-gray-600">{s.body}</p>
           </li>
         ))}
@@ -313,7 +328,7 @@ export const Steps = ({ eyebrow, title, accent, steps }: { eyebrow?: string; tit
 );
 
 /* ── FAQ: the homepage's — lines, not boxes; questions left, heading right ── */
-export const Faq = ({ title = "Common Questions", items }: { title?: string; items: { q: string; a: string }[] }) => {
+export const Faq = ({ title = "Common questions", items }: { title?: string; items: { q: string; a: string }[] }) => {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section className="bg-[#FCFCFD] py-16 md:py-20">
@@ -346,11 +361,11 @@ export const Faq = ({ title = "Common Questions", items }: { title?: string; ite
             </div>
           </div>
           <div className="order-1 md:order-2 md:w-2/5 md:pl-6">
-            <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">FAQ</div>
-            <h2 className="mt-3 font-heading text-3xl font-bold text-[#222222] md:text-4xl" style={{ lineHeight: 1.25 }}>
+            <Eyebrow>FAQ</Eyebrow>
+            <h2 className={`mt-3 ${H2_CLS} text-[#222222]`} style={H2_STYLE}>
               {title}
             </h2>
-            <p className="mt-4 max-w-sm text-[17px] leading-relaxed text-gray-600 md:text-lg">
+            <p className={`mt-5 max-w-sm ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
               Still can't find what you're looking for? We're happy to walk through anything specific to your practice or your state.
             </p>
             <div className="mt-6">
@@ -396,7 +411,7 @@ export const LinkCards = ({
             </div>
             <div className="flex flex-1 flex-col p-6">
               {c.eyebrow && <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{c.eyebrow}</div>}
-              <div className="mt-1.5 font-heading text-xl font-bold text-[#222222]">{c.label}</div>
+              <div className={`mt-1.5 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>{c.label}</div>
               <p className="mt-2 flex-1 text-[15px] leading-relaxed text-gray-600">{c.desc}</p>
               <span className="mt-5 inline-flex items-center gap-1 text-[14.5px] font-medium text-[#0C7370]">
                 Learn more <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -436,7 +451,7 @@ export const SecurityBand = () => (
         <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
           <div>
             <Eyebrow light>Security</Eyebrow>
-            <h2 className="mt-3 font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+            <h2 className={`mt-3 ${H2_CLS} text-white`} style={H2_STYLE}>
               Built for the most private documents a family has.
             </h2>
             <div className="mt-8">
@@ -448,7 +463,7 @@ export const SecurityBand = () => (
           <div className="grid gap-x-10 gap-y-7 sm:grid-cols-2">
             {SECURITY_POINTS.map((p) => (
               <div key={p.title} className="border-t border-white/25 pt-4">
-                <h3 className="font-heading text-[17px] font-bold text-white">{p.title}</h3>
+                <h3 className={`${H3_CLS} text-white`} style={H3_STYLE}>{p.title}</h3>
                 <p className="mt-1.5 text-[15px] leading-relaxed text-white/80">{p.body}</p>
               </div>
             ))}
@@ -489,7 +504,7 @@ export const ClosingCard = ({
       </div>
     }
   >
-    <h2 className="font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+    <h2 className={`${H2_CLS} text-white`} style={H2_STYLE}>
       {title}
     </h2>
     <p className="mt-6 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>

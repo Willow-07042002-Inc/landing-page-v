@@ -27,7 +27,7 @@ const NewsCard = ({ article: a, headingLevel = 2 }: { article: NewsArticle; head
           )}
           <span className="text-[12px] font-medium text-gray-400">{a.date}</span>
         </div>
-        <Heading className="mt-3 font-heading text-xl font-bold text-[#222222] md:text-[22px]" style={{ lineHeight: 1.35 }}>
+        <Heading className="mt-3 text-[20px] font-medium leading-snug text-[#222222]" style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" }}>
           {a.title}
         </Heading>
         <p className="mt-3 text-[15px] text-gray-600" style={{ lineHeight: 1.6 }}>

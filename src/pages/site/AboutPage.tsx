@@ -1,5 +1,5 @@
 import React from "react";
-import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta } from "@/components/site/blocks";
+import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta, H2_CLS, H2_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import NewsCard from "@/components/site/NewsCard";
 import { NEWS_ARTICLES } from "@/content/news";
 
@@ -123,16 +123,16 @@ const AboutPage = () => {
             <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
             <div className="relative z-10 p-8 md:p-14 lg:p-16">
-              <h2 className="max-w-3xl font-heading text-2xl font-bold text-white md:text-3xl lg:text-[2.25rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+              <h2 className={`max-w-3xl ${H2_CLS} text-white`} style={H2_STYLE}>
                 Two guiding principles behind every decision we make.
               </h2>
               <div className="mt-10 grid gap-10 md:mt-12 md:grid-cols-2 md:gap-14">
                 {BELIEFS.map((b) => (
                   <div key={b.title} className="border-t border-white/25 pt-6">
-                    <h3 className="font-heading text-xl font-bold text-white md:text-2xl" style={{ lineHeight: 1.25 }}>
+                    <h3 className={`${H3_CLS} text-white`} style={H3_STYLE}>
                       {b.title}
                     </h3>
-                    <p className="mt-4 max-w-xl text-[15px] text-white/85 md:text-[17px]" style={{ lineHeight: 1.65 }}>
+                    <p className={`mt-2 max-w-xl ${BODY_CLS} text-white/85`}>
                       {b.body}
                     </p>
                   </div>

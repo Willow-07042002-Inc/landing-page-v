@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { PageShell, PageHero, PrintFrame, Faq, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta, LinkCards } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, Faq, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta, LinkCards, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import { VaultVignette } from "@/components/site/vignettes";
 import { CARDS } from "@/content/pages";
 import { SUPPORT_EMAIL } from "@/content/siteMap";
@@ -62,8 +62,8 @@ const SecurityPage = () => {
           <div className="mt-12 grid gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
             {PILLARS.map((p) => (
               <div key={p.title} className="border-t-2 border-[#222222] pt-5">
-                <h3 className="font-heading text-xl font-bold text-[#222222]" style={{ lineHeight: 1.35 }}>{p.title}</h3>
-                <p className="mt-3 text-[15px] leading-relaxed text-gray-600 lg:text-base">{p.body}</p>
+                <h3 className={`${H3_CLS} text-[#222222]`} style={H3_STYLE}>{p.title}</h3>
+                <p className={`mt-2 ${BODY_CLS} text-gray-600`}>{p.body}</p>
               </div>
             ))}
           </div>
@@ -83,8 +83,8 @@ const SecurityPage = () => {
           ].map((x) => (
             <div key={x.k} className="border-t border-white/20 pt-5">
               <Eyebrow light>{x.k}</Eyebrow>
-              <div className="mt-3 font-heading text-[1.35rem] font-bold">{x.v}</div>
-              <p className="mt-2 text-[15.5px] leading-relaxed text-white/75">{x.b}</p>
+              <div className={`mt-3 ${H3_CLS}`} style={H3_STYLE}>{x.v}</div>
+              <p className={`mt-2 ${BODY_CLS} text-white/75`}>{x.b}</p>
               {x.link && (
                 <Link to={x.link.to} className="mt-4 inline-flex items-center gap-1.5 text-[14.5px] font-semibold text-white/90 hover:text-white">
                   {x.link.label} <ArrowRight className="h-4 w-4" />

@@ -17,7 +17,7 @@ import {
 } from "@/components/ProductVignettes";
 
 import { ScaledScreen } from "@/components/product/kit";
-import { PageHero, PrintFrame } from "@/components/site/blocks";
+import { PageHero, PrintFrame, Eyebrow, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
 import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
@@ -149,10 +149,10 @@ const AudienceRouter = () => (
       <div className="hv-content">
         <div className="col-span-full flex flex-col gap-[var(--hv-lg)]">
           <div className="flex flex-col items-center gap-[var(--hv-sm)] text-center">
-            <h2 className="hv-h2 font-heading font-light text-[#222222]">
-              One platform, <span className="text-[#138F8B]">for the attorney and the family.</span>
+            <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+              One platform, <span className={ACCENT_CLS}>for the attorney and the family.</span>
             </h2>
-            <p className="hv-body-2 max-w-[560px] text-gray-600">
+            <p className={`max-w-[560px] ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
               Attorneys run every client relationship from one place. Clients and the people they name get a plan they understand, shared on their terms.
             </p>
           </div>
@@ -279,12 +279,10 @@ const StackedCapabilities = () => {
     <>
       {/* Section intro — scrolls away before the pin, like General Magic */}
       <div className="container mx-auto px-4 pt-14 md:px-6 md:pt-16 lg:px-10 max-w-7xl">
-        <div className="flex items-center gap-3 text-[15px] font-semibold uppercase tracking-widest text-gray-500">
-          <span className="w-6 h-1.5 rounded-full bg-[#138F8B]" />
-          Core capabilities
-        </div>
-        <h2 className="text-3xl md:text-4xl lg:text-[2.5rem] font-heading font-bold text-[#222222] mt-3 max-w-3xl" style={{ lineHeight: 1.25 }}>
-          Purpose-built for estate attorneys and the families they protect.
+        <Eyebrow>Core capabilities</Eyebrow>
+        <h2 className={`mt-3 max-w-3xl ${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+          Purpose-built for estate attorneys
+          <span className={ACCENT_CLS}>and the families they protect.</span>
         </h2>
       </div>
 
@@ -301,9 +299,10 @@ const StackedCapabilities = () => {
               {CAPABILITIES.map((cap, i) => (
                 <div key={cap.title} className={`py-4 ${i === 0 ? "border-t-2 border-[#222222]" : "border-t border-gray-200"}`}>
                   <h3
-                    className={`font-heading font-bold text-xl lg:text-2xl transition-colors duration-300 cursor-default ${
-                      i === active ? "text-[#222222]" : "text-gray-400"
+                    className={`${H3_CLS} cursor-default transition-colors duration-300 ${
+                      i === active ? "text-[#222222]" : "text-gray-500"
                     }`}
+                  style={H3_STYLE}
                   >
                     {cap.title}
                   </h3>
@@ -320,7 +319,7 @@ const StackedCapabilities = () => {
                     }}
                   >
                     <p
-                      className="text-[17px] lg:text-lg text-gray-600 leading-relaxed mt-2.5 pr-2"
+                      className={`mt-2 pr-2 ${BODY_CLS} text-gray-600`}
                       style={{
                         opacity: i === active ? 1 : 0,
                         transform: i === active ? "none" : "translateY(10px)",
@@ -374,8 +373,8 @@ const StackedCapabilities = () => {
         {CAPABILITIES.map((cap, i) => (
           <div key={cap.title} className="md:grid md:grid-cols-[38.2fr_61.8fr] md:items-center md:gap-8 lg:gap-10">
             <div className="md:border-t md:border-gray-200 md:pt-4">
-              <h3 className="font-heading font-bold text-xl text-[#222222] mb-2 lg:text-2xl">{cap.title}</h3>
-              <p className="text-[17px] text-gray-600 leading-relaxed mb-4 lg:text-lg">{cap.body}</p>
+              <h3 className={`mb-2 ${H3_CLS} text-[#222222]`} style={H3_STYLE}>{cap.title}</h3>
+              <p className={`mb-4 ${BODY_CLS} text-gray-600`}>{cap.body}</p>
               {i === CAPABILITIES.length - 1 && (
                 <Button
                   className="willow-btn mt-2 hidden h-10 px-5 text-[15px] font-medium md:inline-flex"
@@ -543,11 +542,11 @@ const FaqSection = () => {
           </div>
           {/* Heading + contact */}
           <div className="order-1 md:order-2 md:w-2/5 md:pl-6">
-            <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">FAQ</div>
-            <h2 className="mt-3 font-heading text-3xl md:text-4xl font-bold text-[#222222]" style={{ lineHeight: 1.25 }}>
-              Common Questions
+            <Eyebrow>FAQ</Eyebrow>
+            <h2 className={`mt-3 ${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+              Common questions
             </h2>
-            <p className="mt-4 max-w-sm text-[17px] md:text-lg leading-relaxed text-gray-600">
+            <p className={`mt-5 max-w-sm ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
               Still can't find what you're looking for? We're happy to walk through anything specific to your practice or your jurisdiction.
             </p>
             <Button
@@ -555,7 +554,7 @@ const FaqSection = () => {
               className="willow-btn mt-6 px-7 py-5 text-base"
               onClick={() => (window.location.href = "/request-access")}
             >
-              Let's Get Started
+              Let's get started
             </Button>
           </div>
         </div>
@@ -685,7 +684,7 @@ const Home = () => {
             <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
             <div className="relative z-10 grid md:grid-cols-[1fr_1.15fr]">
               <div className="p-8 md:p-14 lg:p-16 md:pr-4">
-                <h2 className="font-heading text-2xl md:text-3xl lg:text-[2.25rem] font-bold text-white" style={{ lineHeight: 1.2, textWrap: "balance" }}>
+                <h2 className={`${H2_CLS} text-white`} style={H2_STYLE}>
                   Learn how we keep{" "}
                   <br className="hidden md:block" />
                   your clients connected.
