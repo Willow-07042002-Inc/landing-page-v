@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import AttorneyQuotes from "@/components/AttorneyQuotes";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { SharingHomeShot } from "@/components/ClientVignettes";
 import { Link } from "react-router-dom";
 import {
   CheckInDemoVignette,
@@ -669,41 +668,6 @@ const Home = () => {
               </Button>
             </div>
           </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* For clients — the darkened print card: white copy on the left, the
-          client sharing home surfacing out of the bottom-right corner */}
-      <section className="bg-[#FCFCFD] pb-12 md:pb-16">
-        <div className="container mx-auto max-w-7xl px-4 md:px-8">
-          <div className="relative overflow-hidden rounded-3xl">
-            <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
-            <div className="relative z-10 grid md:grid-cols-[1fr_1.15fr]">
-              <div className="p-8 md:p-14 lg:p-16 md:pr-4">
-                <h2 className={`${H2_CLS} text-white`} style={H2_STYLE}>
-                  Learn how we keep{" "}
-                  <br className="hidden md:block" />
-                  your clients connected.
-                </h2>
-                <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
-                  Willow becomes a lasting touchpoint between your practice and the entire family: everyone understands the plan, gets answers in moments, and is prepared long before when it matters most.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => navigate("/for-clients")}
-                  className="mt-8 inline-flex h-11 items-center rounded-md border border-white/70 bg-transparent px-6 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
-                >
-                  Explore the client experience
-                </button>
-              </div>
-              <div className="relative h-[340px] sm:h-[400px] md:h-auto md:min-h-[520px]">
-                <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[11%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
-                  <SharingHomeShot />
-                </div>
               </div>
             </div>
           </div>

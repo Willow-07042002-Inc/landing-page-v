@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
@@ -168,37 +167,7 @@ const ShareBlock = ({
   </div>
 );
 
-/* The homepage's client "Plan's Playbook" screen, framed at 960 design width
-   and self-scaling — used cropped, rising out of the closing card's corner. */
-const PlaybookShot = () => {
-  const W = 960;
-  const ref = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.5);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const measure = () => {
-      const w = el.offsetWidth || el.getBoundingClientRect().width;
-      if (w > 50) setScale(w / W);
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => { ro.disconnect(); window.removeEventListener("resize", measure); };
-  }, []);
-  return (
-    <div ref={ref} className="h-full w-full overflow-hidden">
-      <div style={{ width: W, height: 855, transform: `scale(${scale})`, transformOrigin: "top left" }}>
-        <ClientEstatePlanTodayScreen />
-      </div>
-    </div>
-  );
-};
-
 const ForClientsPage = () => {
-  const navigate = useNavigate();
-
   usePageMeta(
     "Willow for Clients & Their Team",
     "An estate plan everyone understands: your plan and your people in one place, and a direct line back to your attorney whenever life changes."
@@ -286,42 +255,6 @@ const ForClientsPage = () => {
             >
               <RoleChangeVignette />
             </ShareBlock>
-          </div>
-        </div>
-      </section>
-
-      {/* Closing — the demo ask, in the homepage's dark-card clothes: the
-          print darkened, white copy left, the Playbook screen rising from the
-          bottom-right corner */}
-      <section className="bg-[#F8FAFC] py-16 md:py-24">
-        <div className="container mx-auto max-w-7xl px-4 md:px-8">
-          <div className="relative overflow-hidden rounded-3xl">
-            <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
-            <div className="relative z-10 grid md:grid-cols-[1fr_1.15fr]">
-              <div className="p-8 md:p-14 lg:p-16 md:pr-4">
-                <h2 className={`${H2_CLS} text-white`} style={H2_STYLE}>
-                  Ready to bring this{" "}
-                  <br className="hidden md:block" />
-                  to your clients?
-                </h2>
-                <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
-                  Request a demo and walk through the client experience live — see how a signed plan becomes something the whole family understands, and keeps coming back to.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => navigate("/request-access")}
-                  className="mt-8 inline-flex h-11 items-center rounded-md border border-white/70 bg-transparent px-6 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
-                >
-                  Request a demo
-                </button>
-              </div>
-              <div className="relative h-[340px] sm:h-[400px] md:h-auto md:min-h-[520px]">
-                <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[11%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
-                  <PlaybookShot />
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

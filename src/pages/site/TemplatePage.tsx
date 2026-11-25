@@ -10,14 +10,10 @@ import {
   Faq,
   LinkCards,
   SecurityBand,
-  ClosingCta,
   Statement,
   usePageMeta,
 } from "@/components/site/blocks";
 import { CARDS, pageByPath } from "@/content/pages";
-import { ScaledScreen } from "@/components/product/kit";
-import { AttorneyDashboardScreen } from "@/components/product/attorney-dashboard";
-import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 
 /* Renders any platform or solutions page from its definition in
    src/content/pages.tsx, in the homepage's order and clothes: the hero and
@@ -94,11 +90,6 @@ const TemplatePage = () => {
       {related.length > 0 && (
         <LinkCards eyebrow={side.label} title={path === side.to ? "Everything here," : side.more} accent={path === side.to ? "page by page." : undefined} cards={related} />
       )}
-      <ClosingCta
-        title={def.closing?.title}
-        body={def.closing?.body}
-        shot={<ScaledScreen>{side.to === "/for-clients" ? <ClientEstatePlanTodayScreen /> : <AttorneyDashboardScreen />}</ScaledScreen>}
-      />
     </PageShell>
   );
 };

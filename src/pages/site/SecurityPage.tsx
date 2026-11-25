@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { PageShell, PageHero, PrintFrame, Faq, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta, LinkCards, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
+import { PageShell, PageHero, PrintFrame, Faq, SectionHead, WRAP, Eyebrow, usePageMeta, LinkCards, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import { VaultVignette } from "@/components/site/vignettes";
 import { CARDS } from "@/content/pages";
 import { SUPPORT_EMAIL } from "@/content/siteMap";
@@ -118,7 +118,6 @@ const SecurityPage = () => {
           { label: "Legal center", desc: "Every term and policy in one place.", to: "/legal", image: "/willow-street.jpg", eyebrow: "Legal" },
         ]}
       />
-      <ClosingCta />
     </PageShell>
   );
 };

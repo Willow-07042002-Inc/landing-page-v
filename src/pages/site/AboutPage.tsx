@@ -1,5 +1,5 @@
 import React from "react";
-import { PageShell, ClosingCta, SectionHead, WRAP, Eyebrow, usePageMeta, H2_CLS, H2_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
+import { PageShell, SectionHead, WRAP, Eyebrow, usePageMeta, H2_CLS, H2_STYLE, H3_CLS, H3_STYLE, BODY_CLS } from "@/components/site/blocks";
 import NewsCard from "@/components/site/NewsCard";
 import { NEWS_ARTICLES } from "@/content/news";
 
@@ -156,7 +156,6 @@ const AboutPage = () => {
         </div>
       </section>
 
-      <ClosingCta />
     </PageShell>
   );
 };
