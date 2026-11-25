@@ -10,7 +10,7 @@ import {
   CaMonthCalendar,
   CaSlotList,
 } from "@/components/product/client-app";
-import { CheckIcon, ChevronDownIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
+import { CheckIcon, ChevronDownIcon, EditIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
 
 /* For clients, staying in touch: two tiles set the way For attorneys' Keeping
    things easy sets its three (Aaron, Nov 25, 2026), each with its words above
@@ -166,10 +166,19 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-white text-left" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      {/* Who's asking, plainly: the product's header shows the firm's name;
-          here it says his attorney wants to check in. No × (Aaron, Nov 25) */}
-      <div className={`flex-shrink-0 ${pad} ${narrow ? "pb-2 pt-5" : "pb-3 pt-9"}`}>
-        <span className="block text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600, lineHeight: 1.4, textWrap: "balance" } as React.CSSProperties}>Your attorney, Rachel&nbsp;Alvarez, wants to check in</span>
+      {/* Who's asking, set as a notification the way the firm's update is
+          (FirmUpdate's header), with the product's pencil (willow-solid
+          edit.svg) for a check-in to fill in rather than the bell (Aaron,
+          Nov 25), then his attorney wanting to check in, and who she is. The product's header shows only the firm's name
+          in serif; no × (Aaron, Nov 25) */}
+      <div className={`flex-shrink-0 ${pad} ${narrow ? "pt-5" : "pt-8"}`}>
+        <div className={`flex items-start gap-3.5 border-b border-[#EEF0F2] ${narrow ? "pb-3.5" : "pb-4"}`} style={{ fontFamily: FIGTREE }}>
+          <EditIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#128F8B]" />
+          <div className="min-w-0">
+            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 16.5 }}>Your attorney wants to check in</p>
+            <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: narrow ? 13.5 : 14 }}>Rachel Alvarez · Alvarez Family Law</p>
+          </div>
+        </div>
       </div>
       <div ref={boxRef} className={`relative min-h-0 flex-1 overflow-hidden ${pad}`}>
         {/* Earlier turns fade out under the header as the thread moves up */}
