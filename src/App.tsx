@@ -25,7 +25,7 @@ import ForClientsPage from "./pages/ForClientsPage";
 const DevScreens = React.lazy(() => import("./pages/DevScreens"));
 const FilmReview = React.lazy(() => import("./pages/FilmReview"));
 import NewsPage from "./pages/NewsPage";
-import RegulatoryLibraryPage from "./pages/RegulatoryLibraryPage";
+const RegulatoryLibraryPage = React.lazy(() => import("./pages/RegulatoryLibraryPage"));
 import StateDetailPage from "./pages/StateDetailPage";
 import RequestAccess from "./pages/RequestAccess";
 import Investors from "./pages/Investors";
@@ -77,7 +77,7 @@ const App = () => (
           <Route path="/about" element={<AboutPage />} />
           <Route path="/legal" element={<LegalCenterPage />} />
           <Route path="/news" element={<NewsPage />} />
-          <Route path="/legislation-by-state" element={<RegulatoryLibraryPage />} />
+          <Route path="/legislation-by-state" element={<React.Suspense fallback={null}><RegulatoryLibraryPage /></React.Suspense>} />
           <Route path="/legislation-by-state/:slug" element={<StateDetailPage />} />
           {/* Legal set of Nov 13, 2026 (src/pages/legal). The apps link to these paths. */}
           <Route path="/terms" element={<LegalCenterPage />} />
