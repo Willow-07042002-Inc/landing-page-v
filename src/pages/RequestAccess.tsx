@@ -95,11 +95,11 @@ const RequestAccess = () => {
       <Navbar />
       <main className="flex-grow bg-[#FCFCFD]">
         {/* Hero Section with Calendar */}
-        <section className="bg-[#FCFCFD] pt-28 md:pt-32 pb-[100px] md:pb-12 hero-section">
+        <section className="bg-[#FCFCFD] pt-28 md:pt-32 pb-24 md:pb-32 hero-section">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl w-full">
             <div className="text-center mb-8 md:mb-10">
               <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">
-                {isClaiming ? "Book a demo to claim your offer" : "Book a demo"}
+                {isClaiming ? "Request a demo to claim your offer" : "Request a demo"}
               </div>
               <h1 className="mx-auto max-w-3xl font-heading text-2xl font-light text-[#222222] sm:text-3xl md:text-4xl" style={{ lineHeight: 1.25 }}>
                 Explore how Willow can best support your <br className="hidden md:inline" />firm and simplify life for your clients.

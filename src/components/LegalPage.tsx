@@ -36,7 +36,7 @@ export const LegalShell = ({
 }) => (
   <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
     <Navbar />
-    <main className="flex-grow pt-32 md:pt-36 pb-24">
+    <main className="flex-grow pt-32 md:pt-36 pb-24 md:pb-32">
       <div className="container px-4 mx-auto">
         <div className="max-w-2xl mx-auto">
           <div className="mb-4 text-center text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{eyebrow}</div>

@@ -43,7 +43,7 @@ const WhereWereLive = () => {
       <P>Willow isn't available in Washington yet.</P>
 
       <H2 id="states">States where Willow is available</H2>
-      <ul className="mb-6 border-t-2 border-[#222222]">
+      <ul className="border-t-2 border-[#222222]">
         {OPEN.map((s) => (
           <li key={s} className="flex items-baseline justify-between gap-4 border-b border-gray-200 px-1 py-3 text-[15px]">
             <span className="text-[#222222]">{s}</span>

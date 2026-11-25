@@ -287,7 +287,7 @@ const StateDetailPage = () => {
                   className="willow-btn mt-7 h-11 px-6 text-[15px] font-medium"
                   onClick={() => navigate("/request-access")}
                 >
-                  Book a Demo
+                  Request a demo
                 </Button>
               </div>
               <div className="overflow-hidden rounded-2xl" style={{ aspectRatio: "16 / 10", boxShadow: "0 8px 40px rgba(0,0,0,0.12)" }}>

@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,7 +15,6 @@ import {
   FirmAgreementPage,
   PrivacyPage,
   HealthDataNoticePage,
-  TermsIndexPage,
   SubprocessorsPage,
   ConnectionsPage,
   RequestDocumentsPage,
@@ -22,8 +22,11 @@ import {
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ForClientsPage from "./pages/ForClientsPage";
+const DevScreens = React.lazy(() => import("./pages/DevScreens"));
+const FilmReview = React.lazy(() => import("./pages/FilmReview"));
 import NewsPage from "./pages/NewsPage";
-import RegulatoryLibraryPage from "./pages/RegulatoryLibraryPage";
+import ContactPage from "./pages/site/ContactPage";
+const RegulatoryLibraryPage = React.lazy(() => import("./pages/RegulatoryLibraryPage"));
 import StateDetailPage from "./pages/StateDetailPage";
 import RequestAccess from "./pages/RequestAccess";
 import Investors from "./pages/Investors";
@@ -32,6 +35,10 @@ import Founding100 from "./pages/Founding100";
 import NewYorkStateBar from "./pages/NewYorkStateBar";
 import WhereWereLive from "./pages/WhereWereLive";
 import ZoomGuide from "./pages/ZoomGuide";
+import TemplatePage from "./pages/site/TemplatePage";
+import LegalCenterPage from "./pages/site/LegalCenterPage";
+import AttorneysPage from "./pages/site/AttorneysPage";
+import { PAGES, PARKED_PAGES } from "./content/pages";
 
 const queryClient = new QueryClient();
 
@@ -49,11 +56,31 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/for-clients" element={<ForClientsPage />} />
+          {import.meta.env.DEV && (
+            <Route path="/dev/film" element={<React.Suspense fallback={null}><FilmReview /></React.Suspense>} />
+          )}
+          {import.meta.env.DEV && (
+            <Route path="/dev/screens" element={<React.Suspense fallback={null}><DevScreens /></React.Suspense>} />
+          )}
+          <Route path="/platform" element={<AttorneysPage />} />
+          {/* Deeper pages, rendered from src/content/pages.tsx. Parked ones
+              redirect to their part of the two main pages for now. */}
+          {PAGES.filter((p) => !PARKED_PAGES[p.path]).map((p) => (
+            <Route key={p.path} path={p.path} element={<TemplatePage />} />
+          ))}
+          {Object.entries(PARKED_PAGES).map(([from, to]) => (
+            <Route key={from} path={from} element={<Navigate to={to} replace />} />
+          ))}
+          <Route path="/solutions/executors-trustees" element={<Navigate to="/solutions/their-team#executors-trustees" replace />} />
+          <Route path="/solutions/guardians" element={<Navigate to="/solutions/their-team#guardians" replace />} />
+          <Route path="/solutions/agents" element={<Navigate to="/solutions/their-team#agents" replace />} />
+          <Route path="/legal" element={<LegalCenterPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/news" element={<NewsPage />} />
-          <Route path="/legislation-by-state" element={<RegulatoryLibraryPage />} />
+          <Route path="/legislation-by-state" element={<React.Suspense fallback={null}><RegulatoryLibraryPage /></React.Suspense>} />
           <Route path="/legislation-by-state/:slug" element={<StateDetailPage />} />
           {/* Legal set of Nov 13, 2026 (src/pages/legal). The apps link to these paths. */}
-          <Route path="/terms" element={<TermsIndexPage />} />
+          <Route path="/terms" element={<LegalCenterPage />} />
           <Route path="/member-terms" element={<MemberTermsPage />} />
           <Route path="/recipient-terms" element={<RecipientTermsPage />} />
           <Route path="/firm-agreement" element={<FirmAgreementPage />} />
@@ -67,7 +94,21 @@ const App = () => (
             ["/privacy-policy", "/privacy"],
             ["/terms-of-service", "/terms"],
             ["/terms-and-conditions", "/terms"],
-            ["/legal", "/terms"],
+            ["/solutions", "/platform"],
+            ["/solutions/practice-growth", "/platform/check-ins"],
+            ["/platform/vault", "/platform/client-dashboard"],
+            ["/platform/signing", "/platform"],
+            ["/solutions/solo", "/platform"],
+            ["/solutions/boutique-firms", "/platform"],
+            ["/solutions/wills", "/platform/plan-summaries"],
+            ["/solutions/trusts", "/platform/plan-summaries"],
+            ["/solutions/powers-of-attorney", "/platform/plan-summaries"],
+            ["/solutions/guardianship", "/platform/plan-summaries"],
+            ["/trust", "/platform"],
+            ["/security", "/platform"],
+            ["/about", "/"],
+,
+,
             ["/member-agreement", "/member-terms"],
             ["/recipient-agreement", "/recipient-terms"],
             ["/fsa", "/firm-agreement"],
@@ -97,7 +138,7 @@ const App = () => (
           {/* Spelled-out alias: easier to say out loud at a booth than "nysba" */}
           <Route path="/new-york-state-bar" element={<Navigate to="/nysba" replace />} />
           {/* Retired pages — old links land somewhere sensible instead of a 404 */}
-          {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/contact", "/create-will", "/availability-map", "/learn", "/about-us", "/pitol"].map((p) => (
+          {["/attorneys", "/old-home", "/clients", "/for-lawyers", "/create-will", "/availability-map", "/learn", "/pitol"].map((p) => (
             <Route key={p} path={p} element={<Navigate to="/" replace />} />
           ))}
           <Route path="/book" element={<Navigate to="/request-access" replace />} />

@@ -16,7 +16,7 @@ const QUOTES = [
 ];
 
 const AttorneyQuotes = () => (
-  <section className="py-12 md:py-16">
+  <section className="pb-24 md:pb-32">
     <div className="container mx-auto max-w-5xl px-4 md:px-8">
       <div className="grid gap-10 md:grid-cols-2 md:gap-12">
         {QUOTES.map((r) => (

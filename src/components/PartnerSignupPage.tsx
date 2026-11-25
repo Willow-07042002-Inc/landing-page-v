@@ -219,7 +219,7 @@ const PartnerSignupPage = ({
   return (
     <div className="min-h-screen flex flex-col bg-[#FCFCFD]" style={{ color: "#222222" }}>
       <Navbar />
-      <main className="flex-grow overflow-x-clip pt-28 md:pt-32 lg:pb-28">
+      <main className="flex-grow overflow-x-clip pt-28 md:pt-32 lg:pb-32">
         <div className="container mx-auto max-w-7xl px-5 md:px-8">
           <div className="grid gap-14 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:gap-16">
 
@@ -297,8 +297,8 @@ const PartnerSignupPage = ({
                 <ul>
                   {BENEFITS.map(({ gain, rest, body }) => (
                     <li key={gain} className="border-t border-gray-100 py-5 first:border-t-0 first:pt-0 last:pb-0">
-                      <h3 className="font-heading text-[19px] font-normal text-[#222222] md:text-[21px]" style={{ lineHeight: 1.3 }}>
-                        <span className="font-bold text-[#128F8B]">{gain}</span> {rest}
+                      <h3 className="text-[19px] font-medium leading-snug text-[#222222] md:text-[20px]" style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.01em" }}>
+                        <span className="text-[#128F8B]">{gain}</span> {rest}
                       </h3>
                       <p className="mt-1.5 text-[14.5px] text-gray-500 md:text-[15px]" style={{ lineHeight: 1.6 }}>{body}</p>
                     </li>

@@ -1,31 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
 import { VignetteFrame } from "@/components/ProductVignettes";
-import { ClientEstatePlanScreen } from "@/pages/Home";
+import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
+import { ScaledScreen } from "@/components/product/kit";
+import { PageShell, PageHero, PrintFrame, PrimaryButton, Faq, WRAP, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
+import ReachOutButton from "@/components/site/AttorneyReferral";
+import StayInTouchFilm from "@/components/site/StayInTouchFilm";
+import { ChapterFilmSection } from "@/components/site/StayingAhead";
+import PrepareFilm, { PREPARE_CHAPTERS } from "@/components/site/PrepareFilm";
 import {
   TeamRosterVignette,
   StepInVignette,
   WhoGetsWhatVignette,
   TrustVignette,
   DocumentsVaultVignette,
-  CategoriesVignette,
-  ReleaseTimingVignette,
-  RoleChangeVignette,
-  SectionShareVignette,
 } from "@/components/ClientVignettes";
 
 /* ── The five summary chapters, shown in a continuous (wrap-around) carousel:
      the active screen sits centered while its neighbours peek in from both
      sides, so chapter 5 is visible to the left of chapter 1. ── */
 const CHAPTERS: { label: string; vis: React.ReactNode }[] = [
-  { label: "Your team", vis: <TeamRosterVignette /> },
+  { label: "Their team", vis: <TeamRosterVignette /> },
   { label: "Who's responsible if someone needs to step in", vis: <StepInVignette /> },
   { label: "Where everything goes", vis: <WhoGetsWhatVignette /> },
   { label: "Testamentary trust", vis: <TrustVignette /> },
-  { label: "Your documents", vis: <DocumentsVaultVignette /> },
+  { label: "Their documents", vis: <DocumentsVaultVignette /> },
 ];
 
 const ChapterCarousel = () => {
@@ -135,199 +133,142 @@ const ChapterCarousel = () => {
   );
 };
 
-/* ── One preparedness row: eyebrow + title + body beside a vignette ── */
-const ShareBlock = ({
-  eyebrow,
-  title,
-  body,
-  note,
-  flip,
-  children,
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-  note?: string;
-  flip?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className={`flex flex-col gap-8 lg:gap-12 items-center lg:flex-row ${flip ? "lg:flex-row-reverse" : ""}`}>
-    {/* Golden-section split: copy 38.2%, product 61.8% — from lg up; phones and
-        iPad portrait stack, so the product keeps its full width */}
-    <div className="w-full lg:w-[38.2%]">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">{eyebrow}</div>
-      <h3 className="mt-2 text-xl lg:text-2xl font-heading font-bold text-[#222222]" style={{ lineHeight: 1.35 }}>
-        {title}
-      </h3>
-      <p className="mt-3 text-[15px] lg:text-base text-gray-600 leading-relaxed">{body}</p>
-      {note && <p className="mt-2 text-[13.5px] text-gray-400">{note}</p>}
-    </div>
-    <div className="w-full lg:w-[61.8%]">
-      <VignetteFrame>{children}</VignetteFrame>
-    </div>
-  </div>
-);
+/* ── The questions an attorney asks about their clients' side of Willow,
+      asked and answered to the attorney, as the whole site speaks (Aaron,
+      Nov 25). The answers restate what the page and the product already
+      say; the one new fact, that the people a client names don't pay, is
+      Aaron's. Kept plain so "at any time" never reads as "before it's been
+      released". ── */
+const CLIENT_FAQ = [
+  {
+    q: "Who can see a client’s plan?",
+    a: "Your client and your firm. Nobody else sees anything until your client shares it.",
+  },
+  {
+    q: "Do the people my clients share with have to pay?",
+    a: "No. It’s part of your client’s plan. Everyone they name gets their own account at no cost, and sees what’s been shared with them.",
+  },
+  {
+    q: "Can clients keep parts of their plan private until they pass?",
+    a: "Yes. Your clients have full authority to choose what’s shared now and what waits until they pass away. Anything held back stays sealed until you verify the passing. Until then, the people they’ve named can sign in to their accounts, but only see what your client has shared with them so far.",
+  },
+  {
+    q: "Can clients change who has access later?",
+    a: "Yes, at any time. They can add or remove people and change what each one has. When you update a plan, Willow makes suggestions to ensure your client’s team is well prepared.",
+  },
+  {
+    q: "Who writes the plain-English summary?",
+    a: "Willow drafts it from the signed documents, and you review and approve it before your client sees a word.",
+  },
+  {
+    q: "Is client information used to train AI?",
+    a: "Never. Documents are read only to draft the summary you review.",
+  },
+  {
+    q: "How do my clients get Willow?",
+    a: "Drop in their signed documents. Willow goes through the details, creates their accounts and sends the invites to their portal.",
+  },
+];
 
-/* The homepage's client "Plan's Playbook" screen, framed at 960 design width
-   and self-scaling — used cropped, rising out of the closing card's corner. */
-const PlaybookShot = () => {
-  const W = 960;
-  const ref = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.5);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const measure = () => {
-      const w = el.offsetWidth || el.getBoundingClientRect().width;
-      if (w > 50) setScale(w / W);
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => { ro.disconnect(); window.removeEventListener("resize", measure); };
-  }, []);
-  return (
-    <div ref={ref} className="h-full w-full overflow-hidden">
-      <div style={{ width: W, height: 855, transform: `scale(${scale})`, transformOrigin: "top left" }}>
-        <ClientEstatePlanScreen />
-      </div>
-    </div>
-  );
-};
-
-const ForClientsPage = () => {
-  const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen flex flex-col" style={{ color: "#222222" }}>
-      <Navbar />
-
-      {/* Hero */}
-      <section className="relative flex w-full items-center bg-[#F8FAFC] pt-[env(safe-area-inset-top)]" style={{ minHeight: "min(86svh, 860px)" }}>
-        <div className="container relative z-10 mx-auto w-full px-4 pb-16 pt-24">
-          <div className="flex w-full flex-col items-center justify-center text-center">
-            <div className="mb-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">For clients</div>
-            <h1 className="mb-5 w-full font-heading text-3xl font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]" style={{ lineHeight: 1.2 }}>
-              An estate plan
-              <span className="block italic text-[#138F8B]">everyone understands.</span>
-            </h1>
-            <p className="mb-8 max-w-2xl text-base font-normal text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em" }}>
-              Modern enough for the next generation. Simple enough for their parents. Your plan, your people, and your attorney — all in one place.
+/* ── The page's close, for the client reading it (Aaron, Nov 25): Willow
+      comes through their attorney, so Willow offers to reach out to them.
+      The button opens a small window asking only for the attorney's name
+      and email (AttorneyReferral.tsx). Set like the home page's founder
+      note, a white card floating over the print, with the print a little
+      darker than the page's other frames so the card stands off it. The
+      attorney's demo ask is the footer's top line, just below. ── */
+const ClientAsk = () => (
+  <section className="bg-[#F8FAFC] pb-24 md:pb-32">
+    <div className={`${WRAP} max-w-6xl lg:px-10`}>
+      <div className="relative overflow-hidden rounded-3xl">
+        <img src="/williamsburg.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
+        <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.4)" }} />
+        <div className="relative z-10 p-5 sm:p-10 md:p-16">
+          <div className="mx-auto max-w-4xl rounded-2xl bg-white px-6 py-10 text-center sm:px-10 md:px-14 md:py-14" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+            <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+              Want Willow for your plan? <span className={ACCENT_CLS}>We&rsquo;ll reach out to your attorney.</span>
+            </h2>
+            <p className={`mx-auto mt-5 max-w-xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
+              Tell us who drafted your plan, and we&rsquo;ll get in touch with them about Willow.
             </p>
-            <Button
-              size="lg"
-              className="willow-btn px-8 py-6 text-[17px]"
-              style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
-              onClick={() => navigate("/request-access")}
-              data-hero-demo-button
-            >
-              Elevate your client experience
-            </Button>
+            <div className="mt-8">
+              <ReachOutButton />
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
+);
 
-      {/* The summary — five chapters in a continuous carousel */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
+const ForClientsPage = () => {
+  usePageMeta(
+    "Willow for Clients & Their Team",
+    "An estate plan your clients understand: their plan and their people in one place, and a direct line back to you whenever life changes."
+  );
+
+  return (
+    <PageShell>
+      {/* Hero, set as every site page's: the headline, then the client
+          dashboard on the print under the deep teal wash, as For attorneys has it,
+          every card closed (Aaron, Nov 24). */}
+      <PageHero
+        eyebrow="For clients"
+        title="An estate plan"
+        accent="everyone understands."
+        subtitle="Modern enough for the next generation. Simple enough for their parents. Your clients get their plan and their people in one place, and a direct line back to you whenever life changes."
+        visualAspect="1440 / 855"
+        visual={
+          <PrintFrame print="/florida-coast.jpg" aspect="1440 / 855" className="shadow-2xl">
+            <ScaledScreen>
+              <ClientEstatePlanTodayScreen closed />
+            </ScaledScreen>
+          </PrintFrame>
+        }
+      />
+
+      {/* Staying in touch: the yearly check-in through to a call booked on
+          the attorney's calendar */}
+      <StayInTouchFilm />
+
+      {/* The summary — five chapters in a continuous carousel. The one
+          centred heading on the page after the hero, between two set left,
+          as For attorneys alternates them (Aaron, Nov 25). */}
+      <section className="relative overflow-hidden bg-[#F8FAFC] pb-24 md:pb-32">
         <div className="container relative z-10 mx-auto px-4 md:px-8">
-          <div className="mx-auto mb-10 max-w-2xl text-center md:mb-12">
-            <h2 className="font-heading text-2xl font-bold text-[#222222] md:text-3xl lg:text-[2rem]" style={{ lineHeight: 1.3 }}>
-              Countless pages, <span className="block text-[#138F8B]">one simple summary.</span>
+          <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
+            <h2 className={`${H2_CLS} text-[#222222]`} style={H2_STYLE}>
+              Forget the legalese. <span className={ACCENT_CLS}>We&rsquo;ll summarize everything.</span>
             </h2>
-            <p className="mt-3 text-[15px] text-gray-600 md:text-base" style={{ lineHeight: 1.6 }}>
-              Willow turns every plan into a story the family can actually follow — reviewed and approved by you before they see a word.
+            <p className={`mx-auto mt-5 max-w-2xl ${LEAD_CLS} text-gray-500`} style={LEAD_STYLE}>
+              Willow turns every plan into a story the family can actually follow, reviewed and approved by you before they see a word.
             </p>
           </div>
           <ChapterCarousel />
         </div>
       </section>
 
-      {/* Preparedness & sharing */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
-        <div className="container relative z-10 mx-auto px-4 md:px-8 lg:px-10 max-w-6xl">
-          <div className="mx-auto mb-12 max-w-4xl text-center md:mb-16">
-            <h2 className="text-2xl md:text-3xl lg:text-[2rem] font-heading font-bold text-[#222222]" style={{ lineHeight: 1.3 }}>
-              Everyone prepared. <span className="block text-[#138F8B]">Nothing shared early.</span>
-            </h2>
-            <p className="mt-3 text-[15px] md:text-base text-gray-600" style={{ lineHeight: 1.6 }}>
-              Everyone gets exactly what they need, exactly when they need it,
-              <span className="block">from one place you control.</span>
-            </p>
-          </div>
-          <div className="flex flex-col gap-16 md:gap-24">
-            <ShareBlock
-              eyebrow="Gather"
-              title="Everything they'll need, where they'll look for it."
-              body="Beyond the legal documents: accounts, insurance, passwords, the pediatrician's number. Willow tells you exactly what to gather and where it goes, so when someone has to step in, it's waiting for them, not buried in a drawer, an inbox, or someone's memory."
-            >
-              <CategoriesVignette />
-            </ShareBlock>
-            <ShareBlock
-              flip
-              eyebrow="Share"
-              title="Everyone ends up prepared."
-              body="An executor needs different things than a guardian. Willow understands each role and recommends who should receive what. You review it and approve. Everyone you've named gets their own portal, so what's meant for them is there when they sign in."
-            >
-              <SectionShareVignette />
-            </ShareBlock>
-            <ShareBlock
-              eyebrow="Control"
-              title="You control what opens, and when."
-              body="Putting something in someone's hands too early can cause friction in a family. So Willow lets you put everything in place today and control when each piece releases. The will stays sealed until your passing is verified by your attorney. Until then, the people you've named can see something is waiting for them, but not what it says."
-            >
-              <ReleaseTimingVignette />
-            </ShareBlock>
-            <ShareBlock
-              flip
-              eyebrow="Stay current"
-              title="Nothing goes out of date."
-              body="When a plan is updated and responsibilities change hands, Willow notices and proposes exactly what needs to change in what you've already shared. You review it once and approve."
-            >
-              <RoleChangeVignette />
-            </ShareBlock>
-          </div>
-        </div>
-      </section>
+      {/* Preparing their team: chapters left, the client's screen right, as
+          For attorneys sets out "A practice families keep coming back to" */}
+      <ChapterFilmSection
+        name="prepare"
+        title="Prepare their team now,"
+        accent="so no one's left scrambling."
+        label="Preparing the people your clients name"
+        chapters={PREPARE_CHAPTERS}
+        Film={PrepareFilm}
+        sectionClass="bg-[#F8FAFC] pb-24 md:pb-32"
+      />
 
-      {/* Closing — the demo ask, in the homepage's dark-card clothes: the
-          print darkened, white copy left, the Playbook screen rising from the
-          bottom-right corner */}
-      <section className="bg-[#F8FAFC] py-16 md:py-24">
-        <div className="container mx-auto max-w-7xl px-4 md:px-8">
-          <div className="relative overflow-hidden rounded-3xl">
-            <img src="/west-side-hwy.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.72)" }} />
-            <div className="relative z-10 grid md:grid-cols-[1fr_1.15fr]">
-              <div className="p-8 md:p-14 lg:p-16 md:pr-4">
-                <h2 className="font-heading text-2xl md:text-3xl lg:text-[2.25rem] font-bold text-white" style={{ lineHeight: 1.2, textWrap: "balance" }}>
-                  Ready to bring this{" "}
-                  <br className="hidden md:block" />
-                  to your clients?
-                </h2>
-                <p className="mt-6 max-w-xl text-[15px] md:text-[17px] text-white/85" style={{ lineHeight: 1.65 }}>
-                  Book a demo and walk through the client experience live — see how a signed plan becomes something the whole family understands, and keeps coming back to.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => navigate("/request-access")}
-                  className="mt-8 inline-flex h-11 items-center rounded-md border border-white/70 bg-transparent px-6 text-[15px] font-medium text-white transition-colors hover:bg-white/10"
-                >
-                  Book a Demo
-                </button>
-              </div>
-              <div className="relative h-[340px] sm:h-[400px] md:h-auto md:min-h-[520px]">
-                <div className="absolute -bottom-12 -right-12 left-6 top-6 overflow-hidden rounded-tl-xl bg-white md:left-[8%] md:top-[11%]" style={{ boxShadow: "0 16px 56px rgba(0,0,0,0.35)" }}>
-                  <PlaybookShot />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Faq
+        items={CLIENT_FAQ}
+        blurb="Want to see it from your client's side? We'll walk you through it."
+        action={<PrimaryButton>Request a demo</PrimaryButton>}
+        sectionClass="bg-[#F8FAFC] pb-24 md:pb-32"
+      />
 
-      <Footer />
-    </div>
+      <ClientAsk />
+    </PageShell>
   );
 };
 

@@ -9,6 +9,10 @@
 // clock falls back). It reports everyone who signed up since midnight New
 // York time on the day it runs.
 //
+// Since Nov 25 it also carries the Contact page's messages and For
+// clients' attorney referrals (both in SIGNUP_FORM_TYPES), so it reads as
+// "Website leads"; each card names its source.
+//
 // It sends every night, including nights with no sign-ups: a "no sign-ups
 // today" line is a cheap confirmation that the pipeline is still alive, so a
 // quiet inbox is never ambiguous between "nobody signed up" and "it broke".
@@ -74,7 +78,7 @@ export function buildHtml(rows: Row[], dayLabel: string): string {
     const detail = firm
       ? FIRM_FIELDS.map((f, i) => [f, firm[i]] as const)
       // Unrecognised message shape: show it whole rather than drop it.
-      : [["Details", r.message ?? "—"] as const];
+      : [["Message", r.message ?? "—"] as const];
     const time = new Intl.DateTimeFormat("en-US", {
       timeZone: TIMEZONE, hour: "numeric", minute: "2-digit",
     }).format(new Date(r.created_at));
@@ -87,7 +91,7 @@ export function buildHtml(rows: Row[], dayLabel: string): string {
           </div>
           <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
             ${detail.map(([k, v]) => `<tr><td ${label}>${esc(k)}</td><td ${value}>${esc(v)}</td></tr>`).join("")}
-            <tr><td ${label}>Signed up</td><td ${value}>${esc(time)}</td></tr>
+            <tr><td ${label}>Received</td><td ${value}>${esc(time)}</td></tr>
             <tr><td ${label}>Source</td><td ${value}>${esc(signupSourceLabel(r.form_type))}</td></tr>
           </table>
         </td></tr>
@@ -97,16 +101,16 @@ export function buildHtml(rows: Row[], dayLabel: string): string {
 
   const body = rows.length
     ? `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">${rows.map(card).join("")}</table>`
-    : `<p style="font-size:15px;color:#5A6570;margin:0;">No Founding Partner sign-ups today.</p>`;
+    : `<p style="font-size:15px;color:#5A6570;margin:0;">Nothing new from the website today.</p>`;
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;font-family:Arial,'Segoe UI',sans-serif;background:#F4F6F8;">
   <div style="max-width:560px;margin:0 auto;padding:24px 14px;">
     <div style="background:#ffffff;border-radius:16px;padding:28px 22px;border:1px solid #E7EAEE;">
-      <div style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.14em;color:#0C7370;">Founding Partners</div>
+      <div style="font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.14em;color:#0C7370;">Website leads</div>
       <h1 style="font-family:Georgia,serif;font-weight:normal;font-size:23px;color:#222222;margin:8px 0 4px;">
-        ${rows.length} sign-up${rows.length === 1 ? "" : "s"} today
+        ${rows.length} new today
       </h1>
       <p style="font-size:13px;color:#8A93A0;margin:0 0 22px;">${esc(dayLabel)}</p>
       ${body}
@@ -170,7 +174,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await transporter.sendMail({
       from: process.env.SMTP_FROM_EMAIL ?? process.env.SMTP_USER,
       to: DIGEST_TO,
-      subject: `Founding Partners — ${rows.length} sign-up${rows.length === 1 ? "" : "s"} today (${dayLabel})`,
+      subject: `Willow website leads — ${rows.length} new today (${dayLabel})`,
       html: buildHtml(rows, dayLabel),
     });
   } catch (err) {
