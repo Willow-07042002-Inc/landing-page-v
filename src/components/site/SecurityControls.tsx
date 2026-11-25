@@ -10,12 +10,12 @@ import { WRAP } from "@/components/site/blocks";
    the rows are its own commitments, each one the Security page already makes
    (checked against the product and the Privacy Policy, Nov 16, 2026). */
 
-/* Six statements, in the order attorneys ask them (Aaron, Nov 25): the
+/* Five statements, in the order attorneys ask them (Aaron, Nov 25): the
    For attorneys section and the Security page's six commitments and FAQ,
    folded into one list. Each title is a plain statement, each line one
    sentence. Every claim is one the product or the Privacy Policy makes:
    per-item release (now, on incapacity, after a passing, or the client's own
-   condition) is ReleaseSelector.tsx; meet-first is access-meeting.ts; the AI
+   condition) is ReleaseSelector.tsx, and locked items open only once the attorney verifies the passing; the AI
    row is the Anthropic organization's zero data retention, which the firm
    agreements promise (willow-platform CLAUDE.md, "AI and client data");
    AES-256 at rest and TLS in transit are Supabase's and Vercel's own
@@ -23,7 +23,7 @@ import { WRAP } from "@/components/site/blocks";
 const CONTROLS = [
   {
     title: "Clients control when their team sees their documents",
-    body: "Everyone your client shares with gets their own account right away, and your client can lock any part of their plan or documents until they pass away.",
+    body: "Everyone your client shares with gets their own account right away, and anything your client locks stays locked until you confirm their passing.",
   },
   {
     title: "We never train AI on your clients’ data",
@@ -34,12 +34,8 @@ const CONTROLS = [
     body: "Everything is encrypted with AES-256, the same standard banks rely on, both as it travels and where it’s stored.",
   },
   {
-    title: "Nothing locked is opened until you verify it",
-    body: "Anything locked until a passing stays locked until you confirm it, usually from the death certificate, and you can choose to meet the family first.",
-  },
-  {
     title: "Every access is on record",
-    body: "Every view, download, share and release decision is logged and kept for seven years.",
+    body: "Every view, download, share and release decision is logged.",
   },
   {
     title: "We only take what we need from your email and calendar",
