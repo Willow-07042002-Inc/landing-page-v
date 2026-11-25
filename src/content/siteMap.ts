@@ -49,7 +49,7 @@ export const RESOURCE_COLUMNS: NavColumn[] = [
   {
     title: "Learn",
     links: [
-      { label: "Legislation by state", desc: "Electronic wills and remote signing law, state by state", to: "/legislation-by-state" },
+      { label: "Legislation by state", desc: "Where electronic wills are law, state by state", to: "/legislation-by-state" },
       { label: "Willow in the news", desc: "Coverage and announcements", to: "/news" },
     ],
   },
@@ -57,7 +57,6 @@ export const RESOURCE_COLUMNS: NavColumn[] = [
     title: "Guides",
     links: [
       { label: "Requesting documents", desc: "After a passing, or to check a will is on file", to: "/request-documents" },
-      { label: "New York State Bar", desc: "For NYSBA members", to: "/nysba" },
     ],
   },
 ];
@@ -66,11 +65,11 @@ export const COMPANY_COLUMNS: NavColumn[] = [
   {
     title: "Company",
     links: [
-      { label: "About Willow", desc: "Why Willow exists, and the team behind our mission", to: "/about" },
       { label: "Where we're live", desc: "The states Willow serves today", to: "/availability" },
       { label: "Careers", desc: "Join our team as a founding member", to: "/careers" },
       { label: "Contact", desc: SUPPORT_EMAIL, href: `mailto:${SUPPORT_EMAIL}` },
       { label: "Legal center", desc: "Terms, privacy and every policy in one place", to: "/legal" },
+      { label: "New York State Bar", desc: "For NYSBA members", to: "/nysba" },
     ],
   },
 ];
@@ -116,15 +115,14 @@ export const FOOTER_COLUMNS: NavColumn[] = [
       { label: "Legislation by state", to: "/legislation-by-state" },
       { label: "Willow in the news", to: "/news" },
       { label: "Requesting documents", to: "/request-documents" },
-      { label: "New York State Bar", to: "/nysba" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", to: "/about" },
       { label: "Where we're live", to: "/availability" },
       { label: "Careers", to: "/careers" },
+      { label: "New York State Bar", to: "/nysba" },
       { label: "Contact", href: `mailto:${SUPPORT_EMAIL}` },
       { label: "Legal center", to: "/legal" },
       { label: "Privacy Policy", to: "/privacy" },

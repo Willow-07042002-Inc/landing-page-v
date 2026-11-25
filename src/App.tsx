@@ -35,7 +35,6 @@ import NewYorkStateBar from "./pages/NewYorkStateBar";
 import WhereWereLive from "./pages/WhereWereLive";
 import ZoomGuide from "./pages/ZoomGuide";
 import TemplatePage from "./pages/site/TemplatePage";
-import AboutPage from "./pages/site/AboutPage";
 import LegalCenterPage from "./pages/site/LegalCenterPage";
 import AttorneysPage from "./pages/site/AttorneysPage";
 import { PAGES, PARKED_PAGES } from "./content/pages";
@@ -74,7 +73,6 @@ const App = () => (
           <Route path="/solutions/executors-trustees" element={<Navigate to="/solutions/their-team#executors-trustees" replace />} />
           <Route path="/solutions/guardians" element={<Navigate to="/solutions/their-team#guardians" replace />} />
           <Route path="/solutions/agents" element={<Navigate to="/solutions/their-team#agents" replace />} />
-          <Route path="/about" element={<AboutPage />} />
           <Route path="/legal" element={<LegalCenterPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/legislation-by-state" element={<React.Suspense fallback={null}><RegulatoryLibraryPage /></React.Suspense>} />
@@ -106,8 +104,9 @@ const App = () => (
             ["/solutions/guardianship", "/platform/plan-summaries"],
             ["/trust", "/platform"],
             ["/security", "/platform"],
-            ["/company", "/about"],
-            ["/about-us", "/about"],
+            ["/about", "/"],
+,
+,
             ["/member-agreement", "/member-terms"],
             ["/recipient-agreement", "/recipient-terms"],
             ["/fsa", "/firm-agreement"],
