@@ -154,7 +154,7 @@ const CLIENT_FAQ = [
   },
   {
     q: "Can clients change who has access later?",
-    a: "Yes, at any time. They can add or remove people and change what each one has. When you update a plan, Willow suggests what to change in what they’ve already shared, and your client approves it.",
+    a: "Yes, at any time. They can add or remove people and change what each one has. When you update a plan, Willow makes suggestions to ensure your client’s team is well prepared.",
   },
   {
     q: "Who writes the plain-English summary?",
