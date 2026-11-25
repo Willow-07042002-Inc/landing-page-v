@@ -126,7 +126,7 @@ export const ChapterFilmSection = ({
   label,
   chapters,
   Film,
-  sectionClass = "bg-[#F8FAFC] pb-20 md:pb-32",
+  sectionClass = "bg-[#F8FAFC] pb-24 md:pb-32",
 }: {
   /** Keeps this section's ids apart from the other's */
   name: string;

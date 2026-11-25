@@ -12,7 +12,7 @@ const NewsPage = () => (
     <Navbar />
 
     <main className="flex-1">
-      <section className="pb-20 pt-28 md:pb-32 md:pt-36">
+      <section className="pb-24 pt-28 md:pb-32 md:pt-36">
         <div className="container mx-auto max-w-6xl px-4 md:px-8">
           <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
             <div className="mb-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">News</div>

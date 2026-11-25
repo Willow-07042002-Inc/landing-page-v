@@ -90,7 +90,7 @@ const KeepingThingsEasy = () => {
   );
 
   return (
-    <section id="keeping-things-easy" className="scroll-mt-24 bg-[#F8FAFC] pb-20 md:pb-32">
+    <section id="keeping-things-easy" className="scroll-mt-24 bg-[#F8FAFC] pb-24 md:pb-32">
       <div className={`${WRAP} max-w-6xl lg:px-10`}>
         <h2 className="font-heading text-[1.875rem] font-light text-[#222222] sm:text-4xl md:text-[2.75rem]" style={{ lineHeight: 1.2, textWrap: "balance" }}>
           Drop in the estate plan.

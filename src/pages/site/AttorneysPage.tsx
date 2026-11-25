@@ -21,7 +21,7 @@ import SecurityControls from "@/components/site/SecurityControls";
    "Founder & CEO, Willow"), a step smaller than it so it sits under the
    hero without shouting, on a wider measure than the hero's subtitle. */
 const Belief = () => (
-  <section className="bg-[#F8FAFC] pb-20 md:pb-32">
+  <section className="bg-[#F8FAFC] pb-24 md:pb-32">
     <div className={`${WRAP} max-w-6xl`}>
       <figure className="text-center">
         <blockquote>
