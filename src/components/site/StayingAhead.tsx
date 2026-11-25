@@ -49,7 +49,7 @@ export const KEEP_CHAPTERS: Chapter[] = [
     id: "probate",
     also: ["when-it-matters", "booking"],
     title: "Be the firm the executors call",
-    body: "When a client passes, Willow puts their executor in touch with you first, and you can choose to open the plan only after you’ve met.",
+    body: "When a client passes, Willow puts their executor and family in touch with you first, and you can hold the plan until you’ve met.",
   },
 ];
 
