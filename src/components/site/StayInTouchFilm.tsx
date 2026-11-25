@@ -280,14 +280,15 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
    leaves Rev. Rul. 84-139 alone. So the card says "may not", the clause is
    one that only resembles the ruling's facts, and a note under it says the
    section alone doesn't show whether the trust is outside his estate. The
-   trust, its section number and its words are made up for the film; Rachel's
-   thoughts follow the reviewer's draft, shortened. Commentary: Journal of
+   trust, its section number and its words are made up for the film; the
+   update's wording, the note under the clause and Rachel's thoughts follow
+   the outside reviewer's revisions (Nov 25). Commentary: Journal of
    Accountancy, EY, BDO and The Tax Adviser on the ruling. */
 
 const N = { in: 500, tap: 2000, open: 2250, mark: 3500, end: 10400 };
-const ARTICLE = "The IRS clarified that assets in certain irrevocable trusts, ones kept outside your taxable estate, may not get a new “stepped-up” tax basis when you die.";
+const ARTICLE = "The IRS clarified that certain assets transferred to irrevocable grantor trusts may not receive a “step-up” in tax basis when the grantor dies, if those assets aren’t included in the grantor’s taxable estate.";
 const THOUGHTS =
-  "One goal of this trust was to keep assets outside your taxable estate while you paid its income tax. This guidance touches the tax basis of those assets, so I’d like to review the trust and what it holds. It doesn’t necessarily mean anything needs to change, but it’s worth a conversation.";
+  "One goal of this trust was to transfer assets outside your taxable estate while keeping grantor trust treatment for income tax. This IRS guidance raises an important point about the tax basis of those assets when you pass away. I’d like to review how the trust is structured and what it holds, to see whether our original strategy still makes sense. It doesn’t necessarily mean anything needs to change, but it’s worth a conversation.";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
 const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 
@@ -393,7 +394,7 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
                       <Mark on={t >= N.mark}>I intend this trust to be treated as a grantor trust for income tax purposes</Mark>.
                     </p>
                     <p className="border-t border-[#EEF0F2] px-4 py-2.5 text-[#6B7280]" style={{ fontSize: narrow ? 12 : 12.5, lineHeight: 1.45 }}>
-                      On its own, this section doesn’t settle whether the update applies to you.
+                      Additional review is needed to determine whether this trust’s assets are included in your taxable estate.
                     </p>
                   </div>
                 </Reveal>
@@ -520,7 +521,7 @@ const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: numb
      conversation has room around it rather than filling the frame. On a
      phone the tiles stack, so the update's runs taller to hold the card
      once it's open */
-  const size = narrow ? { w: 400, h: i === 1 ? 812 : 560 } : { w: 600, h: 725 };
+  const size = narrow ? { w: 400, h: i === 1 ? 894 : 560 } : { w: 600, h: 810 };
   const frame = frameOf(size);
   return (
     <div role="img" aria-label={c.label}>
