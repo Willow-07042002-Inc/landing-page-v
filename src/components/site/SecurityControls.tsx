@@ -19,7 +19,7 @@ import { WRAP } from "@/components/site/blocks";
 const CONTROLS = [
   {
     title: "Clients control when their team sees their documents",
-    body: "Everyone your client names gets their own account and knows where everything is, and your client can lock any part of the plan so it isn’t released too early.",
+    body: "Everyone your client shares with gets their own account right away, and your client can lock any part of their plan or documents until they pass away.",
   },
   {
     title: "We never train AI on your clients’ data",
