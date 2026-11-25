@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
 import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
+import { ScaledScreen } from "@/components/product/kit";
+import { PageShell, PageHero, PrintFrame, usePageMeta } from "@/components/site/blocks";
 import {
   TeamRosterVignette,
   StepInVignette,
@@ -199,34 +198,31 @@ const PlaybookShot = () => {
 const ForClientsPage = () => {
   const navigate = useNavigate();
 
-  return (
-    <div className="min-h-screen flex flex-col" style={{ color: "#222222" }}>
-      <Navbar />
+  usePageMeta(
+    "Willow for Clients & Their Team",
+    "An estate plan everyone understands: your plan and your people in one place, and a direct line back to your attorney whenever life changes."
+  );
 
-      {/* Hero */}
-      <section className="relative flex w-full items-center bg-[#F8FAFC] pt-[env(safe-area-inset-top)]" style={{ minHeight: "min(86svh, 860px)" }}>
-        <div className="container relative z-10 mx-auto w-full px-4 pb-16 pt-24">
-          <div className="flex w-full flex-col items-center justify-center text-center">
-            <div className="mb-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0C7370]">For clients</div>
-            <h1 className="mb-5 w-full font-heading text-3xl font-light text-[#222222] sm:text-4xl md:text-5xl lg:text-[3.25rem]" style={{ lineHeight: 1.2 }}>
-              An estate plan
-              <span className="block italic text-[#138F8B]">everyone understands.</span>
-            </h1>
-            <p className="mb-8 max-w-2xl text-base font-normal text-gray-500 sm:text-[17px] md:text-lg" style={{ lineHeight: 1.55, letterSpacing: "0.01em" }}>
-              Modern enough for the next generation. Simple enough for their parents. Your plan, your people, and your attorney — all in one place.
-            </p>
-            <Button
-              size="lg"
-              className="willow-btn px-8 py-6 text-[17px]"
-              style={{ boxShadow: "0 0 10px rgba(19, 143, 139, 0.3), 0 0 20px rgba(19, 143, 139, 0.15)" }}
-              onClick={() => navigate("/request-access")}
-              data-hero-demo-button
-            >
-              Elevate your client experience
-            </Button>
-          </div>
-        </div>
-      </section>
+  return (
+    <PageShell>
+      {/* Hero, set as every site page's: the headline, then the client
+          dashboard laid on a print. Daniel has "From your firm" open on Your
+          team, so the shot shows the way back to his attorney (her email and
+          Book a call) above his plan. */}
+      <PageHero
+        eyebrow="For clients"
+        title="An estate plan"
+        accent="everyone understands."
+        subtitle="Modern enough for the next generation. Simple enough for their parents. Your plan and your people in one place, and a direct line back to your attorney whenever life changes."
+        visualAspect="1440 / 855"
+        visual={
+          <PrintFrame print="/florida-coast.jpg" aspect="1440 / 855" className="shadow-2xl">
+            <ScaledScreen>
+              <ClientEstatePlanTodayScreen attorney />
+            </ScaledScreen>
+          </PrintFrame>
+        }
+      />
 
       {/* The summary — five chapters in a continuous carousel */}
       <section className="relative overflow-hidden bg-[#F8FAFC] py-16 md:py-24">
@@ -326,8 +322,7 @@ const ForClientsPage = () => {
         </div>
       </section>
 
-      <Footer />
-    </div>
+    </PageShell>
   );
 };
 

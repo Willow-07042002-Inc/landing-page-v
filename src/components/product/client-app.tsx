@@ -202,14 +202,50 @@ const CaMemberCell = ({ name, meta }: { name: string; meta: string }) => (
 /* "From your firm" (FromYourFirm.tsx -> FromYourFirmCard): no firm logo on
    file, so the teal building; the subtitle is firm-panel.tsx
    firmPanelSubtitle() with the yearly check-in waiting in To-do. Closed at rest. */
-const CaFirmCard = ({ open = false }: { open?: boolean }) => (
+/* "Your team", the first of the card's three tabs (firm-panel.tsx TeamWide +
+   the Book a call link under it): the attorney of record with an initials
+   avatar (the one circle the design system allows), firm and role on the
+   left, the ways to reach them on the right (no phone on the website: no
+   number in a real format), then Book a call, indented under the name. */
+const CaFirmTeam = () => (
+  <div data-testid="firm-panel">
+    <div role="tablist" className="mb-5 inline-flex flex-wrap items-center gap-5 border-b border-[#E5E7EB] pb-2.5">
+      <span className="text-[#128F8B]" style={{ fontSize: "13.5px", fontWeight: 600 }}>Your team</span>
+      <span className="text-[#6B7280]" style={{ fontSize: "13.5px", fontWeight: 500 }}>Recommended actions</span>
+      <span className="text-[#6B7280]" style={{ fontSize: "13.5px", fontWeight: 500 }}>Resources</span>
+    </div>
+    <div role="tabpanel" aria-label="Your team">
+      <div className="flex flex-row items-start justify-between gap-8">
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#159E95] text-white" style={{ fontSize: "15px", fontWeight: 600 }} aria-hidden>
+            RA
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-[15px] font-semibold leading-6 text-[#1F2933]">Rachel Alvarez</div>
+            <div className="truncate text-[14px] leading-6 text-[#4B5563]">Alvarez Family Law</div>
+            <div className="text-[14px] leading-6 text-[#6B7280]">Attorney of record</div>
+          </div>
+        </div>
+        <div className="min-w-0 max-w-[50%] text-right text-[14px]">
+          <span className="block font-medium leading-6 text-[#128F8B]">rachel@alvarezlaw.example</span>
+        </div>
+      </div>
+      <span className="mt-3 inline-flex items-center pl-16 text-[#128F8B]">
+        <span style={{ fontSize: "14px", fontWeight: 600 }}>Book a call</span>
+      </span>
+    </div>
+  </div>
+);
+
+const CaFirmCard = ({ open = false, tab = "actions" }: { open?: boolean; tab?: "actions" | "team" }) => (
   <CaCardShell
     iconNode={<CaBuildingIcon className="h-11 w-11 text-[#3AB2AB]" />}
     title="From your firm"
     subtitle="Your attorney · 1 thing to do"
     open={open}
   >
-    {open && (
+    {open && tab === "team" && <CaFirmTeam />}
+    {open && tab === "actions" && (
       /* firm-panel.tsx FirmPanelView: three tabs (trust-design.tsx TrustTabs),
          opening on Recommended actions while the check-in waits there. With
          the check-in conversation open, its inline card (LifeChangesCard)
@@ -252,7 +288,7 @@ const CaFamilyBody = () => (
 /* The page under the header: the hero, then the card stack. `firmOpen`: the
    check-in conversation was opened from "From your firm", so that card is
    open behind it (CheckInScreen). */
-const CaEstatePlanPage = ({ firmOpen = false }: { firmOpen?: boolean }) => (
+const CaEstatePlanPage = ({ firmOpen = false, firmTab = "actions" }: { firmOpen?: boolean; firmTab?: "actions" | "team" }) => (
   <>
     {/* Hero */}
     <div className="border-b border-[#F3F4F6] bg-white px-6 pb-10 pt-12 text-center">
@@ -270,7 +306,7 @@ const CaEstatePlanPage = ({ firmOpen = false }: { firmOpen?: boolean }) => (
     <div className="mx-auto max-w-[900px] px-4 pb-16 pt-6">
       <div className="space-y-1.5 rounded-2xl bg-[#F3F4F6]" style={{ boxShadow: CA_STACK_SHADOW }}>
         <div className="overflow-hidden rounded-t-2xl">
-          <CaFirmCard open={firmOpen} />
+          <CaFirmCard open={firmOpen} tab={firmTab} />
         </div>
         <CaCardShell iconSrc="/mock/family-icon.png" title="You & Your Family" subtitle="The people at the center of your plan" open>
           <CaFamilyBody />
@@ -297,9 +333,11 @@ const CaEstatePlanPage = ({ firmOpen = false }: { firmOpen?: boolean }) => (
    fold here); the hero's line breaks after "for you"; the font is Inter; the
    stack's cards pad 32px; and there is no floating "Ask Eva" pill (the
    check-in sits in "From your firm" instead). */
-export const ClientEstatePlanTodayScreen = () => (
+export const ClientEstatePlanTodayScreen = ({ attorney = false }: { attorney?: boolean }) => (
   <ClientFrame active="estate-plan" height={855}>
-    <CaEstatePlanPage />
+    {/* attorney: Daniel has opened "From your firm" on Your team, his
+        attorney, how to reach her and Book a call */}
+    <CaEstatePlanPage firmOpen={attorney} firmTab="team" />
   </ClientFrame>
 );
 
