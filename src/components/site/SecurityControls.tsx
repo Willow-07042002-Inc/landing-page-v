@@ -15,7 +15,9 @@ import { WRAP } from "@/components/site/blocks";
    folded into one list. Each title is a plain statement, each line one
    sentence. Every claim is one the product or the Privacy Policy makes:
    per-item release (now, on incapacity, after a passing, or the client's own
-   condition) is ReleaseSelector.tsx; meet-first is access-meeting.ts. */
+   condition) is ReleaseSelector.tsx; meet-first is access-meeting.ts; the AI
+   row is the Anthropic organization's zero data retention, which the firm
+   agreements promise (willow-platform CLAUDE.md, "AI and client data"). */
 const CONTROLS = [
   {
     title: "Clients control when their team sees their documents",
@@ -23,7 +25,7 @@ const CONTROLS = [
   },
   {
     title: "We never train AI on your clients’ data",
-    body: "AI reads a plan only to draft the summary you approve, runs in the United States and never sees your email or calendar.",
+    body: "AI reads a plan only to draft the summary, and once it’s done, our AI provider keeps none of it.",
   },
   {
     title: "Client data is encrypted, kept in the US and never sold",
