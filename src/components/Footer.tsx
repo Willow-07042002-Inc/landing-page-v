@@ -7,8 +7,9 @@ import { DEMO_PATH, FOOTER_COLUMNS, type NavLink } from "@/content/siteMap";
    harvey.ai (the page's demo ask lives here, not in a box above; Aaron,
    Nov 24), a rule, then the logo with one small Inter line under it (no
    log-in buttons: the header's Log in covers both portals; Aaron, Nov 24),
-   the full site map in three columns (the same map the header menus use),
-   then the disclaimer, the copyright and the About page's line. Deep teal
+   the full site map in four columns (Company split 3 and 2, as the header's
+   Company menu is; Aaron, Nov 25), then the disclaimer, the copyright with
+   the Privacy Policy and Cookie settings, and the site's line. Deep teal
    ground. */
 
 const linkCls = "text-[14px] text-white/75 transition-colors hover:text-white";
@@ -52,7 +53,7 @@ const Footer = () => (
           </p>
         </div>
 
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
           {FOOTER_COLUMNS.map((col) => (
             <div key={col.title}>
               <h3 className="mb-4 font-sans text-[12px] font-semibold uppercase tracking-[0.14em] text-white/50">{col.title}</h3>
@@ -62,13 +63,6 @@ const Footer = () => (
                     <FooterLink l={l} />
                   </li>
                 ))}
-                {col.title === "Company" && (
-                  <li>
-                    <button type="button" onClick={openCookieSettings} className={`${linkCls} text-left`}>
-                      Cookie settings
-                    </button>
-                  </li>
-                )}
               </ul>
             </div>
           ))}
@@ -83,7 +77,19 @@ const Footer = () => (
           representative does not create an attorney-client relationship.
         </p>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} 07042002 Inc., doing business as Willow. All rights reserved.</p>
+          {/* The Privacy Policy stays linked from every page (Google's sign-in
+              review checks the home page for it); Cookie settings reopens the
+              consent banner. Both sit here so the Legal & partners column
+              holds just its two pages (Aaron, Nov 25). */}
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span>© {new Date().getFullYear()} 07042002 Inc., doing business as Willow. All rights reserved.</span>
+            <Link to="/privacy" className="transition-colors hover:text-white">
+              Privacy Policy
+            </Link>
+            <button type="button" onClick={openCookieSettings} className="transition-colors hover:text-white">
+              Cookie settings
+            </button>
+          </p>
           <p className="font-heading italic text-white/70">Estate plans shouldn&rsquo;t live in binders.</p>
         </div>
       </div>
