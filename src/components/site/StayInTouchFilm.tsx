@@ -10,7 +10,7 @@ import {
   CaMonthCalendar,
   CaSlotList,
 } from "@/components/product/client-app";
-import { CalendarCheckIcon, ChevronDownIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
+import { ChevronDownIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
 
 /* For clients, staying in touch: two tiles set the way For attorneys' Keeping
    things easy sets its three (Aaron, Nov 25, 2026), each with its words above
@@ -24,8 +24,8 @@ import { CalendarCheckIcon, ChevronDownIcon, NotificationIcon, TrustIcon } from 
       nothing in Daniel's family changed, he bought property (the chalet the
       For attorneys hero has him tell Rachel about), so Eva offers a call with
       Rachel's open times in the thread; he picks one and books it.
-   2. Updates from your firm: a notification that the firm posted its yearly
-      tax update, alone on the print the way For attorneys sets its meeting
+   2. Updates from your firm: a notification that the firm posted a tax
+      update, alone on the print the way For attorneys sets its meeting
       and tax notifications, dropping open to the update, the clause of his
       trust it touches, Rachel's thoughts, and a way to book a meeting
       (imagined; see below).
@@ -80,28 +80,29 @@ const Rise = ({ children, className = "" }: { children: React.ReactNode; classNa
   );
 };
 
-/* The invite once it's booked, under Eva's last line, with its details a tap
-   away. Imagined (Aaron, Nov 25): the product's conversation ends on Eva's
-   line, with no link to the event */
-const EventCard = ({ narrow }: { narrow: boolean }) => {
-  const link = (
-    <span className="inline-flex flex-shrink-0 items-center gap-0.5 font-semibold text-[#128F8B]" style={{ fontSize: 13.5 }}>
-      See event details
-      <ChevronDownIcon className="h-4 w-4 -rotate-90" />
+/* The meeting once it's booked, under Eva's last line: a calendar leaf with
+   its day, the date and time beside it, and its details a tap away. No box
+   around it (Aaron, Nov 25). Imagined: the product's conversation ends on
+   Eva's line, with no link to the event */
+const EventCard = () => (
+  <div className="ml-[60px] mt-6 flex items-center gap-4">
+    <span
+      className="w-[54px] flex-shrink-0 overflow-hidden rounded-xl bg-white text-center"
+      style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.06), 0 6px 18px rgba(15,23,42,0.10)" }}
+    >
+      <span className="block bg-[#128F8B] py-[3px] text-[10px] font-semibold uppercase tracking-[0.14em] text-white">Dec</span>
+      <span className="block pb-1.5 pt-1 text-[#1F2933]" style={{ ...SERIF, fontSize: 22, fontWeight: 600, lineHeight: 1.25 }}>1</span>
     </span>
-  );
-  return (
-    <div className="ml-[60px] mt-5 flex items-center gap-3.5 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3.5" style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.05)" }}>
-      <CalendarCheckIcon className={`h-5 w-5 flex-shrink-0 text-[#128F8B] ${narrow ? "self-start" : ""}`} />
-      <span className="min-w-0 flex-1 leading-snug">
-        <span className="block font-semibold text-[#1F2933]" style={{ fontSize: 14.5 }}>Meeting with Rachel Alvarez</span>
-        <span className="block text-[#6B7280]" style={{ fontSize: 13 }}>{DAY} · {TIME} EST</span>
-        {narrow && <span className="mt-1.5 block">{link}</span>}
+    <span className="min-w-0 leading-snug">
+      <span className="block text-[#1F2933]" style={{ ...SERIF, fontSize: 16, fontWeight: 600 }}>Tuesday, December 1</span>
+      <span className="mt-0.5 block text-[#6B7280]" style={{ fontSize: 13.5 }}>{TIME} EST · with Rachel</span>
+      <span className="mt-1.5 inline-flex items-center gap-0.5 font-semibold text-[#128F8B]" style={{ fontSize: 13.5 }}>
+        See event details
+        <ChevronDownIcon className="h-4 w-4 -rotate-90" />
       </span>
-      {!narrow && link}
-    </div>
-  );
-};
+    </span>
+  </div>
+);
 
 /* The conversation at time t, filling its tile. The thread keeps its newest
    turn in view, the way the conversation scrolls as it grows. `narrow`: a
@@ -206,7 +207,7 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
               </Rise>
               {t >= T.event && (
                 <Rise>
-                  <EventCard narrow={narrow} />
+                  <EventCard />
                 </Rise>
               )}
             </>
@@ -223,21 +224,26 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
    notifications (KeepInTouchFilm.tsx chapters 3 and 5): the card alone on
    the print, its title line, then it drops open, each part arriving just
    after the card has made room, the action at the foot.
-   Why this update is worth a meeting is real law, with no figures: on
-   January 1 the federal estate tax exemption rises again (indexed from 2027
-   under the 2025 tax act), and New York's changes too but stays about half
-   of it. New York has no portability, and once a taxable estate passes 105%
-   of its exemption it taxes all of it (the "cliff"). A trust that fills its
-   Family (credit shelter) Trust with "the largest amount that can pass free
-   of federal estate tax" puts more in it each year, less passes straight to
-   the spouse, and past New York's limit New York taxes the whole trust at
-   the first death. The usual fix caps the formula at New York's exemption.
-   The trust's section number and wording are made up for the film. */
+   The update is one every estate planner knows (Aaron, Nov 25: one from the
+   last five years that changed how plans work): the SECURE Act's end of the
+   "stretch" for inherited retirement accounts, settled by the IRS's final
+   regulations (July 2024, in effect from 2025). Most children who inherit
+   one must now empty it within 10 years; a minor child of the owner takes
+   yearly payouts until 21 (the regulations' age of majority), then has 10
+   years, so it's all out by about 31. A conduit trust, the usual pre-2020
+   way to leave an IRA to a child, must pass every distribution straight to
+   the child, so the whole account lands in their hands by their early
+   thirties, whatever age the trust otherwise holds to. The usual fix lets
+   the trustee keep distributions (an accumulation trust), at the cost of
+   trust income tax rates. Sources: the final RMD regulations, Federal
+   Register, July 19, 2024 (doc. 2024-14542); Kitces, Morningstar and
+   Fidelity on conduit trusts after SECURE. The trust's section number
+   and wording are made up for the film. */
 
 const N = { in: 500, tap: 2000, open: 2250, mark: 3500, end: 10200 };
-const ARTICLE = "On January 1, the federal estate tax exemption rises again. New York’s changes too, but stays far lower.";
+const ARTICLE = "Under the SECURE Act’s final IRS rules, most children who inherit a retirement account must empty it within 10 years. For a minor child, the 10 years start at 21.";
 const THOUGHTS =
-  "This clause fills the Family Trust up to the federal limit. As that limit rises, more goes into the trust and less passes straight to Maria. Once it’s over New York’s much lower limit, New York can tax all of it. A small change caps it at New York’s limit.";
+  "This was written when an inherited account paid out a little each year, so most of it stayed in trust. Now the whole account has to come out, and this clause hands every dollar to Emma and Leo, so they’d have all of it by their early thirties, not 35. We can let the trustee hold it instead. There’s a tax trade-off, so let’s talk it through.";
 const MERRIWEATHER = "Merriweather, Georgia, serif";
 const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 
@@ -288,7 +294,7 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
   const open = t >= N.open;
   const pad = narrow ? "px-5" : "px-7";
   return (
-    <div className="absolute" style={{ left: inset, right: inset, top: narrow ? 26 : 56 }}>
+    <div className="absolute" style={{ left: inset, right: inset, top: narrow ? 26 : 34 }}>
       <div
         className="overflow-hidden rounded-2xl bg-white text-left"
         style={{
@@ -302,7 +308,7 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
         <div className={`flex items-start gap-3.5 ${pad} ${narrow ? "py-4" : "py-5"}`}>
           <NotificationIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#128F8B]" />
           <div className="min-w-0 flex-1">
-            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Alvarez Family Law posted its yearly tax update</p>
+            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Alvarez Family Law posted a tax update</p>
             <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: narrow ? 13.5 : 14 }}>Rachel Alvarez · Just now</p>
             <span
               className="-mx-1.5 mt-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold text-[#0C7370]"
@@ -334,11 +340,11 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
                     <div className="flex items-center gap-2.5 border-b border-[#EEF0F2] bg-[#F8FAFC] px-4 py-2.5">
                       <TrustIcon className="h-4 w-4 flex-shrink-0 text-[#128F8B]" />
                       <span className="min-w-0 flex-1 font-medium text-[#1F2933]" style={{ fontSize: 13.5 }}>Revocable Living Trust</span>
-                      <span className="flex-shrink-0 text-[#9CA3AF]" style={{ fontSize: 12.5 }}>Section 5.2</span>
+                      <span className="flex-shrink-0 text-[#9CA3AF]" style={{ fontSize: 12.5 }}>Section 6.3</span>
                     </div>
                     <p className="px-4 py-3.5 text-[#4B5563]" style={{ fontFamily: MERRIWEATHER, fontSize: narrow ? 12.5 : 13.5, lineHeight: 1.85 }}>
-                      <span className="font-bold text-[#1F2933]">The Family Trust.</span> If my wife, Maria, survives me, the Trustee shall set aside as the Family Trust{" "}
-                      <Mark on={t >= N.mark}>the largest amount that can pass free of federal estate tax</Mark>. The rest of the trust passes to Maria.
+                      <span className="font-bold text-[#1F2933]">Retirement Accounts.</span> Each child’s share of my retirement accounts shall be held in trust until the child is 35, except that{" "}
+                      <Mark on={t >= N.mark}>the Trustee shall pay to the child, as soon as received, all distributions from those accounts</Mark>.
                     </p>
                   </div>
                 </Reveal>
@@ -380,8 +386,8 @@ const CHAPTERS = [
   {
     id: "firm-updates",
     title: "Updates from your firm",
-    body: "When your firm posts an update, like its yearly tax update, see how it affects your plan and book time to talk it through.",
-    label: "A notification: Daniel's firm posted its yearly tax update. He opens it to the update, the clause of his trust it touches, his attorney's thoughts, and a way to book a meeting.",
+    body: "When your firm posts an update, like a change in tax law, see how it affects your plan and book time to talk it through.",
+    label: "A notification: Daniel's firm posted a tax update on inherited retirement accounts. He opens it to the update, the clause of his trust it touches, his attorney's thoughts, and a way to book a meeting.",
     end: N.end,
   },
 ];
@@ -466,7 +472,7 @@ const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: numb
      conversation has room around it rather than filling the frame. On a
      phone the tiles stack, so the update's runs taller to hold the card
      once it's open */
-  const size = narrow ? { w: 400, h: i === 1 ? 708 : 560 } : { w: 600, h: 725 };
+  const size = narrow ? { w: 400, h: i === 1 ? 768 : 560 } : { w: 600, h: 725 };
   const frame = frameOf(size);
   return (
     <div role="img" aria-label={c.label}>
