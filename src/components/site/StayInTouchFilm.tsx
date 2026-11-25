@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { WRAP } from "@/components/site/blocks";
 import { ScaledScreen } from "@/components/product/kit";
-import { tapStyle, useCompact } from "@/components/site/film-kit";
+import { FIGTREE, tapStyle, useCompact } from "@/components/site/film-kit";
 import {
   CheckInParts,
   CaAnsweredTurn,
@@ -9,9 +9,8 @@ import {
   CaQuietButton,
   CaMonthCalendar,
   CaSlotList,
-  ClientFirmNewsScreen,
 } from "@/components/product/client-app";
-import { ChevronDownIcon, NotificationIcon } from "@/components/product/willow-icons";
+import { CalendarCheckIcon, ChevronDownIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
 
 /* For clients, staying in touch: two tiles set the way For attorneys' Keeping
    things easy sets its three (Aaron, Nov 25, 2026), each with its words above
@@ -25,9 +24,11 @@ import { ChevronDownIcon, NotificationIcon } from "@/components/product/willow-i
       nothing in Daniel's family changed, he bought property (the chalet the
       For attorneys hero has him tell Rachel about), so Eva offers a call with
       Rachel's open times in the thread; he picks one and books it.
-   2. Updates from your firm: a notification on his dashboard that the firm
-      posted its yearly tax update, opening to the update, Rachel's thoughts
-      on his plan, and a way to book a meeting (imagined; see below).
+   2. Updates from your firm: a notification that the firm posted its yearly
+      tax update, alone on the print the way For attorneys sets its meeting
+      and tax notifications, dropping open to the update, the clause of his
+      trust it touches, Rachel's thoughts, and a way to book a meeting
+      (imagined; see below).
    Buttons press themselves; nothing crosses the screen to click them. */
 
 const { Eva, Tile, SERIF } = CheckInParts;
@@ -59,7 +60,8 @@ const T = {
   book: 9600, // "Book it"
   booking: 9850,
   booked: 11200,
-  end: 11900,
+  event: 11900, // the invite, with its details a tap away
+  end: 12700,
 };
 const TAP = 260;
 const pressed = (t: number, at: number) => t >= at && t < at + TAP;
@@ -74,6 +76,29 @@ const Rise = ({ children, className = "" }: { children: React.ReactNode; classNa
   return (
     <div className={className} style={{ opacity: on ? 1 : 0, transform: on ? "translateY(0)" : "translateY(10px)", transition: "opacity 320ms ease, transform 420ms cubic-bezier(0.23,1,0.32,1)" }}>
       {children}
+    </div>
+  );
+};
+
+/* The invite once it's booked, under Eva's last line, with its details a tap
+   away. Imagined (Aaron, Nov 25): the product's conversation ends on Eva's
+   line, with no link to the event */
+const EventCard = ({ narrow }: { narrow: boolean }) => {
+  const link = (
+    <span className="inline-flex flex-shrink-0 items-center gap-0.5 font-semibold text-[#128F8B]" style={{ fontSize: 13.5 }}>
+      See event details
+      <ChevronDownIcon className="h-4 w-4 -rotate-90" />
+    </span>
+  );
+  return (
+    <div className="ml-[60px] mt-5 flex items-center gap-3.5 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3.5" style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.05)" }}>
+      <CalendarCheckIcon className={`h-5 w-5 flex-shrink-0 text-[#128F8B] ${narrow ? "self-start" : ""}`} />
+      <span className="min-w-0 flex-1 leading-snug">
+        <span className="block font-semibold text-[#1F2933]" style={{ fontSize: 14.5 }}>Meeting with Rachel Alvarez</span>
+        <span className="block text-[#6B7280]" style={{ fontSize: 13 }}>{DAY} · {TIME} EST</span>
+        {narrow && <span className="mt-1.5 block">{link}</span>}
+      </span>
+      {!narrow && link}
     </div>
   );
 };
@@ -179,6 +204,11 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
               <Rise>
                 <Eva>{CLOSE}</Eva>
               </Rise>
+              {t >= T.event && (
+                <Rise>
+                  <EventCard narrow={narrow} />
+                </Rise>
+              )}
             </>
           )}
         </div>
@@ -187,17 +217,29 @@ const CheckIn = ({ t, narrow }: { t: number; narrow: boolean }) => {
   );
 };
 
-/* ---- 2. The firm's update, as a notification ------------------------------
+/* ---- 2. The firm's yearly tax update, as a notification ------------------
    Imagined, not on main (Aaron, Nov 25): the clients app has no
-   notifications yet. On Daniel's dashboard a notification says his firm
-   posted its yearly tax update; "See how this affects your plan" opens it,
-   top to bottom, to the update (with the firm's full write-up a link away),
-   Rachel's thoughts on his plan, and a way to book a meeting. The update is
-   the one For attorneys shows reaching the attorney (KeepInTouchFilm.tsx
-   chapter 3), with no figures, so nothing here dates or misstates the law. */
+   notifications. Set the way For attorneys sets its meeting and tax
+   notifications (KeepInTouchFilm.tsx chapters 3 and 5): the card alone on
+   the print, its title line, then it drops open, each part arriving just
+   after the card has made room, the action at the foot.
+   Why this update is worth a meeting is real law, with no figures: on
+   January 1 the federal estate tax exemption rises again (indexed from 2027
+   under the 2025 tax act), and New York's changes too but stays about half
+   of it. New York has no portability, and once a taxable estate passes 105%
+   of its exemption it taxes all of it (the "cliff"). A trust that fills its
+   Family (credit shelter) Trust with "the largest amount that can pass free
+   of federal estate tax" puts more in it each year, less passes straight to
+   the spouse, and past New York's limit New York taxes the whole trust at
+   the first death. The usual fix caps the formula at New York's exemption.
+   The trust's section number and wording are made up for the film. */
 
-const N = { in: 500, tap: 2100, open: 2350, end: 8600 };
-const LABEL: React.CSSProperties = { fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" };
+const N = { in: 500, tap: 2000, open: 2250, mark: 3500, end: 10200 };
+const ARTICLE = "On January 1, the federal estate tax exemption rises again. New York’s changes too, but stays far lower.";
+const THOUGHTS =
+  "This clause fills the Family Trust up to the federal limit. As that limit rises, more goes into the trust and less passes straight to Maria. Once it’s over New York’s much lower limit, New York can tax all of it. A small change caps it at New York’s limit.";
+const MERRIWEATHER = "Merriweather, Georgia, serif";
+const LIFT = "0 24px 70px rgba(0,0,0,0.38), 0 2px 8px rgba(0,0,0,0.12)";
 
 const ArrowUpRight = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
@@ -206,86 +248,117 @@ const ArrowUpRight = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9CA3AF]">{children}</p>
+);
+
 /* Each part arrives just after the card has made room */
 const Reveal = ({ open, i, children }: { open: boolean; i: number; children: React.ReactNode }) => (
   <div
     style={{
       opacity: open ? 1 : 0,
       transform: open ? "translateY(0)" : "translateY(8px)",
-      transition: open ? `opacity 360ms ease ${220 + i * 160}ms, transform 480ms cubic-bezier(0.23,1,0.32,1) ${220 + i * 160}ms` : "none",
+      transition: open ? `opacity 320ms ease ${220 + i * 120}ms, transform 420ms var(--ease-out) ${220 + i * 120}ms` : "none",
     }}
   >
     {children}
   </div>
 );
 
-const FirmUpdate = ({ t, narrow, height }: { t: number; narrow: boolean; height: number }) => {
+/* The words the update touches, highlighted in once the clause is in view */
+const Mark = ({ on, children }: { on: boolean; children: React.ReactNode }) => (
+  <span
+    className="rounded-[3px] text-[#0B1220]"
+    style={{
+      padding: "1px 2px",
+      backgroundImage: "linear-gradient(rgba(18,143,139,0.17), rgba(18,143,139,0.17))",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: on ? "100% 100%" : "0% 100%",
+      transition: "background-size 700ms var(--ease-in-out)",
+      boxDecorationBreak: "clone",
+      WebkitBoxDecorationBreak: "clone",
+    }}
+  >
+    {children}
+  </span>
+);
+
+const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: number }) => {
   const shown = t >= N.in;
   const open = t >= N.open;
-  const pad = narrow ? "px-5" : "px-6";
-  const text: React.CSSProperties = { fontSize: narrow ? 14 : 14.5, lineHeight: 1.6 };
+  const pad = narrow ? "px-5" : "px-7";
   return (
-    <div className="relative h-full w-full text-left" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      {/* His dashboard, behind */}
-      <ClientFirmNewsScreen open={false} compact articles={[]} height={height} />
-      <div className="absolute inset-x-0 bottom-0 top-14 bg-black/25" style={{ opacity: open ? 1 : 0, transition: "opacity 400ms ease" }} />
-
-      {/* The notification */}
-      <div className={`absolute top-[72px] ${narrow ? "inset-x-3" : "inset-x-5"}`}>
-        <div
-          className="overflow-hidden rounded-2xl bg-white"
-          style={{
-            boxShadow: "0 14px 44px rgba(15,23,42,0.20), 0 2px 6px rgba(15,23,42,0.06)",
-            opacity: shown ? 1 : 0,
-            transform: shown ? "translateY(0)" : "translateY(-14px)",
-            transition: "opacity 160ms ease-out, transform 520ms cubic-bezier(0.23,1,0.32,1)",
-          }}
-        >
-          <div className={`flex items-start gap-3.5 ${pad} pb-4 pt-5`}>
-            <NotificationIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#128F8B]" />
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-[#1F2933]" style={{ fontSize: narrow ? 15 : 15.5, lineHeight: 1.4 }}>Alvarez Family Law posted its yearly tax update</p>
-              <p className="mt-0.5 text-[#9CA3AF]" style={{ fontSize: 13 }}>Rachel Alvarez · Just now</p>
-              <span
-                className="-mx-1.5 mt-2.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold text-[#128F8B]"
-                style={{ fontSize: 14, ...tapStyle(pressed(t, N.tap)) }}
-              >
-                See how this affects your plan
-                <ChevronDownIcon className="h-4 w-4" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 300ms cubic-bezier(0.23,1,0.32,1)" }} />
-              </span>
-            </div>
+    <div className="absolute" style={{ left: inset, right: inset, top: narrow ? 26 : 56 }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white text-left"
+        style={{
+          boxShadow: LIFT,
+          fontFamily: FIGTREE,
+          opacity: shown ? 1 : 0,
+          transform: shown ? "translateY(0)" : "translateY(16px)",
+          transition: "opacity 220ms ease-out, transform 560ms var(--ease-out)",
+        }}
+      >
+        <div className={`flex items-start gap-3.5 ${pad} ${narrow ? "py-4" : "py-5"}`}>
+          <NotificationIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#128F8B]" />
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold leading-snug text-[#1F2933]" style={{ fontSize: narrow ? 15.5 : 17 }}>Alvarez Family Law posted its yearly tax update</p>
+            <p className="mt-0.5 leading-snug text-[#6B7280]" style={{ fontSize: narrow ? 13.5 : 14 }}>Rachel Alvarez · Just now</p>
+            <span
+              className="-mx-1.5 mt-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold text-[#0C7370]"
+              style={{ fontSize: narrow ? 14 : 14.5, ...tapStyle(pressed(t, N.tap)) }}
+            >
+              See how this affects your plan
+              <ChevronDownIcon className="h-4 w-4" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 300ms var(--ease-out)" }} />
+            </span>
           </div>
+        </div>
 
-          <div style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 560ms var(--ease-in-out)" }}>
-            <div className="min-h-0 overflow-hidden">
-              <div className={`space-y-5 border-t border-[#EEF0F2] ${pad} py-5`}>
+        <div style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 560ms var(--ease-in-out)" }}>
+          <div className="min-h-0 overflow-hidden">
+            <div className="border-t border-[#EEF0F2]">
+              <div className={`${narrow ? "space-y-4 py-4" : "space-y-5 py-5"} ${pad}`}>
                 <Reveal open={open} i={0}>
-                  <p className="text-[#9CA3AF]" style={LABEL}>The update</p>
-                  <p className="mt-1.5 text-[#1F2933]" style={text}>New York’s estate tax exemption changes on January 1.</p>
-                  <span className="mt-2 inline-flex items-center gap-1 font-semibold text-[#128F8B]" style={{ fontSize: 14 }}>
-                    Read the full update
-                    <ArrowUpRight className="h-4 w-4" />
-                  </span>
-                </Reveal>
-                <Reveal open={open} i={1}>
-                  <p className="text-[#9CA3AF]" style={LABEL}>Rachel’s thoughts on your plan</p>
-                  <p className="mt-2 border-l-2 border-[#3AB2AB] pl-3.5 text-[#374151]" style={text}>
-                    Your plan was set up around today’s exemption. Nothing has to change yet, but it’s worth going over together before January.
+                  <Label>The update</Label>
+                  <p className="mt-2 text-[#1F2933]" style={{ fontSize: narrow ? 14 : 15, lineHeight: 1.5 }}>
+                    {ARTICLE}{" "}
+                    <span className="inline-flex items-center gap-0.5 whitespace-nowrap font-semibold text-[#0C7370]">
+                      Read the full update
+                      <ArrowUpRight className="h-4 w-4" />
+                    </span>
                   </p>
                 </Reveal>
-                <Reveal open={open} i={2}>
-                  <div className={`flex ${narrow ? "flex-col items-start gap-3" : "items-center gap-3.5"} rounded-xl bg-[#F4F8F8] p-4`}>
-                    <div className="flex min-w-0 flex-1 items-center gap-3">
-                      <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[12px] font-semibold text-[#0C7370]">RA</span>
-                      <span className="min-w-0 leading-snug">
-                        <span className="block font-semibold text-[#1F2933]" style={{ fontSize: 14.5 }}>Talk it through with Rachel</span>
-                        <span className="block text-[#6B7280]" style={{ fontSize: 13 }}>Your attorney at Alvarez Family Law</span>
-                      </span>
+                <Reveal open={open} i={1}>
+                  <Label>Where it touches your plan</Label>
+                  <div className="mt-2.5 overflow-hidden rounded-xl border border-[#E5E7EB]">
+                    <div className="flex items-center gap-2.5 border-b border-[#EEF0F2] bg-[#F8FAFC] px-4 py-2.5">
+                      <TrustIcon className="h-4 w-4 flex-shrink-0 text-[#128F8B]" />
+                      <span className="min-w-0 flex-1 font-medium text-[#1F2933]" style={{ fontSize: 13.5 }}>Revocable Living Trust</span>
+                      <span className="flex-shrink-0 text-[#9CA3AF]" style={{ fontSize: 12.5 }}>Section 5.2</span>
                     </div>
-                    <span className="inline-flex flex-shrink-0 items-center rounded-xl bg-[#128F8B] px-4 py-2.5 font-semibold text-white" style={{ fontSize: 14 }}>Book a meeting</span>
+                    <p className="px-4 py-3.5 text-[#4B5563]" style={{ fontFamily: MERRIWEATHER, fontSize: narrow ? 12.5 : 13.5, lineHeight: 1.85 }}>
+                      <span className="font-bold text-[#1F2933]">The Family Trust.</span> If my wife, Maria, survives me, the Trustee shall set aside as the Family Trust{" "}
+                      <Mark on={t >= N.mark}>the largest amount that can pass free of federal estate tax</Mark>. The rest of the trust passes to Maria.
+                    </p>
                   </div>
                 </Reveal>
+                <Reveal open={open} i={2}>
+                  <Label>Rachel’s thoughts</Label>
+                  <p className="mt-2.5 rounded-xl bg-[#E6F5F4] px-4 py-3 font-medium text-[#1F2933]" style={{ fontSize: narrow ? 14 : 15, lineHeight: 1.5 }}>
+                    &ldquo;{THOUGHTS}&rdquo;
+                  </p>
+                </Reveal>
               </div>
+              <Reveal open={open} i={3}>
+                <div className={`flex items-center gap-3 border-t border-[#EEF0F2] ${pad} ${narrow ? "py-3" : "py-3.5"}`}>
+                  <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#E6F5F4] text-[11px] font-semibold text-[#0C7370]">RA</span>
+                  <span className="min-w-0 flex-1 leading-snug">
+                    <span className="block font-medium text-[#1F2933]" style={{ fontSize: narrow ? 14 : 14.5 }}>Talk it through with Rachel</span>
+                    <span className="block text-[#6B7280]" style={{ fontSize: 13 }}>{narrow ? "Your attorney" : "Your attorney at Alvarez Family Law"}</span>
+                  </span>
+                  <span className="inline-flex h-[36px] flex-shrink-0 items-center rounded-md bg-[#309E96] px-4 text-[14px] font-semibold text-white">Book a meeting</span>
+                </div>
+              </Reveal>
             </div>
           </div>
         </div>
@@ -301,34 +374,39 @@ const CHAPTERS = [
     id: "book-a-time",
     title: "Book time with your attorney",
     body: "A quick survey each year asks what’s changed. If something has, pick a time on your attorney’s calendar, right in the conversation.",
-    label: "Daniel answers his yearly check-in: he bought property, so Willow suggests a call, and he books a time on his attorney's calendar.",
+    label: "Daniel answers his yearly check-in: he bought property, so Willow suggests a call, and he books a time on his attorney's calendar, with the event's details a tap away.",
     end: T.end + 1400,
   },
   {
     id: "firm-updates",
     title: "Updates from your firm",
     body: "When your firm posts an update, like its yearly tax update, see how it affects your plan and book time to talk it through.",
-    label: "A notification on Daniel's dashboard: his firm posted its yearly tax update. He opens it to the update, his attorney's thoughts on his plan, and a way to book a meeting.",
+    label: "A notification: Daniel's firm posted its yearly tax update. He opens it to the update, the clause of his trust it touches, his attorney's thoughts, and a way to book a meeting.",
     end: N.end,
   },
 ];
 
 /* The tile: a dark print with the product on it, running off the bottom edge
-   with room either side (EasyFilm's FilmFrame, narrow) */
+   with room either side (EasyFilm's FilmFrame, narrow). `bare`: no panel, the
+   film draws on the print itself, in the whole frame's pixels */
 const MAT = { l: 0.05, t: 0.05, r: 0.05 };
-const TileFrame = ({ size, children }: { size: { w: number; h: number }; children: React.ReactNode }) => {
-  const w = size.w / (1 - MAT.l - MAT.r);
-  const h = size.h / (1 - MAT.t);
+const frameOf = (size: { w: number; h: number }) => ({ w: size.w / (1 - MAT.l - MAT.r), h: size.h / (1 - MAT.t) });
+const TileFrame = ({ size, bare = false, children }: { size: { w: number; h: number }; bare?: boolean; children: React.ReactNode }) => {
+  const { w, h } = frameOf(size);
   return (
     <div className="relative w-full overflow-hidden rounded-xl bg-[#062D2C] shadow-xl" style={{ aspectRatio: `${w} / ${h}` }}>
       <img src="/central-park.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
       <div className="absolute inset-0" style={{ background: "rgba(6,45,44,0.74)" }} />
-      <div
-        className="absolute overflow-hidden rounded-t-lg bg-white"
-        style={{ left: `${MAT.l * 100}%`, top: `${MAT.t * 100}%`, right: `${MAT.r * 100}%`, bottom: 0, boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}
-      >
-        <ScaledScreen w={size.w} h={size.h}>{children}</ScaledScreen>
-      </div>
+      {bare ? (
+        <ScaledScreen w={w} h={h}>{children}</ScaledScreen>
+      ) : (
+        <div
+          className="absolute overflow-hidden rounded-t-lg bg-white"
+          style={{ left: `${MAT.l * 100}%`, top: `${MAT.t * 100}%`, right: `${MAT.r * 100}%`, bottom: 0, boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}
+        >
+          <ScaledScreen w={size.w} h={size.h}>{children}</ScaledScreen>
+        </div>
+      )}
     </div>
   );
 };
@@ -385,19 +463,26 @@ const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: numb
   const c = CHAPTERS[i];
   const { t, epoch } = useTileClock(c.end, go, run, onEnd);
   /* The wide tile is drawn a little smaller than life (about 0.85), so the
-     conversation has room around it rather than filling the frame */
-  const size = narrow ? { w: 400, h: 560 } : { w: 600, h: 725 };
+     conversation has room around it rather than filling the frame. On a
+     phone the tiles stack, so the update's runs taller to hold the card
+     once it's open */
+  const size = narrow ? { w: 400, h: i === 1 ? 708 : 560 } : { w: 600, h: 725 };
+  const frame = frameOf(size);
   return (
     <div role="img" aria-label={c.label}>
-      <TileFrame size={size}>
-        <div key={epoch} aria-hidden style={{ width: size.w, height: size.h }}>
-          {i === 0 ? (
+      {i === 0 ? (
+        <TileFrame size={size}>
+          <div key={epoch} aria-hidden style={{ width: size.w, height: size.h }}>
             <CheckIn t={Math.min(t, T.end)} narrow={narrow} />
-          ) : (
-            <FirmUpdate t={t} narrow={narrow} height={size.h} />
-          )}
-        </div>
-      </TileFrame>
+          </div>
+        </TileFrame>
+      ) : (
+        <TileFrame size={size} bare>
+          <div key={epoch} aria-hidden className="relative" style={{ width: frame.w, height: frame.h }}>
+            <TaxUpdate t={t} narrow={narrow} inset={MAT.l * frame.w} />
+          </div>
+        </TileFrame>
+      )}
     </div>
   );
 };
