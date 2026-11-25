@@ -206,9 +206,8 @@ const ForClientsPage = () => {
   return (
     <PageShell>
       {/* Hero, set as every site page's: the headline, then the client
-          dashboard laid on a print. Daniel has "From your firm" open on Your
-          team, so the shot shows the way back to his attorney (her email and
-          Book a call) above his plan. */}
+          dashboard on the print under the deep teal wash, as For attorneys has it,
+          every card closed (Aaron, Nov 24). */}
       <PageHero
         eyebrow="For clients"
         title="An estate plan"
@@ -216,9 +215,9 @@ const ForClientsPage = () => {
         subtitle="Modern enough for the next generation. Simple enough for their parents. Your plan and your people in one place, and a direct line back to your attorney whenever life changes."
         visualAspect="1440 / 855"
         visual={
-          <PrintFrame print="/florida-coast.jpg" aspect="1440 / 855" className="shadow-2xl">
+          <PrintFrame print="/florida-coast.jpg" aspect="1440 / 855" className="shadow-2xl" dark>
             <ScaledScreen>
-              <ClientEstatePlanTodayScreen attorney />
+              <ClientEstatePlanTodayScreen closed />
             </ScaledScreen>
           </PrintFrame>
         }

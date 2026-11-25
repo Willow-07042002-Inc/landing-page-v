@@ -94,6 +94,7 @@ export const PrintFrame = ({
   children,
   aspect = "900 / 560",
   className = "",
+  dark = false,
 }: {
   print: string;
   children: React.ReactNode;
@@ -101,6 +102,9 @@ export const PrintFrame = ({
   width?: string;
   frameAspect?: string;
   className?: string;
+  /** The For attorneys hero's ground: the photograph under the deep teal
+      wash (rgba(6,45,44,0.74)), not the light one. */
+  dark?: boolean;
 }) =>
   print === "self" ? (
     <div className={`relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl ${className}`} style={{ aspectRatio: aspect }}>
@@ -109,8 +113,8 @@ export const PrintFrame = ({
   ) : (
     <div className={`relative w-full overflow-hidden rounded-xl border border-gray-300 bg-white shadow-xl ${className}`} style={{ aspectRatio: aspect }}>
       <img src={print} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" decoding="async" />
-      <div className="absolute inset-0" style={{ background: "rgba(248,250,252,0.22)" }} />
-      <div className="absolute inset-[4%] overflow-hidden rounded-lg bg-white" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
+      <div className="absolute inset-0" style={{ background: dark ? "rgba(6,45,44,0.74)" : "rgba(248,250,252,0.22)" }} />
+      <div className="absolute inset-[4%] overflow-hidden rounded-lg bg-white" style={{ boxShadow: dark ? "0 16px 56px rgba(0,0,0,0.35)" : "0 8px 40px rgba(0,0,0,0.18)" }}>
         {children}
       </div>
     </div>
