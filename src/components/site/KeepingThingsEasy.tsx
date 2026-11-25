@@ -17,7 +17,7 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
     id: "set-up",
     also: ["signed-plan", "dashboard"],
     title: "Automate account creation",
-    body: "Just drop in your documents, and Willow goes through the details and your contacts to put it all together.",
+    body: "Drop in your documents, and Willow goes through the details to create the account and invite your client to their portal.",
   },
   {
     id: "plan-summaries",
