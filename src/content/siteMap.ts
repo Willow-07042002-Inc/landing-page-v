@@ -67,7 +67,7 @@ export const COMPANY_COLUMNS: NavColumn[] = [
     links: [
       { label: "Where we're live", desc: "The states Willow serves today", to: "/availability" },
       { label: "Careers", desc: "Join our team as a founding member", to: "/careers" },
-      { label: "Contact", desc: SUPPORT_EMAIL, href: `mailto:${SUPPORT_EMAIL}` },
+      { label: "Contact", desc: "Talk to our team", href: `mailto:${SUPPORT_EMAIL}` },
       { label: "Legal center", desc: "Terms, privacy and every policy in one place", to: "/legal" },
       { label: "New York State Bar", desc: "For NYSBA members", to: "/nysba" },
     ],

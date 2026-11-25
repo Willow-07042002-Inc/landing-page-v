@@ -3,7 +3,6 @@ import { VignetteFrame } from "@/components/ProductVignettes";
 import { ClientEstatePlanTodayScreen } from "@/components/product/client-app";
 import { ScaledScreen } from "@/components/product/kit";
 import { PageShell, PageHero, PrintFrame, Faq, WRAP, usePageMeta, H2_CLS, H2_STYLE, ACCENT_CLS, LEAD_CLS, LEAD_STYLE } from "@/components/site/blocks";
-import { SUPPORT_EMAIL } from "@/content/siteMap";
 import ReachOutButton from "@/components/site/AttorneyReferral";
 import StayInTouchFilm from "@/components/site/StayInTouchFilm";
 import { ChapterFilmSection } from "@/components/site/StayingAhead";
@@ -265,15 +264,7 @@ const ForClientsPage = () => {
 
       <Faq
         items={CLIENT_FAQ}
-        blurb={
-          <>
-            Questions about your plan itself are best for your attorney. For anything about Willow, write to us at{" "}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[#0C7370] underline decoration-[#0C7370]/30 underline-offset-2 hover:decoration-[#0C7370]">
-              {SUPPORT_EMAIL}
-            </a>
-            .
-          </>
-        }
+        blurb="Anything about your own plan is best answered by your attorney."
         action={null}
         sectionClass="bg-[#F8FAFC] pb-16 md:pb-24"
       />

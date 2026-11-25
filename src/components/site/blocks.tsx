@@ -326,7 +326,10 @@ export const Steps = ({ eyebrow, title, accent, steps }: { eyebrow?: string; tit
   </section>
 );
 
-/* ── FAQ: the homepage's — lines, not boxes; questions left, heading right ── */
+/* ── FAQ: the homepage's — lines, not boxes; questions left, heading right.
+      The line beside the questions never sends readers to the support
+      address: on a marketing page it reads as a support queue (Aaron,
+      Nov 25). The legal pages and the Zoom guide keep it. ── */
 export const Faq = ({
   title = "Common questions",
   items,
