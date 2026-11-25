@@ -162,7 +162,7 @@ const CLIENT_FAQ = [
   },
   {
     q: "Is client information used to train AI?",
-    a: "Never. Documents are read only to draft the summary you review, and that processing stays in the United States.",
+    a: "Never. Documents are read only to draft the summary you review.",
   },
   {
     q: "How do my clients get Willow?",
