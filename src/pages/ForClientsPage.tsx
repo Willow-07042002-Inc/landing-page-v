@@ -147,8 +147,8 @@ const CLIENT_FAQ = [
     a: "No. It’s part of your plan. Everyone you name gets their own account at no cost, and sees what you’ve shared with them.",
   },
   {
-    q: "Can I keep my will private until I pass?",
-    a: "Yes. Share some things now and hold others back. Your will stays sealed until your attorney verifies your passing; until then, the people you’ve named see only that something is waiting for them.",
+    q: "Can I keep parts of my estate plan private until I pass?",
+    a: "Yes. You have full authority to choose what’s shared now and what waits until you pass away. Anything you hold back stays sealed until your attorney verifies your passing; until then, the people you’ve named see only that something is waiting for them.",
   },
   {
     q: "Can I change who has access later?",
@@ -159,15 +159,11 @@ const CLIENT_FAQ = [
     a: "Willow drafts it from your signed documents, and your attorney reviews and approves it before you see a word.",
   },
   {
-    q: "Does Willow give legal advice?",
-    a: "No. Your attorney advises you and drafts your documents. Willow keeps them safe, explains them once your attorney has approved the wording, and keeps you in touch with your attorney.",
-  },
-  {
     q: "Is my information used to train AI?",
     a: "Never. Your documents are read only to draft the summary your attorney reviews, and that processing stays in the United States.",
   },
   {
-    q: "How do I get Willow?",
+    q: "How do I get Willow for my own estate plan?",
     a: "Through your estate planning attorney. If yours doesn’t offer it yet, tell us who they are below and we’ll reach out to them.",
   },
 ];
