@@ -91,12 +91,37 @@ const ClientList = () => (
   </div>
 );
 
+/* The grid's two scenes take turns, the choice first (Aaron: more time
+   between the choice being made and the summary being edited). The choice
+   books its turn as it comes into view; the summary books only when it is
+   about to start, so when both come into view together the choice goes
+   first and the summary waits until the circle has filled and the tile has
+   sat still for a moment. Once the summary is playing, a choice that comes
+   into view waits for it to finish */
+const turn = { owner: "", until: 0 };
+const turnWait = (owner: string) => (turn.owner && turn.owner !== owner ? Math.max(0, turn.until - performance.now()) : 0);
+const takeTurn = (owner: string, delay: number, length: number) => {
+  const start = delay + turnWait(owner);
+  turn.owner = owner;
+  turn.until = performance.now() + start + length;
+  return start;
+};
+const giveUpTurn = (owner: string) => {
+  if (turn.owner === owner) {
+    turn.owner = "";
+    turn.until = 0;
+  }
+};
+
 /* A plan summary in the attorney's words, played as a short scene each time
-   the tile comes into view: the real property power's meaning is selected,
-   the attorney types their own wording over it (the Keeping things easy
-   film's edit, EasyFilm.tsx Rewrite and StepInBody), then the review page's
-   Approve Summary (attorney-review.tsx SummaryHead) presses itself and reads
-   Approved. With reduced motion it shows the end straight away. */
+   the tile comes into view: the review page's summary sits as it is, with
+   only Approve Summary above it (attorney-review.tsx SummaryHead) and no
+   edit box; then the attorney clicks into the real property power's meaning,
+   the edit box opens with the old words selected, they type their own
+   wording over it (the Keeping things easy film's edit, EasyFilm.tsx Rewrite
+   and StepInBody), the box closes, and Approve Summary presses itself and
+   reads Approved (Aaron: plain at first, then click in, retype, approve).
+   With reduced motion it shows the end straight away. */
 const POWERS = [
   { power: "Real property transactions", desc: null },
   { power: "Chattel and goods transactions", desc: "Buy, sell, or manage personal property, tangible goods, and safe deposit box contents" },
@@ -105,11 +130,24 @@ const POWERS = [
 const POWER_KEEP = "Buy, sell, lease, mortgage, or manage ";
 const POWER_BEFORE = "real estate including co-ops, condos, and land";
 const POWER_AFTER = "your home and any other real estate";
+const [POWER_CLICKED, POWER_REST] = [POWER_BEFORE.slice(0, POWER_BEFORE.indexOf(" ")), POWER_BEFORE.slice(POWER_BEFORE.indexOf(" "))];
 
-type EditStage = "idle" | "select" | "typing" | "edited";
+type EditStage = "idle" | "click" | "select" | "typing" | "edited";
+
+/* From the click into the words to Approved, then a rest before the
+   choice tile may take its turn */
+const CLICK_TO_SELECT = 320;
+const SELECT_TO_TYPING = 650;
+const PER_LETTER = 42;
+const TYPED_TO_CLOSED = 700;
+const CLOSED_TO_TAP = 1300;
+const TAP_TO_APPROVED = 220;
+const SUMMARY_TURN =
+  CLICK_TO_SELECT + SELECT_TO_TYPING + PER_LETTER * POWER_AFTER.length + TYPED_TO_CLOSED + CLOSED_TO_TAP + TAP_TO_APPROVED + 1000;
 
 const useRewriteScene = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const clickRing = useRef<HTMLSpanElement>(null);
   const [stage, setStage] = useState<EditStage>("idle");
   const [typed, setTyped] = useState(0);
   const [tap, setTap] = useState(false);
@@ -130,29 +168,51 @@ const useRewriteScene = () => {
     const reset = () => {
       timers.forEach(clearTimeout);
       timers = [];
+      giveUpTurn("summary");
       setStage("idle");
       setTyped(0);
       setTap(false);
       setApproved(false);
     };
+    /* The summary sits unedited for a moment first, and longer while the
+       choice tile is having its turn */
     const play = () => {
       reset();
-      let t = 600;
+      at(1100, begin);
+    };
+    const begin = () => {
+      const wait = turnWait("summary");
+      if (wait > 0) {
+        at(wait, begin);
+        return;
+      }
+      let t = takeTurn("summary", 0, SUMMARY_TURN);
+      at(t, () => {
+        setStage("click");
+        clickRing.current?.animate(
+          [
+            { transform: "translate(-50%, -50%) scale(0.4)", opacity: 0.4 },
+            { transform: "translate(-50%, -50%) scale(1.6)", opacity: 0 },
+          ],
+          { duration: 560, easing: "cubic-bezier(0.23, 1, 0.32, 1)" }
+        );
+      });
+      t += CLICK_TO_SELECT;
       at(t, () => setStage("select"));
-      t += 650;
+      t += SELECT_TO_TYPING;
       at(t, () => setStage("typing"));
       for (let n = 1; n <= POWER_AFTER.length; n++) {
-        t += 42;
+        t += PER_LETTER;
         at(t, () => setTyped(n));
       }
       /* The new words sit in their box for a moment, the box closes, and
          only after a beat does Approve press itself (Aaron: a longer pause
          between the edit and the approval) */
-      t += 700;
+      t += TYPED_TO_CLOSED;
       at(t, () => setStage("edited"));
-      t += 1300;
+      t += CLOSED_TO_TAP;
       at(t, () => setTap(true));
-      t += 220;
+      t += TAP_TO_APPROVED;
       at(t, () => {
         setTap(false);
         setApproved(true);
@@ -179,14 +239,16 @@ const useRewriteScene = () => {
     return () => {
       io.disconnect();
       timers.forEach(clearTimeout);
+      giveUpTurn("summary");
     };
   }, []);
 
-  return { ref, stage, typed, tap, approved };
+  return { ref, clickRing, stage, typed, tap, approved };
 };
 
 const SummaryEdit = () => {
-  const { ref, stage, typed, tap, approved } = useRewriteScene();
+  const { ref, clickRing, stage, typed, tap, approved } = useRewriteScene();
+  const plain = stage === "idle" || stage === "click";
   const editing = stage === "select" || stage === "typing";
   return (
     <div ref={ref} aria-hidden className="text-left">
@@ -216,13 +278,27 @@ const SummaryEdit = () => {
                   <span
                     className="block rounded-[3px]"
                     style={{
-                      color: stage === "idle" ? undefined : "#1F2933",
+                      color: plain ? undefined : "#1F2933",
                       boxShadow: editing ? "0 0 0 1px #309E96, 0 0 0 4px rgba(48,158,150,0.14)" : "0 0 0 0 rgba(48,158,150,0)",
                       transition: "box-shadow 180ms ease, color 180ms ease",
                     }}
                   >
                     {POWER_KEEP}
-                    {stage === "idle" && POWER_BEFORE}
+                    {plain && (
+                      <>
+                        {/* Where the click lands: a ring pulses out from the
+                            word, then the edit box opens */}
+                        <span className="relative">
+                          {POWER_CLICKED}
+                          <span
+                            ref={clickRing}
+                            className="pointer-events-none absolute left-1/2 top-1/2 h-6 w-6 rounded-full bg-[#309E96] opacity-0"
+                            style={{ transform: "translate(-50%, -50%)" }}
+                          />
+                        </span>
+                        {POWER_REST}
+                      </>
+                    )}
                     {stage === "select" && <span className="bg-[#CDEBE8]">{POWER_BEFORE}</span>}
                     {stage === "typing" && (
                       <>
@@ -261,6 +337,7 @@ const FollowUpChoice = ({ labelledBy }: { labelledBy: string }) => {
   const rows = useRef<Partial<Record<FollowUp, HTMLButtonElement | null>>>({});
   const rings = useRef<Partial<Record<FollowUp, HTMLSpanElement | null>>>({});
   const touched = useRef(false);
+  const timer = useRef(0);
   const [value, setValue] = useState<FollowUp | null>(null);
 
   const choose = (label: FollowUp, pressed: boolean) => {
@@ -282,7 +359,8 @@ const FollowUpChoice = ({ labelledBy }: { labelledBy: string }) => {
   };
 
   /* The click plays each time the tile comes into view, until a visitor
-     makes the choice themselves */
+     makes the choice themselves. It books its turn for the click and the
+     still moment after it, so the summary edit beside it waits */
   useEffect(() => {
     const el = groupRef.current;
     if (!el) return;
@@ -290,20 +368,24 @@ const FollowUpChoice = ({ labelledBy }: { labelledBy: string }) => {
       setValue("We call them");
       return;
     }
-    let timer = 0;
     const io = new IntersectionObserver(
       ([entry]) => {
         if (touched.current) return;
-        window.clearTimeout(timer);
-        if (entry.isIntersecting) timer = window.setTimeout(() => choose("We call them", true), 700);
-        else setValue(null);
+        window.clearTimeout(timer.current);
+        if (entry.isIntersecting) {
+          timer.current = window.setTimeout(() => choose("We call them", true), takeTurn("choice", 700, 1800));
+        } else {
+          giveUpTurn("choice");
+          setValue(null);
+        }
       },
       { rootMargin: "0px 0px -25% 0px" }
     );
     io.observe(el);
     return () => {
       io.disconnect();
-      window.clearTimeout(timer);
+      window.clearTimeout(timer.current);
+      giveUpTurn("choice");
     };
   }, []);
 
@@ -321,7 +403,11 @@ const FollowUpChoice = ({ labelledBy }: { labelledBy: string }) => {
             role="radio"
             aria-checked={on}
             onClick={() => {
+              /* A visitor's own click ends the scene: the pending auto-click
+                 never lands on top of it */
               touched.current = true;
+              window.clearTimeout(timer.current);
+              giveUpTurn("choice");
               if (!on) choose(label, false);
             }}
             className="flex w-full items-center gap-3 rounded-[10px] bg-white px-4 py-3.5 text-left transition-transform duration-150 active:scale-[0.98]"
