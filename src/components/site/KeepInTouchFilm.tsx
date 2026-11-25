@@ -110,7 +110,9 @@ const REQUEST_W = { wide: 760, compact: 392 };
 
 /* The waits in each chapter's script, so its length is known up front */
 const TAP = 190;
-const C1 = { read: 900, perChar: 22, after: 350, fold: 450, land: 650, chip: 230, hold: 2400 };
+/* The month fills at Keeping things easy's pace (EasyFilm's C3 land and chip;
+   Aaron, Nov 24) */
+const C1 = { read: 900, perChar: 22, after: 350, fold: 450, land: 420, chip: 90, hold: 2400 };
 const C2 = { rest: 900, carry: 950, over: 300, loading: 900, preview: 1700, hold: 2200 };
 const CL = { read: 2000, open: 3600, sent: 2400 };
 const C3 = { read: 1500, perChar: 32, after: 250, beforeSave: 450, hold: 1900 };
