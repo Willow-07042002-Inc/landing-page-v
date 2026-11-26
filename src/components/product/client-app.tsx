@@ -232,6 +232,9 @@ const CaFirmCard = ({ open = false }: { open?: boolean }) => (
    cards so the 6px gaps read as seams, the outer corners rounded */
 const CA_STACK_SHADOW = "0 2px 8px rgba(0,0,0,0.04)";
 
+/* The summary's card pieces, for films that draw the plan page themselves */
+export const PlanCardParts = { CardShell: CaCardShell, BuildingIcon: CaBuildingIcon, ChevronDownIcon: CaChevronDownIcon, STACK_SHADOW: CA_STACK_SHADOW };
+
 /* "You & Your Family" body as Daniel's will reads (extracted-will-adapter.ts
    familyMembers): his state, "Your spouse", "Your child". No extended or past
    family, so no segment tabs. */
