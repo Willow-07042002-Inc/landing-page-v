@@ -17,7 +17,7 @@ export const EASY_CHAPTERS: { id: string; also?: string[]; title: string; body: 
   {
     id: "set-up",
     also: ["signed-plan", "dashboard"],
-    title: "Automate account setup",
+    title: "Automated account setup",
     body: "Drop in your clients’ documents, and Willow goes through the details, creates their accounts and sends off the invites to their portal.",
   },
   {

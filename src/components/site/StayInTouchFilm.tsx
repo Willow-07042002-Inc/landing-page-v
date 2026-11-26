@@ -334,12 +334,16 @@ const Mark = ({ on, children }: { on: boolean; children: React.ReactNode }) => (
   </span>
 );
 
+/* How far a card sits below the print's top edge (and, for the check-in,
+   above its bottom edge), in the frame's own pixels */
+const CARD_TOP = (narrow: boolean) => (narrow ? 26 : 31);
+
 const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: number }) => {
   const shown = t >= N.in;
   const open = t >= N.open;
   const pad = narrow ? "px-5" : "px-7";
   return (
-    <div className="absolute" style={{ left: inset, right: inset, top: narrow ? 26 : 31 }}>
+    <div className="absolute" style={{ left: inset, right: inset, top: CARD_TOP(narrow) }}>
       <div
         className="overflow-hidden rounded-2xl bg-white text-left"
         style={{
@@ -427,15 +431,15 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
 const CHAPTERS = [
   {
     id: "book-a-time",
-    title: "Clients book time with you",
-    body: "A quick survey each year asks what’s changed. If something has, Willow makes it easy for them to find a time on your calendar for a conversation.",
+    title: "We’ll check in and ask what’s changed",
+    body: "Once a year, Willow sends your clients a quick survey. If anything has changed, it’s easy for them to find a time on your calendar for a conversation.",
     label: "Daniel answers his yearly check-in: he bought property, so Willow suggests a call, and he books a time on his attorney's calendar, with the event's details a tap away.",
     end: T.end + 1400,
   },
   {
     id: "firm-updates",
-    title: "Updates from your firm",
-    body: "When you post an update, like a change in tax law, clients see how it affects their plan and can book time with you to talk it through.",
+    title: "Let clients know how a change affects their plan",
+    body: "When you post an update, like a change in tax law, clients see the part of their plan it touches and can book time with you to talk it through.",
     label: "A notification: Daniel's attorney recommends a check-in call, based on a tax update on IRS Revenue Ruling 2023-2. He opens it to the update, the section of his irrevocable trust it may touch, his attorney's thoughts, and a button to schedule a meeting. The notification doesn't change his documents.",
     end: N.end,
   },
@@ -527,9 +531,17 @@ const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: numb
   return (
     <div role="img" aria-label={c.label}>
       {i === 0 ? (
-        <TileFrame size={size}>
-          <div key={epoch} aria-hidden style={{ width: size.w, height: size.h }}>
-            <CheckIn t={Math.min(t, T.end)} narrow={narrow} />
+        /* The check-in as a card on the print, inset the same on every side
+           as the update's card beside it, so the two tiles match and neither
+           runs off the bottom (Aaron, Nov 26) */
+        <TileFrame size={size} bare>
+          <div key={epoch} aria-hidden className="relative" style={{ width: frame.w, height: frame.h }}>
+            <div
+              className="absolute overflow-hidden rounded-2xl bg-white"
+              style={{ left: MAT.l * frame.w, right: MAT.l * frame.w, top: CARD_TOP(narrow), bottom: CARD_TOP(narrow), boxShadow: LIFT }}
+            >
+              <CheckIn t={Math.min(t, T.end)} narrow={narrow} />
+            </div>
           </div>
         </TileFrame>
       ) : (

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ScaledScreen, WIcon } from "@/components/product/kit";
-import { AttorneyClientsScreen } from "@/components/product/attorney-clients";
+import { AttorneyClientsScreen, CLIENT_PANEL_TABS } from "@/components/product/attorney-clients";
 import { OutlookLogo } from "@/components/product/attorney-booking";
 import { CalendarCheckIcon, CloseIcon, ViewIcon } from "@/components/product/willow-icons";
 
@@ -1235,7 +1235,25 @@ const EasyFilm = ({ chapter, replay, onChapter, onStart, clock, rewatch = false,
                     <h3 className="text-[24px] font-semibold text-[#1F2933]" style={{ lineHeight: 1.2, fontFamily: FIGTREE }}>Daniel Rosen</h3>
                     <p className="mt-1 text-[14px] text-[#9CA3AF]">Joint account with Maria Rosen</p>
                   </div>
-                  <div className={`${compact ? "mt-6" : "mt-8"} min-h-0 flex-1`}>
+                  {/* The record's tab row, open on Estate Plan (back at Aaron's
+                      request, Nov 26). Its right end runs off the panel, as the
+                      product's row scrolls */}
+                  <div
+                    className={`${compact ? "mt-4" : "mt-6"} flex-shrink-0 overflow-hidden border-b border-[#E5E7EB]`}
+                    style={{ WebkitMaskImage: "linear-gradient(to right, #000 85%, transparent)", maskImage: "linear-gradient(to right, #000 85%, transparent)" }}
+                  >
+                    <div className="flex">
+                      {CLIENT_PANEL_TABS.map((t) => (
+                        <span
+                          key={t}
+                          className={`whitespace-nowrap rounded-t-md border-b-2 px-4 py-3 text-[13px] font-medium ${t === "Estate Plan" ? "border-[#309E96] text-[#309E96]" : "border-transparent text-[#6B7280]"}`}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={`${compact ? "mt-5" : "mt-6"} min-h-0 flex-1`}>
                     {(beat === "docs" || !inRecord) && <Appear key="docs"><TheirDocuments /></Appear>}
                   </div>
                 </div>
