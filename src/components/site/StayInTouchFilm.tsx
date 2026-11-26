@@ -438,7 +438,7 @@ const CHAPTERS = [
   },
   {
     id: "firm-updates",
-    title: "We’ll show clients how a change affects their plan",
+    title: "Let clients know how a change affects their plan",
     body: "When you post an update, like a change in tax law, clients see the part of their plan it touches and can book time with you to talk it through.",
     label: "A notification: Daniel's attorney recommends a check-in call, based on a tax update on IRS Revenue Ruling 2023-2. He opens it to the update, the section of his irrevocable trust it may touch, his attorney's thoughts, and a button to schedule a meeting. The notification doesn't change his documents.",
     end: N.end,
