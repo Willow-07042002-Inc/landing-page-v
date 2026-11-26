@@ -9,13 +9,11 @@ import {
   CaQuietButton,
   CaMonthCalendar,
   CaSlotList,
-  PlanCardParts,
 } from "@/components/product/client-app";
 import { CheckIcon, ChevronDownIcon, EditIcon, NotificationIcon, TrustIcon } from "@/components/product/willow-icons";
 
-/* For clients, staying in touch: three tiles (two until Aaron added the
-   third, Nov 26) set the way For attorneys' Keeping things easy sets its
-   three (Aaron, Nov 25, 2026), each with its words above
+/* For clients, staying in touch: two tiles set the way For attorneys' Keeping
+   things easy sets its three (Aaron, Nov 25, 2026), each with its words above
    and its own short film below. Once the row is in view the films play one
    after another; the one playing grows a little and its rule fills. A tile
    not playing rests on its last frame, and clicking a tile plays it again.
@@ -428,99 +426,6 @@ const TaxUpdate = ({ t, narrow, inset }: { t: number; narrow: boolean; inset: nu
   );
 };
 
-/* ---- 3. Your firm, at the top of their plan ------------------------------
-   Daniel's plan on a phone-width page, as the portal draws it
-   (apps/clients/app/dashboard/page.tsx -> ScenarioWillSummary): the hero,
-   then the card stack with "From your firm" first (FromYourFirm.tsx ->
-   FromYourFirmCard; no logo on file, so the teal building). The card opens
-   on Your team (firm-panel.tsx FirmPanelView, TeamWide at phone width):
-   Rachel's initials, name, firm and "Attorney of record", her phone, email
-   and office, and Book a call. Phone and email are reserved example values
-   that reach nobody. Added at Aaron's request (Nov 26). */
-
-const { CardShell, BuildingIcon, ChevronDownIcon: CardChevron, STACK_SHADOW } = PlanCardParts;
-const F = { tap: 900, open: 1150, end: 5600 };
-const RACHEL = { phone: "(212) 555-0136", email: "rachel.alvarez@example.com", office: "Madison Avenue, New York" };
-
-const FirmCard = ({ t }: { t: number }) => {
-  const open = t >= F.open;
-  const down = t >= F.tap && t < F.tap + TAP;
-  const tabCls = (on: boolean) => (on ? "text-[#128F8B]" : "text-[#6B7280]");
-  return (
-    <div className="relative h-full w-full overflow-hidden bg-[#FAFBFC] text-left text-[#1F2933]" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      {/* The page's hero, as a phone shows it */}
-      <div className="border-b border-[#F3F4F6] bg-white px-5 pb-7 pt-8 text-center">
-        <div className="mb-2 text-[#1F2933]" style={{ fontFamily: MERRIWEATHER, fontSize: 26, fontWeight: 600, lineHeight: 1.45 }}>
-          Your Plan&apos;s Playbook
-        </div>
-        <p className="text-[#6B7280]" style={{ fontSize: 15, lineHeight: 1.6 }}>
-          We&apos;ve made it simple for you<br /> to understand everything.
-        </p>
-      </div>
-
-      <div className="px-3 pt-4">
-        <div className="space-y-1.5 rounded-2xl bg-[#F3F4F6]" style={{ boxShadow: STACK_SHADOW }}>
-          {/* From your firm: its header presses, then it opens on Your team */}
-          <div className="overflow-hidden rounded-t-2xl bg-white">
-            <div className="flex items-center gap-4 p-6" style={{ background: down ? "#F4F5F6" : "#FFFFFF", transition: "background-color 200ms ease" }}>
-              <span className="flex h-14 w-14 flex-shrink-0 items-center justify-center">
-                <BuildingIcon className="h-11 w-11 text-[#3AB2AB]" />
-              </span>
-              <span className="block min-w-0 flex-1">
-                <span className="mb-0.5 block text-[#1F2933]" style={{ fontSize: 16, fontWeight: 600 }}>From your firm</span>
-                <span className="block text-[#9CA3AF]" style={{ fontSize: 14 }}>Your attorney, actions and firm news</span>
-              </span>
-              <CardChevron className="h-5 w-5 flex-shrink-0 text-[#6B7280]" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 300ms var(--ease-out)" }} />
-            </div>
-            <div style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows 560ms var(--ease-in-out)" }}>
-              <div className="min-h-0 overflow-hidden">
-                <div className="px-6 pb-6">
-                  <Reveal open={open} i={0}>
-                    <div className="mb-5 inline-flex flex-wrap items-center gap-5 border-b border-[#E5E7EB] pb-2.5" style={{ fontSize: 13.5 }}>
-                      <span className={tabCls(true)} style={{ fontWeight: 600 }}>Your team</span>
-                      <span className={tabCls(false)} style={{ fontWeight: 500 }}>Recommended actions</span>
-                      <span className={tabCls(false)} style={{ fontWeight: 500 }}>Resources</span>
-                    </div>
-                  </Reveal>
-                  <Reveal open={open} i={1}>
-                    <div className="flex items-center gap-4">
-                      {/* An initials avatar, the one circle the design system allows */}
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#159E95] text-white" style={{ fontSize: 15, fontWeight: 600 }}>
-                        RA
-                      </div>
-                      <div className="min-w-0 leading-6">
-                        <div className="text-[15px] font-semibold text-[#1F2933]">Rachel Alvarez</div>
-                        <div className="text-[14px] text-[#4B5563]">Alvarez Family Law</div>
-                        <div className="text-[14px] text-[#6B7280]">Attorney of record</div>
-                      </div>
-                    </div>
-                  </Reveal>
-                  <Reveal open={open} i={2}>
-                    <div className="mt-4 pl-16 text-[14px] leading-6">
-                      <div className="font-medium text-[#128F8B]">{RACHEL.phone}</div>
-                      <div className="font-medium text-[#128F8B]">{RACHEL.email}</div>
-                      <div className="text-[#4B5563]">{RACHEL.office}</div>
-                    </div>
-                  </Reveal>
-                  <Reveal open={open} i={3}>
-                    <span className="mt-3 inline-flex items-center text-[#128F8B]" style={{ fontSize: 14, fontWeight: 600 }}>Book a call</span>
-                  </Reveal>
-                </div>
-              </div>
-            </div>
-          </div>
-          <CardShell compact iconSrc="/mock/family-icon.png" title="You & Your Family" subtitle="The people at the center of your plan" />
-          <CardShell compact iconSrc="/mock/map-icon.png" title="Your Plan Right Now" subtitle="What's already in place while you're alive" />
-          <CardShell compact iconSrc="/mock/shield-icon.png" title="If You Need Someone to Step In" subtitle="What happens if you can't make decisions for yourself" />
-          <div className="overflow-hidden rounded-b-2xl">
-            <CardShell compact iconSrc="/mock/tree-icon.png" title="What You'll Leave Behind" subtitle="How your estate is managed and distributed" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 /* ---- The row -------------------------------------------------------------- */
 
 const CHAPTERS = [
@@ -537,13 +442,6 @@ const CHAPTERS = [
     body: "When you post an update, like a change in tax law, clients see the part of their plan it touches and can book time with you to talk it through.",
     label: "A notification: Daniel's attorney recommends a check-in call, based on a tax update on IRS Revenue Ruling 2023-2. He opens it to the update, the section of his irrevocable trust it may touch, his attorney's thoughts, and a button to schedule a meeting. The notification doesn't change his documents.",
     end: N.end,
-  },
-  {
-    id: "your-firm",
-    title: "Your firm, at the top of every plan",
-    body: "Every client’s plan opens with your firm: how to reach you, and a way to book a call whenever they need you.",
-    label: "Daniel's plan opens with a card from his attorney's firm. He opens it to Rachel Alvarez of Alvarez Family Law, his attorney of record, with her phone, email and office, and a link to book a call.",
-    end: F.end,
   },
 ];
 
@@ -621,31 +519,18 @@ const Fill = ({ ms }: { ms: number }) => {
 
 const GROW = 1.035;
 
-const Film = ({ i, go, run, narrow, threeUp, onEnd }: { i: number; go: boolean; run: number; narrow: boolean; threeUp: boolean; onEnd: () => void }) => {
+const Film = ({ i, go, run, narrow, onEnd }: { i: number; go: boolean; run: number; narrow: boolean; onEnd: () => void }) => {
   const c = CHAPTERS[i];
   const { t, epoch } = useTileClock(c.end, go, run, onEnd);
-  /* The wide tile (two up, 768 to 1023px) is drawn a little smaller than
-     life (about 0.85), so the conversation has room around it rather than
-     filling the frame. Three up, and on a phone, the tiles take the phone
-     layout: three up they're all the update's height, so the row matches; on
-     a phone they stack, and only the update runs taller, to hold its card
+  /* The wide tile is drawn a little smaller than life (about 0.85), so the
+     conversation has room around it rather than filling the frame. On a
+     phone the tiles stack, so the update's runs taller to hold the card
      once it's open */
-  const size = narrow ? { w: 400, h: threeUp || i === 1 ? 894 : i === 2 ? 620 : 560 } : { w: 600, h: 810 };
+  const size = narrow ? { w: 400, h: i === 1 ? 894 : 560 } : { w: 600, h: 810 };
   const frame = frameOf(size);
   return (
     <div role="img" aria-label={c.label}>
-      {i === 2 ? (
-        <TileFrame size={size} bare>
-          <div key={epoch} aria-hidden className="relative" style={{ width: frame.w, height: frame.h }}>
-            <div
-              className="absolute overflow-hidden rounded-2xl"
-              style={{ left: MAT.l * frame.w, right: MAT.l * frame.w, top: CARD_TOP(narrow), bottom: CARD_TOP(narrow), boxShadow: LIFT }}
-            >
-              <FirmCard t={t} />
-            </div>
-          </div>
-        </TileFrame>
-      ) : i === 0 ? (
+      {i === 0 ? (
         /* The check-in as a card on the print, inset the same on every side
            as the update's card beside it, so the two tiles match and neither
            runs off the bottom (Aaron, Nov 26) */
@@ -670,24 +555,8 @@ const Film = ({ i, go, run, narrow, threeUp, onEnd }: { i: number; go: boolean; 
   );
 };
 
-/* Three tiles across from 1024px (lg), as the grid sets them */
-const useThreeUp = () => {
-  const q = "(min-width: 1024px)";
-  const [on, setOn] = useState(() => typeof window !== "undefined" && window.matchMedia(q).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(q);
-    const change = () => setOn(mq.matches);
-    mq.addEventListener("change", change);
-    return () => mq.removeEventListener("change", change);
-  }, []);
-  return on;
-};
-
 const StayInTouchFilm = () => {
-  const phone = useCompact();
-  const threeUp = useThreeUp();
-  /* The films take the phone layout on a phone and three up */
-  const narrow = phone || threeUp;
+  const narrow = useCompact();
   const rowRef = useRef<HTMLDivElement>(null);
   /* The row's turn to play: one film at a time, site-wide (Aaron, Nov 25).
      Without it every tile rests on its last frame */
@@ -724,7 +593,7 @@ const StayInTouchFilm = () => {
           <span className="block italic text-[#138F8B]">with the attorney who knows them best.</span>
         </h2>
 
-        <div ref={rowRef} className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-8 lg:gap-y-6">
+        <div ref={rowRef} className="relative mt-10 grid gap-14 md:mt-12 lg:grid-cols-2 lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-6">
           {CHAPTERS.map((c, i) => {
             const go = rowTurn && turn === i;
             const playing = go && !played[i];
@@ -754,7 +623,7 @@ const StayInTouchFilm = () => {
                       transition: "transform 700ms var(--ease-in-out), box-shadow 700ms ease",
                     }}
                   >
-                    <Film i={i} go={go} run={runs[i]} narrow={narrow} threeUp={threeUp} onEnd={() => ended(i)} />
+                    <Film i={i} go={go} run={runs[i]} narrow={narrow} onEnd={() => ended(i)} />
                   </div>
                 </div>
 
